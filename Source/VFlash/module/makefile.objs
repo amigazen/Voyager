@@ -1,0 +1,27 @@
+# Makefile include (objects)
+#
+# $Id: makefile.objs,v 1.2 2003/04/27 03:13:10 zapek Exp $
+#
+
+SWFOBJS=\
+	amiga.o \
+	flash.o \
+	character.o \
+	shape.o \
+	button.o \
+	program.o \
+	bitmap.o \
+	displaylist.o \
+	font.o \
+	graphic.o \
+	text.o \
+	matrix.o \
+	script.o \
+	sound.o \
+	sprite.o \
+	cxform.o \
+	movie.o \
+	adpcm.o
+
+OBJS = main.o init.o init_$(PLATFORM).o memory.o player.o support.o timers.o timers_$(PLATFORM).o gfx.o gfx_$(PLATFORM).o
+

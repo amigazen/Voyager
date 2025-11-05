@@ -1,0 +1,38 @@
+* When adding an entry there, don't forget to update the following:
+*
+* libfunctable.c: add the proto with LIB_ as prefix and void as arguments
+* then add it to LibFuncTable[].
+*
+* libfunctions.c: add a stub function
+*
+##base _VIDBase
+##bias 30
+##public
+imgdec_markforreload(ic)(a0)
+imgdec_abortload(ic)(a0)
+imgdec_isdone(ic)(a0)
+imgdec_flushimages()()
+imgdec_getmaskbm(ic)(a0)
+imgdec_getimagelist(ic)(a0)
+imgdec_setclientobject(ic,obj)(a0/a1)
+imgdec_tick()()
+imgdec_getinfo(ic,bmp,xp,yp)(a0/a1/a2/a3)
+imgdec_close(ic)(a0)
+imgdec_dowehave(url)(a0)
+imgdec_open(url,client,ref,reload)(a0/a1/a2/d0)
+imgdec_setdestscreen(scr,bgpen,framepen,shadowpen,shinepen)(a0/d0/d1/d2/d3)
+imgdec_libinit(cbtable)(a0)
+imgdec_libexit()()
+imgdec_setprefs(dct,dither,quant,dec,progjpeg,dithergif,ditherpng)(d0/d1/d2/d3/d4/d5/d6)
+imgdec_getrepeatcnt(client)(a0)
+* V10
+imgdec_getinfostring(client,buffer)(a0/a1)
+* V13
+imgdec_errormsg(client)(a0)
+* V14/V15
+imgdec_setdebug(level)(d0)
+* V16/V17
+imgdec_isblank(client)(a0)
+* V18
+imgdec_maskused(client)(a0)
+##endif

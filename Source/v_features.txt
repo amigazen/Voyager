@@ -1,0 +1,300 @@
+Voyager features:
+-----------------
+
+HTTP:
+-----
+- HTTP 1.1
+- content negociation
+- persistent connections (keep alive)
+- resume
+- uploads
+- proxies
+- cache control (expirations, if-modified-since, etc..)
+- authentication
+- language tags
+- post
+- cookies
+- useragent spoofing for broken websites
+
+would be nice to have:
+- compression support
+
+
+FTP:
+----
+- anonymous and normal logins
+- persistent connections
+- resume
+- proxies
+- advanced LIST (aka ls -l) parsing
+- EPLF support
+
+
+SMTP:
+-----
+- can send simple mails from webpage links
+
+
+HTML:
+-----
+- HTML 3.2
+- tags supported (tags with a '+' are additional real life used tags not in
+  the specs)
+  - HEAD
+  - BODY
+  - TITLE
+  - STYLE (hidden, searched for JS. todo: implement styles)
+  - SCRIPT (Javascript)
+  - ISINDEX
+  - BASE
+  - META (http-equiv (refresh, pragma (no-cache), content-type), meta values)
+  - LINK (ignored, not important)
+  - BODY, BGCOLOR, TEXT, LINK, ALINK, VLINK, BACKGROUND
+  - H1, H2, H3, H4, H5, H6
+  - ADDRESS (no special action)
+  - P (left, right, center, middle+)
+  - UL, OL, LI (OL doesn't work properly, both could be rendered better
+    visually)
+  - DL, DT (not handled)
+  - DIR (ignored, useless)
+  - MENU (ignored, useless)
+  - PRE (should ignore everything which is not </PRE> in between)
+  - XMP
+  - LISTING (not handled, obsolete)
+  - PLAINTEXT (not handled, obsolete)
+  - DIV
+  - CENTER
+  - BLOCKQUOTE (ignored, useless)
+  - FORM (action, target, method, enctype)
+  - HR (width, size, noshade, color. todo: should handle align
+    left/right/center)
+  - TABLE (bgcolor+, background+, cellpadding, cellspacing, border, width,
+    height+, bordercolordark+, bordercolorlight+, bordercolor+, align)
+  - TR (bgcolor+, background+, valign, align)
+  - TD/TH (bgcolor+, background+, width, height, rowspan, colspan, valign,
+    align, nowrap)
+    note: tables should follow the "IE-way" which breaks multiples images
+    without space between them, even though the specs says they shouldn't
+    break
+  - TT
+  - I
+  - INS+
+  - B
+  - U
+  - STRIKE
+  - BIG
+  - SMALL
+  - SUB (ignored)
+  - SUP (ignored)
+  - S+
+  - EM
+  - STRONG
+  - DFN
+  - CODE
+  - SAMP
+  - KBD
+  - VAR
+  - CITE
+  - INPUT (type (text, password, checkbox, button+, radio, submit, image,
+    reset, file, hidden), name, value, checked, size, maxlength, src, align)
+  - SELECT (size, multiple, disabled)
+  - TEXTAREA (disabled, rows, cols, readonly+)
+  - A (href, title, target+, accesskey+. rel and rev are useless)
+  - IMG (src, alt, align, width, height, hspace, vspace, border, ismap,
+    usemap, lowsrc+)
+  - APPLET (not supported, we need a JVM first :)
+  - FONT (color, size, face+)
+  - BASEFONT
+  - BR (clear=left/right/all)
+  - NOBR+
+  - MAP
+  - AREA (shape, href, target, coords, accesskey+)
+  - NOSCRIPT+
+  - NOFRAMES+
+  - NOEMBED+
+  - EMBED+ (type, src, width, height, hspace, vspace, border, align)
+  - FRAMESET+
+
+
+SSL:
+----
+- SSLv2
+- SSLv3
+- TLSv1
+- up to 168-bit keys
+- certificates handling
+
+
+Javascript 1.3/ECMA-Script
+--------------------------
+Should implement language differences. JS specs have the nasty habbit of
+changing stuff between versions (see array specs for example)
+
+General objects: missing: constructor, prototype, toSource
+
+- Array: morph the behaviour depending on the JS version
+  - length (missing: index, input (regexp stuff))
+  - concat, join, pop, push, reverse, shift, slice, splice, sort, unshift
+
+- Boolean: ok
+
+- Date: morph the behaviour depending on the JS version
+  - getData, getDay, getFullYear, getHours, getMilliseconds, getMinutes,
+    getMonth, getSeconds, getTime, getTimezoneOffset, getUTCDate, getUTCDay,
+    getUTCFullYear, getUTCHours, getUTCMilliseconds, getUTCMinutes,
+    getUTCMonth, getUTCSeconds, getYear, parse, setDate, setFullYear,
+    setHours, setMilliseconds, setMinutes, setMonth, setSeconds, setTime,
+    setUTCDate, setUTCFullYear, setUTCHours, setUTCMilliseconds,
+    setUTCMinutes, setUTCMonth, setUTCSeconds, setYear, toGMTString,
+    toLocaleString, toUTCString, UTC
+
+- Function: morph the behaviour depending on the JS version
+  - arguments, arity, caller (missing: length, index)
+  - call, toString, .. not sure for the rest
+
+- Java and subclasses: none, no JVM
+
+- Math:
+  - E, LN2, LN10, LOG2E, LOG10E, PI, SQRT1_2, SQRT2
+  - abs, acos, asin, atan, atan2, ceil, cos, exp, floor, log, max, min, pow,
+    random, round, sin, sqrt, tan
+
+- Number:
+  - handled by the JS parser
+
+- Object: morph the behaviour depending on the JS version
+  -
+  - valueOf (missing: toSource, toString, unwatch, eval (deprecated though),
+    watch)
+
+- Packages: none, no JVM
+
+- Regexp: morph the behaviour depending on the JS version
+  - global, ignorecase, lastIndex, multiline, source, lastMatch+, lastParen+,
+    leftContext+, rightContext+
+  - exec, compile+, test
+
+- String: morph the behaviour depending on the JS version
+  - length
+  - charAt, charCodeAt, concat, fromCharCode, indexOf, lastIndexOf, match,
+    replace, search, split, substr, substring, toLowerCase, toUpperCase,
+    valueOf (missing: anchor, big, blink, bold, fixed, fontcolor, fontsize,
+    italics, link, slice, small, strike, sub, sup)
+
+- sun: none, no JVM
+
+
+Plugins:
+--------
+- VFlash: flash player, flash 3 and some flash 4 stuff. We should license
+  the original Flash 6 sourcecode from Macromedia for a port as developping
+  the current one to reach the flash 6 format would take too much time and
+  effort
+- VPDF: PDF viewer by Emmanuel Lesueur. Support encrypted documents through
+  an external module.
+- future plugins: Realaudio, Realvideo, Quicktime, etc..
+
+
+Cache:
+------
+- variable sized memory cache
+- variable sized disk cache
+- automatic cleanup
+- no index, always consistent
+
+
+Imagedecoder:
+-------------
+- fast inline decoding of pictures
+- images are cached as long as there's free memory
+- GIF (with animated and progressive support)
+- JPG
+- PNG (with true alpha channel support)
+- XBM
+
+
+Interface:
+----------
+- internal web page editing with HTML tag highlighting
+
+
+Languages:
+----------
+- V has provisions for UTF-8 (everything libunicode can do)
+
+
+Todo:
+-----
+(this is a cut & paste of what I have on my todo list)
+
+- rewrite a ContactManager replacement (bookmarks), could also be some
+  standalone application that can be shared between apps. To be
+  investigated.
+
+- When trying to download a non-existing file, V saves the resulting error
+  page instead of showing it
+
+- put back the option for HTML errors in pages instead of requesters
+
+- add mouse pointer changing to spot links more easily
+
+- rework the history window/list
+
+- reimplement "search in page"
+
+- reimplement "cut & paste"
+
+- reimplement some basic printing support
+
+- fix the text handling issue. Scanning the whole textlist is inefficient,
+  there should be a faster way of doing the initial lookup to find the text,
+  either starting from where we are then up/downwalk the list or something
+  better
+
+- shift + enter in the URL string starts a download
+
+- fix the stop button in the netinfo window, they don't do anything
+
+- closing a page doesn't abord the connections in it
+
+- download errors should go to the download window everytime, they can go to
+  the errorwin if the connection isn't initiated (eg, connection refused)
+
+- V doesn't always remember visited links properly
+
+- add some quick access options in the menu (enable disabled JS, etc..)
+
+- fix the cache verify handling. Sometimes V caches a page instead of
+  reloading it, happens often with submited FORMs
+
+- after a page failure, V should reload the failed page when clicking on
+  'reload', not the previous one
+
+- improve the ARexx port, more commands
+
+- window handling should be rewritten so that the download window doesn't go
+  away when exiting V :)
+
+- rewrite tabs support from scratch
+
+- have scrollbars disappear when not needed (either horiz, vert or both, no
+  object dispose/new again hack)
+
+- text output has some weird (new ?) problems. Sometimes it doesn't <BR> a
+  style/link properly but lets it continue and breaks it at pagewidth * 2
+  making the page awkward to use. Happens more often on text-only webpages.
+
+- add a heuristic for lame JS scripts with infinite loop requesters
+
+- remove that 2048 pixels wide limit JPEG display
+
+- make historylist work with frames :o) This is more complicated than it
+  seems. In fact I'm pretty sure it's impossible to implement it in a non
+  broken way (all other browser have it broken and you can fool it). Let's
+  have something that "looks" ok then.
+
+- URL target display can be fooled if you jump from a link to anoter without
+  anything in between (it prints nothing then)
+
+- and there's more specific bugs at our bug tracker site
+

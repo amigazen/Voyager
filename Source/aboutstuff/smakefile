@@ -1,0 +1,20 @@
+# SMakefile for AboutStuff
+#
+# $Id: smakefile,v 1.7 2001/06/04 21:15:12 owagner Exp $
+#
+
+# Objects
+OBJ = about.o
+
+voyager_about.vlib: $(OBJ)
+	//rev/rev libid=about_vlib
+	slink from LIB:libent.o LIB:libinit.o $(OBJ) LIB LIB:sc.lib SMALLCODE \
+	STRIPDEBUG NOICONS LIBVERSION \$libver LIBREVISION \$librev LIBFD fd/v_about_lib.fd \
+	LIBID "\$libid" to /plugins/voyager_about.vlib
+
+about.o: about.c
+	sc about.c
+	//rev/rev libid=about_vlib
+
+clean:
+	-delete \#?.(o|map|lnk)

@@ -1,0 +1,30 @@
+# Makefile for VFlash (68020)
+#
+# © 1999-2000 David Gerber <zapek@vapor.com>
+# All rights reserved
+#
+# $Id: Makefile.020,v 1.1.1.1 2002/10/07 12:52:08 zapek Exp $
+#
+
+#DEBUG=-DDEBUG=1
+
+CC := m68k-amigaos-gcc
+LD := m68k-amigaos-ld
+CFLAGS += -g -m68020 $(DEBUG)
+LDFLAGS += -noixemul
+
+export CFLAGS LDFLAGS
+
+all: lib module
+
+lib: FORCE
+	$(MAKE) -f ../../Lib/Makefile
+
+module: lib FORCE
+	$(MAKE) -f ../../module/Makefile VFlash_68020.module
+
+clean:
+	$(MAKE) -f ../../Lib/Makefile clean
+	$(MAKE) -f ../../module/Makefile clean
+
+FORCE:

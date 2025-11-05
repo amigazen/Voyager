@@ -1,0 +1,189 @@
+# Makefile for Voyager
+#
+# © 1999-2001 VaporWare CVS team <ibcvs@vapor.com>
+# standalone shared / link lib makefile by BodyLove
+# All rights reserved
+#
+# $Id: makefile.caos,v 1.8 2000/12/29 13:49:15 bodylove Exp $
+#
+
+include $(SRCDIR)makefile.config
+
+MODULE = vssl
+LINKLIB = lib$(MODULE).a
+
+#########################################################################
+
+MISCFILES = cpt_err.c cryptlib.c ex_data.c mem.c mem_dbg.c
+
+SSLFILES = \
+ssl_cert.c ssl_lib.c ssl_sess.c ssl_ciph.c ssl_algs.c ssl_err2.c \
+s23_clnt.c s2_clnt.c s3_clnt.c t1_clnt.c s23_lib.c ssl_err.c s3_both.c \
+s3_enc.c s2_lib.c s3_lib.c s23_pkt.c s2_enc.c s2_pkt.c s3_pkt.c ssl_rsa.c \
+t1_lib.c t1_enc.c
+
+ASN1FILES = \
+a_bitstr.c a_bool.c a_bytes.c a_d2i_fp.c a_digest.c a_dup.c a_enum.c a_gentm.c \
+a_i2d_fp.c a_int.c a_mbstr.c a_octet.c a_print.c a_set.c a_object.c a_sign.c \
+asn_pack.c asn1_err.c asn1_lib.c a_strnid.c a_time.c a_type.c a_utctm.c a_utf8.c \
+a_verify.c a_vis.c d2i_dhp.c d2i_dsap.c d2i_pr.c d2i_pu.c d2i_r_pr.c d2i_r_pu.c \
+d2i_s_pr.c d2i_s_pu.c evp_asn1.c i2d_dhp.c i2d_dsap.c i2d_pr.c i2d_pu.c i2d_r_pr.c \
+i2d_r_pu.c i2d_s_pr.c i2d_s_pu.c nsseq.c p5_pbe.c p5_pbev2.c p7_dgst.c p7_enc.c \
+p7_enc_c.c p7_evp.c p7_i_s.c p7_lib.c p7_recip.c p7_s_e.c p7_signd.c p7_signi.c \
+p8_pkey.c t_pkey.c t_x509.c t_x509a.c x_algor.c x_attrib.c x_cinf.c x_crl.c x_exten.c \
+x_info.c x_name.c x_pkey.c x_pubkey.c x_req.c x_sig.c x_spki.c x_val.c x_x509.c \
+x_x509a.c 
+
+BIOFILES = \
+bf_buff.c bio_err.c bio_lib.c b_print.c bss_file.c
+
+BUFFERFILES = \
+buffer.c buf_err.c 
+
+BNFILES = \
+bn_add.c bn_asm.c bn_blind.c bn_ctx.c bn_div.c \
+bn_err.c bn_exp.c bn_exp2.c bn_gcd.c bn_lib.c \
+bn_mont.c bn_mul.c bn_print.c bn_rand.c bn_recp.c \
+bn_shift.c bn_sqr.c bn_word.c
+
+COMPFILES = \
+comp_lib.c 
+
+CONFFILES = \
+conf_api.c conf_def.c conf_err.c conf_lib.c
+
+DESFILES = \
+cfb64ede.c cfb64enc.c des_enc.c ecb_enc.c \
+ecb3_enc.c ofb64ede.c ofb64enc.c set_key.c
+
+DHFILES = \
+dh_err.c dh_key.c dh_lib.c
+
+DSAFILES = \
+dsa_asn1.c dsa_err.c dsa_lib.c dsa_ossl.c dsa_sign.c dsa_vrf.c
+
+DSOFILES = \
+dso_err.c
+
+ERRFILES = \
+err.c err_all.c err_prn.c
+
+EVPFILES = \
+digest.c e_des.c e_des3.c e_idea.c encode.c e_null.c \
+e_rc2.c e_rc4.c evp_enc.c evp_err.c evp_key.c evp_lib.c \
+evp_pbe.c evp_pkey.c m_dss1.c m_md2.c m_md5.c m_sha1.c names.c \
+p_lib.c p_sign.c p_verify.c
+
+HMACFILES = \
+hmac.c 
+
+IDEAFILES = \
+i_cbc.c i_cfb64.c i_ecb.c i_ofb64.c i_skey.c
+
+LHASHFILES = \
+lhash.c
+
+MD2FILES = \
+md2_dgst.c
+
+MD5FILES = \
+md5_dgst.c md5_one.c
+
+OBJECTSFILES = \
+obj_dat.c obj_err.c obj_lib.c o_names.c
+
+PEMFILES = \
+pem_all.c pem_err.c pem_info.c pem_lib.c
+
+PKCS7FILES = \
+pk7_lib.c pkcs7err.c
+
+PKCS12FILES = \
+pk12err.c p12_add.c p12_bags.c p12_decr.c \
+p12_sbag.c
+
+RANDFILES = \
+rand_err.c
+
+RC2FILES = \
+rc2_cbc.c rc2cfb64.c rc2_ecb.c rc2ofb64.c rc2_skey.c
+
+RC4FILES = \
+rc4_skey.c rc4_enc.c
+
+RSAFILES = \
+rsa_eay.c rsa_err.c rsa_lib.c rsa_none.c \
+rsa_oaep.c rsa_pk1.c rsa_sign.c rsa_ssl.c
+
+SHAFILES = \
+sha1dgst.c sha1_one.c
+
+STACKFILES = \
+stack.c
+
+X509FILES = \
+by_dir.c by_file.c x_all.c x509_att.c \
+x509_cmp.c x509_d2.c x509_def.c x509_err.c \
+x509_ext.c x509_lu.c x509name.c x509_obj.c \
+x509_req.c x509rset.c \
+x509_trs.c x509_txt.c x509type.c x509_v3.c \
+x509_vfy.c
+
+X509V3FILES = \
+v3_akey.c v3_alt.c v3_bcons.c v3_bitst.c \
+v3_conf.c v3_cpols.c v3_crld.c v3_enum.c \
+v3err.c v3_extku.c v3_genn.c v3_ia5.c \
+v3_info.c v3_int.c v3_lib.c v3_pku.c \
+v3_prn.c v3_purp.c v3_skey.c v3_sxnet.c \
+v3_utl.c 
+
+# SSLOBJS = $(foreach fil,$(SSLFILES),openssl/ssl/$(fil)) $(foreach fil,$(CRYPTOFILES),openssl/crypto/$(fil)) 
+
+#########################################################################
+
+CFILES = \
+$(MISCFILES) $(SSLFILES) $(ASN1FILES) $(BIOFILES) $(BUFFERFILES) $(BNFILES) \
+$(COMPFILES) $(CONFFILES) $(DESFILES) $(DHFILES) $(DSAFILES) $(DSOFILES) \
+$(ERRFILES) $(EVPFILES) $(HMACFILES) $(IDEAFILES) $(LHASHFILES) $(MD2FILES) \
+$(MD5FILES) $(OBJECTSFILES) $(PEMFILES) $(PKCS7FILES) $(PKCS12FILES) \
+$(RANDFILES) $(RC2FILES) $(RC4FILES) $(RSAFILES) $(SHAFILES) $(STACKFILES) \
+$(X509FILES) $(X509V3FILES)
+
+# vssl.c bss_sock_mbx.c    <- Target specific for V !!!!!!!!!!!!!!
+
+ifeq ($(MSDOS),true)
+VPATH = openssl/ssl;openssl/crypto;openssl/crypto/asn1;openssl/crypto/bio;openssl/crypto/buffer;openssl/crypto/bn;openssl/crypto/comp;openssl/crypto/conf;openssl/crypto/des;openssl/crypto/dh;openssl/crypto/dsa;openssl/crypto/dso;openssl/crypto/err;openssl/crypto/evp;openssl/crypto/hmac;openssl/crypto/idea;openssl/crypto/lhash;openssl/crypto/md2;openssl/crypto/md5;openssl/crypto/objects;openssl/crypto/pem;openssl/crypto/pkcs7;openssl/crypto/pkcs12;openssl/crypto/rand;openssl/crypto/rc2;openssl/crypto/rc4;openssl/crypto/rsa;openssl/crypto/sha;openssl/crypto/stack;openssl/crypto/x509;openssl/crypto/x509v3
+else                               
+VPATH = openssl/ssl:openssl/crypto:openssl/crypto/asn1:openssl/crypto/bio:openssl/crypto/buffer:openssl/crypto/bn:openssl/crypto/comp:openssl/crypto/conf:openssl/crypto/des:openssl/crypto/dh:openssl/crypto/dsa:openssl/crypto/dso:openssl/crypto/err:openssl/crypto/evp:openssl/crypto/hmac:openssl/crypto/idea:openssl/crypto/lhash:openssl/crypto/md2:openssl/crypto/md5:openssl/crypto/objects:openssl/crypto/pem:openssl/crypto/pkcs7:openssl/crypto/pkcs12:openssl/crypto/rand:openssl/crypto/rc2:openssl/crypto/rc4:openssl/crypto/rsa:openssl/crypto/sha:openssl/crypto/stack:openssl/crypto/x509:openssl/crypto/x509v3
+endif
+
+HFILES = 
+
+OFILES = $(CFILES:.c=.o) 
+
+CFLAGS += \
+-I$(SRCDIRH)lib/include \
+-Iopenssl/include -Iopenssl/crypto -Iopenssl/crypto/bio -Iopenssl/crypto/err \
+-DB_ENDIAN -DMBX=1
+                                   
+#########################################################################
+
+all : $(LINKLIB)
+
+$(LINKLIB) : $(OFILES)
+	echo "*** Rebuild link library"; \
+	$(AR) $(AR_ADD) $(LINKLIB) $? ; \
+	$(AR) $(AR_IDX) $(LINKLIB)
+
+docs:
+	echo "Do docs yet"
+
+clean:
+	$(RM) *.o *.a *.tmp
+
+#########################################################################
+
+ifeq ($(wildcard .depend.caos),.depend.caos)
+include .depend.caos
+endif
+include $(SRCDIR)makefile.rules

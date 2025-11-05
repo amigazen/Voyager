@@ -1,0 +1,118 @@
+This is a proposal for some C style rules:
+
+
+Conditional defines
+-------------------
+Conditional defines should be done that way:
+
+#if USE_FEATURE
+...
+#else /* !USE_FEATURE */
+...
+#endif /* !USE_FEATURE */
+
+This makes it easy to know in which part of the define we are in.
+
+
+Comments
+--------
+Important or long comments should be done that way:
+
+/*
+ * This function really sucks. Don't look at it or you'll
+ * really regret it.
+ */
+
+
+Structures
+----------
+Don't put same member types in one line like:
+
+APTR foo, bar;
+
+but:
+
+APTR foo;
+APTR bar;
+
+So that it's easier to put comment, defines and quickly grasp what the
+arguments are.
+
+
+Indention
+-----------
+Chosen indention comes from Olli and goes that way:
+
+void function( int foo )
+{
+    if( bla == 3 )
+    {
+        crash( foo, bar, CR_HARD );
+        return( TRUE );
+    }
+}
+
+Note: it's easy to configure GoldED to automatically indent like that while
+you type :) Mail me if you want the config.
+
+
+BOOL
+----
+Never use BOOL except when being forced to by external functions. int should
+be used instead as 16-bits types screw up the cache alignement and decrease
+performances on 68020+ CPUs (which is what is used nowadays, well.. sort of).
+The space gained by using 16-bits datatypes instead of 32-bits ones is
+unimportant.
+
+
+Functions
+---------
+Internal functions are in lowercase, separating words with a '_' when needed.
+Internal structures are in lowercase as well. Fancy capitalized Names Are For
+The OS And Marketroids.
+
+
+Adding a header
+---------------
+The header starts with:
+#ifndef VOYAGER_<FILENAME>
+#define VOYAGER_<FILENAME>
+/*
+ * $Id$
+ */
+...
+#endif /* VOYAGER_<FILENAME> */
+
+FILENAME is the name of the file in uppercase replacing any '.' with a '_'.
+
+
+Enums and defines
+-----------------
+Enums and defines have to be in capitals. Non capitalized macros should only
+be used in very special cases like replacement of OS functions which have to
+be done transparently.
+
+
+General stuffs
+--------------
+Every file includes "voyager.h" as the first include.
+
+
+Conditional statements
+----------------------
+Do not use negative conditional statements when they're not needed, for
+example:
+
+if (!bla)
+{
+    foo();
+}
+else
+{
+    bar();
+}
+
+Which is confusing and more error prone than using if (bla). Same for defines.
+Do not use nonsensical statements like if (foo == TRUE) or if (foo == FALSE)
+because if (foo) and if (!foo) is less confusing.
+

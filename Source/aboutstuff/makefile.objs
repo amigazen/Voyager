@@ -1,0 +1,10 @@
+#
+# $Id: makefile.objs,v 1.1 2003/06/22 23:04:50 zapek Exp $
+#
+
+COBJS = noexec.o libfunctable.o lib.o about.o
+
+COBJS_NODEP = libfunctions.o
+
+LIBS = -lmoto -lmath -lstring -lmemblock -lsyscall -labox -laboxstubs
+

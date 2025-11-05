@@ -1,0 +1,36 @@
+###############################################################
+#
+# Rules for VFlash
+#
+# TOFIX: make it from mkdep.sh
+#
+# $Id: makefile.rules,v 1.1.1.1 2002/10/07 12:52:14 zapek Exp $
+#
+
+main.o: main.c globals.h main.h player.h gfx.h support.h init.h
+
+init.o: init.c globals.h init.h main.h gfx.h timers.h
+
+init_amiga.o: init_amiga.c globals.h init.h
+
+init_caos.o: init_caos.c globals.h init.h
+
+memory.o: memory.c globals.h
+
+player.o: player.c globals.h main.h gfx.h timers.h support.h
+
+support.o: support.c globals.h support.h
+
+timers.o: timers.c globals.h timers.h
+
+timers_amiga.o: timers_amiga.c globals.h amiga_timers.h timers.h
+
+timers_caos.o: timers_caos.c globals.h timers.h
+
+timers_powerup: timers_powerup.c globals.h timers.h
+
+gfx.o: gfx.c globals.h gfx.h
+
+gfx_amiga.o: gfx_amiga.c globals.h gfx.h
+
+gfx_caos.o: gfx_caos.c globals.h gfx.h main.h support.h

@@ -1,0 +1,35 @@
+pregcc
+*.pc
+v_about.h
+Plugins
+voyager_cat.h rev.h
+js_parser.c js_scanner.h
+makecharmap charmap.h
+v encodeabout
+Cache
+Certificates
+Certificates.info
+Voyager.prefs
+Voyager-3.KEY
+Voyager.KEY
+Buttons
+v.debug*
+v.todo
+rfc*.txt
+V.CRYPTED
+.mailoutrc
+css_scanner.h
+make
+.depend.morphos
+.depend.amigaos
+.depend.caos
+urlparser
+outjs.l
+.mdconv.tmp
+mbxtoolbar.h
+catmaker_mbx
+cattmp.c
+diab.tmp
+link.tmp
+css_parser.c
+crev

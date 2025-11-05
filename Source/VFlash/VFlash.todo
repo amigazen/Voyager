@@ -1,0 +1,99 @@
+Executive nice value
+Real priority (PPC too ?)
+
+»» is there a way to find out the area needing refresh after getting MUIM_Draw and MADF_DRAWOBJECT ? is it _mleft() and so ?
+*Olli42* MUI sets the cliprect
+*Olli42* so, you could check the layer
+»» hm
+*Olli42* hm, "damage region"
+»» ah, layers.library
+*Olli42* but this is only  important if the flash object is partially deobscured  -- you think it's worth optimizing?
+»» you think I'd better just WritePixelArray() the whole ?
+*Olli42* yup
+
+<Zapek> Warning 624: Absolute reference to symbol UNKNOWN
+<Zapek> I'm wondering why slink always pukes when I include pictures in the plugins
+<Olli42> because they're in chipmem
+<Olli42> yielding an absolute reference
+<Zapek> ah
+<Zapek> I'll play with AllocBitmap() when I'll have time to lose :)
+
+prefs: cybersound, switch from 8 to 16 (and 16 to 8) press ok between that,
+hits.
+
+*RobR* still need to put inthe about plugin section what version of the flash plugin is used.. 040 ect..
+*RobR* or have olli add it tothe about like he does with image stuff. and ssl
+
+I changed some stuff in the pen allocation and so, added a struct BitMap and
+struct ColorMap... check if everything is ok
+
+check the return values of ObtainBestPen()...
+
+<Zapek> Olli666: when do one need to use MUI_AddClipping() in a Draw method ?
+<Olli666> Zapek, when you don't bother making sure you're rendering out of the object's box
+
+the plugin CAN send a signal to the tast under some circumstances... make sure
+it's not possible at all
+
+www.joecartoon.com to fix. crashes all the time
+
+www.npgonlineltd.com - crashes according to BF, looks like a fucked up jpeg
+
+add the MOUSEOBJECT stuff into VFlash, much better
+
+add a softlink for powerup_main.c -> amiga_main.c, etc... :)
+
+http://www.erykahbadu.com/site.html stays at "Loading..." stage
+
+add a -D__POWERUP__ -U__MORPHOS__ for the PowerUP build... sure about -U ? YES!
+the common stuff between them is PPC
+
+see Guru book page 71 about lookahead techniques to delete intuition events...
+might be handy but I don't know if I can do that from MUI..
+
+hm... streaming is only possible if the filesize is known. currently libflash
+keeps pointers to the stream (eg strings) and if it changes location within
+memory -> boom
+
+<Zapek> OlliRatte: hm.. what method do I get when a flash object changes size due to a window resize ?
+<OlliRatte> hide cleanup setup show
+<OlliRatte> like any other mui object
+
+
+remove the sound settings, except the bitrate perhaps. 44100 and 16 bit should
+be standard (or 22500.. dunno). otherwise they don't seem handled. some
+samples are wrong too.. sigh
+
+
+testing against 0.4.10:
+-----------------------
+bitmap.cc - has some alpha table support
+button.cc - still misses the actionrecord cloning from Olli :)
+character.cc - has support for names in characters
+cxform.cc - has some stuff to avoid pixels values to overflow (can be copied standalone)
+flash.cc - support for multiple graphic devices, still misses proper wake times
+graphic.cc - completely changed. now uses one for 16, 24 and 32 bpp
+program.cc - has 2 new (useless ?) methods, still misses the Ollicode clone stuff
+script.cc - can't tell :)
+shape.cc - got fid of some pixel/alpha stuff.. hm
+
+and that's it.. nothing to worry about I guess
+
+
+44000 or 44100? the docs say 44000 but common sense would suggest 44100..
+swfdec uses 44100 as well
+
+
+why sound slows down everything ? it doesn't take cpu.. just seems to screw up
+events.. I probably need a way to check if the buffer is still playing and do
+the return 1 trick ? hm.. yeah works.. but the odebon mixer is limited to 1
+sound at a time and could do with more improvements
+
+
+I don't handle the mp3 sound offset stuff atm. mp3 is a bit too fast still.
+seems the sample is 2x too short..
+
+download stuff from: http://www.e7.pl/~casha/swf/
+
+
+add sound repeat support.. should be too hard

@@ -1,0 +1,68 @@
+;
+; In URL Test Mode, V cycles
+; through every URL mentioned
+; in the given file every 30 seconds
+;
+; Ideally, all once "known to crash" URLs
+; should be added here, for easy regression
+; testing
+;
+; Note that some of the URLs may have
+; offensive or disgusting content 
+; (i.e., slashdot, eurosport etc.). Listing
+; an URL here doesn't mean that any of
+; the developers endorses the contents
+; of the sites listed
+;
+; $Id: urltest.txt,v 1.1 2001/11/18 09:17:14 owagner Exp $
+;
+http://www.heise.de
+http://www.spiegel.de
+http://www.amazon.de
+http://www.rtl.de
+http://www.sat1.de
+http://www.slashdot.org
+http://www.web.de
+http://www.ebay.de
+http://www.mediamarkt.de	
+http://www.das-erste.de
+http://www.mdr.de    
+http://www.orb.de    
+http://www.sfb.de    
+http://www.mdr.de/mdr-kultur
+http://www.mdr.de/mdr-info/
+http://www.fritz.de		 
+http://www.mdr.de/jump/	 
+http://www.ndr.de/hf/radio3/
+http://www.mdr.de/sputnik/
+http://www.multikulti.de/ 
+http://www.swr2.de/     	 
+http://www.wdr.de/radio/wdr3
+http://www.wdr5.de/  	 
+http://www.das-erste.de
+http://www.hr-online.de/
+http://www.arte.de
+http://www.sr-online.de
+http://www.wdr.de
+http://www.swr-online.de/3
+http://www.phoenix.de
+http://www.br-online.de/bayern4/
+http://www.br-online.de/b5aktuell/
+http://www.hr-online.de/hf/chronos/
+http://www.hr-online.de/hf/hr2/
+http://www.hr-online.de/hf/hrklassik/
+http://www.hr-xxl.de/            
+http://www.br-online.de  	
+http://www.ndr4.de/ 	 		
+http://www.wdr.de             
+http://www.br-online.de/bfs    
+http://www.zdf.de
+http://www.3sat.de
+http://www.zdf.de
+http://www.eurosport.de
+http://www.cnbc.com  
+http://www.zdf.de    
+http://www.zdf.de
+http://www.dradio.de
+http://oe1.orf.at/
+http://www.deutschlandfunk.de/

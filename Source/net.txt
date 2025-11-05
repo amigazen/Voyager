@@ -1,0 +1,69 @@
+Let's follow how V performs a simple download (clicklink + shift)
+
+There are 2 objects:
+
+    - unode: describes an URL can have many nstream clients
+    - nstream: describes a connection ("socket") to the server
+
+· nets_open(url, referer, reload, informobj, gauge, txtstatus, addurl);
+prepare the message and sends it to the network process (netport)
+
+· nethandler calls upon addstream()
+
+· addstream(unode)
+creates a nstream, puts it into into un->clients
+
+(There, nethandler is in a loop which scans every unodes fresly added)
+
+· processunode()
+remove all the clients ns->removeme
+states:
+    UNS_SETUP -> un_setup() -> un_setup_http()
+    UNS_LOOKINGUP -> dns
+    UNS_WAITINGFORNET -> un_startnet()
+    UNS_CONNECTING -> un_doconnect()
+    UNS_WAITING -> un_dowaiting()
+    UNS_CONNECTED/READING -> un_doprotocol()
+    UNS_DONE -> un_done()
+
+and checks if we have to inform un->clients (progress)
+
+--- break ---
+Let's follow UNS_CONNECTED
+
+-> un_doprotocol() -> un_doprotocol_http()
+
+· nice loop here :)
+
+un_doprotocol_http_initialreply()
+un_doprotocol_http_readheader() (many times)
+un_doprotocol_http_afterreadheader() (mime type here)
+
+createdlwin()
+
+un_dowaiting()
+un_doprotocol_http_beginreaddata()
+un_doprotocol_http_readdata_??() (many times)
+
+
+
+I get an Accept-Ranges: bytes btw...
+
+
+<^o^> nets_close() -> client gone, inform NULL
+<^o^> you are making entitiyish assumptions about program flow now :)
+<^o^> if this goes like this and that goes like that, case XYZ can't happen
+<Zapek> you can nets_close() before going through un_done() ?
+<^o^> which normally ends up in an "oops" after a 3 hour debug session 6 month later
+<KingGuppy> Impossible to decipher what goes on in it.
+<^o^> you can nets_close() anytime
+<^o^> user clicks stop -> nets_close() everything etc.
+<^o^> I still haven't fixed locutus' porn site thingy
+<Zapek> I still don't really understand why there are unodes and nstreams
+<^o^> because a unode can have several nstreams as a client
+<Zapek> why? isn't an url one stream only ?
+<^o^> open the same (large) url in two windows
+<^o^> nstream == client structure
+<KingGuppy> Or download the same file to two places...
+<^o^> unode == actual network object
+<^o^> nstream == keeps communication information about one unode and a client

@@ -1,0 +1,22 @@
+Since there's always something wrong when doing a release, there's a simple
+text file which you only have to follow:
+
+IBETA RELEASE
+-------------
+in config.h, IBETA_RELEASE 1
+make alpha
+
+Description:
+It will create a v.debug-version that you have to keep to find out enforcer
+hits later then mailout automatically to the ibeta mailing-list.
+
+
+PUBLIC BETA RELEASE
+-------------------
+in config.h BETA_RELEASE 1
+make
+make checkdebug
+
+Description:
+There's no automatic mailout yet, need to be cleaned up.
+

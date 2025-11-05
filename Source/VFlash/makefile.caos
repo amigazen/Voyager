@@ -1,0 +1,30 @@
+# Makefile for VFlash (caos)
+#
+# © 1999-2000 David Gerber <zapek@vapor.com>
+# All rights reserved
+#
+# $Id: makefile.caos,v 1.1.1.1 2002/10/07 12:52:09 zapek Exp $
+#
+.PHONY: lib module
+
+include $(SRCDIR)makefile.config
+
+all: lib module
+
+lib:
+	@echo "Build flash lib with $(COMPILER)"
+	set COMPILER = $(COMPILER)
+	$(MAKE) -C Lib -f makefile.caos
+
+module:
+	@echo "Build module with $(COMPILER)"
+	set COMPILER = $(COMPILER)
+	$(MAKE) -C module -f makefile.caos
+
+clean:
+	$(MAKE) -C Lib -f makefile.caos clean
+	$(MAKE) -C module -f makefile.caos clean
+
+docs:
+	@echo "VFlash doesn't need docs"
+

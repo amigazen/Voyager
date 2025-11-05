@@ -1,0 +1,10 @@
+#define VERSIONSTRING "3.4.10"
+#define VERSION 3
+#define REVISION 4
+#define COMPILEREV 10
+#define COMPILEYEAR "2005"
+#define REVDATE "(01.01.2005)"
+#define VERTAG "3.4.10 (1.1.105)"
+#define LVERTAG "3.4.10 (1.1.2005)"
+
+#define VERHEXID 0x304000A

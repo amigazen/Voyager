@@ -1,0 +1,16 @@
+This is how to resume a HTTP request:
+
+If the file exists, get its <size> then:
+
+Range: bytes=<size>-
+
+ie:
+
+GET http://www.meanmachine.ch/range.txt HTTP/1.0
+Range: bytes=190-
+
+The result looks like:
+
+Accept-Ranges: bytes
+Content-Length: 7
+Content-Range: bytes 190-196/197

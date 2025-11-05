@@ -1,0 +1,170 @@
+@database VFlash VFlash.guide
+@$VER: VFlash.guide 1.1 (28.2.2004)
+@(c) David Gerber
+@author David Gerber
+@Wordwrap
+
+@node main "VFlash"
+@{jcenter}
+__     _______ _           _      @{ui}
+\\ \\   / /  ___| | __ _ ___| |__   @{ui}
+ \\ \\ / /| |_  | |/ _` / __| '_ \\  @{ui}
+  \\ V / |  _| | | (_| \\__ \\ | | | @{ui}
+   \\_/  |_|   |_|\\__,_|___/_| |_| @{ui}
+
+The Ultimate Shockwave Flash Player for Voyager 3
+=================================================
+© 1999-2004 by David Gerber <zapek@vapor.com>
+All rights reserved
+
+@{jcenter}
+@{"Introduction" link intro}            @{fg fill}What's that ?@{fg text}
+@{"Requirements" link reqs}         @{fg fill}What do I need ?@{fg text}
+@{"Installation" link install}  @{fg fill}How do I install that ?@{fg text}
+@{"Usage" link usage}              @{fg fill}How does it werk ?@{fg text}
+@{"Support" link add}       @{fg fill}Where to find updates ?@{fg text}
+@{"FAQ" link faq}                   @{fg fill}Who, what why ?@{fg text}
+@{"Version history" link history}     @{fg fill}What did you do ?@{fg text}
+@{"Greetings" link greetings}            @{fg fill}Thanks to whom ?@{fg text}
+@{"To do" link todo}                @{fg fill}What's missing ?@{fg text}
+@endnode
+
+@node intro "Introducing VFlash"
+@WordWrap
+@{jcenter}@{bg fill} Introduction @{bg background}
+@{jleft}
+  VFlash is a Shockwave Flash player for Voyager 3 designed around @{"libflash" link libflash} by Olivier Debon.
+
+  The player consists of two parts: VFlash.VPlug, a V³ plugin which provides the browser interface and which is loaded during Voyager startup, and VFLash_x.module (where x is the processor), the actual player, which is loaded on demand when a SWF (ShockWave Flash) file is loaded. VFlash works with any Amiga native screenmode (OCS/ECS/AGA) and is designed for both CyberGraphX and Picasso96.
+
+  From version 0.9, VFlash takes advantage of versions specifically optimized for given CPUs. Please use the right version for your CPU as the performance gain is quite noticeable.
+
+  From version 0.14 there's a PPC version of VFlash which works with the PowerUP system and with MorphOS.
+
+  From version 1..5 there's a fully native MorphOS version with proper sound support
+@endnode
+
+@node reqs "Requirements"
+@WordWrap
+@{jcenter}@{bg fill} Requirements @{bg background}
+@{jleft}
+To run VFlash you need:
+@{lindent 2}
+@{b}·@{ub} @{lindent 4}Voyager 3.1 or higher
+@{lindent 2}
+@{b}·@{ub} @{lindent 4}A 68020 or higher
+@{lindent 2}
+@{b}·@{ub} @{lindent 4}OS 3.0 or higher (but preferably not too high)
+@{lindent 2}
+@{b}·@{ub} @{lindent 4}ppc.library 46.31 or higher if you use the PPC version. MorphOS is fully supported.
+@{lindent 2}
+@endnode
+
+@node install "Installation"
+@WordWrap
+@{jcenter}@{bg fill} Installation @{bg background}
+@{jleft}
+  Use the supplied installer script. It has been designed by Robert 'Slave' Reiswig and is thus very smart and efficient.
+
+  If you want to do it by hand think twice. The script is really fine. But if you still insist, copy VFlash.VPlug and VFlash_#?.module to the 'Plugins' directory of Voyager and don't forget to flush the plugin from memory if needed. Do @{b}NOT@{ub} rename any of the module ! If you do that I'll come to your house and hit you on the head with a blunt instrument.
+@endnode
+
+@node usage "Usage"
+@WordWrap
+@{jcenter}@{bg fill} Usage @{bg background}
+@{jleft}
+Go to the @{i}Settings/Plugins...@{ui} menu to access VFlash's preferences.
+@{lindent 2}
+@{b}Sound settings:@{ub}
+@{lindent 4}
+@{i}None@{ui} - No sound at all, VFlash skips all the sound processing and is thus faster.
+
+@{i}DOS Driver@{ui} - Sound output using a DOS Driver, for example the AUDIO: device from AHI.
+@{lindent 0}
+
+@{i}Ambient Sound@{ui} - Excellent sound output using Ambient's advanced sound API. This is the recommended sound output.
+@endnode
+
+@node add "Support"
+@WordWrap
+@{jcenter}@{bg fill} Support @{bg background}
+@{jleft}
+  Updates are available at any VaporWare mirror near you in the /pub/voyager directory. Please report any VFlash bug and suggestions to the Voyager mailing-list (see http://www.vapor.com/ for more details), the VaporWare bug tracking system (http://bugs.vapor.com/) or directly to me.
+@{jcenter}
+@{FG fill}VaporWare@{FG text}
+http://www.vapor.com/
+@{i}You'll always find the latest versions and infos about VaporWare products.@{ui}
+
+@{FG fill}The V³ portal@{FG text}
+http://v3.vapor.com/
+@{i}A portal more specificaly designed for Voyager 3, VFlash, other plugins and resources.@{ui}
+
+@{FG fill}The Flash plugin test page@{FG text}
+http://flash.meanmachine.ch/
+@{i}A page containing many flash links. It's a good idea to go there if it's the first time you install the plugin. The page is regularly updated.@{ui}
+
+@{FG fill}The author@{FG text}
+David Gerber
+ch. de la Mairie 15
+1223 Cologny
+Geneva
+Switzerland
+
+zapek@vapor.com
+@endnode
+
+@node faq "FAQ"
+@WordWrap
+@{lindent 0}
+@{b}·@{ub} @{i}@{lindent 2}This site doesn't look the same as in my PC browser !@{ui}
+@{lindent 2}
+VFlash doesn't implement some features of the Shockwave Flash player 3 from Macromedia. It doesn't implement any of the new features found in version 4 although it's capable of playing Flash 4 anims. Most sites will play correctly though and it'll get hopefully better with later version of VFlash.
+
+@{lindent 0}
+@{b}·@{ub} @{i}@{lindent 2}How comes I hear so much jumps in the sound ?@{ui}
+@{lindent 2}
+Only Ambient Sound offers optimized sound support.
+
+@{lindent 0}
+@{b}·@{ub} @{i}@{lindent 2}Why don't you do a WarpOS version ? I heard that WarpOS runs 1000x faster than PowerUP and that it'll bring me back my missing hair and that it can run code simultaneously on the 68k, but also feed the PPC by the Copper and the Blitter and even use the keyboard's processor for dispatching tasks !@{ui}
+@{lindent 2}
+VFlash should work with the ppclibemu from Frank Wille. Well, not anymore but who cares :)
+
+@{lindent 0}
+@{b}·@{ub} @{i}@{lindent 2}Can you write a Flash creator like Macromedia did on Wintel ?@{ui}
+@{lindent 2}
+No.
+@endnode
+
+@node history "History"
+@WordWrap
+@{jcenter}@{bg fill} History @{bg background}
+@{jleft}
+  The history is in @{"VFlash.ReadMe" link VFlash.ReadMe/main}.
+@endnode
+
+@node greetings "Greetings"
+@WordWrap
+@{jcenter}@{bg fill} Greetings @{bg background}
+@{jleft}
+  The greetings are in VFlash's preferences. Activate the plugin prefs window and wait a moment to get a scroll.
+@endnode
+
+@node todo "Future"
+@WordWrap
+@{jcenter}@{bg fill} To do @{bg background}
+@{jleft}
+@{lindent 2}
+· @{lindent 4}add the missing features the Macromedia version has (except the bugs of course)
+@{lindent 2}
+· @{lindent 4}streaming support
+@{lindent 2}
+@{lindent 0}
+@endnode
+
+@node libflash "Olivier Debon"
+@WordWrap@
+@{jcenter}@{bg fill} libflash @{bg background}
+@{jleft}
+  You can find more informations about libflash on http://perso.club-internet.fr/odebon/flash.html
+@endnode

@@ -1,0 +1,10 @@
+#define VERSIONSTRING "19.4"
+#define VERSION 19
+#define COMPILEREV 0
+#define COMPILEYEAR "2003"
+#define REVISION 4
+#define REVDATE "(22.09.2003)"
+#define VERTAG "19.4 (22.9.103)"
+#define LVERTAG "19.4 (22.9.2003)"
+
+#define VERHEXID 0x13040000

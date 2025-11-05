@@ -1,0 +1,6 @@
+rev
+rev libid=search_plugin
+sc search.c
+slink FROM LIB:libent.o,LIB:libinit.o,search.o LIB LIB:sc.lib SMALLCODE SMALLDATA STRIPDEBUG LIBVERSION $libver LIBREVISION $librev LIBFD /pluginapi/fd/v_plugin_lib.fd LIBID "$libid" to Search.VPlug map search.map hxfslo
+;copy search.vplug /Plugins/Search.VPlug
+flushlib Search.VPlug

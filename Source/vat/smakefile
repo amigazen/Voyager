@@ -1,0 +1,63 @@
+#
+# SAS/C makefile for vapor_toolkit.library
+#
+# © 2001 VaporWare CVS team <ibcvs@vapor.com>
+# All rights reserved
+#
+# $Id: smakefile,v 1.1 2001/10/01 10:46:10 laursen Exp $
+#
+
+OBJS = vat.o asyncio.o sup.o md5.o random.o string.o time.o \
+       malloc.o mui.o mime.o tcpip.o
+
+vapor_toolkit.library: $(OBJS)
+   /rev/rev libid vapor_toolkit global
+   slink LIBVERSION $$libver LIBREVISION $$librev LIBID "$$libid" <with <
+   TO vapor_toolkit.library
+   FROM lib:libent.o lib:libinit.o $(OBJS)
+   ADDSYM
+   SMALLCODE
+   SMALLDATA
+   WITH lib:utillib.with
+   LIB lib:sc.lib lib:small.lib lib:libgmp.lib lib:debug.lib
+   LIBFD fd/vat_lib.fd
+   MAP vat.map hxfslo
+   NOICONS
+   <
+   slink vapor_toolkit.library to libs:vapor_toolkit.library nd NOICONS
+   flushlib vapor_toolkit.library
+
+vat.o: vat.c globals.h /include/gmp.h vat_ctype.h voy_ipc.h \
+       libraries/vat.h malloc.h vat_debug.h
+
+asyncio.o: asyncio.c libraries/vat.h globals.h vat_debug.h
+
+md5.o: md5.c globals.h md5.h vat_debug.h
+
+random.o: random.c random.h globals.h md5.h vat_debug.h
+
+string.o: string.c libraries/vat.h globals.h vat_debug.h
+
+time.o: time.c globals.h vat_debug.h
+
+mui.o: mui.c globals.h vat_debug.h
+
+mime.o: mime.c globals.h libraries/vat.h vat_debug.h
+
+tcpip.o: tcpip.c libraries/vat.h globals.h vat_debug.h
+
+sup.o: sup.s
+  sc sup.s
+
+malloc.o: malloc.c
+  sc parms=both malloc.c
+
+#
+
+clean:
+  @Execute <<
+  FailAt 20
+  Delete >NIL: \#?.o QUIET
+  Set RC 0
+  <
+  @Echo "Done!"

@@ -1,0 +1,78 @@
+Voyager Search Central Plugin
+-----------------------------
+
+This plugin extends V3 with versatile Web Search
+functionality. It allows searching both major
+search engines and the Amazon store network for
+keywords, all from a simple control panel.
+
+To install, simply place Search.VPlugin into
+the Plugins/ directory of your V3 installation.
+
+To call upon the plugin, enter "search:" into
+V3's URL box. You can also type "search:keywords"
+to preset the control panel with the given
+keywords.
+
+
+Revision history
+----------------
+
+3.0.0
+-----
+- Initial release
+
+3.0.1
+-----
+- fixed multiple search runs to not nest in frame (Olli)
+- fixed web search engine selection (Olli)
+- fixed amazon.com/co.uk screwup (Olli)
+
+3.0.2
+-----
+- added Yahoo web search (Olli)
+- added Excite web search (Olli)
+- reworked layout: Now heading is only shown on initial
+  display, to save visual space (Olli)
+
+3.1.0
+-----
+- new style HTML and images (Beej)
+
+3.2 [internal]
+--------------
+
+3.3
+---
+- added www.alltheweb.com to search engines (Olli)
+- reworked layout a bit (Olli)
+- added VHS/DVD search to amazon.co.uk and amazon.de (Olli)
+
+3.4
+---
+- reworked Google link to go through bfast (Olli)
+
+3.5
+---
+- country flags now link to respective amazon sites (Olli)
+- fixed tagline date (Olli)
+
+3.6
+---
+- fixed search strings with spaces being not properly
+  escaped (Olli)
+- changed result top layout to drop the upper window caption (Olli)
+
+3.7
+---
+- added Amazon.FR (Olli)
+
+3.8
+---
+- Quoted attributes properly in output HTML  (Neko)
+- Added  frame  breakout  for  people with JS turned on (Neko)
+- Corrected reference to french flag data for  Amazon.FR  (Neko)
+- Added  code for returning data size of french flag data, and code
+  for not deallocating the french flag data that Olli  should  have
+  added  last  time  (grr!) (Neko)
+- Optimised images to save space (Neko)

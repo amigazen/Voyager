@@ -1,0 +1,1268 @@
+;******************************************************************************
+;         __  __                                     
+;        / / / /                                    
+;       / / / /______ __  __ ______  ______ ______ _____
+;      / / / // __  / \ \/ // __  / / __  // ____// .__/
+;     /  \/ // /_/ /   \  // __  / / /_/ // __/_ / /
+;     \____//_____/    / //_/ /_/ _\__  //_____//_/      NG
+;                     /_/        /_____/   
+;
+; Temporary hack version by Olli
+;
+; $VER: Voyager_Installer 3.1b (October-07-2001) 
+; Installer by Robert C. Reiswig ©1995,1996,1997,1998,1999,2000,2001
+; Voyager by Oliver Wagner ©1995,1996,1997,1998,1999,2000,2001
+;
+; If you wish to use any part of this installer you must ask. May not be 
+; integrated/placed into any other package. Changes, suggestions or problems:
+; voyager@vgr.com or vgr@best.com
+;******************************************************************************
+(set Vkey 0) ; 0=NoKey, 1=LookForKey
+(set #Voyager_Archive "v_ng.lha")
+(set #Compress "lhex")
+
+;*** System Stuff ***
+(set cpu (database "cpu"))  (set vblank (database "vblank"))
+(set graphmem (database "graphics-mem")) (set totmem (database "total-mem"))
+(set osver (/ (getversion "LIBS:version.library") 65536))
+(if (= vblank "60") ((set blank "NTSC")) ((set blank "PAL")))
+(set fastmem (- totmem graphmem))
+
+(if (= osver 37) (set workbench "2.0")) (if (= osver 38) (set workbench "2.1"))
+(if (= osver 39) (set workbench "3.0")) (if (= osver 40) (set workbench "3.1"))
+(if (= osver 41) (set workbench "3.5"))
+
+(set cpu (database "cpu"))
+(if (> (exists ("sys:libs/68060.library")) 0) (set #cpu 5) )
+(if (> (exists ("68060.library") (resident)) 0) (set #cpu 5) )
+(if (= cpu 68000) (set #cpu 0)) (if (= cpu 68010) (set #cpu 1))
+(if (= cpu 68020) (set #cpu 2)) (if (= cpu 68030) (set #cpu 3))
+(if (= cpu 68040) (set #cpu 4)) (if (= cpu 68050) (set #cpu 5)) 
+
+(set vernum1 (getversion "V")) (set ver1 (/ vernum1 65536))
+(set rev1 (- vernum1 (* ver1 65536) ) ) (set Voyagerver (cat ver1 "." rev1))
+
+(if (> (exists ("env:Language")) 0) (set lanfound (getenv "Language")) )
+(set lan 0)
+
+(if (= "english"    lanfound) (set lan 0))  (if (= "deutsch"    lanfound) (set lan 1))
+(set #English    "English")  (set #Deutsch    "Deutsch")
+
+(set mfound 0) (set newicon1 1) 
+(set keeper 1) (set firsttime 0)
+
+;********************************************************************
+; English Strings
+;********************************************************************
+(set #about (cat "\n\nWelcome to Voyager " Voyagerver "\n\nCopyright © 1995-2001 by\n\nOliver Wagner\n<owagner@vapor.com>\n\nhttp://v3.vapor.com/\nhttp://www.vapor.com/") )
+(set #installup " Install or Update Voyager")
+(set #clearcache " Clear Cache Directory")
+(set #task "\nWhat would you like to do?\n")
+(set #whereVoyager "Where do you wish to install Voyager. The directory 'Voyager' will be created if it is not there. If a copy of Voyager is found it will be backed up.")
+(set muiver "No Version Installed")
+(set #newermui "\nVoyager needs version 3.6 or higher of MUI installed to work correctly.\n\nNow would be a good time to Upgrade!\n\nYou can find mui38usr.lha on Aminet in util/libs\n\nIt looks like you have: \n\n")
+(set #nomuiarc "\nThe installer could not find the MUI dir in the archive. Because of this the MUI Classes used by VoyagerNG were not installed.\n\n If you are Updating VoyagerNG then this is not a problem. If it is your first time installing VoyagerNG you will need to get an archive with these files.")
+(set #nompc "\nThe .MCC files for VoyagerNG can not be installed to 'mui:libs/mui'")
+(set #need-os "\n\nVoyager needs version 3.0 or higher of the Amiga OS installed to work correctly.\n\n It looks like you have: \n\n")
+(set #000used "\n\nThe 68000 version will be installed.") 
+(set #nompc "\nThe .MPC files for Voyager can not be installed to 'mui:libs/mui'")
+(set #noreg1 "\nThe installer could not find 'S:Voyager.Key' or '")
+(set #noreg2 "' on your system. It also does not seem to be in the archive you are installing Voyager from. You may need to get the archive again.\n\nThe installer will now run the Registration Utility, 'Register-Voyager'.")   
+(set #filethere1 "\n\nThe installer has found Voyager version ")
+(set #filethere2 " at ")
+(set #filethere3 "\n\nThe file will be renamed to ")
+(set #filethere4 " and it will then be moved to ")
+(set #backuptoXXX "Back-UP to file named 'Voyager.")
+(set #copyover "Copy Over Old Version")
+(set #oktodelete1 "\nIs it ok to delete the older Voyager binary so that the Voyager Directory can be made?\n")
+(set #oktodelete2 "\nIs it ok to delete the older _renamed_ Voyager binary so that the Voyager Directory can be made?\n")
+(set #Voyagerfound "\nThe Installer has found a copy of Voyager already installed. What do you want to do?\n")
+(set #no030found "\n\nThe 68030+FPU Version of Voyager, V030, was not found in this archive this is why the 68000 version was installed.")
+(set #newicon "\nDo you wish to copy over The Voyager Icon from the archive? If you have any ToolTypes already set you should select no.\n")
+(set #nonewicon  "No  - ToolTypes already set.")
+(set #yesnewicon "Yes - Copy over Icon.")
+(set #yesnewicon "Yes - Copy over Icon.")
+(set #whatcat "\nSelect the Voyager Language catalog you wish to install.\n")
+(set #wherecat "\nWhere do you wish to install the Voyager Language Catalog? Default is ")
+(set #catnofind "Can not find this catalog in this Voyager archive. You may need to get a newer archive.")
+(set #whattools "\nWhat Tools would you like to install? They will be placed in: ")
+(set #updatingmuic "\nUpdating the MUI Classes if needed.\n\n(#?.mcc & #?.mcp)")
+(set #nomuiarc "\nThe installer could not find the MUI dir in the archive. Because of this the MUI Classes used by Voyager were not installed.\n\n If you are Updating Voyager then this is not a problem. If it is your first time installing Voyager you will need to get an archive with these files.")
+(set #whatdocs "What Voyager documentation would you like to install? (* = Not found in this archive)")
+(set #wheredocs "Where would you like the Voyager documentation you selected to be installed?")
+(set #byebye (cat "\nVoyager Install Complete!\n\n" ))
+
+(set #whereUnpack "Where would you like to Uncompress the VoyagerNG Archive to, so that you may install it from there?")
+(set #uncompressingbin (cat "\n\nUncompressing the " #Voyager_Archive " archive.\n\nPlease wait."))
+(set #errorbin (cat "\n\nThe " #Voyager_Archive " is missing or has an error in it. You might try to reinstall.  If that does not work you will need to get a new VoyagerNG disk/archive."))
+(set #oktoinstall "\nThe VoyagerNG archive has been un-packed. You can now run the installer to complete the install in:\n\n")
+
+(set #askcpu "\nWhat CPU does the machine have that you will run Voyager on?\n")
+(set #noregdir "\nThe Register-Voyager directory was not found. This means that the archive has been altered or is bad. Please get another copy of the Voyager Archive.\n\nOR\n\nThe Keyfile is missing. Please contact your REG site.")
+(set #updatesetpatch "\nThe installer looked for 'c:setpatch' and did not find it or you have a version lower then 40.16. Voyager needs version 40.16 to work correctly. You wany want to upgrade soon. (NOTE: if you keep 'setpatch' in a different place than 'c:' and its 40.16 or higher then this message is void.)")
+(set #updateinstaller "\nJust to let you know ESCOM AG has released a new version of the installer program.\n\n\nVersion 43.3 can be found on Aminet in:\n\n/util/misc/Installer-43_3.lha\n\n\nYou might want to upgrade soon, if you can.")
+;can you add provision for Java/Applets and Java/Classes dirs?
+(set #nossl "\nNote that the Voyager SSL module must not be used in the USA due to patent law restrictions. Are you living in the USA?\n")
+(set #okssl "\n\n\nUS citizens can legaly use the MiamiSSL library which ships with Miami 2.1.\n\nVoyagerNG will use this SSL library if it was installed with Miami 2.1.")
+(set #yesc "Yes - In USA")
+(set #noc "No - Other Country")
+
+(set #wheremp "\nWhere do you wish to install the MimePrefs program?\n")
+
+(set #updatedlibs "\nInstall/Update the Vapor Libraries?\n* = Must be installed to work correctly\n(Click 'Help' for more info on the libs.)\n")
+(set #lib1 " Update library")
+(set #lib2 " Toolkit library (*)")
+(set #lib3 " Registration library")
+(set #libC " CManager lib [Bookmarks] (*)")
+(set #libhelp1 "vapor_update.library:\nIf installed every Vapor app will automagically check for updates by querying the Vapor server via Internet. You will be informed and offered automatic downloading if there is an update.")
+(set #libhelp2 "\n\nvapor_toolkit.library:\nContains support functions which are used by most Vapor applications and thus can be shared to reduce individual application code size. ie: Async I/O library, crytographically strong random number generator, math support.")
+(set #libhelp3 "\n\nvapor_registration.library:\nContains the core code for the registration utility\n")
+(set #libhelpC "\n\nCManager.library:\nThe Contact Manager is a unique product for the Amiga. It's best described as a diary / address book which allows you to store all your contacts' user information, favourite web & ftp sites and IRC server/channels. Voyager uses CManager.library for its 'Bookmarks section'")
+(set #wherelibs "Where do you wish to place the Vapor lib(s), 'Libs:' is default.")
+(set #flushing "\n\nTrying to flush old Vapor libraries from memory.")
+
+(set #insregstuff " Install Register information")
+(set #insregstuffno " Don't Install Register information")
+(set #installerreg "\nThe installer did not find an Voyager key in the usual places. Do you wish to install the Register information?\n") 
+
+(set #updateplug "\n\n\nInstalling or Updating Plugins")
+(set #cpuver "\nWhat version of TextInput would you like to be installed?\n")
+
+(set #neednlist1 "\nThe installer could not find:\n")
+(set #neednlist2 "\n\nVoyager 3 needs the CManager package to run. The CManager components needed to let voyager run are included in the Voyager archive.\n\nCManager needs to have the NList classes/package installed. You can find the NList package on Aminet in dev/mui. Current file name is: MCC_NList0_89.lha")
+
+(set #needpopph1 "\nThe installer could not find:\n")
+(set #needpopph2 "\n\nVoyager 3 needs to have the Popup Placeholder classes/package installed. You can find the latest Popup Placeholder classes/package at:\n\nhttp://amiga.com.pl/mcc/\n\nCurrent file name is: CC_Popph.lha")
+
+(set #libdiff "\nThe installer found one of the Vapor libraries in 'LIBS:' to be a different version than a resident Vapor library (loaded in memory).")
+(set #rebootnote1 "\n\nNOTE: If you currently have a Vapor program running now it might have one of the Vapor libraries open. This may prevent the next Vapor application, that may need a newer library from this archive, from working. The installer has already tried to flush the old libraries. If this did not work you may need to reboot.")
+(set #rebootnote  "\n\nNOTE: It is strongly recommended that you reboot, after the installer is finished, to ensure that all updated libraries have been flushed. The libraries may be held open by VaporWare applications or MUI custom classes which are currently running.")
+
+(set #badcm1 "\nNOTE: There seems to be an error in your 'CManager_path' setting file. CManager needs to have the ENV:Vapor/CManager_path set up and pointing to a directory that exist and it needs to end with '/CManager', the installer has found this to not be the case. This is where CManager stores its database for Voyager. Currently it is set to:\n\n")
+(set #badcm2 "\n\n** DO NOT SET THIS TO 'RAM:' **")
+
+(set #whereCMan "Where do you wish to set the 'CManager_path' to. Please select the *real* directory on your HD, where you keep Voyager, so the ENV will be set correctly for CManager/Voyager.") 
+
+;********************************************************************
+; German Strings
+;********************************************************************
+(if (= lan 1) (set OlliShareSomePizza TRUE_But_From_Long_Ago) )
+
+;********************************************************************
+; Check for LHA voyager.. if there unpack then install. Oh the floppy
+;********************************************************************
+(if (= 1 (exists #Voyager_Archive) )
+ (
+   (welcome)
+   (set VoyagerUdir  (askdir (prompt #whereUnpack)
+	                    (help   #whereUnpack)
+     		            (default "Ram:")
+                    )  
+   )
+
+   (working (cat #uncompressingbin ""))
+   (set ToDo  ("%s \"-qfw=%s\" x %s %s" #Compress VoyagerUdir #Voyager_Archive)) 
+   (set error (run ToDo))
+   (if (> error 0) (message #errorbin))
+  
+   (if (exists "Voyager.KEY")
+    (copyfiles (source "Voyager.key") (dest (tackon VoyagerUdir "Voyager-30-Prerelease1")) (optional "nofail") ) 
+   )
+
+   (set @default-dest VoyagerUdir)
+   ;(run (cat "run Installer \"" (tackon VoyagerUdir "Voyager-30-Prerelease1/Install_Voyager") "\" APPNAME \"Voyager3-Installer\" MINUSER AVERAGE DEFUSER AVERAGE LOGFILE RAM:Voyager3-Install.LOG") ) 
+   (exit (cat #oktoinstall (tackon VoyagerUdir "Voyager-30-Prerelease1/Install_Voyager")) (quiet))
+ )
+
+)
+
+;********************************************************************
+; Check on New installer 
+;********************************************************************
+(set InstallerVer 0)
+(set vernum1 @installer-version) (set ver1 (/ vernum1 65536)) 
+(set rev1 (- vernum1 (* ver1 65536) ) ) (set InstallerVer (cat ver1 "." rev1))
+(set current_installer "43.3")
+(if (< InstallerVer current_installer) (message #updateinstaller) )
+
+;********************************************************************
+; Check on Setpatch 
+;********************************************************************
+(set vernum1 (getversion "c:setpatch")) (set ver1 (/ vernum1 65536)) 
+(set rev1 (- vernum1 (* ver1 65536) ) ) (set setpatchver (cat ver1 "." rev1))
+(set current_setpatch "40.16")
+(if (< setpatchVer current_setpatch) (message #updatesetpatch) )
+
+;********************************************************************
+; Hello
+;********************************************************************
+(message #about)
+
+ ;*** For Olli
+ ;(message "\n\n\nThe Voyager 3 pre-release requires a keyfile.\n\nVoyager.KEY, Voyager-3.KEY and NetConnect.library will work.")
+
+(welcome) 
+
+;********************************************************************
+; Checks for MUI & OS versions
+;********************************************************************
+(set ver 0)
+(if (<> (getassign "mui") "")
+ (
+  (if (exists "mui:mui")       (set vernum (getversion "mui:mui"))  )
+  (if (exists "sys:prefs/mui") (set vernum (getversion "sys:prefs/mui")) )
+  (set ver (/ vernum 65536)) (set rev (- vernum (* ver 65536) ) )
+ )
+)
+
+(if (= ver 7)  (set muiver "2.0") )  (if (= ver 8)  (set muiver "2.1") )
+(if (= ver 9)  (set muiver "2.2") )  (if (= ver 10) (set muiver "2.3") )
+(if (= ver 11) (set muiver "3.0") )  (if (= ver 12) (set muiver "3.1") )
+(if (= ver 13) (set muiver "3.2") )  (if (= ver 14) (set muiver "3.3") )
+(if (= ver 15) (set muiver "3.4") )  (if (= ver 16) (set muiver "3.5") )
+(if (= ver 17) (set muiver "3.6") )  (if (= ver 18) (set muiver "3.7") )
+(if (= ver 19) (set muiver "3.8") )  (if (= ver 20) (set muiver "3.9") )
+(if (= ver 21) (set muiver "4.0") )  (if (= ver 22) (set muiver "4.1") )
+
+(if (< ver 17)   ( (message (cat #newermui muiver))   (set cpuPick 0) ))
+(if (< osver 39) ( (message (cat #need-os workbench)) (set cpuPick 0) ))
+
+;********************************************************************
+; Double Check on the CPU
+;********************************************************************
+(set cpuPick (askchoice (choices "68000" "68010" "68020" "68030"
+		                 "68040" "68060"
+		        )
+			 (prompt #askcpu)
+	                 (help   #askcpu)
+          		 (default #cpu)
+	  )
+)
+
+
+;********************************************************************
+; check for Register-Voyager
+;********************************************************************
+;(if (OR (exists "Register-Voyager") (exists "Voyager.KEY"))
+; (set tempz 0) (abort #noregdir)
+;)
+
+;********************************************************************
+; Check Last ENV
+;********************************************************************
+(if (> (exists "env:Vapor/Voyager_LASTUSEDDIR") 0) 
+ (
+  (set lastdir (getenv "Vapor/Voyager_LASTUSEDDIR"))
+  (set lastdirlen (strlen lastdir))
+  (set tricklen (+ 1 (strlen (fileonly lastdir))))
+  (set lastdir (substr lastdir 0 (- lastdirlen tricklen) ) )
+  (if (= 0 (exists lastdir (noreq))) (set lastdir (cat lastdir ":"))) 
+ )
+ (set lastdir 0)
+)
+
+
+;********************************************************************
+; Ask where to put Voyager & Make dir if needed
+;********************************************************************
+(set Package (getassign "AmiTCP"))
+(if (= Package "") (set Package (getassign "Inet")) )
+(if (<> lastdir 0) (set Package lastdir))
+
+(set Voyagerdir  (askdir (prompt #whereVoyager)
+		        (help   #whereVoyager)
+     		        (default Package)
+               )  
+)
+
+(set where Voyagerdir)
+
+;********************************************************************
+; Check for Key file
+;********************************************************************
+;(if (AND (= Vkey 1) (OR (= (exists "Voyager.Key") 0) (OR (= (exists "S:Voyager.Key") 0)  (= (exists (tackon where "Voyager.Key")) 0) ) ) )
+; (
+;  (message (cat #noreg1 (tackon where "Voyager/Voyager.Key") #noreg2))
+;  (run (cat "run Register-Voyager") )
+;  ;;** (exit (quiet))
+; )
+;) 
+
+;********************************************************************
+; Check to see if Voyager is already there, if so ask to backup
+;********************************************************************
+(if (= 1 (exists (tackon where "V") ) ) 
+  (
+    (set vernum1 (getversion (tackon where "V") ))
+    (set ver1 (/ vernum1 65536)) (set rev1 (- vernum1 (* ver1 65536) ) )
+    (set Voyager_old (cat ver1 "." rev1))
+
+    (message (cat #filethere1 ver1 "." rev1 #filethere2 where #filethere3 
+                  (cat "V" Voyager_old) #filethere4 (tackon Voyagerdir "V") )
+    )
+
+    (copyfiles (source (tackon where "V"))
+               (dest where) 
+               (infos)
+               (newname (cat "V." Voyager_old))
+    )
+    
+    (delete (tackon Voyagerdir "V") (prompt #oktodelete1) (help #oktodelete1) (confirm) (infos)) 
+
+    (if (< (exists (tackon Voyagerdir "V")) 2) (makedir (tackon Voyagerdir "V") (infos)) )    
+
+    (copyfiles (source (tackon where (cat "V." Voyager_old) ))
+                       (dest (tackon Voyagerdir "V")) 
+                       (infos)
+               
+    )
+
+    (delete (tackon where (cat "V" Voyager_old)) (prompt #oktodelete2) (help #oktodelete2) (confirm) (infos) ) 
+
+    ;(set firsttime 1)
+
+  )
+)
+
+(if (< (exists (tackon Voyagerdir "Voyager")) 2) (makedir (tackon Voyagerdir "Voyager")) )
+
+;********************************************************************
+; copy rooticon if there
+;********************************************************************
+(set pathI @icon)  (set pathIlen (strlen pathI))
+(set Inamelen (fileonly @icon))
+(set Inamelen (+ (strlen Inamelen) 1) )
+(set pathI (substr pathI 0 (- pathIlen Inamelen) ) )
+
+(if (= (exists (tackon where "Voyager.info")) 0)
+ (if (exists (cat pathI ".info"))
+  (copyfiles (source (cat pathI ".info")) (dest (tackon "/" where)) (newname "Voyager.info") (optional "nofail") ) 
+ )
+)
+
+(set where (tackon Voyagerdir "Voyager"))
+(set @default-dest where)
+
+;********************************************************************
+; Check for old & backup
+;********************************************************************
+(if (exists (tackon where "V")) 
+  (
+      (set vernum1 (getversion (tackon where "V") ))
+      (set ver1 (/ vernum1 65536)) (set rev1 (- vernum1 (* ver1 65536) ) )
+      (set Voyager_old (cat ver1 "." rev1))
+
+      (set keeper  (askchoice (choices  (cat #backuptoXXX Voyager_old "'")  #copyover)
+                     (prompt #Voyagerfound)
+	             (help   #Voyagerfound)
+                     (default 0)
+	           )
+      )    
+
+      (if (= keeper 0)
+         (copyfiles (source (tackon where "V"))
+                     (dest where) 
+                     (infos)
+                     (newname (cat "V" Voyager_old))
+         )
+      )          
+
+      (set firsttime 1)
+  )
+)
+
+;********************************************************************
+; Copy over correct Voyager and Icon if wanted
+;********************************************************************
+;(set gcpu 0)
+;(if (AND (> #cpu 1) (exists ("V030")) ) (set gcpu 1) ) 
+
+;(if (exists "V030") (set v030there "") (set v030there " (N/A in this Archive)") ) 
+
+;(set cpuPick (askchoice (choices "68000" (cat "68030+FPU" v030there) )
+;			 (prompt #askcpu)
+;	                 (help   #askcpu)
+;          		 (default gcpu)
+;	  )
+;)
+
+;(if (AND (= cpuPick 1) (exists ("V030")) )
+; (copyfiles (source "V030") (dest where) (newname "V") (optional "nofail") )
+; (copyfiles (source "V") (dest where) (optional "nofail") )
+;)
+
+
+(set #need000archive1 "\n(or you selected 68000 or 68010 as your CPU)\nAs of Voyager V3 Prerelease 4 the main archive will only have a version of the binary for OS3.0 or OS3.1 and needs to have a 68020 CPU or higher. You can get the 68000 archive (if available) at the following addresses:\n\nhttp://v3.vapor.com/\nftp://ftp.vapor.com/pub/voyager/")
+(set #need000archive2 "\n\nPress 'Proceed' and the installer will updated the other parts needed to run Voyager")
+(set #need000archiveA "The installer found AmigaOS: ")
+(set #need000archiveB " & CPU: ") 
+
+(set voyagercpu "")
+
+(if (OR (< cpuPick 2) (< osver 39))
+ (message (cat #need000archiveA workbench #need000archiveB cpu #need000archive1 #need000archive2))
+
+ (copyfiles (source (cat "V" voyagercpu)) (dest where) (optional "nofail") )
+)
+
+
+;(if (AND (> #cpu 1) (= (exists ("V030")) 0) )
+; (message #no030found)
+;)
+
+(if (= firsttime 0)  (copyfiles (source "V.info") (dest where) (optional "nofail") ) )
+
+(if (OR (= keeper 0) (= (exists (tackon where "V.info")) 0))
+  (
+   (set newicon (askchoice (choices #yesnewicon #nonewicon)
+                           (prompt #newicon)
+	                   (help   #newicon)
+                           (default 0)
+	        )
+   )
+  
+   (if (= newicon 0) 
+     (copyfiles (source "V.info") (dest where)  (optional "nofail") )
+   )
+  )
+)
+
+
+;********************************************************************
+; Copy over Other stuff
+;********************************************************************
+;*** Copy Key 
+(if (> (exists "Voyager.KEY") 0)
+ (copyfiles (source "Voyager.KEY") (dest where) (infos) (optional "nofail") ) 
+)
+
+(if (= (exists (tackon where "TransferAnim")) 0)
+  (if (exists "TransferAnim")
+   (copyfiles (source "TransferAnim") (dest where) (optional "nofail") ) 
+  )
+)
+
+(if (= (exists (tackon where "TransferAnim.info")) 0)
+ (if (exists "TransferAnim.info")
+  (copyfiles (source "TransferAnim.info") (dest where) (optional "nofail") ) 
+ )
+)
+
+
+(makedir (tackon where "Cache"))
+(if (> (exists "CacheBrowser") 0)
+ (copylib (source "CacheBrowser") (dest where) (infos) (optional "nofail") ) 
+)
+
+;********************************************************************
+; Copy MimePrefs
+;********************************************************************
+(if (exists "MimePrefs")  
+ (
+  (if (exists "sys:prefs/MimePrefs" (noreq)) (set mpguess 1) (set mpguess 0))
+ 
+  (set wheremp  (askchoice (choices where "SYS:Prefs")
+                           (prompt (cat #wheremp "\n"))
+	   	           (help   #wheremp)
+     		           (default mpguess)
+                )  
+  )
+
+  (if (= wheremp 0) (set destmp where) (set destmp "SYS:Prefs"))
+
+  (if (= (exists (tackon destmp "MimePrefs.info")) 0)  
+   (copylib (source "MimePrefs") (dest destmp) (infos) (optional "nofail") ) 
+   (copylib (source "MimePrefs") (dest destmp) (optional "nofail") ) 
+  )
+
+ )
+)
+
+;******************************************************************************** 
+; Copy over Plugins stuff
+;********************************************************************************
+(set #askimageP1 "What version of the Image Decoder would you like to install (or update)? The average size for a Image Decoder plugin is about: ")
+(set #askimageP2 "Total for all ")
+(set #askimageP3 " *=Not found in archive.")
+(set #askflashP1 "What version of the VFlash plugin would you like to install (or update)? The average size for a VFlash plugin is about ")
+(set #askflashP2 "Total for all ")
+(set #askflashP3 " *=Not found in archive.")
+(set #flashno000 "\n\nNOTE\n~~~~~~~~~~~~~~~~~~~~~~~~~~~\nThe VFlash plugin needs to be installed on an Amiga with at least a 68020 CPU. The installer did not find this. You can install the VFlash plugin but it will not work on 68000 and 68010 based Amigas.")
+(set #imageno000 "\n\nNOTE\n~~~~~~~~~~~~~~~~~~~~~~~~~~~\nThe Image plugin needs to be installed on an Amiga with at least a 68020 CPU. The installer did not find this. You can install the Image plugin but it will not work on 68000 and 68010 based Amigas.")
+(set #noppclib   "\n\nNOTE\n~~~~~~~~~~~~~~~~~~~~~~~~~~~\nYou selected a PPC plugin that needs MorphOs installed. The installer did not find 'libs:ppc.library' or the library resident. The installer will install the _ppc version of the plugin, if it is in the archive, but without a PPC (with MorphOs) it will not work and you may need to install a different version of the plugin if you did not select another version also.")
+(set #noplugfound "\n\nNOTE\n~~~~~~~~~~~~~~~~~~~~~~~~~~~\nThe Plugin you selected was not found it this archive. You will need to install a different version.\n\nPlugin not found:\n")
+
+
+(if (> (exists "Plugins") 0)
+ (
+
+  (if (< (exists (tackon where "Plugins")) 2) (makedir (tackon where "Plugins") (infos)) )    
+  (if (exists "Plugins.info")
+   (copyfiles (source "Plugins.info") (dest where) (optional "nofail") ) 
+  )
+
+  (if (= cpuPick 0) (set defvimgd 0)) (if (= cpuPick 1) (set defvimgd 0)) 
+  (if (= cpuPick 2) (set defvimgd 1)) (if (= cpuPick 3) (set defvimgd 2)) 
+  (if (= cpuPick 4) (set defvimgd 4)) (if (= cpuPick 5) (set defvimgd 8)) 
+  (if (AND (exists "libs:ppc.library")  (exists "Plugins/vimgdec_604e.vlib")) (set defvimgd 16))
+  (if (AND (exists "ppc.library" (resident)) (exists "Plugins/vimgdec_604e.vlib")) (set defvimgd 16))
+ 
+ ;***** Image Decoder Plugin  ******************************
+ (if (> (exists "Plugins/vimgdec_68020.vlib") 0)
+ (
+  (if (< cpuPick 2) (message #imageno000)) 
+
+  (set size 0) (set totalplug 0)
+  (foreach "Plugins" "vimgdec#?"  (set size (+ size (getsize (tackon "Plugins" @each-name)))) (set totalplug (+ totalplug 1)) )
+  (set sizek-vimg (/ size 1024))
+
+  (if (exists "Plugins/vimgdec_68020.vlib")    (set vimgd020 "") (set vimgd020 " (*)") ) 
+  (if (exists "Plugins/vimgdec_68030fpu.vlib") (set vimgd030 "") (set vimgd030 " (*)") ) 
+  (if (exists "Plugins/vimgdec_68040fpu.vlib") (set vimgd040 "") (set vimgd040 " (*)") ) 
+  (if (exists "Plugins/vimgdec_68060.vlib")    (set vimgd060 "") (set vimgd060 " (*)") ) 
+  (if (exists "Plugins/vimgdec_604e.vlib")      (set vimgdppc "") (set vimgdppc " (*)") ) 
+
+  (set cpuPickI (askoptions (choices (cat " 68020" vimgd020) (cat " 68030+FPU" vimgd030) 
+                                     (cat " 68040+FPU" vimgd040) (cat " 68060" vimgd060)
+                                     (cat " PPC (MorphOs)" vimgdppc)
+                            ) 
+    			  (prompt (cat #askimageP1 (/ sizek-vimg totalplug) "K. " #askimageP2 sizek-vimg "K." #askimageP3) )
+	                  (help   (cat #askimageP1 (/ sizek-vimg totalplug) "K. " #askimageP2 sizek-vimg "K." #askimageP3) )
+          		  (default defvimgd)
+	        )
+  )
+
+  (working #updateplug)
+
+  (procedure updatevimg_plug
+    (if (exists (tackon "Plugins" (cat "vimgdec_" imageplugin ".vlib")) )
+       (copylib (source (tackon "Plugins" (cat "vimgdec_" imageplugin ".vlib"))) (dest (tackon where "Plugins")) (optional "nofail") ) 
+    )
+  )
+
+  (set PPCthere 0)
+   (if (exists "libs:ppc.library") (set PPClibthere 1)  )
+   (if (exists "ppc.library" (resident)) (set PPClibthere 1) )
+  (if (AND (= PPClibthere 0) (IN cpuPickI 4)) (message #noppclib)) 
+  
+  (if (IN cpuPickI 0) ((set imageplugin "68020")    (updatevimg_plug)) ) 
+  (if (IN cpuPickI 1) ((set imageplugin "68030fpu") (updatevimg_plug)) )
+  (if (IN cpuPickI 2) ((set imageplugin "68040fpu") (updatevimg_plug)) )
+  (if (IN cpuPickI 3) ((set imageplugin "68060")    (updatevimg_plug)) )
+  (if (IN cpuPickI 4) ((set imageplugin "PPC")      (updatevimg_plug)) )
+
+ )
+ )
+
+ ;*********** Recheck CPU/PPC and file
+  (if (= cpuPick 0) (set defvimgd 0)) (if (= cpuPick 1) (set defvimgd 0)) 
+  (if (= cpuPick 2) (set defvimgd 1)) (if (= cpuPick 3) (set defvimgd 2)) 
+  (if (= cpuPick 4) (set defvimgd 4)) (if (= cpuPick 5) (set defvimgd 8)) 
+  (if (AND (exists "libs:ppc.library")  (exists "Plugins/VFlash_604e.module")) (set defvimgd 16))
+  (if (AND (exists "ppc.library" (resident)) (exists "Plugins/VFlash_604e.module")) (set defvimgd 16))
+ 
+
+ ;***** VFlash Plugin ******************************
+ (if (> (exists "Plugins/VFlash.VPlug") 0)
+ (
+    (if (< cpuPick 2) (message #flashno000)) 
+  
+    (set size 0) (set totalplug 0)
+    (foreach "Plugins" "VFlash_#?"  (set size (+ size (getsize (tackon "Plugins" @each-name)))) (set totalplug (+ totalplug 1)) )
+    (set sizek-vflash (/ size 1024))
+
+    ;(if (exists "libs:ppc.library") (set #cpuguess 5))
+    ;(if (exists "ppc.library" (resident)) (set #cpuguess 5))
+   
+    (if (exists "Plugins/VFlash_68020.module")    (set vflash020 "") (set vflash020 " (*)") ) 
+    (if (exists "Plugins/VFlash_68030fpu.module") (set vflash030 "") (set vflash030 " (*)") ) 
+    (if (exists "Plugins/VFlash_68040fpu.module") (set vflash040 "") (set vflash040 " (*)") ) 
+    (if (exists "Plugins/VFlash_68060.module")    (set vflash060 "") (set vflash060 " (*)") ) 
+    (if (exists "Plugins/VFlash_604e.module")      (set vflashppc "") (set vflashppc " (*)") ) 
+
+
+    (set cpuPickI (askoptions (choices (cat " 68020" vflash020) (cat " 68030+FPU" vflash030) 
+                                      (cat " 68040+FPU" vflash040) (cat " 68060" vflash060)
+                                      (cat " PPC (MorphOs)" vflashppc)
+                             ) 
+         			  (prompt (cat #askflashP1 (/ sizek-vflash totalplug) "K. " #askflashP2 sizek-vflash "K." #askflashP3) )
+	                          (help   (cat #askflashP1 (/ sizek-vflash totalplug) "K. " #askflashP2 sizek-vflash "K." #askflashP3) )
+          	                  (default defvimgd)
+	          )
+    )
+
+    (working #updateplug)
+
+    (procedure updateflash_plug
+      (if (exists (tackon "Plugins" (cat "VFlash_" flashplugin ".module")) )
+         (copylib (source (tackon "Plugins" (cat "VFlash_" flashplugin ".module"))) (dest (tackon where "Plugins")) (optional "nofail") ) 
+      )
+    )
+
+    (set PPCthere 0)
+     (if (exists "libs:ppc.library") (set PPClibthere 1)  )
+     (if (exists "ppc.library" (resident)) (set PPClibthere 1) )
+    (if (AND (= PPClibthere 0) (IN cpuPickI 4)) (message #noppclib)) 
+  
+    (if (IN cpuPickI 0) ((set flashplugin "68020")    (updateflash_plug)) ) 
+    (if (IN cpuPickI 1) ((set flashplugin "68030fpu") (updateflash_plug)) )
+    (if (IN cpuPickI 2) ((set flashplugin "68040fpu") (updateflash_plug)) )
+    (if (IN cpuPickI 3) ((set flashplugin "68060")    (updateflash_plug)) )
+    (if (IN cpuPickI 4) ((set flashplugin "PPC")      (updateflash_plug)) )
+
+    (copylib (source (tackon "Plugins" "VFlash.VPlug")) (dest (tackon where "Plugins")) (optional "nofail") ) 
+ )
+ )
+
+
+ ;***** ssl Plugin ******************************
+  ;(set USA (askchoice (choices #yesc  #noc)
+  ;	              (prompt #nossl)
+  ;	              (help #nossl)
+  ;                     (default 1)
+  ;	   )
+  ;)
+
+  ;(if (= USA 0) ; 0=InUSA
+  ; (message #okssl)
+  ; (copylib (source (tackon "Plugins" "voyager_ssl.vlib")) (dest (tackon where "Plugins")) (optional "nofail") ) 
+  ;)
+
+ ;***** About & Search Plugin ******************************
+  (copylib (source (tackon "Plugins" "voyager_about.vlib")) (dest (tackon where "Plugins")) (optional "nofail") ) 
+  (copylib (source (tackon "Plugins" "Search.VPlug")) (dest (tackon where "Plugins")) (optional "nofail") ) 
+  (copylib (source (tackon "Plugins" "voyager_ssl.vlib")) (dest (tackon where "Plugins")) (optional "nofail") ) 
+
+
+ )
+)
+
+;******************************************************************************** 
+; Copy over Buttons if wanted
+;********************************************************************************
+(set #but1 " Devo's (Default Set Used)")
+(set #but2 " Brad's Buttons")
+(set #but3 " Loony's Buttons")
+(set #installbut "What Button set(s) do you wish to install? If you have created your own or don't wish to use graphics for buttons you should deselect the options below.")
+
+(if (> (exists "buttons") 0)
+ (
+  
+  (set defbut 7)
+     (if (exists "buttons/Devo")
+      (
+       (set size 0)
+       (foreach "buttons/Devo" "#?"  (set size (+ size (getsize (tackon "buttons/Devo" @each-name)))) )
+       (set sizek-devo (/ size 1024))
+      )
+      ( (set defbut (- defbut 1))  (set sizek-devo "(N/A) 0") )
+     )
+
+     (if (exists "buttons/Brad")
+      (
+       (set size 0)
+       (foreach "buttons/Brad" "#?"  (set size (+ size (getsize (tackon "buttons/Brad" @each-name)))) )
+       (set sizek-brad (/ size 1024))
+      )
+      ( (set defbut (- defbut 2))  (set sizek-brad "(N/A) 0") )
+     )
+
+     (if (exists "buttons/Loony")
+      (
+       (set size 0)
+       (foreach "buttons/Loony" "#?"  (set size (+ size (getsize (tackon "buttons/Loony" @each-name)))) )
+       (set sizek-loon (/ size 1024)) 
+      )
+      ( (set defbut (- defbut 4))  (set sizek-loon "(N/A) 0") )
+     )
+
+  (set butPick (askoptions (choices (cat #but1 " [" sizek-devo "K]")  (cat #but2 " [" sizek-brad "K]") (cat #but3 " [" sizek-loon "K]") )
+			  (prompt #installbut)
+	                  (help   #installbut)
+          		  (default defbut)
+	       )
+  )
+
+  (if (<> butPick 0)
+   (
+     (if (< (exists (tackon where "buttons")) 2) (makedir (tackon where "buttons") (infos)) )    
+     (if (exists "buttons.info")
+       (copyfiles (source "buttons.info") (dest where) (optional "nofail") ) 
+     )
+
+     (if (IN butPick 0)
+      (
+       (if (< (exists (tackon where "buttons/Devo")) 2) (makedir (tackon where "buttons/Devo") ) )    
+       (foreach "buttons/Devo" "#?"
+        (copyfiles (source (tackon "buttons/Devo" @each-name)) (dest (tackon where "buttons/Devo")) (optional "nofail") ) 
+       )
+      )
+     )
+
+     (if (IN butPick 1)
+      (
+       (if (< (exists (tackon where "buttons/Brad")) 2) (makedir (tackon where "buttons/Brad") ) )    
+       (foreach "buttons/Brad" "#?"
+        (copyfiles (source (tackon "buttons/Brad" @each-name)) (dest (tackon where "buttons/Brad")) (optional "nofail") ) 
+       )
+      )
+     )
+
+     (if (IN butPick 2)
+      (
+       (if (< (exists (tackon where "buttons/Loony")) 2) (makedir (tackon where "buttons/Loony") ) )    
+       (foreach "buttons/Loony" "#?"
+        (copyfiles (source (tackon "buttons/Loony" @each-name)) (dest (tackon where "buttons/Loony")) (optional "nofail") ) 
+       )
+      )
+     )
+
+   )
+  )
+
+ )
+)
+
+;******************************************************************************** 
+; Copy over rexx stuff
+;********************************************************************************
+(if (> (exists "rexx") 0) 
+(
+ (if (< (exists (tackon where "rexx")) 2) (makedir (tackon where "rexx") (infos)) )    
+ (if (exists "Rexx.info")
+  (copyfiles (source "Rexx.info") (dest where) (optional "nofail") ) 
+ )
+
+ (if (> (exists "rexx") 0)
+   (foreach "rexx" "#?"
+      (copylib (source (tackon "rexx" @each-name)) (dest (tackon where "rexx")) (optional "nofail") ) 
+   )
+ )
+)
+)
+
+;******************************************************************************** 
+; Copy over Certificates stuff
+;********************************************************************************
+(if (> (exists "Certificates") 0) 
+(
+
+ (if (< (exists (tackon where "Certificates")) 2) (makedir (tackon where "Certificates") (infos)) )    
+ (if (exists "Certificates.info")
+  (copyfiles (source "Certificates.info") (dest where) (optional "nofail") ) 
+ )
+
+ (foreach "Certificates" "#?"
+    (copyfiles (source (tackon "Certificates" @each-name)) (dest (tackon where "Certificates")) (optional "nofail") ) 
+ )
+ 
+)
+)
+
+;******************************************************************************** 
+; Copy over Submissions stuff
+;********************************************************************************
+(if (> (exists "Submissions") 0) 
+ (
+  (if (< (exists (tackon where "Submissions")) 2) (makedir (tackon where "Submissions") (infos)) )    
+  (if (exists "Submissions.info")
+   (copyfiles (source "Submissions.info") (dest where) (optional "nofail") ) 
+  )
+
+  (if (> (exists "Submissions") 0)
+    (foreach "Submissions" "#?"
+       (copylib (source (tackon "Submissions" @each-name)) (dest (tackon where "Submissions")) (optional "nofail") ) 
+    )
+  )
+
+ )
+)
+
+;********************************************************************
+; Copy over DOCS (home.html and Vpics dir) & Other Docs
+;********************************************************************
+(set defdocs 63)
+(if (exists "Voyager_home") (set html_found "") ( (set html_found " (*)") (set defdocs (- defdocs 1)) ) ) 
+(if (exists "V.readme")     (set readme_found "") ( (set readme_found " (*)") (set defdocs (- defdocs 2)) ) ) 
+(if (exists "Docs/Readme.mui") (set muidoc_found "") ( (set muidoc_found " (*)") (set defdocs (- defdocs 4)) ) ) 
+(if (exists "Docs/Readme.TearOff") (set tear_found "") ( (set tear_found " (*)") (set defdocs (- defdocs 8)) ) ) 
+(if (exists "Docs/VFlash.readme") (set flash_found "") ( (set flash_found " (*)") (set defdocs (- defdocs 16)) ) ) 
+(if (exists "Docs/VFlash_604e.readme") (set flashppc_found "") ( (set flashppc_found " (*)") (set defdocs (- defdocs 32)) ) ) 
+
+
+(set docs (askoptions (choices (cat " Docs In HTML format" html_found) 
+                               (cat " V.readme" readme_found)
+                               (cat " ReadMe.mui" muidoc_found)
+                               (cat " ReadMe.TearOff" tear_found)
+                               (cat " VFlash.readme" flash_found)
+                               (cat " VFlash_604e.readme" flashppc_found)
+                      ) 
+
+		      (prompt #whatdocs) 
+                      (help #whatdocs)
+	              (default defdocs)
+	  )
+)
+
+(if (<> docs 0)
+ (
+   ;(set docsdir (askdir (prompt (cat #wheredocs " (V.readme)" )) ; & V.history
+   ;		        (help   (cat #wheredocs " (V.readme)" )) ; & V.history
+   ;   		        (default where)
+   ;             )  
+   ;)
+
+   (set docsdir where)  
+
+   (if (IN docs 0)
+    (
+      (if (< (exists (tackon where "Voyager_home")) 2) (makedir (tackon where "Voyager_home") (infos)) )    
+      (if (< (exists (tackon where "Voyager_home/images")) 2) (makedir (tackon where "Voyager_home/images") (infos)) )    
+      (if (exists "Voyager_home.info")
+        (copyfiles (source "Voyager_home.info") (dest where) (optional "nofail") ) 
+      )
+
+      (if (exists "Voyager_home")
+        (foreach "Voyager_home" "#?.html"
+           (copyfiles (source (tackon "Voyager_home" @each-name)) (dest (tackon where "Voyager_home")) (optional "nofail") ) 
+        )
+      )
+
+      (if (exists "Voyager_home/images")
+        (foreach "Voyager_home/images" "#?.gif"
+          (copyfiles (source (tackon "Voyager_home/images" @each-name)) (dest (tackon where "Voyager_home/images")) (optional "nofail") ) 
+        )
+      )
+    )
+   )
+
+   (if (IN docs 1) (copyfiles (source "V.readme") (dest docsdir) (infos) (optional "nofail") ) )
+
+     (set docsdirneeded 0)                  (if (IN docs 2) (set docsdirneeded 1))   
+     (if (IN docs 3) (set docsdirneeded 1)) (if (IN docs 4) (set docsdirneeded 1))
+     (if (IN docs 5) (set docsdirneeded 1))
+
+     (if (= docsdirneeded 1)
+      (    
+       (if (< (exists (tackon where "Docs")) 2) (makedir (tackon where "Docs") (infos)) )    
+       (if (exists "Docs.info")
+        (copyfiles (source "Docs.info") (dest where) (optional "nofail") ) 
+       )
+      )
+     )
+
+   (if (IN docs 2)  (copyfiles (source "Docs/ReadMe.mui") (dest (tackon where "Docs")) (infos) (optional "nofail") ) )
+   (if (IN docs 3)  (copyfiles (source "Docs/ReadMe.TearOff") (dest (tackon where "Docs")) (infos) (optional "nofail") ) )
+   (if (IN docs 4) (copyfiles (source "Docs/VFlash.readme") (dest (tackon where "Docs")) (infos) (optional "nofail") ) )
+   (if (IN docs 5) (copyfiles (source "Docs/VFlash_604e.readme") (dest (tackon where "Docs")) (infos) (optional "nofail") ) )
+
+ )
+)
+
+;********************************************************************
+; Copy over TOOLS if wanted
+;********************************************************************
+(if (> (exists "Tools") 0)
+ (
+  (set tools (askoptions (choices " ClearCacheDir" " Uninstall")
+	  	         (prompt (cat #whattools (tackon where "Tools\n"))) 
+                         (help   (cat #whattools (tackon where "Tools\n")))
+	                 (default 1)
+             )
+  )
+
+  (if (<> tools 0)
+   (
+     (if (< (exists (tackon where "Tools")) 2) (makedir (tackon where "Tools") (infos)) )    
+     (set toolsdir (tackon where "Tools"))   
+
+     (if (IN tools 0) (copyfiles (source "Tools/ClearCacheDir") (dest toolsdir) (infos) (optional "nofail") ) )
+     (if (IN tools 1) (copyfiles (source "Tools/Uninstall") (dest toolsdir) (infos) (optional "nofail") ) )
+   
+   )
+  )
+ 
+ )
+)
+
+;********************************************************************
+; Copy over #?.mpc|#?.mcc (Need to be in mui:libs/mui)
+;********************************************************************
+(if (> #cpu 1) (set guesscpu 1) (set guesscpu 0)) 
+
+;Check for MUI stuff in 'Libs' or 'MUI/Libs'
+ (if (exists "Libs/MUI") (set mui_localdir "Libs/MUI"))
+ (if (exists "MUI") (set mui_localdir "MUI"))
+
+(if (<> (getassign "mui") "")
+(
+  (if (> (exists "mui:libs/mui") 0) 
+   (
+
+    (if (> (exists (tackon mui_localdir "Textinput.mcc.020")) 0)
+      (set whatver (askchoice (choices  "68000" "68020")
+                      (prompt #cpuver)
+	              (help   #cpuver)
+                      (default guesscpu)
+	           )
+      )
+    )
+
+    (working #updatingmuic)
+    (foreach mui_localdir "#?.mcp"
+      (if (AND (= whatver 1) (exists (cat (tackon mui_localdir @each-name) ".020") ) )
+        (copylib (source (cat (tackon mui_localdir @each-name) ".020")) (dest "mui:libs/mui") (newname @each-name) (optional "nofail") ) 
+        (copylib (source (tackon mui_localdir @each-name)) (dest "mui:libs/mui") (optional "nofail") ) 
+      )
+    )
+
+    (foreach mui_localdir "#?.mcc"
+       (if (AND (= whatver 1) (exists (cat (tackon mui_localdir @each-name) ".020") ) )
+        (copylib (source (cat (tackon mui_localdir @each-name) ".020")) (dest "mui:libs/mui") (newname @each-name) (optional "nofail") ) 
+        (copylib (source (tackon mui_localdir @each-name)) (dest "mui:libs/mui") (optional "nofail") ) 
+       )  
+    )
+   )
+
+   (message (cat #newermui muiver #nompc)) 
+  )
+)
+)
+
+;********************************************************************
+; Copy update Lib if wanted 
+;********************************************************************
+(set deflibs 15)
+(if (> (exists "libs") 0)
+ (
+  (set deflibs 0)
+  (if (> (exists (tackon "libs" "vapor_update.library")) 0)       (set deflibs (+ deflibs 1)))
+  (if (> (exists (tackon "libs" "vapor_toolkit.library")) 0)      (set deflibs (+ deflibs 2)))
+  (if (> (exists (tackon "libs" "vapor_registration.library")) 0) (set deflibs (+ deflibs 4)))
+  (if (> (exists (tackon "libs" "CManager.library")) 0)           (set deflibs (+ deflibs 8)))
+
+  (set libPick (askoptions (choices #lib1 #lib2 #lib3 #libC)
+			  (prompt #updatedlibs)
+	                  (help   (cat #libhelp1 #libhelp2 #libhelp3 #libhelpC))
+          		  (default deflibs)
+	       )
+  )
+
+  (if (> libPick 0)
+   (
+    (set wherelibs (askdir (prompt #wherelibs)
+		          (help   #wherelibs)
+     		          (default "LIBS:")
+                   )  
+    )
+    
+    (if (IN libPick 0)
+     (if (> (exists (tackon "libs" "vapor_update.library")) 0)
+      (copylib (source (tackon "libs" "vapor_update.library")) (dest wherelibs) (optional "nofail"))  
+     )
+    )
+
+    (if (IN libPick 1)
+     (if (> (exists (tackon "libs" "vapor_toolkit.library")) 0)
+      (copylib (source (tackon "libs" "vapor_toolkit.library")) (dest wherelibs) (optional "nofail"))  
+     )
+    )
+
+    (if (IN libPick 2)
+     (if (> (exists (tackon "libs" "vapor_registration.library")) 0)
+      (copylib (source (tackon "libs" "vapor_registration.library")) (dest wherelibs) (optional "nofail"))  
+     )
+    )
+
+    (if (IN libPick 3)
+     (if (> (exists (tackon "libs" "CManager.library")) 0)
+      (copylib (source (tackon "libs" "CManager.library")) (dest wherelibs) (optional "nofail"))  
+     )
+    )
+
+   ;(working #flushing) (run "avail flush > NIL:") (run "avail flush > NIL:") (run "avail flush > NIL:")
+
+   ; Run David's flushlib if there - 0=ok , 20=FlushFail
+    (if (exists "flushlib")
+     (run "flushlib QUIET vapor_#?.library CManager.#?")
+    )
+   
+
+   )
+
+  )
+ )
+)
+
+;********************************************************************
+; Check version of libs resident VS in libs: then note reboot
+;********************************************************************
+(if (> (exists "libs") 0)
+ (
+  (set lib_localdir "Libs:")
+
+  (procedure checkversion
+   (set vernum1 (getversion (tackon lib_localdir ver_checkfile)))
+   (set ver1 (/ vernum1 65536))  (set rev1 (- vernum1 (* ver1 65536) ) )
+   (set ver_result (cat ver1 "." rev1))
+  )
+  (procedure checkversionR
+   (set vernum1 (getversion (tackon lib_localdir ver_checkfile) (resident)))
+   (set ver1 (/ vernum1 65536))  (set rev1 (- vernum1 (* ver1 65536) ) )
+   (set ver_result (cat ver1 "." rev1))
+  )
+
+  (set ver_checkfile "vapor_toolkit.library") (checkversion) (set toolkit_ver ver_result)
+  (set ver_checkfile "vapor_update.library") (checkversion) (set update_ver ver_result)
+  (set ver_checkfile "vapor_registration.library") (checkversion) (set reg_ver ver_result)
+  (set ver_checkfile "CManager.library") (checkversion) (set cman_ver ver_result)
+
+  (if (= toolkit_ver "0.0") (set toolkit_ver "None"))
+  (if (= update_ver "0.0") (set update_ver "None"))
+  (if (= reg_ver "0.0") (set reg_ver "None"))
+  (if (= cman_ver "0.0") (set cman_ver "None"))
+
+  (set lib_localdir "")
+  (set ver_checkfile "vapor_toolkit.library") (checkversionR) (set toolkit_verR ver_result)
+  (set ver_checkfile "vapor_update.library") (checkversionR) (set update_verR ver_result)
+  (set ver_checkfile "vapor_registration.library") (checkversionR) (set reg_verR ver_result)
+  (set ver_checkfile "CManager.library") (checkversionR) (set cman_verR ver_result)
+
+  (if (= toolkit_verR "0.0") (set toolkit_verR "None"))
+  (if (= update_verR "0.0") (set update_verR "None"))
+  (if (= reg_verR "0.0") (set reg_verR "None"))
+  (if (= cman_verR "0.0") (set cman_verR "None"))
+
+
+  (set #verchecklib (cat "Vapor Library Version Check\n------------------------------------\n"
+                         "vapor_toolkit.library\nIn 'LIBS:' " toolkit_ver " (In memory: " toolkit_verR ")" 
+                         "\n\nvapor_update.library\nIn 'LIBS:' " update_ver " (In memory: " update_verR ")" 
+                         "\n\nvapor_registration.library\nIn 'LIBS:' " reg_ver " (In memory: " reg_verR ")"
+                         "\n\nCManager.library\nIn 'LIBS:' " cman_ver " (In memory: " cman_verR ")"
+                    ) 
+  )
+  
+  (set libdiff 0)
+  (if (<> toolkit_ver toolkit_verR) (set libdiff 1)) 
+  (if (<> update_ver update_verR)   (set libdiff 1))
+  (if (<> reg_ver reg_verR)         (set libdiff 1)) 
+  (if (<> cman_ver cman_verR)       (set libdiff 1))
+
+  (if (= libdiff 1)
+   (
+    (message #verchecklib)
+    (message (cat #libdiff #rebootnote))
+   )
+  )
+
+ )
+)
+
+;********************************************************************
+; Double check that env:Vapor/CManager_path is ok
+;********************************************************************
+(procedure askfor_CManager_dir
+  (set where_cman  (askdir (prompt #whereCMan)
+	            (help   #whereCMan)
+   		             (default where)
+                   )  
+  )
+
+  (delete "env:Vapor/CManager_path")
+  (textfile (dest "env:Vapor/CManager_path") (append (tackon where_cman "CManager")))
+  (copyfiles (source "env:Vapor/CManager_path") (dest "envarc:vapor") (optional "nofail") )  
+)
+
+(procedure check_CManager_dir
+ (set badcmdir 0)
+ (set lastdir1 "")
+
+ (if (> (exists "env:Vapor/CManager_path") 0) 
+  (set lastdir1 (getenv "Vapor/CManager_path"))
+ )
+
+ (set lastdirlen (strlen lastdir1))
+
+ (if (< lastdir1 "") (set badcmdir 1))
+ (if (< lastdirlen 9) (set badcmdir 1))
+ (if (<> (exists (pathonly lastdir1) (noreq) ) 2) (set badcmdir 1))
+ (if (<> (fileonly lastdir1) "CManager")  (set badcmdir 1))
+)
+
+(check_CManager_dir)
+
+(while (= badcmdir 1) 
+  (
+     (message (cat #badcm1 "\"" lastdir1 "\"" #badcm2))
+     (askfor_CManager_dir) (check_CManager_dir) 
+  )
+)
+
+;********************************************************************
+; Check for Cmanager-dir+Default.data
+;********************************************************************
+;(set #cmanager5 "NOTE: Voyager uses CManager for its bookmark section. CManager stores its database file 'Default.data' in the CManager's ENV path. The installer did not find 'Default.data' in the CManager ENV path.\n\nIf you 'test' installed the CManager package to RAM:/RAD: then CManager will try to save the Voyager bookmark file there, thus not being around after a reboot/powerdown.")
+;(set #cmanager6 " The installer will try to correct this, if this does not work you should (re)install the CManager package and place it elsewhere. Currenty it looks at:")
+
+;(if (> (exists "env:Vapor/CManager_path") 0)  (set lastdir1 (getenv "Vapor/CManager_path"))  )
+
+;(if (exists (tackon lastdir1 "Default.data"))  
+; (set DefaultData 1)
+; (message (cat #cmanager5 #cmanager6 "\n\"" (tackon lastdir1 "Default.data") "\"" ) )
+;)
+
+;(askfor_CManager_dir)
+
+;********************************************************************
+; BackUp bookmarks if there
+;********************************************************************
+(if (> (exists "env:Vapor/CManager_path") 0) 
+ (
+  (set lastdir1 (getenv "Vapor/CManager_path"))
+
+  (if (<> lastdir1 "CManager")
+   (
+    (set lastdirlen (strlen lastdir1))
+    (set tricklen (+ 1 (strlen (fileonly lastdir1))))
+    (set lastdir1 (substr lastdir1 0 (- lastdirlen tricklen) ) )
+    (if (= 0 (exists lastdir1 (noreq))) (set lastdir1 (cat lastdir1 ":"))) 
+   )
+  )
+ )
+
+ (set lastdir1 where)
+)
+
+(if (> (exists (tackon lastdir1 "Default.data")) 0)
+ (copyfiles (source (tackon lastdir1 "Default.data")) (dest where) (optional "nofail") (newname (cat (getsum (tackon lastdir1 "Default.data")) "_Default.data")) )
+)
+
+
+;********************************************************************
+; Check for OLD CManager.key
+;********************************************************************
+(set #cmanagerkey "\nNOTE\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\nVoyager uses CManager for its bookmark section. The installer has found your 'CManager.key' _could_ be a older key. If you use registered version of CManager, with the latest Cmanager classes/libs, and have a older Cmanager.key then this will cause CManager to not work correctly and thus Voyager.\n\nYou will need to get an updated CManager.key.")
+
+(set CmanagerKeyDir "")
+(if (exists (tackon lastdir1 "CManager.key")) (set CmanagerKeyDir lastdir1) )
+(if (exists (tackon "s:" "CManager.key")) (set CmanagerKeyDir "s:") )
+
+(if (<> CmanagerKeyDir "")
+ (
+  (set cmkey (getsize (cat CmanagerKeyDir "CManager.key")))
+  (if (< cmkey 500)
+   (message (cat #cmanagerkey "\n(" (tackon CmanagerKeyDir "CManager.key") ")" ) )
+  )
+ )
+) 
+
+;********************************************************************
+; Check for NList for CManager
+;********************************************************************
+(if (exists (tackon "mui:libs/mui" "NListview.mcc")) 
+ (set NListfound 1)
+ (message (cat #neednlist1 (tackon "MUI:Libs/mui" "NListview.mcc") "\n(" (tackon (expandpath "mui:libs/mui") "NListview.mcc") ")" #neednlist2) ) 
+)
+
+;********************************************************************
+; Check for Popph 
+;********************************************************************
+(if (exists (tackon "mui:libs/mui" "popplaceholder.mcc")) 
+ (set Popph 1)
+ (message (cat #needpopph1 (tackon "MUI:Libs/mui" "popplaceholder.mcc") "\n(" (tackon (expandpath "mui:libs/mui") "popplaceholder.mcc") ")" #needpopph2) ) 
+)
+
+;********************************************************************
+; Reg stuff Register-V³
+;********************************************************************
+(procedure checkforkey
+ (set foundkey 0) 
+ (set kc "Voyager.key")
+
+ (if (exists kc (noreq)) (set foundkey 1) )
+ (if (exists (tackon where kc) (noreq)) (set foundkey 1) )
+ (if (exists (tackon "s:" kc) (noreq)) (set foundkey 1) )
+ (if (exists (tackon "l:" kc) (noreq)) (set foundkey 1) )
+ (if (exists (tackon "libs:" kc) (noreq)) (set foundkey 1) )
+ (if (exists (tackon "keypath:" kc) (noreq)) (set foundkey 1) )
+ (if (exists (tackon "keyfiles:" kc) (noreq)) (set foundkey 1) )
+
+ (if (= foundkey 0)
+  (set wantkey (askchoice  (choices #insregstuffno #insregstuff)
+	                   (prompt #installerreg)
+                           (help #installerreg)
+	                   (default 1)
+               )
+  )
+
+  (set wantkey 0)
+ )
+)
+
+
+(if (exists "Register-V³") 
+ (checkforkey)
+)
+
+
+
+(if (AND (exists "Register-V³") (= wantkey 1))
+ (
+  (if (< (exists (tackon where "Register-V³")) 2) (makedir (tackon where "Register-V³") (infos)) )    
+  (if (exists "Register-V³.info")
+    (copyfiles (source "Register-V³.info") (dest where) (optional "nofail") ) 
+  )
+  (set whereR (tackon where "Register-V³"))
+
+
+  (set whatreg  (askchoice (choices "English"  "Deutsch" "Francais" )
+                           (prompt "What Registration Files (Language) would you like to install?")
+	                   (help   "What Registration Files (Language) would you like to install?")
+     		           (default 0)
+                )  
+  )
+
+  (if (= whatreg 0) ((set basereg "English")  (set baseregTT "English") ) )
+  (if (= whatreg 1) ((set basereg "Deutsch")  (set baseregTT "Deutsch") ) )
+  (if (= whatreg 2) ((set basereg "Francais") (set baseregTT "French")  ) )
+
+  (if (exists "Register-V³/RegistrationUtility") 
+    (copyfiles (source "Register-V³/RegistrationUtility")
+               (dest whereR)
+               (infos)
+    )
+  )
+ 
+  ;(if (exists (tackon "Register-V³" (cat "Regtool-" basereg ".info")) )
+  ;  (copyfiles (source (tackon "Register-V³" (cat "Regtool-" basereg ".info")) )
+  ;             (dest whereR) 
+  ;             (newname "RegistrationUtility.info")
+  ;  )
+  ;)
+
+  (if (exists (tackon "Register-V³" (cat "Reg_" basereg ".guide")) ) 
+    (copyfiles (source (tackon "Register-V³" (cat "Reg_" basereg ".guide")))
+               (dest whereR) 
+               (infos)
+    )
+  )
+
+  (if (exists (tackon "Register-V³" (cat "Reg_" basereg ".doc")) )
+    (copyfiles (source (tackon "Register-V³" (cat "Reg_" basereg ".doc")))
+               (dest whereR) 
+               (infos)
+    )
+  )
+
+
+ )
+)
+
+;********************************************************************
+; End Bye 
+;********************************************************************
+(if (> (exists ("c:multiview")) 0) (set #mpath "c:") )
+(if (> (exists ("sys:Utilities/multiview")) 0) (set #mpath "sys:Utilities") )
+(run (cat "run " #mpath "/multiview V.readme") )
+
+(exit #byebye)

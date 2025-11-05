@@ -1,0 +1,242 @@
+# Makefile for Voyager
+#
+# © 1999-2001 VaporWare CVS team <ibcvs@vapor.com>
+# All rights reserved
+#
+# $Id: makefile.caos,v 1.8 2001/11/30 15:30:38 akl Exp $
+#
+
+include $(SRCDIR)makefile.config
+#LIBDIRH=\Sourcen\CaOS\lib\\
+
+################################################################################
+
+MAKEFILENAME = makefile.caos
+DELETE = rm
+DELETEALL = rm -rf
+TMPDIR = /tmp/
+SOURCE =
+
+CAOSROOT = $(SRCDIR)
+
+BUILD=MBX
+PLATFORM=mbx
+VPATH := $(SOURCE)
+
+VDEBUG = -DVDEBUG=1
+
+NATVCC = gcc
+CROSSCC = $(CC)      # m68k-elf-gcc
+HOSTAS = as
+CROSSAS = $(AS)      # m68k-elf-as
+HOSTLINK = gcc
+CROSSLINK = $(LD)    # m68k-elf-ld
+CATMAKER = ./catmaker_mbx
+
+################################################################################
+
+include makefile.objs
+
+ifeq ($(MSDOS),true)
+VPATH = vsslstubs;imgdecode;pluginapi
+else
+VPATH = vsslstubs:imgdecode:pluginapi
+endif
+
+IMGOBJS = imgdecode/adler32.o imgdecode/inftrees.o imgdecode/jdhuff.o \
+	imgdecode/jdsample.o imgdecode/jquant2.o imgdecode/pngrio.o \
+	imgdecode/crc32.o imgdecode/infutil.o imgdecode/jdinput.o \
+	imgdecode/jidctflt.o imgdecode/jutils.o imgdecode/pngrtran.o \
+	imgdecode/gif.o imgdecode/jcomapi.o imgdecode/jdmainct.o \
+	imgdecode/jidctfst.o imgdecode/mimebrushes.o imgdecode/pngrutil.o \
+	imgdecode/imgdecode.o imgdecode/jdapimin.o imgdecode/jdmarker.o \
+	imgdecode/jidctint.o imgdecode/png.o imgdecode/pngset.o \
+	imgdecode/infblock.o imgdecode/jdapistd.o imgdecode/jdmaster.o \
+	imgdecode/jidctred.o imgdecode/pngerror.o imgdecode/pngtrans.o \
+	imgdecode/infcodes.o imgdecode/jdcoefct.o imgdecode/jdmerge.o \
+	imgdecode/jmemmgr.o imgdecode/pngmem.o imgdecode/zutil.o \
+	imgdecode/inffast.o imgdecode/jdcolor.o imgdecode/jdphuff.o \
+	imgdecode/jmemnobs.o imgdecode/pngpread.o imgdecode/inflate.o \
+	imgdecode/jddctmgr.o imgdecode/jdpostct.o imgdecode/jquant1.o \
+	imgdecode/pngread.o imgdecode/c2p_generic.o
+
+#
+# Well, since OpenModule() is still too dumb to load
+# a disk module we'll have to hack around
+ifeq ($(findstring ygwin,$(OSTYPE)),ygwin)
+  ifeq ($(COMPILER),gnuc)
+VFLASHOBJS = libvflash/plugin/flash_vplug.o libvflash/plugin/flash_mcc.o \
+	libvflash/plugin/flash_prefs.o libvflash/plugin/flash_io.o
+  else
+VFLASHOBJS = ../flash/plugin/flash_vplug.o ../flash/plugin/flash_mcc.o \
+	../flash/plugin/flash_prefs.o ../flash/plugin/flash_io.o
+  endif
+else
+VFLASHOBJS = libvflash/plugin/flash_vplug.o libvflash/plugin/flash_mcc.o \
+	libvflash/plugin/flash_prefs.o libvflash/plugin/flash_io.o
+endif
+
+OBJS = $(COBJS) $(COBJS_NODEP) $(PLATFORMOBJS) $(MBXOBJS) $(IMGOBJS) $(SSLOBJS) $(VFLASHOBJS)
+
+################################################################################
+
+CFLAGS += -DCLIB_NOPOSIXNAMES=1
+
+ifeq ($(COMPILER),gnuc)
+ CFLAGS += -Wno-cast-qual -Wno-parentheses -DMBX=1 -I$(SRCDIR)lib/include -I. -Iimgdecode -Ipluginapi $(VFLAGS)
+ IMGCFLAGS = $(CFLAGS) -Iimgdecode
+ VFLASHFLAGS = -Ilibvflash $(CFLAGS) -Ilibvflash/plugin -Ilibvflash/Lib
+ SSLCFLAGS = $(CFLAGS) -I$(SRCDIR)lib/vssl -I$(SRCDIR)lib/vssl/openssl/include \
+ -I$(SRCDIR)lib/vssl/openssl/crypto -DB_ENDIAN
+ CCOPTS = $(CFLAGS)
+else
+ CFLAGS += -DMBX=1 -I$(SRCDIRH)lib/include -I. -Iimgdecode -Ipluginapi $(VFLAGS) -ew1130
+ IMGCFLAGS = $(CFLAGS) -Iimgdecode
+ifeq ($(findstring inux,$(OSTYPE)),inux)
+ VFLASHFLAGS = -Ilibvflash $(CFLAGS) -Ilibvflash/plugin -Ilibvflash/Lib
+else
+ VFLASHFLAGS = -I../flash $(CFLAGS) -I../flash/plugin -I../flash/Lib
+endif
+ # the following uses relative paths, as MSDOS has problems with symlinks
+ SSLCFLAGS = $(CFLAGS) -I../vssl -I../vssl/openssl/include -I../vssl/openssl/crypto -DB_ENDIAN
+ CCOPTS := $(CFLAGS)
+endif
+
+HOSTCCOPTS = -c -pipe -funsigned-char -fomit-frame-pointer -DMBX -I$(SOURCE). \
+	-I$(SOURCE).. -I$(CAOSROOT)/include -I$(CAOSROOT)/descriptors -I.
+
+LDOPTS = -o
+
+################################################################################
+#
+# Executables and objects for installation
+#
+
+# Main V executable
+
+#AR_ADD = -ruv
+
+MODULE   = voyager_exe
+EXE_FILE = $(MODULE).elf
+MAP_FILE2= $(MODULE)2.map
+EXE_DEP  = $(EXE_FILE)
+
+LIBS     = -lvssl -lmath -lc -lcaos -lm -lmfd
+OUTPUT   = $(MODULE).lib
+MAP_FILE = $(MODULE).map
+
+ifeq ($(findstring -DNO_ROMFS=1,$(CFLAGS)),-DNO_ROMFS=1)
+else
+LD_FILE  = $(MODULE).ld
+endif
+
+ifeq ($(findstring -DNO_EXE=1,$(CFLAGS)),-DNO_EXE=1)
+EXE_DEP=
+else
+endif
+
+
+OFILES = $(OBJS)
+
+#########################################################################
+#
+
+ifeq ($(wildcard .depend.caos),.depend.caos)
+all: mbxtoolbar.h .mdconv.tmp rev.h $(LD_FILE) $(EXE_DEP) $(LIBVFLASH)
+
+else
+all: .mdconv.tmp dep
+	make all
+endif
+
+dep:
+	sh mkdep.sh -m -f .depend.caos $(INCLUDES) $(patsubst %.o,%.c, $(COBJS)) $(patsubst %.o,%.c, $(PLATFORMOBJS)) $(patsubst %.o,%.c, $(MBXOBJS))
+
+.mdconv.tmp: pluginapi/md/v_plugin_lib.md
+	$(MDCONV) $(CHATTY) $(SOURCE)pluginapi/md/v_plugin_lib.md $(SOURCE)pluginapi/md/v_plugin_lib_defs.h $(SOURCE)pluginapi/md/v_plugin_lib_calls.h $(SOURCE)pluginapi/md/v_plugin_lib_mod.h $(SOURCE)pluginapi/md/v_plugin_lib_dummy.c
+	echo "foo" >.mdconv.tmp
+
+GCCLFLAGS = \
+ -M $(LDFLAGS) \
+ -L$(SRCDIR)../devenv/lib/gcc-lib/m68k-elf/2.95.2/m5200/mhwdiv \
+ -L$(SRCDIR)../devenv/lib/m5200/mhwdiv \
+ $(LIBDIR)crt0.o $(OFILES) $(LIBS) -lgcc -no-keep-memory
+
+################################################################################
+
+TBIMAGES = toolbar_back toolbar_frwd toolbar_home toolbar_reld toolbar_find toolbar_prnt toolbar_stop toolbar_favs toolbar_mail toolbar_font toolbar_meta
+
+mbxtoolbar.h: $(TBIMAGES:%=%.jpg) $(MAKEFILENAME)
+	echo "Converting mbx toolbar images..." ; \
+	rm -f mbxtoolbar.h
+	for image in $(TBIMAGES); do \
+		echo "Image: $$image.jpg:" ; \
+		file2c.exe <$$image.jpg $$image >>mbxtoolbar.h ; \
+	done ; \
+
+#syncvsslstubs :
+#   cp $(SRCDIR)lib/vssl/vssl.c vsslstubs/vssl.c ; \
+#   cp $(SRCDIR)lib/vssl/bss_sock_mbx.c vsslstubs/bss_sock_mbx.c ; \
+
+################################################################################
+
+$(OUTPUT): $(OFILES)
+	@echo "*** Rebuild link library"; \
+	$(AR) $(AR_ADD) $(OUTPUT) $(OFILES) ; \
+	$(AR) $(AR_IDX) $(OUTPUT)
+
+ifeq ($(COMPILER),diab)
+
+$(LD_FILE) : $(OFILES) $(MAKEFILENAME)
+	echo "*** Linking $(LD_FILE)"   ; \
+	echo "$(LDFLAGS) -r4 " >link.tmp ; \
+	echo "$(LIBDIRH)crt0.o $(OFILES) $(LIBS) -limpl" >>link.tmp      ; \
+	echo "-o$(LD_FILE) $(LIBDIRH)exe.dld" >>link.tmp ; \
+	$(LD) -@@link.tmp >$(MAP_FILE)
+	ahc.exe $(LD_FILE) $(BOOTDIR)/c/voyager
+
+$(EXE_FILE) : $(OFILES) $(MAKEFILENAME)
+	echo "*** Linking $(EXE_FILE) (absolute)" ; \
+	echo "$(LDFLAGS) " >link.tmp ; \
+	echo "$(LIBDIRH)crt0.o $(OFILES) $(LIBS) -limpl" >>link.tmp ; \
+	echo " -o$(EXE_FILE) $(LIBDIRH)exe.dld" >>link.tmp ; \
+	$(LD) -@@link.tmp >$(MAP_FILE2)
+	mv $(EXE_FILE) ${BLDDIR}images/$(EXE_FILE)
+	date >$(EXE_FILE)
+else
+
+$(LD_FILE) : $(OFILES) $(MAKEFILENAME)
+	echo "Rebuild $(OUTPUT) " ; \
+	$(LD) --no-keep-memory -r $(GCCLFLAGS) -o$(LD_FILE) -T $(LIBDIR)exe.lds >$(MAP_FILE)
+	ahc.exe $(LD_FILE) $(BOOTDIR)/c/voyager
+
+$(EXE_FILE) : $(OFILES) $(MAKEFILENAME)
+	echo "*** Linking $(EXE_FILE) code"     ; \
+	$(LD) --no-keep-memory $(GCCLFLAGS) -o$(BLDDIR)images/$(EXE_FILE) -T $(LIBDIR)exe.lds >$(MAP_FILE2)
+	date >$(EXE_FILE)
+
+endif # ! DIAB
+
+################################################################################
+
+#rev.h: .revinfo crev.c
+
+docs:
+	echo "Do docs yet"
+
+clean:
+	-rm -f *.o js_parser.c catmaker_mbx css_parser.c css_scanner.h
+	-rm -f imgdecode/*.o *.tmp mbxtoolbar.h makecharmap crev rev.h
+	-rm -rf netinclude cattmp.c voyager_lib.* voyager_exe.* .depend.caos
+	-rm -f vssl/*.o vssl/openssl/*.o vssl/crypto/*.o vssl/ssl/*.o
+	-rm -f vsslstubs/*.o
+	-rm -f .text .data .symtab .strtab .rela.text .rela.data diab.tmp
+	-rm $(VFLASHOBJS)
+	make -w -C libvflash -f makefile.caos clean
+
+################################################################################
+
+ifeq ($(wildcard .depend.caos),.depend.caos)
+include .depend.caos
+endif
+include makefile.rules

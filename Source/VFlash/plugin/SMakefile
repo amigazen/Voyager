@@ -1,0 +1,63 @@
+# SMakefile for Flash
+#
+# $Id: SMakefile,v 1.2 2002/12/01 16:16:16 zapek Exp $
+
+CC = sc
+
+OBJS = flash_vplug.o flash_mcc.o flash_prefs.o flash_io.o sup.o c2p.o
+
+all: $(OBJS)
+	slink FROM lib:libent.o,lib:libinit.o $(OBJS) LIB lib:sc.lib LIB lib:debug.lib LIB lib:amiga.lib \
+	SMALLCODE SMALLDATA ADDSYM NOICONS LIBVERSION \$LIBVER LIBREVISION \$LIBREV \
+	LIBFD include/fd/v_plugin_lib.fd LIBID "\$LIBID" to VFlash.VPlug
+	-delete VFlash.VPlug.debug
+	rename VFlash.VPlug VFlash.VPlug.debug
+	slink FROM lib:libent.o,lib:libinit.o $(OBJS) LIB lib:sc.lib LIB lib:debug.lib LIB lib:amiga.lib \
+	SMALLCODE ND SMALLDATA NOICONS LIBVERSION \$LIBVER LIBREVISION \$LIBREV \
+	LIBFD include/fd/v_plugin_lib.fd LIBID "\$LIBID" to VFlash.VPlug
+
+rev.h:
+	rev DIR=/ LIBID=flash_plugin GLOBAL QUIET
+
+flash_vplug.o: rev.h flash_mcc_private.h flash_vplug.c
+	$(CC) $(CFLAGS) $(DEBUG) flash_vplug.c
+
+flash_mcc.o: rev.h flash_mcc_private.h flash_mcc.c
+	$(CC) $(CFLAGS) $(DEBUG) flash_mcc.c
+
+flash_prefs.o: rev.h flash_mcc_private.h flash_prefs.c
+	$(CC) $(CFLAGS) $(DEBUG) flash_prefs.c
+
+flash_io.o: rev.h flash_mcc_private.h flash_io.c
+	$(CC) $(CFLAGS) $(DEBUG) flash_io.c
+
+clean:
+	-delete $(OBJS) #?.lnk VFlash.VPlug QUIET
+
+debug:
+	smake DEBUG=DEF=DEBUG=1
+
+sup.o: sup.s
+	asm sup.s
+
+c2p.o: c2p.s
+	asm c2p.s
+
+install: all
+	copy VFlash.VPlug to //voyager/plugins
+	-flushlib VFlash.VPlug
+
+zapinstall: all
+	copy VFlash.VPlug to AmiTCP:/voyager/plugins
+	-flushlib VFlash.VPlug
+
+oinstall: all
+	copy VFlash.VPlug to //voyager/plugins
+	-flushlib VFlash.VPlug
+
+zapninstall: all
+	slink from VFlash.VPlug to rh0:communications/Voyager/Plugins/VFlash.VPlug noicons stripdebug
+
+zapdebuginstall: debug
+	copy VFlash.VPlug to AmiTCP:/voyager/plugins
+	-flushlib VFlash.VPlug

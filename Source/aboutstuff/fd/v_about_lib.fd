@@ -1,0 +1,11 @@
+##base _VAboutBase
+##bias 30
+##public
+VABOUT_GetAboutPtr(revid,owner,imgdeclib)(a0/a1/a2)
+VABOUT_GetVLogo(sizeptr)(a0)
+VABOUT_GetSSLLogo(sizeptr)(a0)
+VABOUT_GetPNGLogo(sizeptr)(a0)
+VABOUT_GetAboutIbeta()()
+VABOUT_GetV3Logo(sizeptr)(a0)
+VABOUT_GetFlashLogo(sizeptr)(a0)
+##end

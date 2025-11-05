@@ -1,0 +1,38 @@
+# Makefile for Flash (PPC)
+#
+# $Id: Makefile.powerup,v 1.1.1.1 2002/10/07 12:52:07 zapek Exp $
+#
+
+#DEBUG=-DDEBUG=1
+
+#CC := ppc-amigaos-egcs-gcc
+#LD := ppc-amigaos-egcs-ld
+#CC := ppc-amigaos-g++
+#LD := ppc-amigaos-gcc
+CC := ppc-morphos-gcc
+LD := ppc-morphos-ld
+LDFLAGS += -r
+CFLAGS += -nostdlib -mcpu=604e -mmultiple -I/gg/morphos/include -I/gg/morphos/emulinclude/includegcc -I/gg/morphos/emulinclude/emulinclude \
+		  -I/gg/morphos/emulinclude/includestd
+#CFLAGS += -b ppc-amigaos -V egcs-2.91.66 $(DEBUG) -I/gg/ppc-amigaos/os-include -I/gg/ppc-amigaos/include -mcpu=604e -mmultiple
+
+#AR := ppc-amigaos-egcs-ar rc
+#AR2 := ppc-amigaos-egcs-ranlib
+AR := ppc-amigaos-ar rc
+AR2 := ppc-amigaos-ranlib
+
+export CC LD CFLAGS LDFLAGS AR AR2
+
+all: lib module
+
+lib: FORCE
+	$(MAKE) -f ../../Lib/Makefile
+
+module: lib FORCE
+	$(MAKE) -f ../../module/Makefile VFlash_ppc.module
+
+clean:
+	$(MAKE) -f ../../Lib/Makefile clean
+	$(MAKE) -f ../../module/Makefile clean
+
+FORCE:

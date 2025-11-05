@@ -1,0 +1,91 @@
+#########################################################################
+#
+# Objects
+#
+
+#
+# This is a hack for the MBX build. Will be cleaned up one day.
+#
+LIBVFLASH = libvflash.a
+
+#
+# Common objects used by every build
+#
+COBJS = plugins.o parse.o urlparser.o network.o init.o \
+	amicon.o autoproxy.o gauge.o history.o \
+	urlstring.o frameborder.o jscript.o printrequest.o \
+	searchrequest.o fastlinkbutton.o fastlinkgroup.o ddstring.o \
+	sendmailwin.o frame.o prefs.o \
+	sourceview.o colortable.o netinfo.o \
+	authenticate.o cookies.o certificates.o http.o \
+	ledclass.o mime.o smartlabel.o \
+	docinfowin.o ftp.o cache.o dns.o imgstub.o \
+	fonttestclass.o fontcache.o main.o \
+	cookiebrowser.o authbrowser.o historylist.o \
+	js_object.o js_navigator.o js_real.o js_string.o js_bool.o \
+	js_location.o js_screen.o js_link.o js_event.o js_regexp.o \
+	js_objref.o js_array.o js_func.o js_date.o js_plugin.o \
+	js_mimetype.o app.o button.o errorwin.o prunecache.o \
+	js_gc.o js_math.o \
+	prefswin_main.o prefswin_cache.o prefswin_certs.o \
+	prefswin_colors.o prefswin_fastlinks.o prefswin_fonts.o \
+	prefswin_general.o prefswin_hyperlinks.o prefswin_images.o \
+	prefswin_javascript.o prefswin_languages.o prefswin_mailnews.o \
+	prefswin_network.o prefswin_security.o prefswin_spoof.o \
+	prefswin_toolbar.o prefswin_download.o prefswin_list.o debug.o pluginswin.o \
+	pluginswin_list.o lo_anchor.o lo_group.o lo_table.o htmlview.o lo_frameset.o \
+	htmlwin.o layout_main.o layout_parse.o lo_div.o lo_br.o lo_dummy.o lo_form.o \
+	lo_image.o lo_hr.o lo_button.o lo_formbutton.o lo_formtext.o toolbar.o \
+	lo_formhidden.o lo_formcycle.o formpost.o lo_radio.o lo_checkbox.o \
+	lo_formtextfield.o lo_formfile.o lo_map.o lo_area.o lo_li.o locale.o \
+	lo_margin.o lo_embed.o lo_form_option.o \
+	clock.o host_os.o methodstack.o mui_func.o time_func.o update.o \
+	file.o malloc.o win_func.o rexx.o \
+	cssengine.o clip.o \
+	regcomp.o regfree.o regexec.o regerror.o menus.o nlist.o template.o sizegroup.o \
+	sur_gauge.o lineread.o
+
+#
+# Same as before except those objects are auto-generated, thus
+# they cannot be taken into account during the dependencies build,
+# which happens before they exist.
+COBJS_NODEP = voyager_cat.o js_parser.o css_parser.o
+
+#
+# m68k specific assembler objects
+#
+ASMOBJS = mynexto.o hash.o sup.o idea68k.o textfit.o
+
+#
+# generic portable objects (only used by MorphOS ATM)
+#
+GENERICOBJS = hash.o vatstart.o textfit.o mui_stubs.o
+
+#
+# STB only objects
+#
+MBXOBJS = \
+ mbx_menu.o mbx_cross.o mbx_gauge.o mbx.o hash.o mbximage.o mbxexe.o lo_pip.o \
+ vsslstubs/vssl.o vsslstubs/bss_sock_mbx.o js_stb_root.o js_stb_cdplayer.o pipwindow.o
+
+#
+# this is old and should go away soon :)
+#
+PLATFORMOBJS = prefsimages.o #prefsimages_amiga.o #prefsimages_$(PLATFORM).o
+
+#
+# Amiga/MorphOS specific objects (should get another name)
+#
+AMIGAOBJS =  mybrush.o nagwin.o keyparse.o \
+	executive.o readkey.o tearoff.o bitmapclone.o textfit2.o \
+	splashwin.o commandclass.o cmanager.o prefswin_contextmenu.o download.o snprintf.o smartreq.o
+
+#
+# Linklibs
+#
+ifeq ($(BUILD), AMIGAOS)
+LIBS = lib:scmieee.lib lib:vatlib.lib lib:sc.lib lib:small.lib lib:debug.lib ///libmath64/libmath64ieee.lib
+endif
+ifeq ($(BUILD), MORPHOS)
+LIBS = -labox -lmoto -lmath -lsyscall -lvat -laboxstubs -lgmp
+endif

@@ -1,0 +1,34 @@
+*
+* Prototype FD file for Voyager plugins
+*
+* $Id: v_plugin_lib.fd,v 1.2 2001/04/16 15:47:00 zapek Exp $
+*
+##base _VPluginBase
+##bias 30
+##public
+*
+* API V1
+*
+VPLUG_Query()()
+VPLUG_ProcessURLMethod(url)(a0)
+VPLUG_GetURLData(urlhandle)(a0)
+VPLUG_GetURLMIMEType(urlhandle)(a0)
+VPLUG_FreeURLData(urlhandle)(a0)
+*
+* API V2 additions
+*
+VPLUG_GetClass(mimetype)(a0)
+VPLUG_Setup(functable)(a0)
+VPLUG_Cleanup()()
+VPLUG_FinalSetup()()
+VPLUG_Hook_Prefs(method,prefsobj)(d0/a0)
+*
+* API V3 additions
+*
+VPLUG_GetInfo(vpluginfo,nethandle)(a0/a1)
+VPLUG_GetURLDataSize(urlhandle)(a0)
+*
+* API V4 additions
+*
+VPLUG_ProcessURLString(string)(a0)
+##end

@@ -1,0 +1,71 @@
+Porting Notes		2-15-99
+-------------
+
+This explains the part of the code that must be adapted
+to other platforms.
+The code has been re-written to make porting easier.
+
+Technical approach
+------------------
+The whole rendering engine works in a hidden buffer
+called 'canvas'. This buffer can be described with a couple
+of parameters. The buffer must consist of consecutive
+memory bytes (linear buffer) this is the only constraint.
+The parameters to describe the buffer are :
+	- canvasBuffer: a point to the buffer memory (of course)
+	- bpl: bytes per line.
+	- bpp: bytes per pixel.
+	- pad: scanline padding in bytes.
+Enough memory must be allocated to contain
+targetWidth * targetHeight pixels.
+
+The engine works with colors. The display device has its
+way of handling colors and it can be described by :
+	- redMask: the relevant bit mask in the pixel value for red.
+	- greenMask: the relevant bit mask in the pixel value for green.
+	- blueMask: the relevant bit mask in the pixel value for blue.
+Then depending on the display depth there are a collection of
+color pixel computation functions in which the most suitable must
+be picked up. If needed, you can write your own routine.
+
+Events
+------
+Events are handled though Flash Event Definition, so remap your
+own Event types onto these types.
+Time routines may be Unix specific.
+
+Sounds
+------
+A mixer has been written to help in porting the sound code.
+You can specify the audio capabilities of your sound device
+(rate, channels, bits) and the mixer should handle all this
+correctly.
+
+Files
+-----
+graphic.cc is the unique file to modify for porting graphics stuff.
+No other files contains dependencies on X11.
+Methods that are platform independent are tagged with the comment
+///////////// PLATFORM INDEPENDENT
+So don not touch these methods.
+The GraphicDevice class constructor has to be re-written to fit your
+platform specificities. Other methods that must be seen are :
+GraphicDevice::setForegroundColor	Set current foreground color.
+GraphicDevice::setHandCursor		Change cursor shape when on a button.
+GraphicDevice::displayCanvas		Copy the canvas into the actual window.
+GraphicDevice::drawLine			Variable width line drawer.
+(I have not found a generic algorithm to make the player more independent).
+GraphicDevice::synchronize		Special call made to synchronize
+					serialized graphic calls.
+(This is used by X11 to commit pending drawing actions, for instance.
+ You may not need it).
+
+sound.cc is the sound code part. Look at the SoundMixer class to adapt
+to your platform.
+
+flash.cc is the engine frontend, so you will have to change it a bit.
+
+
+Please tell me if you succeed in porting to a new platform.
+
+	-Olivier Debon   <odebon@club-internet.fr>

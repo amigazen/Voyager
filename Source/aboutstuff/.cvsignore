@@ -1,0 +1,4 @@
+libfunctions.c
+.depend.morphos
+objects
+*.vlib *.info rev.h

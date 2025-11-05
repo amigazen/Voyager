@@ -1,0 +1,14 @@
+#
+# $Id: makefile.rules,v 1.1 2003/06/22 23:04:50 zapek Exp $
+#
+
+rev.h: .revinfo
+	rev DIRECTORY=//
+
+libfunctions.c: fd/v_about_lib.fd clib/v_about_protos.h
+	cvinclude.pl --libprefix=LIB_ --fd $(SOURCE)fd/v_about_lib.fd --clib $(SOURCE)clib/v_about_protos.h --gatestubs $(SOURCE)$@_tmp
+	cat $(SOURCE)$@_tmp | sed -e "s,../../,," > $(SOURCE)$@
+	rm -f $(SOURCE)$@_tmp
+
+%.o : %.c
+	$(CROSSCC) $(CCOPTS) $(DEBUG) $(SOURCE)$*.c

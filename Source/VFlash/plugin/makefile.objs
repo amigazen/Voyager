@@ -1,0 +1,6 @@
+
+COBJS = lib.o libfunctable.o flash_io.o flash_mcc.o flash_prefs.o flash_vplug.o
+
+COBJS_NODEP = libfunctions.o
+
+LIBS = -labox -laboxstubs -lauto -lmoto -lmath -lc -lstring -lmemblock -lstringio -lsyscall

@@ -1,0 +1,118 @@
+##base _VATBase
+##bias 30
+##public
+*
+* Init functions
+*
+VAT_Initialize(appid,libvec,ctypevec,requirements)(a0/a1/a2/d0)
+VAT_Cleanup(libvec)(a0)
+VAT_OpenLibrary(libname,libversion)(a0/d0)
+VAT_OpenLibraryCode(libcode)(d0)
+VAT_CheckVATVersion(minver)(d0)
+*
+* Async I/O
+*
+VAT_OpenAsync(name,mode,buffsize)(a0/d0/d1)
+VAT_CloseAsync(asyncfile)(a0)
+VAT_ReadAsync(asyncfile,buffer,len)(a0/a1/d0)
+VAT_ReadCharAsync(asyncfile)(a0)
+VAT_WriteAsync(asyncfile,buffer,len)(a0/a1/d0)
+VAT_WriteCharAsync(asyncfile,ch)(a0/d0)
+VAT_SeekAsync(asyncfile,offset,mode)(a0/d0/d1)
+VAT_FGetsAsync(file,buffer,maxlen)(a0/a1/d0)
+VAT_VFPrintfAsync(file,string,args)(a0/a1/a2)
+VAT_FtellAsync(file)(a0)
+VAT_UnGetCAsync(asyncfile)(a0)
+VAT_FGetsAsyncNoLF(file,buffer,maxlen)(a0/a1/d0)
+*
+* Pools
+*
+VAT_CreatePool(requirements,puddleSize,threshSize)(d0/d1/d2)
+VAT_DeletePool(poolHeader)(a0)
+VAT_AllocPooled(poolHeader,memSize)(a0,d0)
+VAT_FreePooled(poolHeader,memory,memSize)(a0/a1,d0)
+VAT_AllocVecPooled(poolHeader,memSize)(a0,d0)
+VAT_FreeVecPooled(poolHeader,memory)(a0/a1)
+VAT_StrDupPooled(poolHeader,string)(a0/a1)
+*
+* Cryptography
+*
+VAT_CalcMD5(in,inlen,out)(a0/d0/a1)
+VAT_MD5Init(ctx)(a0)
+VAT_MD5Final(digest,ctx)(a0/a1)
+VAT_MD5Update(ctx,data,datalen)(a0/a1/d0)
+VAT_RandomStir()()
+VAT_Random()()
+VAT_RandomByte()()
+VAT_MPZPow(od,id,pe,pn)(a0/a1/a2/a3)
+VAT_MPZFree(od)(a0)
+*
+* String
+*
+VAT_ExpandTemplateA(from,to,tosize,args)(a0/a1/d0/a2)
+VAT_RemSpaces(str)(a0)
+*
+* Time
+*
+VAT_Time(tptr)(a0)
+VAT_Timev()()
+*
+* Misc
+*
+VAT_SetLastUsedDir(appid)(a0)
+VAT_CheckProgramInPathFull(name,fullpath)(a0/a1)
+VAT_SendRXMsg(cmd,basename,suffix)(a0/a1/a2)
+VAT_ShowURL(url,suffix,muiapp)(a0/a1/a2)
+*
+* to be continued...
+*
+* V3 additions
+*
+VAT_GetFilesizeAsync(asyncfile)(a0)
+VAT_ScanForURLS(str)(a0)
+VAT_FreeURLList(urllist)(a0)
+*
+* V4 additions
+*
+VAT_MultiSetA(attr,val,objs)(d0/d1/a0)
+*
+* V5 additions
+*
+VAT_SetFmtA(obj,attr,fmt,args)(a0/d0/a1/a2)
+VAT_SetTxtFmtA(obj,fmt,args)(a0/a1/a2)
+*
+* V6 additions
+*
+VAT_GetAppScreen(app)(a0)
+*
+* V7 additions
+*
+VAT_ShowRegUtil(scr)(a0)
+*
+* V8 additions
+*
+VAT_GetDataType(filename,gid,id,name)(a0/a1/a2/a3)
+VAT_IsAmigaGuideFile(filename)(a0)
+VAT_MIME_FindByExtension(filename,savedir,viewer,viewmode,mimetype)(a0/a1/a2/a3/d0)
+VAT_MIME_FindByType(mimetype,savedir,viewer,viewmode)(a0/a1/a2/a3)
+*
+* V9 additions
+*
+VAT_GetAppScreenName(app)(a0)
+*
+* V10 additions
+*
+VAT_FGets(fh,buff,size)(a0/a1/d0)
+*
+* V11 additions
+*
+VAT_NewShowRegUtil(appobj,name)(a0/a1)
+*
+* V12 additions
+*
+VAT_IsOnline()()
+*
+* V14 additions
+*
+VAT_CheckEcrypt(datetoquit)(d0)
+##end

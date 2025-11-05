@@ -1,0 +1,2761 @@
+;
+; $Id: voyager.cd,v 1.149 2003/12/02 16:23:55 zapek Exp $
+;
+; 
+; $VER: Voyager.cd 1.1 (20 Jun 99) for Voyager³ © Oliver Wagner
+; English strings by Oliver Wagner and Ben Preece <beej@vapor.com>
+;
+;
+;
+; ********** Common strings **********
+;
+MSG_OK (//)
+Ok
+;
+MSG_CANCEL (//)
+Cancel
+;
+MSG_NO (//)
+No
+;
+MSG_YES (//)
+Yes
+;
+MSG_ERROR (//)
+An error occured!
+;
+MSG_CLOSE (//)
+Close
+;
+; ********** Menus ***********
+;
+MSG_MENU_AMBROWSE (//)
+Voyager
+;
+MSG_MENU_BROWSER (//)
+Browser
+;
+;
+MSG_MENU_ABOUT (//)
+About...
+;
+MSG_MENU_ABOUTMUI (//)
+About MUI...
+;
+MSG_MENU_CACHECONTENTS (//)
+Goto disk cache
+;
+MSG_MENU_ICONIFY (//)
+Iconify
+;
+MSG_MENU_NETINFO (//)
+Network status...
+;
+MSG_MENU_DOWNLOADS (//)
+Downloads...
+;
+MSG_MENU_CACHEPRUNE (//)
+Prune disk cache...
+;
+MSG_MENU_CACHEFLUSH (//)
+Flush pages from memory
+;
+MSG_MENU_CACHEFLUSHIMAGES (//)
+Flush images from memory
+;
+MSG_MENU_QUIT (//)
+Quit
+;
+MSG_MENU_WINDOWS (//)
+Windows
+;
+MSG_MENU_NEWWIN (//)
+Open new window...                         
+;
+MSG_MENU_CLOSEWIN (//)
+Close window
+;
+MSG_MENU_WIN_SAVE (//)
+Save current window contents...
+; *** old? ***
+;
+MSG_MENU_SETWINSIZE_FS (//)
+Toggle Fullscreen
+;
+MSG_MENU_WIN_PRINT (//)
+Print...
+;
+MSG_MENU_WIN_SOURCE (//)
+View page source...
+;
+MSG_MENU_WIN_FIND (//)
+Find in page...
+;
+MSG_MENU_BOOKMARKS (//)
+Bookmarks
+;
+MSG_MENU_GOTOBOOK (//)
+Goto bookmarks
+;
+MSG_MENU_BOOK_LOAD (//)
+Load bookmarks...
+;
+MSG_MENU_BOOKMARKS_SEARCH (//)
+Search...
+;
+MSG_MENU_BOOK_SAVE (//)
+Save bookmarks
+; *** to die ***
+;
+MSG_MENU_BOOK_SAVEAS (//)
+Save bookmarks as...
+;
+MSG_MENU_BOOK_SAVEASDEF (//)
+Save bookmarks as defaults
+; *** to die ***
+;
+MSG_MENU_BOOKMARKS_EDIT (//)
+Bookmark Manager...
+;
+MSG_MENU_GOTO (//)
+History
+; *** old? ***
+;
+MSG_MENU_GOTO_HOME (//)
+Home
+; *** old? ***
+;
+MSG_MENU_SETTINGS (//)
+Settings
+;
+MSG_MENU_EDIT (//)
+Edit
+;
+MSG_MENU_CACHE (//)
+Cache
+;
+MSG_MENU_SET_MIME (//)
+MIME settings...
+;
+MSG_MENU_MUIOPTS (//)
+MUI settings...
+;
+MSG_MENU_SET_GUI (//)
+General settings...
+;
+MSG_MENU_SET_USEBACKGROUND (//)
+Use HTML background?
+; *** old? ***
+;
+MSG_MENU_SET_LOADIMAGES (//)
+Image loading
+;
+MSG_MENU_SET_LOADIMAGES_NONE (//)
+None
+;
+MSG_MENU_SET_LOADIMAGES_IMAPS (//)
+Image maps only
+;
+MSG_MENU_SET_LOADIMAGES_ALL (//)
+All
+;
+MSG_MENU_SET_LOADIMAGES_BACKGROUNDS (//)
+Backgrounds
+;
+MSG_MENU_SET_KEEPFTP (//)
+Keep FTP connections
+;
+MSG_MENU_SET_NOFRAMES (//)
+Ignore frames
+;
+MSG_MENU_SET_NOPROXY (//)
+Disable Proxies
+;
+MSG_MENU_SET_SPOOF (//)
+Spoof as...
+MSG_MENU_SET_SPOOF_DEFAULT (//)
+Nothing, be Voyager.
+;
+MSG_MENU_SET_IGNOREMIME (//)
+Ignore server sent MIME types
+;
+MSG_MENU_SET_METAREFRESH (//)
+Disable META Refresh
+;
+MSG_MENU_SET_OFFLINEMODE (//)
+Offline browsing
+;
+MSG_MENU_SET_SAVE (//)
+Save settings
+;
+MSG_MENU_SET_SAVEAS (//)
+Save settings as...
+;
+MSG_MENU_SET_SAVEASDEF (//)
+Save settings as default
+; *** to die ***
+;
+MSG_MENU_SET_LOAD (//)
+Load settings...
+;
+MSG_MENU_SAVEHTML (//)
+Save as HTML...
+;
+MSG_MENU_SET_PLUGINS (//)
+Plugins...
+;
+MSG_MENU_SAVETEXT (//)
+Save as plain text...
+;
+MSG_MENU_OPENFILE (//)
+Open file...
+;
+MSG_APP_DESC (//)
+The leading WWW Browser
+;
+MSG_APP_GUIDENAME (//)
+Voyager.guide
+;
+MSG_APP_FAILED (//)
+Internal error:\n\
+Failed to create MUI Application Objest\n\
+MUI Error code %d\n\
+Please report this bug via email immediately to\n\
+<voyager-bugs@vapor.com>\n\
+State your system configuration and, if possible,\n\
+the circumstances which caused the bug.
+;
+MSG_WIN_FAILED (//)
+Internal error:\n\
+Failed to create Window Objest\n\
+Error code %d\n\
+Please make sure you have installed \033bTextinput.mcc\033b\n\
+to your \033bMUI:Libs/MUI/\033n drawer
+;
+MSG_WIN_URL (//)
+Location:
+;
+MSG_WIN_URL_GOTO (//)
+Goto:
+;
+MSG_WIN_BT_BACK (//)
+Back
+;
+MSG_WIN_BT_FORWARD (//)
+Forward
+;
+MSG_WIN_BT_RELOAD (//)
+Reload
+;
+MSG_WIN_BT_HOME (//)
+Home
+;
+MSG_WIN_BT_FIND (//)
+Search
+;
+MSG_WIN_BT_IMAGES (//)
+Images
+;
+MSG_WIN_BT_PRINT (//)
+Print
+;
+MSG_WIN_BT_STOP (//)
+Stop
+;
+MSG_WIN_BT_ADDURL (//)
+Add
+;
+;
+MSG_WIN_OPENLOCALFILE (//)
+Open local file
+;
+; ********** Bubble help **********
+;
+MSG_SH_WIN_BT_BACK (//)
+Go back to previous page
+;
+MSG_SH_WIN_BT_FORWARD (//)
+Go forward to next page
+;
+MSG_SH_WIN_BT_RELOAD (//)
+Reload current page
+;
+MSG_SH_WIN_BT_HOME (//)
+Go to your home page
+;
+MSG_SH_WIN_BT_PRINT (//)
+Print current page
+;
+MSG_SH_WIN_BT_IMAGES (//)
+(Re)load all images\n\
+in current page
+;
+MSG_SH_WIN_BT_STOP (//)
+Stop loading current page
+;
+MSG_SH_WIN_BT_FIND (//)
+Search the web using keywords
+;
+MSG_SH_WIN_BT_ADDURL (//)
+Add URL to Bookmarks
+; *** this is not working ***
+;
+MSG_SH_WIN_BT_VOYAGER (//)
+\033c\033bWelcome to Voyager!\033n\n\
+\n\
+\033cThis image will animate\033n\n\
+\033cwhen a page is loading.\033n\n\
+\n\
+\033cClick here to read the V about: page
+;
+MSG_SH_WIN_BT_URL (//)
+\033bUniform Resource Locator\033n\n\
+Enter an internet address here
+;
+MSG_WINBM_TITLE (//)
+Voyager · Bookmarks
+;
+; ******* Prefs bubble help/General **********
+;
+MSG_SH_PREFSWIN_CHK_ICON (//)
+Selects whether the transferanimation\nis displayed as part of the GUI
+;
+MSG_SH_PREFSWIN_STR_HOMEPAGE (//)
+The URL that is displayed when you\npress the "Home" button
+;
+MSG_SH_PREFSWIN_CHK_SCROLLBARS (//)
+Selects whether you want Gadtools\nor MUI scrollbars in Voyager's window
+;
+MSG_SH_PREFSWIN_CHK_EXIT (//)
+Selects if Voyager should save the\ncurrent prefs when you exit the program
+;
+MSG_SH_PREFSWIN_CHK_ERRORREQUESTER (//)
+Selects how Voyager should inform you\nof errors. If enabled, Voyager will open\na requester with a description of the\nerror, if not the error will be displayed\nin the HTML area
+;
+; ******* Prefs bubble help/Hyperlinks **********
+;
+MSG_SH_PREFSWIN_CHK_LINKS (//)
+Selects whether Voyager should\nunderline hyperlinks or not
+;
+MSG_SH_PREFSWIN_STR_LINKS (//)
+The amount of days Voyager will keep\na visited link in it's URL history
+;
+MSG_SH_PREFSWIN_BT_EXPIRE (//)
+Clear Voyager's URL history
+;
+MSG_SH_PREFSWIN_STR_DLPATH (//)
+The default download path
+;
+MSG_SH_PREFSWIN_CHK_AUTOCLOSE (//)
+Selects whether Voyager should auto-close\nthe download window when all downloads are completed
+;
+MSG_SH_PREFSWIN_CYC_DLMODE (//)
+Selects the behaviour of the download window:\nNever clean up - keep everything\nLeave failures - keep failed downloads\nClean up everything - clear the window when all downloads finish
+;
+; ******* Prefs bubble help/Fonts ************
+;
+MSG_SH_PREFSWIN_LV_FACES (//)
+The different font classes:\nDefault: The font used if the is no <FONT FACE="xxx"> specified\nFixed: Font used for fixed space text\nTemplate: Template for <FONT FACE="xxx">\nYou can also specify sizes for specific fonts
+;
+MSG_SH_PREFSWIN_CHK_FONTFACE (//)
+Enables FACE="xxx" reading on <FONT> tags
+;
+MSG_SH_PREFSWIN_STR_FAMILY (//)
+The name of the font face
+;
+MSG_SH_PREFSWIN_BT_ADD_FAMILY (//)
+Add a font face
+;
+MSG_SH_PREFSWIN_BT_DEL_FAMILY (//)
+Delete selected font face
+;
+MSG_SH_PREFSWIN_BT_RANGE (//)
+Automatically fill out all font sizes for current font face\nThe size used as reference is size 3
+;
+MSG_SH_PREFSWIN_STR_STEP (//)
+The number of points that Voyager will use between\neach font size when automatically making a range
+;
+MSG_SH_PREFSWIN_TXT_TEST (//)
+Here you can see a preview\nof the font sizes you've specified
+;
+; ******* Prefs bubble help/Network **********
+;
+MSG_SH_PREFSWIN_CYC_PROXY_MODE (//)
+Selects the proxy configuration method
+;
+MSG_SH_PREFSWIN_STR_PROXY_AUTOURL (//)
+The URL from which the proxy settings is read
+;
+MSG_SH_PREFSWIN_CHK_PROXY_USE_HTTP (//)
+Selects whether to use proxy for HTTP connections or not
+;
+MSG_SH_PREFSWIN_STR_PROXY_HOST (//)
+The URL for the proxy
+;
+MSG_SH_PREFSWIN_STR_PROXY_PORT (//)
+The port to connect to on the proxy
+;
+MSG_SH_PREFSWIN_CHK_PROXY_USE_FTP (//)
+Selects whether to use proxy for FTP connections or not
+;
+MSG_SH_PREFSWIN_CHK_PROXY_USE_SSL (//)
+Selects whether to use proxy for SSL connections or not
+;
+MSG_SH_PREFSWIN_STR_NOPROXY (//)
+Hosts that will bypass the proxy, useful for\npages that have dynamic content. Enter as:\nhost1.domain,host2.domain,host3.domain
+;
+MSG_SH_PREFSWIN_SL_MAXCON (//)
+Maximum number of sockets Voyager will open
+;
+; ******* Prefs bubble help/Cache **********
+;
+MSG_SH_PREFSWIN_STR_CACHEDIR (//)
+The location of the disk cache files
+;
+MSG_SH_PREFSWIN_STR_CACHESIZE (//)
+The maximum size of the disk cache in kilobytes
+;
+MSG_SH_PREFSWIN_BT_FLUSHDISK (//)
+Delete all cached files
+;
+MSG_SH_PREFSWIN_STR_CACHEDAYS (//)
+The maximum number of days between disk cache cleanups
+;
+MSG_SH_PREFSWIN_CYC_CACHEVERIFY (//)
+Selects how often voyager should verify cached files
+;
+MSG_SH_PREFSWIN_STR_CACHEMEM (//)
+The maximum size of the memory cache in kilobytes
+;
+MSG_SH_PREFSWIN_BT_FLUSHMEM (//)
+Flush all memory cached files
+;
+MSG_SH_PREFSWIN_CHK_CACHEIMG (//)
+Selects whether Voyager should cache\nimages in memory or not
+;
+; ******* Prefs bubble help/Fastlinks **********
+;
+MSG_SH_PREFSWIN_LV_FASTLINKS (//)
+Configured fastlinks
+;
+MSG_SH_PREFSWIN_STR_FASTLINK_LABEL (//)
+The name of the fastlink
+;
+MSG_SH_PREFSWIN_STR_FASTLINK_URL (//)
+The URL that Voyager will load when the fastlink is pressed
+;
+MSG_SH_PREFSWIN_BT_FASTLINK_ADD (//)
+Add a new fastlink
+;
+MSG_SH_PREFSWIN_BT_FASTLINK_DEL (//)
+Remove selected fastlink
+;
+MSG_SH_PREFSWIN_CHK_STRIPTEXT (//)
+Selects whether Voyager is allowed to strip\nfastlink labels to get a better layout;
+;
+; ******* Prefs bubble help/Security **********
+;
+MSG_SH_PREFSWIN_CHK_ASK_MAILTO (//)
+Open a requester asking you to confirm\nthat you want to mail the form
+;
+MSG_SH_PREFSWIN_CHK_WARN_POST (//)
+Open a requester asking you to confirm\nthat you want to submit forms not sent\nvia an encrypted link
+;
+MSG_SH_PREFSWIN_CHK_NO_REFERER (//)
+Don't send the REFERER part of the HTTP\nrequest when following a hyperlink
+;
+MSG_SH_PREFSWIN_CHK_NO_MAILADDR (//)
+When logging into anonymous ftp servers,\ndon't use your email address as password
+;
+MSG_SH_PREFSWIN_CHK_NO_SSLCACHE (//)
+Don't cache pages that are sent over encrypted links
+;
+MSG_SH_PREFSWIN_CYC_ASK_COOKIE_TEMP (//)
+Selects how Voyager should deal with temporary cookies
+;
+MSG_SH_PREFSWIN_CYC_ASK_COOKIE_PERM (//)
+Selects how Voyager should deal with permanent cookies
+;
+; ******* Prefs bubble help/certificates *******
+;
+MSG_SH_PREFSWIN_BT_CERT_ACT (//)
+Mark selected certificate as active
+;
+MSG_SH_PREFSWIN_BT_CERT_DEACT (//)
+Mark selected certificate as inactive
+;
+MSG_SH_PREFSWIN_CHK_SSL2 (//)
+Enable Secure Socket Layer version 2
+;
+MSG_SH_PREFSWIN_CHK_SSL3 (//)
+Enable Secure Socket Layer version 3
+;
+MSG_SH_PREFSWIN_CHK_TLS1 (//)
+Enable Transport Layer Security version 1
+;
+MSG_SH_PREFSWIN_CHK_SSLBUGS (//)
+Enable workarounds for buggy secure servers
+;
+; ******* Prefs bubble help/mail/news **********
+;
+MSG_SH_PREFSWIN_STR_MAILADDR (//)
+Your full e-mail address
+;
+MSG_SH_PREFSWIN_STR_REALNAME (//)
+Your full name
+;
+MSG_SH_PREFSWIN_STR_ORGANIZATION (//)
+Your organization (optional)
+;
+MSG_SH_PREFSWIN_STR_SMTP (//)
+Your SMTP (outgoing mail) server.
+;
+MSG_SH_PREFSWIN_CYC_MAILAPP (//)
+Selects how Voyager should send mail
+;
+MSG_SH_PREFSWIN_CYC_NEWSAPP (//)
+Selects how voyager should handle news: links
+;
+; ******* Prefs bubble help/images **********
+;
+MSG_SH_PREFSWIN_CHK_DBUFFER (//)
+Reduces (eliminates) GIF-anim flicker
+;
+MSG_SH_PREFSWIN_CYC_JPEG_DITHER (//)
+Selects which dither method to use for\nimages on 8 bit or lower screens
+;
+MSG_SH_PREFSWIN_CYC_JPEG_QUANT (//)
+The method Voyager will use for\nit's colour selection on 8 bit or lower screens
+;
+MSG_SH_PREFSWIN_CYC_JPEG_DCT (//)
+Selects the jpeg decode method to be used
+;
+MSG_SH_PREFSWIN_CHK_STOP_ANIMGIF (//)
+Saves CPU especially on SMART_REFRESH AGA systems
+;
+MSG_SH_PREFSWIN_CHK_SHOW_ALT_TEXT (//)
+Displays 'alternate' text for images
+;
+MSG_SH_PREFSWIN_CHK_SHOW_PH_BORDER (//)
+Draws a 'placeholder' for images\nthat aren't yet loaded
+;
+; ******* Prefs bubble help/javascript **********
+;
+MSG_SH_PREFSWIN_CHK_JS_ENABLE (//)
+Selects whether voyager should execute Javascripts or not
+;
+MSG_SH_PREFSWIN_CHK_JS_DEBUG (//)
+Whenever a Javascript error occurs,\nopen a requester describing the error
+;
+MSG_SH_PREFSWIN_CHK_JS_LOG (//)
+Whenever a Javascript error occurs, append a describtion\nof the error to the file "JSERROR.LOG" in Voyager's base directory
+;
+; ******* Prefs bubble help/toolbar **********
+;
+MSG_SH_PREFSWIN_CYC_TBMODE (//)
+Selects the look of the navigation buttons
+;
+MSG_SH_PREFSWIN_CHK_TB_SUNNY (//)
+Whenever the mouse is over a button,\nthe button will be highlighted
+;
+MSG_SH_PREFSWIN_CHK_TB_RAISED (//)
+Whenever the mouse is over a button,\nthe button will gain a border
+;
+MSG_SH_PREFSWIN_CHK_TB_BORDERLESS (//)
+Selects between the normal MUI borders or the SpeedBar borders
+;
+MSG_SH_PREFSWIN_CHK_TB_SMALL (//)
+Selects the small set of images
+;
+MSG_SH_PREFSWIN_BT_TB_ADD (//)
+Add a button to the toolbar
+;
+MSG_SH_PREFSWIN_BT_TB_ADDSPACE (//)
+Add a space to the toolbar
+;
+MSG_SH_PREFSWIN_BT_TB_REMOVE (//)
+Removes current selected item from the toolbar
+;
+MSG_SH_PREFSWIN_STR_TB_ICON (//)
+The image that will appear on the toolbar
+;
+MSG_SH_PREFSWIN_STR_TB_LABEL (//)
+The text that is associated with the image
+;
+MSG_SH_PREFSWIN_STR_TB_HOTKEY (//)
+When this key is pressed it has the same\naffect as pressing the associated button
+;
+MSG_SH_PREFSWIN_CYC_TB_ACT (//)
+The internal Voyager command that will be\nexecuted when the button is pressed
+;
+MSG_SH_PREFSWIN_STR_TB_CMD (//)
+The arguments for the command
+;
+; ******* Prefs bubble help/languages **********
+;
+MSG_SH_PREFSWIN_STR_LANGUAGES (//)
+If there is multiple language versions of a webpage,\ntell the server which one to accept
+;
+MSG_SH_PREFSWIN_BT_GETLOCALE (//)
+Copy the settings from Workbench Locale prefs
+;
+;
+; ********** Network status **********
+;
+MSG_NET_LOOKINGUP (//)
+Looking up "%s"...
+;
+MSG_NET_CONNECT_HTTP (//)
+Making HTTP connection to host "%s" (%s,%u)...
+;
+MSG_NET_CONNECT_TUNNEL (//)
+Making SSL-Tunneling connection to host "%s" (%s,%u)...
+;
+MSG_NET_CONNECT_HTTP_SSL (//)
+Making HTTP-SSL connection to host "%s" (%s,%u)...
+;
+MSG_NET_SSL_HANDSHAKING (//)
+Connection established; now negotiating encryption...
+;
+MSG_NET_SSL_HANDSHAKING_DONE (//)
+Secure (%s) connection established; sending request...
+;
+MSG_NET_SEND_HTTP (//)
+HTTP request sent; now waiting for response...
+;
+MSG_NET_SEND_TUNNEL (//)
+CONNECT request sent; now waiting for response...
+;
+MSG_NET_GOT_RESPONSE (//)
+Host responding; now receiving header...
+;
+MSG_NET_RECEIVE_HTTP (//)
+Receiving Data...
+;
+MSG_NET_RECEIVE_DONE (//)
+Transfer complete.
+;
+MSG_NET_RECEIVE_ABORTED (//)
+Page transfer aborted.
+;
+MSG_NET_RECEIVE_GAUGE (//)
+%u%%%% of %uK (at %u bytes/s)
+;
+MSG_NET_RECEIVE_GAUGE_STALLED (//)
+stalled at %uK
+;
+MSG_NET_RECEIVE_GAUGE_UK (//)
+%uK (at %u bytes/s)
+;
+MSG_NET_RECEIVE_GAUGE_DONE (//)
+%uK in %us, %u bytes/s
+;
+MSG_NET_RECEIVE_GAUGE_UNKNOWN (//)
+Size unknown
+;
+MSG_GETURL_UNKNOWN_METHOD (//)
+<TITLE>Error Message</TITLE>\n\
+<H1>Unknown URL transfer method</H1>\n\
+The specified transfer method <B>%s</B> is unknown to Voyager.<BR>\n\
+Please check if the URL is spelled correctly.
+;
+MSG_GETURL_UNKNOWN_HOST (//)
+<TITLE>Network Error Message</TITLE>\n\
+<H1>Host %s unknown</H1><HR>\n\
+The specified host <B>%s</B> does not exist, or its name server is unavailable.<BR>\n\
+Please check if the URL is spelled correctly, or try again later.
+;
+MSG_GETURL_NO_CONNECT (//)
+<TITLE>Network Error Message</TITLE>\n\
+<H1>Network connection failed!</H1><HR>\n\
+The connection to host <B>%s</B> failed with error <B>%s (%u)</B><BR>\n\
+Please check if the URL is spelled correctly, or try again later.
+;
+MSG_GETURL_INTERRUPTED (//)
+<BR><HR><H4>Transfer interrupted!</H4>
+;
+MSG_GETURL_NO_MEM (//)
+<TITLE>Out of Memory</TITLE>\n\
+<H1>Out of Memory</H1>\n\
+There is not enough memory to load the specified URL.
+;
+MSG_GETURL_NO_SOCK (//)
+<TITLE>No TCP/IP Stack</TITLE>\n\
+<H1>No TCP/IP Stack</H1>\n\
+Voyager was unable to open a socket.<BR>\n\
+Please start your TCP/IP stack.
+;
+MSG_GETURL_NO_SSL (//)
+<TITLE>SSL Support unavailable</TITLE>\n\
+<H1>SSL Support unavailable</H1><HR>\n\
+Voyager was unable to load the <B>voyager_ssl.vlib</B> SSL plugin.<BR>\n\
+To access SSL pages you will need this plugin installed in PROGDIR:Plugins
+;
+MSG_GETURL_SSL_ERROR (//)
+<TITLE>SSL Session Error</TITLE>\n\
+<H1>SSL Session Error</H1><HR>\n\
+Error % occured whilst establishing the SSL connection.
+;
+MSG_GETURL_FILENOTFOUND (//)
+<TITLE>Error Message</TITLE>\n\
+<H1>File not found!</H1><HR>\n\
+The file named <B>%s</B> could not be opened for reading.<BR>\n\
+DOS error code <B>%u</B> (%s)<BR>\n\
+Please check the path and filename, and try again.
+;
+MSG_GETURL_FILEREADGAUGE (//)
+Local file read
+;
+MSG_GETURL_READINGFILE (//)
+Reading file \"%s\", %u bytes
+;
+MSG_GETURL_FILEREAD (//)
+File \"%s\" read (%u bytes)
+;
+MSG_SH_FASTLINK_VISITED (//)
+\033b%.400s\033n\n\
+Last visited on %s (%u days ago)
+;
+MSG_SH_FASTLINK_NOTVISITED (//)
+This Fastlink goes to\n\
+\033b%.400s\033n\n\
+(not yet visited)
+;
+MSG_GETURL_READINGCACHE (//)
+Loading page from cache...
+;
+MSG_GETURL_READCACHE (//)
+Page loaded from cache (%uK, %u days old)
+;
+MSG_GETURL_FROMCACHEGAUGE (//)
+(%u bytes from cache)
+;
+; ********** Prefs **********
+;
+MSG_PREFS_USE (//)
+Use
+;
+MSG_PREFS_CANCEL (//)
+Cancel
+;
+;
+MSG_PREFS_ERROR (//)
+Internal failure:\n\
+\n\
+\033bUnable to create sub window \"%s\".\033n\n\
+\n\
+The system may be out of memory,\n\
+or the class library configuration\n\
+may not be valid.
+;
+; ************ Prefs: Bookmarks **********
+;
+MSG_BOOK_TITLE (//)
+Voyager · Bookmarks
+;
+MSG_BOOK_DEFAULTTITLE (//)
+*New Title*
+; *** old? ***
+;
+MSG_BOOK_DEFAULTNAME (//)
+*New URL*
+; *** old? ***
+;
+MSG_BOOK_LABELTITLE (//)
+_Title
+; *** old? ***
+;
+MSG_BOOK_LABELNAME (//)
+_Name
+; *** old? ***
+;
+MSG_BOOK_GADSTRNEWGROUP (//)
+New _Group
+; *** old? ***
+;
+MSG_BOOK_GADSTRNEWBOOKMARK (//)
+New _Bookmark
+; *** old? ***
+;
+MSG_BOOK_GADSTRREMOVE (//)
+_Remove
+; *** old? ***
+;
+MSG_BOOK_GADSTRMENU (//)
+_Menu
+; *** old? ***
+;
+MSG_BOOK_GADSTROK (//)
+_OK
+; *** old? ***
+;
+MSG_BOOK_GADSTRCANCEL (//)
+Cancel
+; *** old? ***
+;
+; ********s** where do these live? **********
+;
+MSG_HELP (//)
+Help
+;
+MSG_URH_STATE_DONE (//)
+Done.
+;
+MSG_URH_STATE_READING_FILE (//)
+Reading file \"%s\"...
+;
+MSG_URH_STATE_FILE_NOT_FOUND (//)
+Unable to open file \"%s\", error %u
+;
+; ********** Prefs **********
+;
+MSG_PREFSWIN_TITLE (//)
+Voyager · Settings
+;
+MSG_PREFSWIN_BT_ADD (//)
+_Add new
+;
+MSG_PREFSWIN_BT_DEL (//)
+_Remove
+;
+MSG_PREFSWIN_TAB1 (//)
+General
+;
+MSG_PREFSWIN_TAB2 (//)
+Colours
+;
+MSG_PREFSWIN_TAB3 (//)
+Fonts
+;
+MSG_PREFSWIN_TAB4 (//)
+Network
+;
+MSG_PREFSWIN_TAB5 (//)
+Cache
+;
+MSG_PREFSWIN_TAB6 (//)
+MIME
+; *** old? ***
+;
+MSG_PREFSWIN_TAB7 (//)
+Fastlinks
+;
+MSG_PREFSWIN_TAB8 (//)
+Security
+;
+MSG_PREFSWIN_TAB9 (//)
+Mail/News
+;
+MSG_PREFSWIN_TAB10 (//)
+Images
+;
+MSG_PREFSWIN_TAB11 (//)
+Certificates
+;
+MSG_PREFSWIN_TAB12 (//)
+Javascript
+;
+MSG_PREFSWIN_TAB13 (//)
+Hyperlinks
+;
+MSG_PREFSWIN_TAB14 (//)
+Toolbar
+;
+; ********** Prefs: General **********
+;
+MSG_PREFSWIN_STYLE_L1 (//)
+Toolbar style
+;
+MSG_PREFSWIN_STYLE_L2 (//)
+Home page
+;
+MSG_PREFSWIN_STYLE_URL (//)
+U_RL:
+;
+MSG_PREFSWIN_STYLE_ANIM (//)
+Transfer animation
+;
+MSG_PREFSWIN_STYLE_ANIMHIDE (//)
+_Hide
+;
+; ********** Prefs: Toolbar **********
+MSG_PREFSWIN_TB_SUNNY (//)
+_Highlite?
+MSG_PREFSWIN_TB_RAISED (//)
+_Raised?
+MSG_PREFSWIN_TB_BORDERLESS (//)
+_Borderless?
+MSG_PREFSWIN_TB_SMALL (//)
+_Small?
+;
+;
+; ********** Prefs: Links **********
+;
+MSG_PREFSWIN_STYLE_L3 (//)
+Hyperlinks
+;
+MSG_PREFSWIN_STYLE_L4 (//)
+File downloads
+;
+MSG_PREFSWIN_STYLE_L5 (//)
+Misc
+;
+MSG_PREFSWIN_STYLE_UNDERLINE_LINKS (//)
+Under_line hyperlinks
+;
+MSG_PREFSWIN_STYLE_LINKS (//)
+Followed links _expire after
+;
+MSG_PREFSWIN_STYLE_LINKS_DAYS (//)
+days
+;
+MSG_PREFSWIN_STYLE_LINKS_NOW (//)
+_Flush \033bnow\033n
+;
+MSG_PREFSWIN_STYLE_TB (//)
+_Toolbar buttons appear as:
+;
+MSG_PREFSWIN_STYLE_TB_1 (//)
+Icons and text
+;
+MSG_PREFSWIN_STYLE_TB_2 (//)
+Icons only
+;
+MSG_PREFSWIN_STYLE_TB_3 (//)
+Text only
+;
+MSG_PREFSWIN_STYLE_EXIT (//)
+Save prefs on _exit
+;
+MSG_PREFSWIN_COLORS_L1 (//)
+Default colours
+;
+MSG_PREFSWIN_COLORS_COL1 (//)
+Background:
+;
+MSG_PREFSWIN_COLORS_COL2 (//)
+Text:
+;
+MSG_PREFSWIN_COLORS_COL3 (//)
+Hyperlink:
+;
+MSG_PREFSWIN_COLORS_COL4 (//)
+Visited hyperlink:
+;
+MSG_PREFSWIN_COLORS_IGNOREDOC (//)
+Ignore page provided colours
+; *** old? ***
+;
+; ********** Prefs: Fonts **********
+;
+MSG_PREFSWIN_FONT_GFT (//)
+Fonts
+;
+MSG_PREFSWIN_FONT_L0 (//)
+Normal (0)
+;
+MSG_PREFSWIN_FONT_L1 (//)
+Smaller (-1)
+;
+MSG_PREFSWIN_FONT_L2 (//)
+Smaller (-2)
+;
+MSG_PREFSWIN_FONT_L3 (//)
+Larger (1)
+;
+MSG_PREFSWIN_FONT_L4 (//)
+Larger (2)
+;
+MSG_PREFSWIN_FONT_L5 (//)
+Larger (3)
+;
+MSG_PREFSWIN_FONT_L6 (//)
+Larger (4)
+;
+MSG_PREFSWIN_FONT_L7 (//)
+Headline 1
+;
+MSG_PREFSWIN_FONT_L8 (//)
+Headline 2
+;
+MSG_PREFSWIN_FONT_L9 (//)
+Headline 3
+;
+MSG_PREFSWIN_FONT_L10 (//)
+Headline 4
+;
+MSG_PREFSWIN_FONT_L11 (//)
+Headline 5
+;
+MSG_PREFSWIN_FONT_L12 (//)
+Headline 6
+;
+MSG_PREFSWIN_FONT_L13 (//)
+Fixed
+;
+; ********** Prefs: Net **********
+;
+MSG_PREFSWIN_PROXIES_GFT (//)
+Proxies
+;
+MSG_PREFSWIN_PROXIES_USE (//)
+\033c\033bUse
+;
+MSG_PREFSWIN_PROXIES_HOST (//)
+\033c\033bHost
+;
+MSG_PREFSWIN_PROXIES_PORT (//)
+\033c\033bPort
+;
+MSG_PREFSWIN_PROXIES_ALWAYS (//)
+\033c(always)
+; *** to die ***
+;
+MSG_PREFSWIN_PROXIES_NO (//)
+_No proxy for hosts:
+;
+MSG_PREFSWIN_PROXIES_MODE0 (//)
+None
+;
+MSG_PREFSWIN_PROXIES_MODE1 (//)
+Automatic Proxy config
+;
+MSG_PREFSWIN_PROXIES_MODE2 (//)
+Manual Proxy config
+;
+MSG_PREFSWIN_PROXIES_AUTOCONF (//)
+\033cAutoconfiguration URL:
+;
+MSG_PREFSWIN_MAXCON_GFT (//)
+Maximum number of connections
+;
+; ********** Prefs: Cache **********
+;
+MSG_PREFSWIN_CACHE_DISK_GFT (//)
+Disk cache
+;
+MSG_PREFSWIN_CACHE_DISK_DIR (//)
+Cache _location:
+;
+MSG_PREFSWIN_CACHE_DISK_SIZE (//)
+Maximum size:
+;
+MSG_PREFSWIN_CACHE_DISK_SIZE_KB (//)
+KBytes
+;
+MSG_PREFSWIN_CACHE_DISK_FLUSH (//)
+_Empty cache \033bnow\033n
+;
+MSG_PREFSWIN_CACHE_MEM_GFT (//)
+Memory cache
+;
+MSG_PREFSWIN_CACHE_VERIFY (//)
+_Verify:
+;
+MSG_PREFSWIN_CACHE_VERIFY_1 (//)
+Once per session
+;
+MSG_PREFSWIN_CACHE_VERIFY_2 (//)
+Every time
+;
+MSG_PREFSWIN_CACHE_VERIFY_3 (//)
+Never
+;
+; ********** Prefs: MIME (all old?) **********
+;
+MSG_PREFSWIN_MIME_LV1 (//)
+\033uType
+;
+MSG_PREFSWIN_MIME_LV2 (//)
+\033uExtensions
+;
+MSG_PREFSWIN_MIME_LV3 (//)
+\033uAction
+;
+MSG_PREFSWIN_MIME_LV4 (//)
+\033uApp
+;
+MSG_PREFSWIN_MIME_ACT_1 (//)
+Ask
+;
+MSG_PREFSWIN_MIME_ACT_2 (//)
+View
+;
+MSG_PREFSWIN_MIME_ACT_3 (//)
+Save
+;
+MSG_PREFSWIN_MIME_ACT_4 (//)
+Run
+;
+MSG_PREFSWIN_MIME_E_TYPE (//)
+MIME type:
+;
+MSG_PREFSWIN_MIME_E_EXT (//)
+Extensions:
+;
+MSG_PREFSWIN_MIME_E_ACTION (//)
+Action:
+;
+MSG_PREFSWIN_MIME_E_APP (//)
+Application:
+;
+MSG_PREFSWIN_MIME_ACTS_1 (//)
+Ask user
+;
+MSG_PREFSWIN_MIME_ACTS_2 (//)
+View internally
+;
+MSG_PREFSWIN_MIME_ACTS_3 (//)
+Save to disk
+;
+MSG_PREFSWIN_MIME_ACTS_4 (//)
+Use external application
+;
+MSG_PREFSWIN_MIME_L_DLDIR (//)
+Download to:
+;
+; ********** Fastlinks **********
+;
+MSG_PREFSWIN_FASTLINKS_GFT (//)
+Fastlinks
+;
+MSG_PREFSWIN_FASTLINKS_LABEL (//)
+_Label:
+;
+MSG_PREFSWIN_FASTLINKS_URL (//)
+_URL:
+;
+MSG_PREFSWIN_FASTLINKS_L_URL (//)
+\033uURL
+;
+MSG_PREFSWIN_FASTLINKS_STRIPTEXT (//)
+_Allow labels stripping
+; *** note: needs NList ***
+;
+MSG_PREFSWIN_FASTLINKS_L_LABEL (//)
+\033uLabel
+;
+; ********** Security **********
+;
+MSG_PREFSWIN_SECURITY_GFT (//)
+Security
+;
+MSG_PREFSWIN_SECURITY_MAILTO (//)
+Ask before sending a _MAILTO: form
+;
+MSG_PREFSWIN_SECURITY_COOKIE (//)
+Cookies
+;
+MSG_PREFSWIN_SECURITY_COOKIE_TEMP (//)
+_Temporary:
+;
+MSG_PREFSWIN_SECURITY_COOKIE_PERM (//)
+_Persistant:
+;
+MSG_PREFSWIN_SECURITY_COOKIE_S_0 (//)
+Reject
+;
+MSG_PREFSWIN_SECURITY_COOKIE_S_1 (//)
+Ask
+;
+MSG_PREFSWIN_SECURITY_COOKIE_S_2 (//)
+Accept
+;
+MSG_PREFSWIN_SECURITY_WARN_POST (//)
+_Warn before posting an insecure form
+;
+MSG_PREFSWIN_SECURITY_NO_REFERER (//)
+Don't send Referer: _HTTP header
+;
+MSG_PREFSWIN_SECURITY_NO_MAILADDR (//)
+Don't use e-mail address as anonymous _FTP password
+;
+MSG_PREFSWIN_SECURITY_NO_SSLCACHE (//)
+Don't cache _SSL pages
+;
+; ********** Prefs: Mail/News **********
+;
+MSG_PREFSWIN_MAIL_GFT (//)
+Mail/News/Telnet
+; *** should be three groups on this page ***
+;
+MSG_PREFSWIN_TELNET_APP (//)
+_Telnet application:
+; *** should have a file requester and read-only gadget for placeholders ***
+;
+MSG_PREFSWIN_TELNET_APP_SH (//)
+Command line for external telnet client
+;
+;
+MSG_PREFSWIN_NEWS_APP (//)
+_News application:
+;
+MSG_PREFSWIN_NEWS_APP_SH (//)
+Command line for external news reader
+;
+;
+MSG_PREFSWIN_MAIL_APP (//)
+_Mail application:
+;
+MSG_PREFSWIN_MAIL_APP_SH (//)
+Command line for external mailer
+;
+;
+MSG_PREFSWIN_MAIL_APP_INTERNAL (//)
+Voyager (internal)
+;
+MSG_PREFSWIN_MAIL_APP_MD2 (//)
+MicroDot II
+;
+MSG_PREFSWIN_MAIL_APP_EXT (//)
+External
+;
+MSG_PREFSWIN_MAIL_ADDR (//)
+Your _email address:
+;
+MSG_PREFSWIN_MAIL_ORG (//)
+Org_anization:
+;
+MSG_PREFSWIN_MAIL_REAL (//)
+_Your name:
+;
+MSG_PREFSWIN_MAIL_SMTP (//)
+_SMTP server:
+;
+MSG_PREFSWIN_MAIL_NNTP (//)
+N_ews server:
+; *** old? ***
+;
+; *********** Misc. **********
+;
+MSG_NOREG_BODY (//)
+Sorry, but this version of Voyager is\n\
+only available to registered users.\n\n\
+Please see the included "Registration"\n\
+drawer or visit http://www.vapor.com/\n\
+for information on how to buy Voyager.
+;
+MSG_INFOLINE_PREFIX (//)
+Loading page: 
+MSG_INFOLINE_IMAGES (//)
+%u images
+MSG_INFOLINE_IMAGES_SINGLE (//)
+%u image
+MSG_INFOLINE_FRAMES (//)
+%u frames
+MSG_INFOLINE_FRAMES_SINGLE (//)
+%u frame
+MSG_INFOLINE_OBJECTS (//)
+%u other objects
+MSG_INFOLINE_OBJECTS_SINGLE (//)
+%u other object
+;
+MSG_INFOLINE_DONE (//)
+Ready.
+;
+MSG_INFOLINE_LOADINGFRAMES (//)
+Loading framesets, %u to go...
+;
+; ********** Prefs: Images **********
+;
+MSG_PREFSWIN_IMG_L_JPEG (//)
+JPEG images
+;
+MSG_PREFSWIN_IMG_L_NOTRUECOLOR (//)
+\033c(This is ignored on hi/truecolour screens)
+;
+MSG_PREFSWIN_IMG_JPEG_L_QUANT (//)
+Colour _quantization:
+;
+MSG_PREFSWIN_IMG_JPEG_QUANT_SIMPLE (//)
+Simple
+;
+MSG_PREFSWIN_IMG_JPEG_QUANT_2PASS (//)
+Two pass
+;
+MSG_PREFSWIN_IMG_JPEG_L_DITHER (//)
+Dithering of images:
+;
+;
+MSG_PREFSWIN_IMG_JPEG_DITHER_NONE (//)
+None
+;
+MSG_PREFSWIN_IMG_JPEG_DITHER_ORDERED (//)
+Ordered
+;
+MSG_PREFSWIN_IMG_JPEG_DITHER_FS (//)
+F-S
+;
+MSG_PREFSWIN_IMG_JPEG_L_DCT (//)
+DC_T processing:
+;
+MSG_PREFSWIN_IMG_JPEG_DCT_FAST (//)
+Fast Integer (less accurate)
+;
+MSG_PREFSWIN_IMG_JPEG_DCT_SLOW (//)
+Slow Integer (more accurate)
+;
+MSG_PREFSWIN_IMG_JPEG_DCT_FLOAT (//)
+Floating point (most accurate)
+;
+MSG_PREFSWIN_IMG_OPT_DOUBLEBUFFER (//)
+_Flicker-free transparent images
+;
+MSG_PREFSWIN_IMG_OPT_DOUBLEBUFFERWARN (//)
+(uses increased CPU and memory for double-buffering)
+;
+MSG_PREFSWIN_IMG_L_GENERAL (//)
+Image display
+;
+MSG_PREFSWIN_IMG_OPT_ALT_TEXT (//)
+Show alt text
+;
+MSG_PREFSWIN_IMG_OPT_PLACEHOLDER (//)
+Show placeholder border
+;
+; *********** Prefs: Javascript **********
+;
+MSG_PREFSWIN_JS_L (//)
+Javascript
+;
+MSG_PREFSWIN_JS_ENABLE (//)
+_Enable Javascript
+;
+MSG_PREFSWIN_JS_ERROR (//)
+Error handling
+MSG_PREFSWIN_JS_DEBUG (//)
+_Warn on parse errors 
+MSG_PREFSWIN_JS_ERROR_LOG (//)
+_Log errors to file
+;
+; ********** Misc. **********
+;
+MSG_NET_CONNECT_FTP (//)
+Making FTP connection to host "%s" (%s,%u)...
+;
+MSG_NET_CONNECT_FTP_LOGIN (//)
+FTP Connection established, now logging in...
+;
+; ********** Child windows **********
+;
+MSG_NETINFO_TITLE (//)
+Voyager · Network status
+;
+MSG_NETINFO_PARKED (//)
+\033l(parked connection)
+;
+MSG_AUTH_TITLE (//)
+Voyager · Authentication required
+;
+MSG_AUTH_L1 (//)
+Server:
+;
+MSG_AUTH_L2 (//)
+Realm:
+;
+MSG_AUTH_L3 (//)
+Username:
+;
+MSG_AUTH_L4 (//)
+Password:
+;
+MSG_AUTH_L5 (//)
+Remember this password?
+;
+MSG_AUTH_FAILED (//)
+\033cAuthentication \033bfailed!\033n
+;
+MSG_COOKIEWIN_TITLE (//)
+Voyager · Cookie request
+;
+MSG_COOKIEWIN_L1 (//)
+Server \033b%s\033n wants to set a cookie.\n
+;
+MSG_COOKIEWIN_L2A (//)
+· Cookie is sent back to \033bthis server\033n only\n
+;
+MSG_COOKIEWIN_L2B (//)
+· Cookie is sent to all servers in domain \033b%s\033n\n
+;
+MSG_COOKIEWIN_L3A (//)
+· Cookie expires when Voyager is quit\n
+;
+MSG_COOKIEWIN_L3B (//)
+· Cookie expires \033b%s\033n.\n
+;
+MSG_COOKIEWIN_L4A (//)
+· Cookie is sent using \033binsecure\033n links\n
+;
+MSG_COOKIEWIN_L4B (//)
+· Cookie is sent using \033bsecure\033n links\n
+;
+MSG_COOKIEWIN_L5 (//)
+· Cookie name: \033b%.30s\033n\n
+;
+MSG_COOKIEWIN_L6 (//)
+· Cookie data: \033b%.30s\033n\n
+;
+MSG_COOKIEWIN_L7 (//)
+· Comment: \033b%.30s\033n\n
+;
+MSG_COOKIEWIN_ALLOW (//)
+_Allow
+;
+MSG_COOKIEWIN_REJECT (//)
+_Reject
+;
+MSG_POSTWARN_TITLE (//)
+Voyager · Security warning
+;
+MSG_POSTWARN_BODY (//)
+\033cThe data you are about to submit will\n\
+be transferred with an \033binsecure\033n connection.
+;
+MSG_POSTWARN_GADS (//)
+*Submit|Submit and don't warn again|Cancel
+;
+MSG_POSTWARN_MAIL (//)
+\033cYou are about to send the form data\n\
+as a \033bmailto:\033n form, which is\n\
+\033binsecure\033n and will reveal\n\
+your email address to the recipiant:\n\
+\033i%s
+;
+MSG_FTP_FAILED1 (//)
+<FONT SIZE=+1>Login to FTP server <B>%s</B> failed.</FONT><BR>
+;
+MSG_FTP_FAILED2 (//)
+The server responded:<BR><PRE>
+;
+MSG_FTP_PASV_FAILED1 (//)
+<FONT SIZE=+1>Passive connection to FTP server <B>%s</B> failed.</FONT><BR>
+;
+MSG_FTP_PASV_FAILED2 (//)
+A network error has occured: <B>%s (%)</B>
+;
+MSG_FTP_CWD_FAILED1 (//)
+<FONT SIZE=+1>Conversation with FTP server <B>%s</B> failed.</FONT><BR>
+;
+; ********** Bubble help: Hyperlinks ***********
+;
+MSG_CLICKLINK_LASTVISITED (//)
+\033b%.400s\033n\n\
+Last visited: %s (%u days ago)
+;
+MSG_CLICKLINK_NEVERVISITED (//)
+\033b%.400s\033n\n\
+(not yet visited)
+;
+; *********** Requesters *********
+;
+MSG_CLICKLINKS_FLUSHED (//)
+History of followed hyperlinks flushed.
+;
+MSG_NOTE (//)
+Note
+;
+MSG_MEMCACHE_FLUSHED (//)
+Memory cache flushed.
+;
+MSG_DISKCACHE_FLUSHED (//)
+Disk cache flushed.
+;
+MSG_GETURL_READMEMCACHE (//)
+Got page from memory cache (%uK)
+;
+MSG_PREFSWIN_CACHE_IMAGES (//)
+Cache Images
+;
+; ********** SSL **********
+;
+MSG_CERTREQWIN_TITLE (//)
+Voyager · SSL Authentication Error
+;
+MSG_CERTREQWIN_ONCE (//)
+Accept this time
+;
+MSG_CERTREQWIN_SAVE (//)
+Accept and save
+;
+MSG_CERTREQWIN_CANCEL (//)
+Reject connection
+;
+MSG_CERTREQWIN_INFO (//)
+SSL Server authentication failed:\n\
+\033b%s\033n\n\
+\nCertificate information:\n\
+%s
+;
+; *********** Prefs: Certificates **********
+;
+MSG_PREFS_CERTS_NOSSL (//)
+\033bVoyager SSL module not found.\n\
+SSL is disabled.
+;
+MSG_PREFS_CERTS_ACTIVATE (//)
+_Activate
+;
+MSG_PREFS_CERTS_DEACTIVATE (//)
+_Deactivate
+;
+MSG_PREFS_CERTS_TITLE (//)
+Installed Security Certificates
+;
+; ********** File requester titles ***********
+;
+MSG_PREFSIO_LOAD_TITLE (//)
+Load Configuration...
+;
+MSG_PREFSIO_SAVE_TITLE (//)
+Save Configuration...
+;
+MSG_PREFSIO_BMLOAD_TITLE (//)
+Load Bookmarks...
+;
+MSG_PREFSIO_BMSAVE_TITLE (//)
+Save Bookmarks...
+;
+; ********** Download window **********
+;
+MSG_DOWNLOAD_TITLE (//)
+Voyager · Downloads
+;
+MSG_DOWNLOAD_TO (//)
+Download to:
+;
+MSG_DOWNLOAD_LPATH (//)
+\033uFile
+;
+MSG_DOWNLOAD_LSIZE (//)
+\033uSize
+;
+MSG_DOWNLOAD_LSTATE (//)
+\033uState
+;
+MSG_DOWNLOAD_LTIME (//)
+\033uTime
+;
+MSG_DOWNLOAD_LETA (//)
+\033uETE
+;
+MSG_DOWNLOAD_LRETRIES (//)
+\033uRetries
+;
+MSG_DOWNLOAD_LURL (//)
+\033uURL
+;
+MSG_DOWNLOAD_SIZE_UNKNOWN (//)
+%u (total size unknown)
+;
+MSG_DOWNLOAD_STATE_0 (//)
+(waiting)
+;
+MSG_DOWNLOAD_STATE_1 (//)
+\0333(failed)
+;
+MSG_DOWNLOAD_STATE_2 (//)
+(to be viewed)
+;
+MSG_DOWNLOAD_STATE_3 (//)
+(viewing)
+;
+MSG_DOWNLOAD_STATE_CACHED (//)
+(cached)
+;
+MSG_DOWNLOAD_BT_ABORT (//)
+Abort
+;
+MSG_DOWNLOAD_BT_CLEANUP (//)
+Cleanup list
+;
+MSG_DOWNLOAD_BT_PAUSE (//)
+Pause
+;
+; ********** Network errors **********
+;
+MSG_NWM_ERROR_UNKNOWNMETHOD (//)
+Unknown URL transfer method \"%s\".
+;
+MSG_NWM_ERROR_HTML (//)
+<HEAD><TITLE>Voyager · Page retrieval failed</TITLE>\n\
+<BODY><H1>Page retrieval failed!</H1>\n\
+<FONT SIZE=+1><B>%s</B></FONT>\n\
+<BR>%s<HR>
+; *** "unable to load page!" maybe? ***
+;
+MSG_NWM_ERROR_INTERNAL (//)
+A local error occured:
+;
+MSG_NWM_ERROR_NETWORK (//)
+A network error occured:
+;
+MSG_NWM_ERROR_CACHEOPENFAILED (//)
+failed to open cache file (%d)
+;
+MSG_NWM_ERROR_FILEOPENFAILED (//)
+Error: failed to open file '%s' (%u, %s)
+;
+MSG_NWM_ERROR_NONET (//)
+Unable to find a TCP/IP stack.\
+You must start your TCP/IP stack before you can use network access in Voyager.
+;
+MSG_NWM_ERROR_NOSOCK (//)
+Unable to obtain a socket.
+;
+MSG_NWM_ERROR_NOCONNECT (//)
+Unable to connect (%u, %s)
+;
+MSG_NWM_ERROR_NODNS (//)
+Unable to find host name \"%s\".
+; *** "unable to lookup"? ***
+;
+MSG_NWM_ERROR_NODATA (//)
+Link broken (%u, %s)
+; *** is this the same as broken pipe? ***
+;
+MSG_NWM_ERROR_SERVERERROR (//)
+Server returned: %.69s
+;
+MSG_NWM_ERROR_NOSSL (//)
+Unable to locate Voyager SSL module or MiamiSSL
+;
+MSG_NWM_ERROR_SSLFAILED (//)
+SSL handshake failed
+;
+MSG_NETST_LOOKINGUP (//)
+Looking up host name "%s"...
+;
+MSG_NETST_CONNECTING (//)
+Connecting to \"%s\" (%s/%u)...
+;
+MSG_NETST_CONNECTING_PROXY (//)
+Connecting via proxy \"%s\" (%s/%u) to host \"%s\"...
+;
+MSG_NETST_CONNECTED (//)
+Connection established; sending %s request and waiting for response... 
+;
+MSG_NETST_SSLHANDSHAKE (//)
+Negotiating SSL encryption with server...
+;
+MSG_NETST_SSLESTABLISHED (//)
+Secure (%s) connection established; sending request...
+;
+MSG_NETST_TRANSFER (//)
+Receiving page (unknown size)
+;
+MSG_NETST_TRANSFER_SIZE (//)
+Receiving page (total %u bytes)
+;
+MSG_NETST_TRANSFER_GAUGE (//)
+%u%%%% of %ldK (at %u bytes/s)
+;
+MSG_NETST_TRANSFER_GAUGE_SIZE (//)
+%uK (at %u bytes/s)
+;
+MSG_NETST_TRANSFER_STALLED (//)
+(stalled)
+;
+MSG_NETST_FTP_SENDING_USERNAME (//)
+FTP connection ok; sending username...
+;
+MSG_NETST_FTP_SENDING_PASSWORD (//)
+FTP username ok; sending password...
+;
+MSG_NETST_FTP_CONNECTING (//)
+FTP login ok; establishing data link...
+;
+MSG_NETST_FTP_LISTING (//)
+Retrieving FTP directory listing...
+;
+MSG_MIMEPREFS_NOTFOUND (//)
+\033cUnable to locate the "MIMEPrefs" program.\n\
+Please install to PROGDIR: or SYS:Prefs.
+;
+; ********** Print *********
+;
+MSG_PRINT_TITLE (//)
+Print Page
+;
+MSG_PRINT_BT_PRINT (//)
+Print
+;
+MSG_PRINT_BT_PRINTER (//)
+Open Printer prefs
+;
+MSG_PRINT_BT_PRINTERGFX (//)
+Open PrinterGFX prefs
+;
+MSG_PRINT_MODE (//)
+Print mode:
+;
+MSG_PRINT_MODE_GFXBG (//)
+Graphical dump (with background)
+;
+MSG_PRINT_MODE_GFX (//)
+Graphical dump (without background)
+;
+MSG_PRINT_MODE_TEXT (//)
+Text only
+;
+MSG_PRINT_BT_ABORT (//)
+Abort printing
+;
+MSG_PRINT_PRINTING (//)
+Printing...
+;
+MSG_PRINT_OPENERR (//)
+Unable to open printer.device!
+;
+MSG_PRINT_BMERR (//)
+Internal print error:\n\
+Unable to create buffer!
+;
+MSG_PRINT_PRINTERR (//)
+Printer error!\n\
+printer.device error code \033b%u\033n.
+;
+MSG_PRINT_NOFRAMES (//)
+\033cYou may not print frame containers.\n\
+Use the right mouse button popup menu\n\
+to print individual frames.
+;
+; *********** Search **********
+;
+MSG_SEARCH_TITLE (//)
+Find in page
+;
+MSG_SEARCH_WHAT (//)
+Search for:
+;
+MSG_SEARCH_CASE0 (//)
+Ignore case
+;
+MSG_SEARCH_CASE1 (//)
+Case sensitive
+;
+MSG_SEARCH_BT_SEARCH (//)
+Find
+;
+MSG_SEARCHDONE_BODY (//)
+\033b%s\033n not found.\n\
+Search again from top of page?
+;
+MSG_SEARCHDONE_GADS (//)
+*Search from top|Cancel
+;
+; ********** Errors **********
+;
+MSG_MAILTO_NOMD2 (//)
+\033cCan't read ENV:VAPOR/MD2_LASTUSEDDIR.\n\
+Unable to locate your MicroDot-II installation.
+;
+MSG_JS_ERROR_TITLE (//)
+Javascript Error
+;
+MSG_JS_ERROR_PARSE (//)
+\033cJavascript parse error in\n\
+document \033b%s\033n\n\
+on line %u:\n\
+\033b%s
+;
+MSG_JS_ERROR_EXEC (//)
+\033cJavascript execution error in\n\
+document \033b%s\033n\n\
+on line %u:\n\
+\033b%s
+;
+MSG_JS_TOO_LONG (//)
+\033cThe Javascript on this page has been busy for over 10 seconds.\n\
+Do you want to continue running Javascript in this page?
+;
+MSG_JS_TOO_LONG_BUT (//)
+*\033bAbort script|Continue
+;
+; ********** Removal of Fastlinks **********
+;
+MSG_FASTLINK_REMOVE (//)
+\033cDo you want to remove the fastlink\n\
+\033b%s\033n\n\
+which points to\n\
+\033b%s\033n ?
+;
+MSG_FASTLINK_REMOVE_YESNO (//)
+\033bRemove fastlink|*Cancel
+;
+; ********** Prefs: Links -> Download **********
+;
+MSG_PREFSWIN_AUTOCLEANUP (//)
+Download window entries
+;
+MSG_PREFSWIN_AUTOCLEANUP_1 (//)
+Never clean up
+;
+MSG_PREFSWIN_AUTOCLEANUP_2 (//)
+Leave failures
+;
+MSG_PREFSWIN_AUTOCLEANUP_3 (//)
+Clean up everything
+;
+MSG_PREFSWIN_AUTOCLOSEDLWIN (//)
+Autoclose _Download window
+;
+MSG_NETSTAT_LOCALDIR (//)
+Reading local dir...
+;
+MSG_NETSTAT_LISTCACHE (//)
+Reading cache directory...
+;
+MSG_NETSTAT_NODIRMEM (//)
+Not enough memory for scanning the directory
+;
+MSG_NETSTAT_EXALLFAILED (//)
+Directory listing failed
+;
+; ********** Page information window **********
+;
+MSG_DOCINFOWIN_WINTITLE (//)
+Voyager · Page Information
+;
+MSG_DOCINFOWIN_URL (//)
+URL:
+;
+MSG_DOCINFOWIN_SERVER (//)
+Server:
+;
+MSG_DOCINFOWIN_MIMETYPE (//)
+MIME type:
+;
+MSG_DOCINFOWIN_SSLCIPHER (//)
+Cipher:
+;
+MSG_DOCINFOWIN_CERT (//)
+Cert:
+;
+MSG_DOCINFOWIN_SOURCE (//)
+Source:
+;
+MSG_DOCINFOWIN_SIZE (//)
+Size:
+;
+MSG_DOCINFOWIN_SOURCEID_INTERNAL (//)
+Internal (generated by Voyager)
+;
+MSG_DOCINFOWIN_SOURCEID_CACHED (//)
+Cached (disk)
+;
+MSG_DOCINFOWIN_SOURCEID_HTTP (//)
+HTTP
+;
+MSG_DOCINFOWIN_SOURCEID_HTTP11 (//)
+HTTP 1.1
+;
+MSG_DOCINFOWIN_SOURCEID_FTP (//)
+FTP
+;
+MSG_DOCINFOWIN_SOURCEID_DONE (//)
+Done
+;
+MSG_DOCINFOWIN_SOURCEID_INPROGRESS (//)
+In progress...
+;
+MSG_MENU_WIN_DOCINFOWIN (//)
+View page info...
+;
+MSG_PREFSWIN_CACHE_AUTOVERIFY (//)
+Days between cleanups:
+;
+MSG_PREFSWIN_STYLE_SCROLLBARS (//)
+Scrollbars in window _border
+;
+MSG_MENU_JSSNOOP (//)
+Javascript Console...
+;
+; ********** Plugins **********
+;
+MSG_PLUGIN_EMBED_INFO (//)
+· Source: \033b%s\033n\n· MIME type: \033b%s\033n
+;
+MSG_PLUGIN_EMBED_NOPLUGIN (//)
+· No plugin installed for \033b%s\033n\n· Click here for the \033bV³ Plugin Finder\033n
+;
+MSG_PLUGIN_WIN_TITLE (//)
+Voyager · Plugins
+;
+MSG_PLUGIN_REG1 (//)
+Information
+;
+MSG_PLUGIN_REG2 (//)
+Settings
+;
+MSG_PLUGIN_L_NAME (//)
+\033bName:
+;
+MSG_PLUGIN_L_VERSION (//)
+\033bVersion:
+;
+MSG_PLUGIN_L_COPYRIGHT (//)
+\033bCopyright:
+;
+MSG_PLUGIN_L_INFOSTRING (//)
+\033bInfo:
+;
+MSG_PLUGIN_L_HANDLES_URL (//)
+URL method \033b%s\033n available.
+;
+MSG_PLUGIN_L_HANDLES_MIME (//)
+MIME type \033b%s\033n is now supported.
+;
+MSG_PLUGIN_L_HANDLES_MIMEEXT (//)
+MIME extension \033b%s\033n is now supported.
+;
+MSG_PLUGIN_L_NOPREFS (//)
+No prefs available
+;
+MSG_PLUGIN_DISPLAY (//)
+Plugin Display
+;
+; ********** Source view **********
+;
+MSG_SOURCEVIEW_BT_SAVE (//)
+Save as
+;
+MSG_SOURCEVIEW_BT_CHANGE (//)
+Apply changes
+;
+MSG_MENU_BOOK_IMPORT (//)
+Import
+;
+MSG_MENU_BOOK_IMPORT_VOYAGER (//)
+Voyager 2.x...
+;
+MSG_MENU_BOOK_IMPORT_IBROWSE (//)
+IBrowse...
+;
+MSG_MENU_BOOK_IMPORT_AWEB (//)
+AWeb...
+;
+MSG_MENU_BOOK_EXPORT (//)
+Export as HTML
+;
+MSG_MENU_BOOK_EXPORT_WWW (//)
+WWW URLs...
+;
+MSG_MENU_BOOK_EXPORT_FTP (//)
+FTP URLs...
+;
+MSG_MENU_BOOK_EXPORT_WWW_AND_FTP (//)
+Both...
+;
+MSG_PREFSIO_BM_IMPORT (//)
+Select Bookmarks file...
+;
+MSG_PREFSIO_BM_EXPORT (//)
+Export as HTML file...
+;
+;
+; ******** Startup ***********
+; 
+MSG_MCCCHECK_TITLE (//)
+Some of the required MUI custom classes are missing or too old:
+;
+MSG_MCCCHECK_LINE (//)
+\n%s: required v%u.%u, installed %s
+;
+MSG_MCCCHECK_BAD (//)
+old - upgrade or reboot?
+;
+MSG_MCCCHECK_GOOD (//)
+Ok
+;
+MSG_MCCCHECK_MISSING (//)
+missing
+;
+; ******** Toolbar Editor ********
+;
+MSG_TB_BT_ADD (//)
+_Add button
+;
+MSG_TB_BT_ADDSPACE (//)
+Add s_pace
+;
+MSG_TB_BT_REMOVE (//)
+R_emove
+;
+MSG_TB_ACT_LABEL (//)
+Act_ion:
+;
+MSG_TB_ACT_CODE (//)
+Co_mmand:
+;
+MSG_TB_ACT_0 (//)
+Separator
+;
+MSG_TB_ACT_1 (//)
+Exec Rexx
+;
+MSG_TB_ACT_2 (//)
+Exec JS
+;
+MSG_TB_ACT_3 (//)
+Back
+;
+MSG_TB_ACT_4 (//)
+Forward
+;
+MSG_TB_ACT_5 (//)
+Search
+;
+MSG_TB_ACT_6 (//)
+Home
+;
+MSG_TB_ACT_7 (//)
+Load Images
+;
+MSG_TB_ACT_8 (//)
+Print
+;
+MSG_TB_ACT_9 (//)
+Reload
+;
+MSG_TB_ACT_10 (//)
+Stop
+;
+MSG_TB_L_ICON (//)
+Ico_n:
+;
+MSG_TB_L_LABEL (//)
+_Label:
+;
+MSG_TB_L_HOTKEY (//)
+_Hotkey:
+;
+MSG_PREFSWIN_OFFLINEMODE (//)
+O_ffline detection
+;
+MSG_PREFSWIN_CYC_OFFLINE_CHECKSTACK (//)
+TCP/IP Stack
+;
+MSG_PREFSWIN_CYC_OFFLINE_MANUAL (//)
+Manual
+;
+MSG_PREFSWIN_OFFLINE_TITLE (//)
+Offline mode
+;
+MSG_MENU_COOKIEBROWSER (//)
+Cookie browser...
+;
+MSG_COOKIEBROWSER_WINTITLE (//)
+Voyager · Cookie Browser
+;
+MSG_COOKIEBROWSER_BT_REMOVEALL (//)
+Remove all
+;
+MSG_COOKIEBROWSER_BT_REMOVE (//)
+Remove
+;
+MSG_COOKIEBROWSER_LIST_SERVER (//)
+Server
+;
+MSG_COOKIEBROWSER_LIST_PATH (//)
+Path
+;
+MSG_COOKIEBROWSER_LIST_SETON (//)
+Set on
+;
+MSG_COOKIEBROWSER_LIST_EXPIRES (//)
+Expires
+;
+MSG_COOKIEBROWSER_LIST_NAME (//)
+Name
+;
+MSG_COOKIEBROWSER_LIST_DATA (//)
+Data
+;
+;
+;
+;*** PREFS / Popph related
+;
+MSG_PREFSWIN_TELNET_POPPH_0 (//)
+%h|host
+MSG_PREFSWIN_TELNET_POPPH_1 (//)
+%p|port number
+;
+MSG_PREFSWIN_NEWS_POPPH_0 (//)
+%m|MessageID
+MSG_PREFSWIN_NEWS_POPPH_1 (//)
+%g|Groupname
+;
+MSG_PREFSWIN_MAIL_POPPH_0 (//)
+%t|Recipients
+MSG_PREFSWIN_MAIL_POPPH_1 (//)
+%s|Subject
+MSG_PREFSWIN_MAIL_POPPH_2 (//)
+%c|Contents file
+;
+;
+;
+MSG_PLUGIN_NO_PLUGINS (//)
+There're no plug-in\nmodules installed
+;
+;
+MSG_WINDOW_CANT_OPEN (//)
+Can't open window!
+;
+;
+MSG_PREFSWIN_PROXY_HTTP (//)
+_HTTP:
+MSG_PREFSWIN_PROXY_FTP (//)
+_FTP:
+MSG_PREFSWIN_PROXY_SSL (//)
+_SSL:
+MSG_PREFSWIN_PROXY_GOPHER (//)
+_Gopher:
+MSG_PREFSWIN_PROXY_WAIS (//)
+_WAIS:
+;
+;
+MSG_PREFSWIN_CACHE_MEM_FLUSH (//)
+E_mpty cache \033bnow\033n
+;
+;
+; *** Flush cache confirmation requester
+;
+MSG_FLUSH_CACHE (//)
+Are you sure you want to\nflush your %s cache?\n\nThis operation cannot be undone.
+;
+MSG_FLUSH_CACHE_DISK (//)
+disk
+MSG_FLUSH_CACHE_MEM (//)
+memory
+;
+MSG_FLUSH_CACHE_GAD (//)
+_Flush|*_Cancel
+;
+MSG_IMG_CACHE_FLUSHED (//)
+Images flushed from the memory.
+;
+;
+MSG_CLICKLINKS_FLUSH (//)
+Are you sure you want to flush\nthe history of followed hyperlinks?\n\nThis operation cannot be undone.
+;
+; ********** Prefs: General -> Home page **********
+;
+MSG_PREFSWIN_HOMEPAGEURL (//)
+Home page URL
+;
+MSG_PREFSWIN_HOMEPAGEURL_1 (//)
+V3·Portal
+;
+MSG_PREFSWIN_HOMEPAGEURL_2 (//)
+About:
+;
+MSG_PREFSWIN_HOMEPAGEURL_3 (//)
+None
+;
+MSG_PREFSWIN_HOMEPAGEURL_4 (//)
+Other
+;
+MSG_SH_PREFSWIN_CYC_HOMEPAGEURL (//)
+Select what home page you would like to see on startup
+;
+; ****** PASSWORD MANAGER ******
+;
+MSG_AUTHBROWSER_WINTITLE (//)
+Voyager · Password Manager
+;
+MSG_MENU_AUTHBROWSER (//)
+Password Manager...
+;
+MSG_AUTHBROWSER_LIST_REALM (//)
+Realm
+;
+MSG_AUTHBROWSER_LIST_USER (//)
+User
+;
+MSG_AUTHBROWSER_LIST_REMEMBER (//)
+Remember
+;
+;
+MSG_PREFSWIN_IMG_STOP_ANIMGIF (//)
+Stop animations when window is inactive
+;
+;
+MSG_DOWNLOAD_RESUME_TITLE (//)
+File exists
+;
+MSG_DOWNLOAD_ASK_TITLE (//)
+Unknown media type
+;
+MSG_DOWNLOAD_ASK_KNOWN_TITLE (//)
+Selectable action
+;
+MSG_DOWNLOAD_ASK_UNKNOWN_BODY (//)
+The media type\n\
+\033b%s\033n\n\
+of URL\n\
+\033b%s\033n\n\
+is currently unknown to Voyager.\n\
+\n\
+What do you want to do with the file?
+;
+MSG_DOWNLOAD_ASK_KNOWN_BODY (//)
+The media type\n\
+\033b*s\033n\n\
+of URL\n\
+\033b%s\033n\n\
+has selectable action.\n\
+\n\
+What do you want to do with the file?
+;
+MSG_DOWNLOAD_RESUME_RESUMEGAD (//)
+_Resume
+;
+MSG_DOWNLOAD_RESUME_GADGETS (//)
+Re_name|_Overwrite|_Cancel
+;
+MSG_DOWNLOAD_ASK_GADGETS (//)
+_Save|_View|Save _and View|_Cancel
+;
+MSG_DOWNLOAD_RESUME_BODY (//)
+\033cFile %s exists.\n%s\nRemote - Size: %s Date: %s\nLocal - Size: %lu Date : %s
+;
+MSG_DOWNLOAD_RESUME_BIGGER (//)
+\nLocal file is bigger.\nResuming it is impossible.\n
+;
+MSG_DOWNLOAD_RESUME_BIGGER_NEWER (//)
+\nLocal file is bigger and newer.\nResuming it is impossible.\n
+;
+MSG_DOWNLOAD_RESUME_BIGGER_OLDER (//)
+\nLocal file is bigger and older.\nResuming it is impossible.\n
+;
+MSG_DOWNLOAD_RESUME_SAME_NEWER (//)
+\nLocal file size is the same\nas the remote one and newer.\n
+;
+MSG_DOWNLOAD_RESUME_SAME_OLDER (//)
+\nLocal file size is the same\nas the remote one and older.\n
+;
+MSG_DOWNLOAD_RESUME_SAME (//)
+\nLocal file size is the same\nas the remote one.\n
+;
+MSG_DOWNLOAD_RESUME_NEWER (//)
+\nLocal file is newer.\n
+;
+MSG_DOWNLOAD_RESUME_OLDER (//)
+\nRemote file is newer.\n
+;
+MSG_DOWNLOAD_RESUME_UNKNOWN (//)
+unknown
+;
+MSG_DOWNLOAD_STATE_REDIRECT (//)
+redirect
+;
+MSG_DOWNLOAD_STATE_OUTOFMEM (//)
+out of mem
+;
+MSG_DOWNLOAD_STATE_NA (//)
+N/A
+;
+MSG_DOWNLOAD_STATE_FETCHING (//)
+fetching
+;
+MSG_DOWNLOAD_STATE_OVERFLOW (//)
+overflow
+;
+MSG_DOWNLOAD_STATE_USERFEEDBACK (//)
+user feedback
+;
+MSG_DOWNLOAD_STATE_RESUMING (//)
+resuming
+;
+MSG_DOWNLOAD_STATE_OVERWRITING (//)
+overwriting
+;
+MSG_DOWNLOAD_STATE_QUEUED (//)
+queued
+;
+MSG_DOCINFOWIN_MAIL (//)
+Address:
+;
+MSG_DOCINFOWIN_SUBJECT (//)
+Subjest:
+;
+MSG_DOCINFOWIN_BODY (//)
+Body:
+;
+;
+; ********** REG NAG-O-MATIC **********
+;
+MSG_REG_HEADER (//)
+\033c\033uWelcome to \033uV³!\033n\n\n\
+This is a time limited demo version.\n\
+It is fully functional, except that it\n\
+will silently quit after 30 minutes.\n
+;
+MSG_REG_OVER (//)
+\033c\033uThanks for trying \033uV³\033n!\n\n\
+Your 30 minute testing period is over.
+;
+MSG_REG_TXT1 (//)
+You can buy V³ online now using our\n\
+secure Credit Card order system and receive\n\
+your license key \033bwithin minutes!\033n\
+\n
+;
+MSG_REG_TXT2 (//)
+You can also use the included Vapor\n\
+Regutil to buy V³ at any of the\n\
+VaporWare registration sites worldwide!\
+\n
+;
+MSG_REG_TXT3 (//)
+Registering V³ will get you a\n\
+personal license key file which identifies\n\
+you as an legal owner of V³.
+;
+MSG_REG_CNT (//)
+\033cThis is day %u of your testing period.\n\
+So far, you have run V³ %u times,\n\
+and used it for %u hours and %u minutes.
+;
+MSG_REGISTER_DO (//)
+Register
+MSG_REGISTER_ONLINE (//)
+Register \033bONLINE!\033n
+MSG_REGISTER_CONT (//)
+Continue testing...
+MSG_REGISTER_DO_UPDATE (//)
+Update
+MSG_REGISTER_ONLINE_UPDATE (//)
+Update \033bONLINE!\033n
+;
+MSG_PREFSWIN_TAB15 (//)
+Languages
+;
+MSG_PREFSWIN_LANGUAGE_TITLE (//)
+Accept languages
+;
+MSG_PREFSWIN_LANGUAGE_LABEL (//)
+Languages
+;
+MSG_PREFSWIN_LANGUAGE_LOCALE (//)
+Get from locale
+;
+MSG_PREFSWIN_USE_REQUESTER (//)
+Show HTML errors in requesters
+;
+MSG_DOWNLOAD_BT_RETRY (//)
+Retry
+;
+MSG_PREFSWIN_HOMEPAGE_AUTOLOAD (//)
+Load on startup
+;
+MSG_PREFSWIN_MAIL_SIG (//)
+Signature:
+;
+; ********** ERROR WINDOW **********
+;
+MSG_ERRORWIN_WINTITLE (//)
+Voyager · Error window
+;
+MSG_ERRORWIN_ERRORLEVEL (//)
+Info
+;
+MSG_ERRORWIN_ERRORLEVEL_1 (//)
+Warning
+;
+MSG_ERRORWIN_ERRORLEVEL_2 (//)
+Error
+;
+MSG_ERRORWIN_ERRORTYPE (//)
+Net
+;
+MSG_ERRORWIN_ERRORTYPE_1 (//)
+JS
+;
+MSG_ERRORWIN_ERRORTYPE_2 (//)
+HTML
+;
+MSG_ERRORWIN_ERRORTYPE_3 (//)
+Internal
+;
+MSG_ERRORWIN_ERRORTYPE_4 (//)
+Image
+;
+MSG_ERRORWIN_ERROTTYPE_5 (//)
+Cache
+;
+MSG_ERRORWIN_ERROTTYPE_6 (//)
+CSS
+;
+MSG_ERRORWIN_TYPE (//)
+Type
+;
+MSG_ERRORWIN_LEVEL (//)
+Level
+;
+MSG_ERRORWIN_NUM (//)
+Num/Line
+;
+MSG_ERRORWIN_URL (//)
+URL
+;
+MSG_ERRORWIN_MESSAGE (//)
+Message
+;
+MSG_ERRORWIN_NONE (//)
+none
+;
+MSG_ERROR_BOGUS_CACHE_FILE (//)
+bogus cache file deleted
+;
+MSG_ERROR_BOGUS_CACHE_ENTRY (//)
+bogus cache entry (link or directory) detected
+;
+; ********** CACHE PRUNER **********
+;
+MSG_PRUNECACHEWIN_WINTITLE (//)
+Voyager · Cache pruner
+;
+MSG_PRUNECACHEWIN_START (//)
+Start
+;
+MSG_PRUNECACHEWIN_STOP (//)
+Stop
+;
+MSG_PRUNECACHEWIN_GAUGE_USED (//)
+%uK used
+;
+MSG_PRUNECACHEWIN_SIZE (//)
+Prune to:
+;
+MSG_PRUNECACHEWIN_SCANNING (//)
+Scanning cache directory...
+;
+MSG_PRUNECACHEWIN_DELETING (//)
+Deleting old files...
+;
+MSG_PRUNECACHEWIN_FINISHED (//)
+Cache pruning complete.
+;
+MSG_PRUNECACHEWIN_INPROGRESS (//)
+Cache pruning already in progress...
+;
+MSG_PRUNECACHEWIN_READY (//)
+Ready.
+;
+MSG_PRUNECACHEWIN_WRONGSIZE (//)
+Estimated cache size was wrong. Please start again.
+;
+MSG_PRUNECACHEWIN_STARTPROC (//)
+Preparing to read cache...
+;
+; ********** PREFS: SPOOFING **********
+;
+MSG_PREFSWIN_TAB16 (//)
+Compatibility
+MSG_PREFSWIN_COMPAT_TITLE (//)
+Spoofing
+MSG_PREFSWIN_COMPAT_SPOOF_L1 (//)
+The \033bUser-Agent\033n line to\n\
+send in HTTP requests. Will also\n\
+be \033bnavigator.userAgent\033n\n\
+in JS.
+MSG_PREFSWIN_COMPAT_SPOOF_L2 (//)
+The \033bnavigator.appName\033n\n\
+to use in JS.
+MSG_PREFSWIN_COMPAT_SPOOF_L3 (//)
+The \033bnavigator.appCodeName\033n\n\
+to use in JS.
+MSG_PREFSWIN_COMPAT_SPOOF_L4 (//)
+The \033bnavigator.appVersion\033n\n\
+to use in JS.
+;
+; ********** Window > Set Size **********
+;
+MSG_MENU_SETWINSIZE (//)
+Set window size
+;
+MSG_MENU_SETWINSIZE_1 (//)
+640 x 480
+;
+MSG_MENU_SETWINSIZE_2 (//)
+800 x 600
+;
+MSG_MENU_SETWINSIZE_3 (//)
+1024 x 768
+;
+; ** toclass
+;
+MSG_DOCINFOWIN_SSLVERSION (//)
+Version:
+;
+; Font Prefs
+;
+MSG_PREFS_FONT_FAMILY_ADD (//)
+Add Face
+;
+MSG_PREFS_FONT_FAMILY_DEL (//)
+Delete Face
+;
+MSG_PREFS_FONT_FAMILY_RANGE (//)
+Make Range
+;
+MSG_PREFS_FONT_STEP (//)
+ Step:
+;
+; Splash window
+;
+MSG_SPLASHWIN_INIT (//)
+Initializing...
+;
+MSG_SPLASHWIN_COOKIES (//)
+Loading cookies...
+;
+MSG_SPLASHWIN_AUTH (//)
+Loading authentications...
+;
+MSG_SPLASHWIN_IMGDEC (//)
+Loading image decoder...
+;
+MSG_SPLASHWIN_HISTORY (//)
+Loading history...
+;
+MSG_SPLASHWIN_PRUNECACHE (//)
+Checking cache...
+;
+MSG_SPLASHWIN_PLUGINS (//)
+Loading plugins...
+;
+MSG_SPLASHWIN_DONE (//)
+Done; starting up...
+;
+MSG_PREFSWIN_FONT_FONTFACE (//)
+_Enable font face
+;
+;
+; debugging stuffs, do not translate
+;
+MSG_MENU_DEBUG (//)
+Debug
+;
+MSG_MENU_DEBUG_AUTH (//)
+Authentification
+;
+MSG_MENU_DEBUG_CACHE (//)
+Cache
+;
+MSG_MENU_DEBUG_COOKIE (//)
+Cookie
+;
+MSG_MENU_DEBUG_DNS (//)
+DNS
+;
+MSG_MENU_DEBUG_DOCINFOWIN (//)
+DocInfoWin
+;
+MSG_MENU_DEBUG_DOWNLOADWIN (//)
+DownloadWin
+;
+MSG_MENU_DEBUG_FTP (//)
+FTP
+;
+MSG_MENU_DEBUG_HISTORY (//)
+History
+;
+MSG_MENU_DEBUG_HTTP (//)
+HTTP
+;
+MSG_MENU_DEBUG_JS (//)
+JavaScript
+;
+MSG_MENU_DEBUG_NET (//)
+Network
+;
+MSG_MENU_DEBUG_PLUGIN (//)
+Plugin
+;
+MSG_MENU_DEBUG_MAIL (//)
+Mail
+;
+MSG_MENU_DEBUG_CACHEPRUNE (//)
+Cacheprune
+;
+MSG_MENU_DEBUG_HTML (//)
+HTML
+;
+MSG_MENU_DEBUG_CSS (//)
+CSS
+;
+MSG_MENU_DEBUG_GUI (//)
+GUI
+;
+MSG_MENU_DEBUG_MISC (//)
+Misc
+;
+MSG_MENU_DEBUG_INIT (//)
+Init
+;
+MSG_MENU_DEBUG_REXX (//)
+Rexx
+;
+MSG_MENU_DEBUG_IMGDEC (//)
+Imgdec
+;
+MSG_MENU_DEBUG_FORCEBORDER (//)
+Force Border?
+;
+;
+MSG_MENU_DEBUG_LEVEL_0 (//)
+Errors
+MSG_MENU_DEBUG_LEVEL_1 (//)
+Warnings
+MSG_MENU_DEBUG_LEVEL_2 (//)
+Important
+MSG_MENU_DEBUG_LEVEL_3 (//)
+Info
+MSG_MENU_DEBUG_LEVEL_4 (//)
+Chatty
+;
+; ****
+;
+MSG_PRINT_BT_TURBOPRINT (//)
+Open TurboPrefs
+;
+MSG_PREFSWIN_TAB17 (//)
+Download
+;
+MSG_IMGDEC_ERROR (//)
+Couldn't open the image decoders.\nPlease check that you have PROGDIR:Plugins/vimgdec_<cpu>.vlib\ninstalled properly!
+;
+MSG_PREFSWIN_DLTIMINGS (//)
+Timings
+;
+MSG_PREFSWIN_DLTIMEOUT (//)
+Timeout
+;
+MSG_PREFSWIN_DLRETRIES (//)
+Retries
+;
+MSG_COMMANDCLASS_CYCLE_COMMAND (//)
+Command
+;
+MSG_COMMANDCLASS_CYCLE_AMIGADOS (//)
+AmigaDOS
+;
+MSG_COMMANDCLASS_CYCLE_WORKBENCH (//)
+Workbench
+;
+MSG_COMMANDCLASS_CYCLE_SCRIPT (//)
+Script
+;
+MSG_COMMANDCLASS_CYCLE_JS (//)
+JavaScript
+;
+MSG_COMMANDCLASS_CYCLE_AREXX (//)
+ARexx
+;
+MSG_COMMANDCLASS_AMIGADOS_ASLTITLE (//)
+Please select an executable...
+;
+MSG_COMMANDCLASS_WORKBENCH_ASLTITLE (//)
+Please select a Workbench executable...
+;
+MSG_COMMANDCLASS_SCRIPT_ASLTITLE (//)
+Please select an AmigaDOS script...
+;
+MSG_COMMANDCLASS_JAVASCRIPT_ASLTITLE (//)
+Please select a JavaScript file...
+;
+MSG_COMMANDCLASS_AREXX_ASLTITLE (//)
+Please select an ARexx script...
+;
+MSG_PREFSWIN_USE_CLOCK (//)
+Display clock
+;
+MSG_PREFSWIN_SMOOTH_SCROLL (//)
+Smooth scrolling
+;
+MSG_PREFSWIN_SINGLEWINDOW (//)
+Single window mode
+;
+MSG_WBSTART_FAILED (//)
+You need wbstart.library v2 or higher to run Workbench programs.
+;
+MSG_PREFSWIN_CONTEXTMENU_OPTS (//)
+_Type:
+;
+MSG_PREFSWIN_CONTEXTMENU_OPTS_1 (//)
+Page
+;
+MSG_PREFSWIN_CONTEXTMENU_OPTS_2 (//)
+Link
+;
+MSG_PREFSWIN_CONTEXTMENU_OPTS_3 (//)
+Image
+;
+MSG_PREFSWIN_CONTEXTMENU_TITLE (//)
+Context menu
+;
+MSG_PREFSWIN_TAB18 (//)
+Context menu
+;
+MSG_PREFSWIN_CONTEXTMENU_ADD (//)
+Add
+;
+MSG_PREFSWIN_CONTEXTMENU_ADDSUB (//)
+Add sub
+;
+MSG_PREFSWIN_CONTEXTMENU_REMOVE (//)
+Remove
+;
+MSG_PREFSWIN_CONTEXTMENU_ACTION_LABEL (//)
+Action:
+;
+MSG_PREFSWIN_CONTEXTMENU_TYPE (//)
+Type:
+;
+MSG_NOREXX (//)
+\033cRexxMast is not running, and Voyager\nwas unable to start it.\nDue to that, the buttons and all\nother ARexx functionality will not be available.
+;
+MSG_MENU_ERRORWIN (//)
+Error window...
+; 
+MSG_CMENU_PAGEMODE (//)
+Page
+;
+MSG_CMENU_IMAGEMODE (//)
+Image
+;
+MSG_CMENU_LINKMODE (//)
+Link
+;
+MSG_CMENU_IMAGELINKMODE (//)
+Imagelink
+;
+MSG_PREFSWIN_BARTYPE_OPTS_1 (//)
+Label
+;
+MSG_PREFSWIN_BARTYPE_OPTS_2 (//)
+Bar
+;
+MSG_SENDMAILWIN_ACK_FAILED (//)
+Conversation with mail server failed:\nWe sent \033b%s\033n\nServer responded \033b%s\033n
+;
+MSG_SENDMAILWIN_ACK_NOTHING (//)
+(nothing)
+;
+MSG_SENDMAILWIN_TO (//)
+To:
+;
+MSG_SENDMAILWIN_SUBJECT (//)
+Subject:
+;
+MSG_SENDMAILWIN_SEND (//)
+Send mail
+;
+MSG_SENDMAILWIN_CANCEL (//)
+Cancel
+;
+MSG_SENDMAILWIN_WINTITLE (//)
+Send mail
+;

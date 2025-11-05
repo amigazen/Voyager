@@ -1,0 +1,251 @@
+                    VFlash · Shockwave Flash Player for V³
+                    ======================================
+
+                     Copyright 1999-2000 by David Gerber
+                              <zapek@vapor.com>
+                             All rights reserved
+
+
+This is the history. See VFlash.guide for the complete documentation.
+
+
+0.1
+---
+- CVS: first CVS import
+- fixed foreground colors which could be wrong sometimes (Zapek)
+- added preliminary Picasso96 support (Zapek)
+- important executable size gain (Zapek)
+- sound support. uses AHI (Zapek)
+
+0.2
+---
+- changed all over again (Zapek)
+
+0.3
+---
+- fixed recognition of P96/CGFX
+
+0.4
+---
+- added support for native P96 and CGFX screenmodes to
+  speed up writing (requires cybergraphics.library V41.4
+  or up) (Olli)
+
+0.5
+---
+- recompiled libjpeg with -O3, all fingers crossed (Olli)
+- added (lame) support for CLUT screens (AGA and CGFX/P96)
+  (Olli)
+- fixed tons of bugs in the original parser code (Olli)
+- added support for playing sprites (Olli)
+- added support for SetTarget action (Olli)
+- fixed returning of multiple actions for a button
+  transition (Olli)
+- implemented GetURL command (Olli)
+
+0.6
+---
+- plugin will now show a progress report while downloading
+  and decoding, and any possible player startup error (Olli)
+- improved color allocation for CLUT mode (Olli)
+- fixed handling of partial getURLs() (Olli)
+
+0.7
+---
+- fixed problems with CGFX3 (Olli)
+- fixed problems when flash internal size didn't fit
+  <EMBED> size (Olli)
+
+0.8
+---
+- fixed AGA c2p handling (Olli)
+- fixed a lame race condition in the player shutdown
+  which could cause a set() on <freed memory>->obj.
+  Guaranteed nuke with mungwall, otherwise a matter
+  of luck (Olli)
+- fixed problems with various CGFX and P96 screenmodes (Olli)
+- more speed on CGFX3 (Olli)
+
+0.9
+---
+- ixemul.library isn't needed anymore (Zapek)
+- added plugin identification for navigator.plugins array (Zapek)
+- notify the user when the file is in the decoding stage (Zapek)
+- added preference group (Zapek)
+- fixed rendering trashing with CGFX3 and hicolor/truecolor modes (Zapek)
+- fixed enforcer hits in some input events (Zapek)
+- reenabled sound support (Zapek)
+- new versions optimized for 68k CPUs:
+    · plain 68020
+    · 68030 + FPU
+    · 68040 (internal FPU)
+    · 68060 (internal FPU)
+on my setup, there's a 80% speed gain using the 68060 version instead of the
+68020 one (Zapek)
+
+0.10
+----
+- added resize capabilities (Zapek)
+
+0.11
+----
+- added a nice icon for the prefs (Zapek)
+- fixed a bug which could cause VFlash to hang V under some circumstances
+(Zapek)
+
+0.12
+----
+- more enforcer hits squashed (Zapek)
+
+0.13
+----
+- fixed tons of NULL object references when sound
+  was disabled (Olli)
+- fixed a race condition during shutdown which would
+  cause a semaphore deadlock (Olli)
+- modified build process to make gccfindhit work (Olli)
+- changed the naming convention for CPU specific versions (Zapek)
+- lowered stack usage a bit (Zapek)
+- reenabled sound, Olli should buy a speaker :) (Zapek)
+
+0.14
+----
+- fixed some Flash anims not displaying properly (Zapek)
+- fixed crashes on some small Flash anims (ie. www.eye4u.com) (Zapek)
+
+0.15
+----
+- displays which CPU is being used while decoding (Zapek)
+- fixed rendering problems on 24-bit CGFX4 screens (Zapek)
+- some deadlocks were possible on exit (Zapek)
+- frees all the resources correctly when exiting because of a failure (Zapek)
+
+0.16
+----
+- fixed stupid crash when VFlash failed to allocate memory (Zapek)
+- added PPC version (Zapek)
+
+0.17
+----
+- fixed trashing bug showing up in some 24/32 bit CGFX4 screenmodes (Zapek)
+
+0.18
+----
+- based on the new release by Olivier Debon (Zapek)
+  · much faster
+  · alpha supported (transparency)
+  · image rotation supported
+- CLUT screen and sound support has been temporarily removed (Zapek)
+- doesn't allocate structures for P96 when run under CGFX (Zapek)
+- lowered stack usage a bit (Zapek)
+- rewrote timing and event handling from scratch. Faster, more efficient and
+  accurate now (Zapek)
+- fixed a longstanding bug happening in low memory situations where Voyager
+  would free the datas VFlash was parsing (Zapek)
+- rewrote the startup/shutdown handling of the M68K process to fix some
+  possible crashes (Zapek)
+- removed input handler and added an event handler. No more lose of events
+  when the V window gets inactivated then reactivated (Zapek)
+- uses IDCMP_INTUITICKS instead of IDCMP_MOUSEMOVE thus stops hogging
+  resources for nothing when moving the mouse over a Flash animation (Zapek)
+
+0.19
+----
+- upgraded API to version 3 (Zapek)
+- PPC version is back (Zapek)
+- fixed possible crash when there was not enough memory on startup (Zapek)
+- rewrote CGFX support from scratch. Faster on 24/32 bits screenmodes (Zapek)
+- less stupid error requesters on missing audio DOSDriver (Zapek)
+- reworked CLUT screen and AGA support from scratch with much better pen
+  allocation (Olli)
+
+0.20
+----
+- merged back the sprites and button actions from Olli (www.hyundai.de, but a
+  Saxo is much better anyway :) (Zapek)
+- VFlash could crash if the animation was already in the memory cache (Zapek)
+- fixed event issues with the PPC version (Zapek)
+- PPC version uses its own memory allocation with pools. Thanks to Emmanuel
+  Lesueur for helping in resolving the last issue :) (Zapek)
+- moved the memory pool thing into Libnixppc (Zapek)
+- finally fixed the 2 enforcer hits on startup ! Woohoo ! (Zapek)
+- PPC module failed to be signaled to shutdown on exit under some
+  circumstances (Zapek)
+
+0.21
+----
+- checks if 68k timer is created properly instead of assuming it is in
+  all cases (Zapek)
+- fixed clipping of the progress bar (Zapek)
+- added another method call to allow the plugin to embed another flash anim
+  (Zapek)
+- the progress bar redraws itself properly when scrolling while it updates
+  (Zapek)
+- background color is cleared when starting to play the anim (Zapek)
+- the BGCOLOR option tag is honoured (Zapek)
+
+0.22
+----
+- fixed ppc.library warning message (Zapek)
+- recompiled PPC version which wasn't working properly (Zapek)
+- removed BGCOLOR handling temporarily as this idea is broken. I don't know
+  why they implemented this tag in the first place. From now on, VFlash will
+  set the plugin background with the color specified by the BGCOLOR tag but
+  will then clear it with the Flash animation's real background color. I think
+  this is correct. (Zapek)
+- oops, I broke the handling of the VFLASHNOPPC env var. It had no effect at
+  all (Zapek)
+
+0.23
+----
+- PPC version no longer opens timer.device (Zapek)
+- no longer tries to open the 060 module if there's no FPU available. Mainly
+  for MorphOS but the PPC version should work well under it anyway :) (Zapek)
+
+1.0
+---
+- added event handlers optimizations for MUI 4 (Zapek)
+- fixed some Flash animations not loading others (Zapek)
+
+1.1
+---
+- fixed a stupid hang bug in the PPC version (Zapek)
+- new progress indicator (Zapek)
+- fixed possible hits when there was no SRC tag in the embed. Hardly happens
+  but who knows... (Zapek)
+
+1.2
+---
+- checks if there's not enough free pens (Zapek)
+- compiled with full optimizations
+- added Installer script by RobR and VFlash.guide
+
+1.3
+---
+- fixed font not being correctly set when updating the progress sometimes
+  (Zapek)
+- now correctly unselects buttons when the mouse leaves the Flash display area
+  (Zapek)
+
+1.4
+---
+- added asynchronous IFF parsing if asyncio.library v38 is available (Zapek)
+- fixed crash which could happen on low memory situations when opening the
+  timer.device (Zapek)
+- fixed buffer overflow in libflash (Zapek)
+- lowered memory usage for Flash events (Zapek)
+
+1.5
+---
+- MorphOS version (Zapek)
+- rewrote sound support. Now uses ambient_sound.library (Zapek)
+- optimized the input handling a bit, less slowdowns on events (Zapek)
+- hopefully fixed all shutdown hanging (Zapek)
+
+1.6
+---
+- added mp3 support (Zapek)
+
+1.7
+---
+- fixed mp3 playing speed (Zapek)

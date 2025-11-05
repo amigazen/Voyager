@@ -1,0 +1,105 @@
+# Makefile for the Flash static module (CaOS)
+#
+# $Id: makefile.caos,v 1.1.1.1 2002/10/07 12:52:14 zapek Exp $
+#
+
+include $(SRCDIR)makefile.config
+include makefile.objs
+#LIBDIRH=/Sourcen/CaOS/lib/
+#BLDDIRH=/Sourcen/CaOS/build/$mcf-phoenix/
+
+
+ifeq ($(COMPILER),gnuc)
+CFLAGS += -nostdlib -nostdinc -DMBX=1 -I.. -I../plugin -I../Lib -I$(SRCDIRH)lib/include -I$(SRCDIR)modules -idirafter $(SRCDIR)executables/voyager_exe
+#CFLAGS += -fno-builtin -nostdlib -nostdinc -DMBX=1 -I.. -I../plugin -I../Lib -I$(SRCDIRH)lib/include -I$(SRCDIR)modules -idirafter $(SRCDIR)executables/voyager_exe
+#LDFLAGS += -fno-builtin -nostdlib
+endif
+
+ifeq ($(COMPILER),diab)
+  CFLAGS += -DMBX=1 -I.. -I../plugin -I../Lib -I$(SRCDIRH)lib/include -I$(SRCDIRH)modules -I../../voyager -I../module
+#LDFLAGS += -fno-builtin -nostdlib
+endif
+
+CFLAGS += -DCLIB_NOPOSIXNAMES=1
+
+MODULE    = VFlash_mcf.module
+OLDMODULE = vflash_mcf.module
+
+#srcdir = ../../module
+
+#VPATH := $(srcdir)
+
+FLASH=../../Lib
+PLUGIN=../../plugin
+PLATFORM=caos
+
+LIBS = ../Lib/libflash.a ../Lib/Jpeg/libjpeg.a -lmath -lc -lcaos -lm -lmfd -lcaos
+
+
+MAP_FILE = $(MODULE).map
+MAP_FILE2 = $(MODULE)2.map
+OUTPUT = $(MODULE).lib
+LD_FILE = $(MODULE).ld
+EXE_FILE = $(MODULE).elf
+OFILES = $(OBJS)
+
+
+GCCLFLAGS = \
+ -M $(LDFLAGS) \
+ -L$(SRCDIR)../devenv/lib/gcc-lib/m68k-elf/2.95.2/m5200/mhwdiv \
+ -L$(SRCDIR)../devenv/lib/m5200/mhwdiv \
+ $(LIBDIR)crt0.o $(OFILES) $(LIBS) -lgcc
+
+all: $(OUTPUT) $(LD_FILE) $(EXE_FILE)
+
+%.o : %.cc
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(OUTPUT): $(OFILES)
+	@echo "*** Rebuild link library"; \
+	$(AR) $(AR_ADD) $(OUTPUT) $(OFILES) ; \
+	$(AR) $(AR_IDX) $(OUTPUT)
+
+$(BOOTDIR)c/$(MODULE): $(LD_FILE)
+
+ifeq ($(COMPILER),diab)
+
+$(LD_FILE) : $(OFILES) makefile.caos
+	@echo "*** Linking $(LD_FILE)"   ; \
+	echo "$(LDFLAGS) -r4 " >link.tmp ; \
+	echo "$(LIBDIRH)crt0.o $(OFILES) $(LIBS) -ld -limpl" >>link.tmp      ; \
+	echo "-o$(LD_FILE) $(LIBDIRH)exe.dld" >>link.tmp ; \
+	$(LD) -@@link.tmp >$(MAP_FILE)
+	rm -f $(BOOTDIR)/c/$(MODULE)
+	rm -f $(BOOTDIR)/c/$(OLDMODULE)
+	ahc.exe $(LD_FILE) $(BOOTDIR)/c/$(MODULE)
+
+$(EXE_FILE) : $(OFILES) makefile.caos
+	echo "*** Linking $(EXE_FILE) (absolute)" ; \
+	echo "$(LDFLAGS) " >link.tmp ; \
+	echo "$(LIBDIRH)crt0.o $(OFILES) $(LIBS) -ld -limpl" >>link.tmp ; \
+	echo " -o$(EXE_FILE) $(LIBDIRH)exe.dld" >>link.tmp ; \
+	$(LD) -@@link.tmp >$(MAP_FILE2)
+	mv $(EXE_FILE) $(BLDDIR)images/$(EXE_FILE)
+	date >$(EXE_FILE)
+else
+
+$(LD_FILE) : $(OFILES) makefile.caos
+	@echo "Rebuild $(OUTPUT) " ; \
+	$(LD) -r $(GCCLFLAGS) -o$(LD_FILE) -T $(LIBDIR)exe.lds >$(MAP_FILE)
+	rm -f $(BOOTDIR)c/$(MODULE)
+	rm -f $(BOOTDIR)c/$(OLDMODULE)
+	ahc.exe $(LD_FILE) $(BOOTDIR)/c/$(MODULE)
+
+$(EXE_FILE) : $(OFILES) makefile.caos
+	@echo "*** Linking $(EXE_FILE) code";
+	-$(LD) $(GCCLFLAGS) -o$(BLDDIR)images/$(EXE_FILE) -T $(LIBDIR)exe.lds >$(MAP_FILE2)
+	date >$(EXE_FILE)
+
+endif # ! DIAB
+
+clean:
+	-rm -f $(OBJS)
+	-rm -f VFlash_mcf.module*
+
+include makefile.rules

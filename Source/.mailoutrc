@@ -1,0 +1,17 @@
+#
+# MailOut Configuration
+#
+
+history         V.ReadMe
+application     V
+
+archivebase     V_
+archivepostfix  alpha
+archivecontent  objects/68020/V V.ReadMe
+
+from            David Gerber <zapek@vapor.com>
+organisation    VaporWare
+smtprelay       mail.vapor.com
+to              ibeta@vapor.com
+replyto         zapek@vapor.com
+

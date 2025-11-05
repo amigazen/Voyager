@@ -1,0 +1,928 @@
+TABLE OF CONTENTS
+
+VPLUG/--background--
+VPLUG/--PPC plugins--
+VPLUG/VPLUG_Cleanup
+VPLUG/VPLUG_FinalSetup
+VPLUG/VPLUG_FreeURLData
+VPLUG/VPLUG_GetClass
+VPLUG/VPLUG_GetInfo
+VPLUG/VPLUG_GetURLData
+VPLUG/VPLUG_GetURLDataSize
+VPLUG/VPLUG_GetURLMIMEType
+VPLUG/VPLUG_Hook_Prefs
+VPLUG/VPLUG_ProcessURLMethod
+VPLUG/VPLUG_ProcessURLString
+VPLUG/VPLUG_Query
+VPLUG/VPLUG_Setup
+PLFUNC/vplug_net_abort
+PLFUNC/vplug_net_close
+PLFUNC/vplug_net_colorspec2rgb
+PLFUNC/vplug_net_domethoda
+PLFUNC/vplug_net_errorstring
+PLFUNC/vplug_net_getdoclen
+PLFUNC/vplug_net_getdocmem
+PLFUNC/vplug_net_getdocptr
+PLFUNC/vplug_net_lockdocmem
+PLFUNC/vplug_net_mergeurl
+PLFUNC/vplug_net_mimetype
+PLFUNC/vplug_net_openurl
+PLFUNC/vplug_net_redirecturl
+PLFUNC/vplug_net_settofile
+PLFUNC/vplug_net_settomem
+PLFUNC/vplug_net_seturl
+PLFUNC/vplug_net_state
+PLFUNC/vplug_net_unlockdocmem
+PLFUNC/vplug_net_url
+VPLUG/--background--
+
+    PURPOSE
+        A V³ plugin is a shared library. When V starts it scans the plugins
+        directory and OpenLibrary()s every #?.VPlug it finds.
+
+        Do not put a 500KB plugin there or you would waste memory for nothing.
+        You can use another library or a module you load from your plugin when
+        needed.
+
+        Since V 3.3.97, V assumes a plugin ending with the .elf file extension
+        is a PPC plugin and handles them in a certain way. Please refer to the
+        part of this documentation describing PPC plugins.
+
+		Since V 3.4.6 this is no longer the case. Just call your plugin
+        normally ending in VPlug.
+
+    OVERVIEW
+        Whenever V encounters an <EMBED> tag in a HTML page or when an URL
+        matches a particular filename extension (from API 3), V will
+        NewObject()s the plugin.
+
+        Check the MUI documentation to find out more about MUI custom classes
+        and how they work.
+
+        There are 2 kind of calls described in this doc. The VPLUG calls are
+        within your plugin so it means that those are library function calls
+        in your plugins and that the meaning of INPUT and RESULT is reversed.
+        V gives you INPUT and *you* give back RESULT.
+
+        The PLFUNC calls are made from your plugin into a function table
+        handled by V. You can call those functions once you get a pointer to
+        this table.
+
+VPLUG/--PPC plugins--
+
+    OVERVIEW
+        Since version 3.3.97 and with the API version 5, V has direct support
+        for PPC plugins when running under MorphOS. There are different
+        scenarios to take into account:
+
+            V68k <-> 68k plugin: as usual, nothing to worry about.
+
+            VPPC <-> 68k plugin: as usual, nothing to worry about.
+
+            V68k <-> PPC plugin: although it's strongly discouraged to avoid
+            supporting this configuration, plugins wanting to support it
+            nevertheless have to set the VPLUG_Query_PPC_68kCallbacks tag
+            to TRUE into VPLUG_Query(). If, and only if this tag is supplied,
+            V will use the plugin and pass it a 68k callback table. The
+            plugin MUST call this table by filling in an EmulCaos structure
+            then call MyEmulHandle->EmulCall68k correctly.
+
+            VPPC <-> PPC plugin: you get a PPC callback function table and
+            thus can make direct calls with arguments on the stack. Beware
+            though, if you specified VPLUG_Query_PPC_68kCallbacks you'll get a
+            68k callback table as well.
+
+        V detects if a plugin is PPC transparently.
+
+VPLUG/VPLUG_Cleanup                                      VPLUG/VPLUG_Cleanup
+
+    NAME
+        VPLUG_Cleanup -- called before the plugin is unloaded (V2)
+
+    SYNOPSIS
+        VPLUG_Cleanup()
+
+        void VPLUG_Cleanup(void);
+
+    FUNCTION
+        V calls upon this function when your plugin is about to be unloaded.
+
+    SEE ALSO
+        VPLUG_Setup(), VPLUG_FinalSetup()
+
+VPLUG/VPLUG_FinalSetup                                VPLUG/VPLUG_FinalSetup
+
+    NAME
+        VPLUG_FinalSetup -- called when all the plugins are loaded (V2)
+
+    SYNOPSIS
+        VPLUG_FinalSetup()
+
+        void VPLUG_FinalSetup(void);
+
+    FUNCTION
+        This function is called upon when all the plugins are loaded and got
+        their VPLUG_Setup() call.
+
+    SEE ALSO
+        VPLUG_Setup(), VPLUG_Cleanup()
+
+VPLUG/VPLUG_FreeURLData                              VPLUG/VPLUG_FreeURLData
+
+    NAME
+        VPLUG_FreeURLData -- free the data allocated by VPLUG_GetURLData
+
+    SYNOPSIS
+        VPLUG_FreeURLData(handle)
+                          A0
+
+        void VPLUG_FreeURLData(APTR);
+
+    FUNCTION
+        After using VPLUG_GetURLData(), V calls upon this function. You can
+        release the memory you allocated for the data there.
+
+    INPUT
+        handle - your own handle given to VPLUG_ProcessURLMethod()
+
+    SEE ALSO
+        VPLUG_GetURLData()
+
+VPLUG/VPLUG_GetClass                                    VPLUG/VPLUG_GetClass
+
+    NAME
+        VPLUG_GetClass -- get a pointer to the plugin's class (V2)
+
+    SYNOPSIS
+        class = VPLUG_GetClass(mimetype)
+        D0                     A0
+
+        APTR VPLUG_GetClass(STRPTR);
+
+    FUNCTION
+        If you specified the VPLUG_Query_RegisterMIMEType or
+        VPLUG_Query_RegisterMIMEExtension in VPLUG_Query(), you should return
+        your class (subclass of Area.mui, Group.mui, etc...) there so that V
+        will be able to NewObject() the plugin.
+
+    INPUT
+        mimetype - string containing the mimetype
+
+    RESULT
+        class - your object's class or NULL if there's a failure
+
+    SEE ALSO
+        VPLUG_Query()
+
+VPLUG/VPLUG_GetInfo                                      VPLUG/VPLUG_GetInfo
+
+    NAME
+        VPLUG_GetInfo -- get some infos before NewObject()ing the plugin (V3)
+
+    SYNOPSIS
+        retval = VPLUG_GetInfo(vpi, nethandle)
+        D0                     A0   A1
+
+        BOOL VPLUG_GetInfo(struct VPlugInfo *, APTR);
+
+    FUNCTION
+        Before displaying a plugin which has been found by the
+        VPLUG_Query_RegisterMIMEExtension tag passed in VPLUG_Query(), V will
+        call upon VPLUG_GetInfo() to allow the plugin to adapt itself to the
+        size that will be used for rendering. The plugin can also modify the
+        size if needed and V will adjust its display area accordingly. See the
+        header file for a description of the VPlugInfo structure.
+
+    INPUT
+        vpi - VPlugInfo structure. You can change its fields if you need to.
+              They are properly setup by V.
+
+        nethandle - pointer to a net handle
+
+    RESULT
+        retval - TRUE or FALSE if you don't want V to NewObject() your plugin
+
+    SEE ALSO
+        VPLUG_Query()
+
+VPLUG/VPLUG_GetURLData                                VPLUG/VPLUG_GetURLData
+
+    NAME
+        VPLUG_GetURLData -- return data handled by an URL method
+
+    SYNOPSIS
+        data = VPLUG_GetURLData(handle)
+        D0                      A0
+
+        APTR VPLUG_GetURLData(APTR);
+
+    FUNCTION
+        After setting up an URL method, you need to return some data to V so
+        that it can handle it.
+
+    INPUT
+        handle - private handle given to VPLUG_ProcessURLMethod()
+
+    RESULT
+        data - the data built by the plugin that V will display or NULL if
+               there was a failure
+
+    SEE ALSO
+        VPLUG_GetURLDataSize(), VPLUG_GetURLMIMEType(), VPLUG_FreeURLData()
+
+VPLUG/VPLUG_GetURLDataSize                        VPLUG/VPLUG_GetURLDataSize
+
+    NAME
+        VPLUG_GetURLDataSize -- set the size of the data generated by the
+        plugin and returned with VPLUG_GetURLData if your data is not simple
+        text (V3)
+
+    SYNOPSIS
+        size = VPLUG_GetURLDataSize(handle)
+        D0                          A0
+
+        int VPLUG_GetURLDataSize(APTR);
+
+    FUNCTION
+        If your plugin doesn't return simple text, you have to specify the
+        size of the data returned by VPLUG_GetURLData(). Otherwise, V will
+        assume text and do a strlen() on it. You need to specify the
+        VPLUG_Query_HasURLMethodGetSize tag in VPLUG_Query().
+
+    INPUT
+        handle - private handle given to VPLUG_ProcessURLMethod()
+
+    RESULT
+        size - the size of your data or -1 if there was a failure
+
+    SEE ALSO
+        VPLUG_GetURLData(), VPLUG_Query()
+
+VPLUG/VPLUG_GetURLMIMEType                        VPLUG/VPLUG_GetURLMIMEType
+
+    NAME
+        VPLUG_GetURLMIMEType(handle) -- return a mime type used by an URL
+        handler
+
+    SYNOPSIS
+        mimetype = VPLUG_GetURLMIMEType(handle)
+        A0                              A0
+
+        STRPTR VPLUG_GetURLMIMEType(APTR);
+
+    FUNCTION
+        V calls upon this function to find out the mimetype of the data
+        returned by the plugin. Return a string describing the mimetype or
+        NULL if you don't care. V uses a default of "text/html".
+
+    INPUT
+        handle - your own handle
+
+    SEE ALSO
+        VPLUG_GetURLData()
+
+VPLUG/VPLUG_Hook_Prefs                                VPLUG/VPLUG_Hook_Prefs
+
+    NAME
+        VPLUG_Hook_Prefs -- preference callback hook (V2)
+
+    SYNOPSIS
+        VPLUG_Hook_Prefs(methodid, prefs)
+                         D0        A0
+
+        void VPLUG_Hook_Prefs(ULONG, struct vplug_prefs);
+
+    FUNCTION
+        If you set that VPLUG_Query_HasPrefs tag to TRUE in VPLUG_Query(), V
+        will call upon this function when it needs to handle preference
+        related stuffs.
+
+    INPUT
+        methodid - an ID containing one of the following method:
+
+            VPLUGPREFS_Setup
+                This method is sent once directly after VPLUG_Setup() (or
+                VPLUG_FinalSetup() if you have it). This is a good place
+                initialize your prefs stuffs like putting default prefs. It's
+                also the place where you can optionally setup some parts of
+                the vplug_prefs structure althought they're only required
+                between VPLUGPREFS_Create and VPLUGPREFS_Dispose.
+
+            VPLUGPREFS_Cleanup
+                Called once before VPLUG_Cleanup().
+
+            VPLUGPREFS_Create
+                Create your prefs object here and put it into prefs->object.
+                You don't need to check for success. V will do that for you
+                and send a VPLUGPREFS_Dispose if anything went wrong.
+                Don't forget to make sure your prefs object is resizeable in
+                all directions or you'll annoy your user.
+
+            VPLUGPREFS_Dispose
+                There you can dispose your prefs object. Although you're not
+                forced to do it and can still use VPLUGPREFS_Cleanup for that,
+                doing it there will save memory as the object will be
+                disposed when it is not visible.
+
+            VPLUGPREFS_Use
+                This method is sent when the user wants the changes to take
+                effect.
+
+            VPLUGPREFS_Load
+                There you can load preferences stored from the disk. This
+                method is sent after VPLUGPREFS_Setup and your prefs object is
+                not yet valid.
+
+            VPLUGPREFS_Save
+                This method is sent when the user wants to save the settings
+                permanently. Remember to not use your prefs object for that
+                as it might not be valid. Suggested place to store your prefs
+                is in 'PROGDIR:Plugins/Data' with the name of your plugin and
+                the extension '.data' appended to it.
+
+        prefs - vplug_prefs structure you can fill in. If you don't set it, V
+                will use defaults.
+
+
+    SEE ALSO
+        VPLUG_Setup(), VPLUG_Cleanup()
+
+VPLUG/VPLUG_ProcessURLMethod                    VPLUG/VPLUG_ProcessURLMethod
+
+    NAME
+        VPLUG_ProcessURLMethod -- handle an URL method
+
+    SYNOPSIS
+        handle = VPLUG_ProcessURLMethod(url)
+        D0                              A0
+
+        APTR VPLUG_ProcessURLMethod(STRPTR);
+
+    FUNCTION
+        This function is used to handle a certain URL method. You need to
+        specify the VPLUG_Query_RegisterURLMethod tag in VPLUG_Query() and V
+        will call upon this function. Return an own handle or NULL if there
+        was an error. The handle will be used by other functions so keep it !
+
+    INPUT
+        url - pointer to the complete URL
+
+    RESULT
+        handle - your own private handle or NULL for failure
+
+    SEE ALSO
+        VPLUG_Query(), VPLUG_GetURLData(), VPLUG_GetURLDataSize(),
+        VPLUG_FreeURLData()
+
+VPLUG/VPLUG_ProcessURLString                    VPLUG/VPLUG_ProcessURLString
+
+    NAME
+        VPLUG_ProcessURLString -- rewrite an URL entered by the user
+
+    SYNOPSIS
+        continue = VPLUG_ProcessURLString(url)
+        D0                                A0
+
+        BOOL VPLUG_ProcessURLString(STRPTR);
+
+    FUNCTION
+        This function allows the plugin to rewrite the textual URL as written
+        by the user. Changing it will change the URL as it appears on the URL
+        input string of the browser. You need to supply TRUE as the value of
+        the VPLUG_Query_HasProcessURLString tag within VPLUG_Query() first.
+
+    INPUT
+        url - pointer to the complete URL
+
+    RESULT
+        continue - return -1 if you want V to stop sending that function to
+        other plugins
+
+    SEE ALSO
+        VPLUG_Query()
+
+VPLUG/VPLUG_Query                                          VPLUG/VPLUG_Query
+
+    NAME
+        VPLUG_Query -- get information about the plugin's requirements
+
+    SYNOPSIS
+        tagArray = VPLUG_Query()
+        D0
+
+        struct TagItem *VPLUG_Query(void);
+
+    FUNCTION
+        This is where you tell Voyager your requirements and abilities.
+        It is the first function you get.
+
+    RESULT
+        tagArray - an array containing the following tags:
+
+            VPLUG_Query_Version (ULONG)
+                The version of your plugin.
+
+            VPLUG_Query_Revision (ULONG)
+                The revision of your plugin.
+
+            VPLUG_Query_Copyright (STRPTR)
+                A string containing some copyright informations.
+
+            VPLUG_Query_Infostring (STRPTR)
+                A generic information string describing your plugin.
+
+            VPLUG_Query_APIVersion (ULONG)
+                Specify which version of the API the plugin implements.
+                Currently, version 1 is implemented in Voyager 2.95, V2 is
+                implemented in Voyager 3.0 and V3 is implemented in Voyager
+                3.1. If this tag is not specified it defaults to API 1.
+
+            VPLUG_Query_HasPrefs (LONG)
+                Set this tag to TRUE if your plugin implements the
+                VPLUG_Hook_Prefs() function.
+
+            VPLUG_Query_PluginID (STRPTR)
+                Plugin identification that will be in the JavaScript
+                navigator.plugins array.
+
+            VPLUG_Query_RegisterURLMethod (STRPTR)
+                If a plugin wants to handle a certain URL method (for example
+                "mailto:"), it must specifiy this tag. V will then call upon
+                VPLUG_ProcessURLMethod() for the plugin to return a data
+                stream. V will call upon VPLUG_FreeURLData() later on to free
+                any data allocated in the data stream.
+
+            VPLUG_Query_HasURLMethodGetSize (BOOL)
+                Set to TRUE if the plugin implements VPLUG_GetURLDataSize().
+                If not set or if VPLUG_GetURLDataSize returns -1, V will
+                assume the data to be text and do a strlen() on it.
+
+            VPLUG_Query_RegisterMIMEType (STRPTR)
+                If the plugin wants to handle a certain MIME type within the
+                HTML <EMBED> tag, it can register a MIME type here. When
+                layouting, V will call VPLUG_GetClass() and expect the plugin
+                to return a pointer to a MUI custom class (subclassed from
+                Area.mui). V will NewObject() an instance of that class and
+                embed that object into the page. Then, the plugin can do
+                anything that a MUI object can do -- getting input, rendering
+                and so on. Together with the OM_NEW, V will pass additional
+                tags to inform the object of the environment, source URL and
+                other stuff. The plugin class can make use of this as it
+                likes.
+
+            VPLUG_Query_RegisterMIMEExtension (STRPTR)
+                This tag works exactly like VPLUG_Query_RegisterMIMEType
+                described above except it allows to handle MIME types by
+                filename extensions each separated by one space, for example
+                "lzx lha zip".
+
+            VPLUG_Query_ProcessURLString (BOOL)
+                If set to TRUE, the plugin will receive a
+                VPLUG_ProcessURLString() method which allows to rewrite the
+                textual URL.
+
+            VPLUG_Query_PPC_68kCallbacks (BOOL)
+                Allow PPC plugins to specify if they wish to handle a 68k
+                callback table. This tag is strongly discouraged and should be
+                used only if you have problems with the PPC version of
+                Voyager or suspect a bug in it.
+
+VPLUG/VPLUG_Setup                                          VPLUG/VPLUG_Setup
+
+    NAME
+        VPLUG_Setup -- setup the plugin (V2)
+
+    SYNOPSIS
+        retval = VPLUG_Setup(table)
+        D0                   A0
+
+        BOOL VPLUG_Setup(struct vplug_functable *);
+
+    FUNCTION
+        V calls upon this function and gives you a pointer to a callback table
+        from where you can call functions.
+
+    INPUT
+        table = function table from where you can call functions
+
+    RESULT
+        retval - TRUE or FALSE if you want to abort
+
+    SEE ALSO
+        VPLUG_Cleanup(), PLFUNC functions
+
+PLFUNC/vplug_net_abort                                PLFUNC/vplug_net_abort
+
+    NAME
+        vplug_net_abort -- abort the loading of data
+
+    SYNOPSIS
+        vplug_net_abort(nethandle)
+                        A0
+
+        void vplug_net_abort(APTR);
+
+    FUNCTION
+        This call aborts the loading of data by a nethandle.
+
+    INPUT
+        nethandle - a network handle
+
+    SEE ALSO
+        vplug_net_openurl()
+
+PLFUNC/vplug_net_close                                PLFUNC/vplug_net_close
+
+    NAME
+        vplug_net_close -- close a network handle
+
+    SYNOPSIS
+        vplug_net_close(nethandle)
+                        A0
+
+        void vplug_net_close(APTR);
+
+    FUNCTION
+        This call closes a network handle.
+
+    INPUT
+        nethandle - a network handle
+
+    SEE ALSO
+        vplug_net_open()
+
+PLFUNC/vplug_net_colorspec2rgb                PLFUNC/vplug_net_colorspec2rgb
+
+    NAME
+        vplug_net_colorspec2rgb -- converts a color spec to 8-bit RGB values
+
+    SYNOPSIS
+        vplug_net_colorspec2rgb(colorspec, red, green, blue)
+                                A0         D0   D1     D2
+
+        void vplug_net_colorspec2rgb(STRPTR, ULONG, ULONG, ULONG);
+
+    FUNCTION
+        This call converts a color spec (eg. "#FFFFFF") to 8-bit RGB values.
+
+    INPUT
+        colorspec - a string with the color spec
+        red       - the value for the red component
+        green     - the value for the green component
+        blue      - the value for the blue component
+
+    SEE ALSO
+
+PLFUNC/vplug_net_domethoda                        PLFUNC/vplug_net_domethoda
+
+    NAME
+        vplug_net_domethoda -- executes a MUI method synchronously
+
+    SYNOPSIS
+        ret = vplug_net_domethoda(obj, msg)
+        D0                        A0   A1
+
+        int vplug_net_domethoda(APTR, APTR);
+
+    FUNCTION
+        This call executes a MUI method synchronously. It can safely be called
+        from other tasks and will (ab)use yourself->pr_MsgPort.
+
+    INPUT
+        obj - your MUI object
+        msg - your message array
+
+    RESULT
+        ret - return value
+
+PLFUNC/vplug_net_errorstring                    PLFUNC/vplug_net_errorstring
+
+    NAME
+        vplug_net_errorstring -- return the error when an URL fails
+
+    SYNOPSIS
+        error = vplug_net_errorstring(nethandle)
+        D0                            A0
+
+        STRPTR vplug_net_errorstring(APTR);
+
+    FUNCTION
+        This call returns the error string in case the loading of an URL
+        failed.
+
+    INPUT
+        nethandle - a network handle
+
+    RESULT
+        error - a string with the error
+
+    SEE ALSO
+        vplug_net_state()
+
+PLFUNC/vplug_net_getdoclen                        PLFUNC/vplug_net_getdoclen
+
+    NAME
+        vplug_net_getdoclen -- return the length of a document
+
+    SYNOPSIS
+        size = vplug_net_getdoclen(nethandle)
+        DO                         A0
+
+        int vplug_net_getdoclen(APTR);
+
+    FUNCTION
+        This call returns the advertised length of a document.
+
+    INPUT
+        nethandle - a network handle
+
+    RESULT
+        size - the length of the document. It'll be -1 if the length is
+               unknown (no Content-Length: given by the server for example)
+
+    SEE ALSO
+        vplug_net_getdocmem(), vplug_net_getdocptr()
+
+PLFUNC/vplug_net_getdocmem                        PLFUNC/vplug_net_getdocmem
+
+    NAME
+        vplug_net_getdocmem -- get a pointer to a data buffer in memory
+
+    SYNOPSIS
+        buffer = vplug_net_getdocmem(nethandle)
+        D0                        A0
+
+        APTR vplug_net_getdocmem(APTR);
+
+    FUNCTION
+        This call returns a pointer to a data buffer in memory. You MUST call
+        vplug_net_lockdocmem() before calling it and vplug_net_unlockdocmem()
+        after. Remember that the buffer can move anytime when being accessed
+        outside those calls.
+
+    INPUT
+        nethandle - a network handle
+
+    RESULT
+        buffer - an in-memory data buffer
+
+    SEE ALSO
+        vplug_net_lockdocmem(), vplug_net_unlockdocmem(),
+        vplug_net_getdocptr(), vplug_net_getdoclen()
+
+PLFUNC/vplug_net_getdocptr                        PLFUNC/vplug_net_getdocptr
+
+    NAME
+        vplug_net_getdocptr -- get the size of the data read by a nethandle
+
+    SYNOPSIS
+        size = vplug_net_getdocptr(nethandle)
+        D0                         A0
+
+        int vplug_net_getdocptr(APTR);
+
+    FUNCTION
+        This call returns the size of the data which has been currently read
+        by a nethandle.
+
+    INPUT
+        nethandle - a network handle
+
+    RESULT
+        size - the data read in bytes
+
+    SEE ALSO
+        vplug_net_getdocmem(), vplug_net_getdoclen()
+
+PLFUNC/vplug_net_lockdocmem                      PLFUNC/vplug_net_lockdocmem
+
+    NAME
+        vplug_net_lockdocmem -- lock the docmem memory semaphore
+
+    SYNOPSIS
+        vplug_net_lockdocmem()
+
+        void vplug_net_lockdocmem(void);
+
+    FUNCTION
+        This call locks the docmem memory. You must call it before accessing
+        docmem.
+
+    SEE ALSO
+        vplug_net_getdocptr(), vplug_net_getdoclen()
+
+PLFUNC/vplug_net_mergeurl                          PLFUNC/vplug_net_mergeurl
+
+    NAME
+        vplug_net_mergeurl -- merges a partial URL to a complete URL
+
+    SYNOPSIS
+        vplug_net_mergeurl(url, partial, dest)
+                           A0   A1       A2
+
+        void vplug_net_mergeurl(STRPTR, STRPTR, STRPTR);
+
+    FUNCTION
+        This call merges a partial URL like a path to a complete URL.
+
+    INPUT
+        url     - a string with the URL
+        partial - a string with a partial URL
+        dest    - a string which will receive the result
+
+    SEE ALSO
+
+PLFUNC/vplug_net_mimetype                          PLFUNC/vplug_net_mimetype
+
+    NAME
+        vplug_net_mimetype -- return the mime type of a nethandle
+
+    SYNOPSIS
+        mimetype = vplug_net_mimetype(nethandle)
+        D0                            A0
+
+        STRPTR vplug_net_mimetype(APTR);
+
+    FUNCTION
+        This call returns the mime type of a nethandle, if available.
+
+    INPUT
+        nethandle - a network handle
+
+    RESULT
+        mimetype - a string with the mimetype or NULL if it is not available
+
+PLFUNC/vplug_net_openurl                            PLFUNC/vplug_net_openurl
+
+    NAME
+        vplug_net_openurl -- open an URL data stream
+
+    SYNOPSIS
+        dataStream = vplug_net_openurl(url, referer, informobj, reload)
+                                       A0   A1       A2         D0
+
+        APTR vplug_net_openurl(STRPTR, STRPTR, APTR, int);
+
+    FUNCTION
+        This call tries to open an URL data stream.
+
+    INPUT
+        url       - a string containing the URL
+        referer   - a string with the referer or NULL
+        informobj - the object that will receive notification methods
+                    (VPLUG_NetStream_GotInfo/Data/Done), usually the plugin
+                    object
+        reload    - set to TRUE if you want to force a reload of the URL
+
+PLFUNC/vplug_net_redirecturl                    PLFUNC/vplug_net_redirecturl
+
+    NAME
+        vplug_net_redirecturl -- return the redirected URL
+
+    SYNOPSIS
+        url = vplug_net_redirecturl(nethandle)
+        D0                          A0
+
+        void vplug_net_redirecturl(APTR);
+
+    FUNCTION
+        This call returns the redirected URL if there's one.
+
+    INPUT
+        nethandle - a network handle
+
+    RESULT
+        url - a string with the redirected URL or NULL if there's none
+
+    SEE ALSO
+        vplug_net_url()
+
+PLFUNC/vplug_net_settofile                        PLFUNC/vplug_net_settofile
+
+    NAME
+        vplug_net_settofile -- tell the stream to load itself to disk
+
+    SYNOPSIS
+        vplug_net_settofile(nethandle, filename, resume)
+                            A0         A1        D0
+
+        void vplug_net_settofile(APTR, STRPTR, int);
+
+    FUNCTION
+        This call sets the destination of a netstream to a file on disk. You
+        have to do that if you want to receive notification methods
+        (VPLUG_NetStream_GotInfo/Data/Done).
+
+    INPUT
+        nethandle - a network handle
+        filename  - a string with the path/filename
+        resume    - the offset in bytes from where you want to resume or 0
+
+    SEE ALSO
+        vplug_net_settomem()
+
+PLFUNC/vplug_net_settomem                          PLFUNC/vplug_net_settomem
+
+    NAME
+        vplug_net_settomem -- tell the stream to load itself to memory
+
+    SYNOPSIS
+        vplug_net_settomem(nethandle)
+                           A0
+
+        void vplug_net_settomem(APTR);
+
+    FUNCTION
+        This call sets the destination of a netstream to memory. You have to
+        do that if you want to receive notification methods
+        (VPLUG_NetStream_GotInfo/Data/Done).
+
+    INPUT
+        nethandle - a network handle
+
+    SEE ALSO
+        vplug_net_settofile()
+
+PLFUNC/vplug_net_seturl                              PLFUNC/vplug_net_seturl
+
+    NAME
+        vplug_net_seturl -- set an URL
+
+    SYNOPSIS
+        vplug_net_seturl(url, target, reload)
+                         A0   A1      D0
+
+        void vplug_net_seturl(STRPTR, STRPTR, int);
+
+    FUNCTION
+        This call loads a new URL into V. Note that this call is asynchronous
+        and WILL return to the caller even if the embedded object which called
+        it should go away due to the URL change.
+
+    INPUT
+        url    - a string with the URL
+        target - a name for a frame target or NULL
+        reload - set to TRUE if you want to force a reload of the URL
+
+PLFUNC/vplug_net_state                                PLFUNC/vplug_net_state
+
+    NAME
+        vplug_net_state -- return the state of a network handle
+
+    SYNOPSIS
+        state = vplug_net_state(nethandle)
+        D0                      A0
+
+        int vplug_net_state(APTR);
+
+    FUNCTION
+        This call returns the state of a network handle.
+
+    INPUT
+        nethandle - a network handle
+
+    RESULT
+        state - VNS_FAILED     : failed
+                VNS_INPROGRESS : in progress
+                VNS_DONE       : done
+
+PLFUNC/vplug_net_unlockdocmem                  PLFUNC/vplug_net_unlockdocmem
+
+    NAME
+        vplug_net_unlockdocmem -- unlock the docmem memory semaphore
+
+    SYNOPSIS
+        vplug_net_unlockdocmem()
+
+        void vplug_net_unlockdocmem(void);
+
+    FUNCTION
+        This call unlocks the docmem memory. You must call it once you're done
+        with the docmem.
+
+    SEE ALSO
+        vplug_net_lockdocmem()
+
+PLFUNC/vplug_net_url                                    PLFUNC/vplug_net_url
+
+    NAME
+        vplug_net_url -- return the URL of a nethandle
+
+    SYNOPSIS
+        url = vplug_net_url(nethandle)
+        D0                  A0
+
+        void vplug_net_url(APTR);
+
+    FUNCTION
+        This call returns the URL of a nethandle.
+
+    INPUT
+        nethandle - a network handle
+
+    RESULT
+        url - a string with the URL of the nethandle
+
+    SEE ALSO
+        vplug_net_redirecturl()
+

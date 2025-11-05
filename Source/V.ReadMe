@@ -1,0 +1,2255 @@
+  __   __  
+  \ \ / 3 | Voyager 3.3.126
+   \ V /  | Full release (27.12.2002)
+	\_/   | http://v3.vapor.com/
+			
+Welcome to V3.3.126
+
+This is a full release archive and contains everything
+needed to run Voyager (except MUI 3.8). Please, do NOT
+install this over an old V 3.2 installation, because
+some of the subsystems are no longer compatible.
+
+There are 2 archives. One with the "Classic Amiga" 68020+
+build and another one with the PPC native MorphOS build.
+
+Improvements over the last public beta (3.3.122):
+
+ - see history below
+
+Notable known deficiencies (not worth reporting):
+
+ - list item blocks don't get proper indentation
+   (same for BLOCKQUOTE)
+ - no printing at all
+ - Navigation within frames is, erm, suboptimal
+ - JS: function calls across frames don't pass arguments
+ - VFlash plugin doesn't detect resizes
+ - Download window will close when you close the last
+   browser window, even if it's downloading
+ - frames always have scrollbars no matter what
+ - this list doesn't seem to be shrinking with new versions
+
+------------------------------------------------------------
+
+Support & Bug reporting
+-----------------------
+
+Bug reports are appreciated, just stuff as much information
+as possible into them. A quick glance at the V mailing list
+will reveal whether 50000 people have already reported
+before. The JSERROR.LOG functionality will come in handy
+for dealing with JS quirks.
+
+There's now an automated bug tracking system located at
+
+ http://bugs.vapor.com/
+
+To submit a bug report, simply mail it to
+
+ <voyager-bugs@vapor.com>
+
+You will receive a receipt and a tracking ID, which allows
+you to track your bug report stats in the bug database.
+
+Please join the Voyager mailing list to discuss this beta
+release. Please do not contact any of the authors directly -
+their time is severly limited, and chances are good that
+you want them to do some work on the code instead of
+answering mail all day long :)
+
+To subscribe, mail to
+
+ <voyager-request@vapor.com>
+
+and put "SUBSCRIBE" in the subject or body of the mail.
+The mailing list is archived at
+
+ http://www.mail-archive.com/voyager@vapor.com/
+
+Credits
+-------
+
+Voyager is (C) 1995-2002 by Oliver Wagner <owagner@vapor.com>, 
+All Rights Reserved.
+
+V³ is actually a joint effort conducted by several people
+using the powers of CVS:
+
+The flash player and many many core changes have been done
+by David "Zapek" Gerber <zapek@vapor.com>
+
+Several layout engine improvements have been contributed
+by Jon "Sircus" Bright <jon@siliconcircus.com>
+
+Matt "Neko" Sealey has done a tremendous amount of work in
+processing bug reports, and provided several code improvements.
+
+The new bookmark and toolbar system has been devised by the wits
+of Simone "Wiz" Tellini <wiz@vapor.com>
+
+Jerome "KingGuppy" Fisher <kingguppy@vapor.com> contributed 
+the new Textinput functionality including HTML tag highliting. 
+He also squashed some bugs.
+
+The GUI cleanup and the new about:, plus the Voyager
+Portal site (http://v3.vapor.com) design are done by
+Ben "Beej" Preece <beej@vapor.com>
+
+The nifty new V3 logo is done by Jason "Morden" Murray
+<morden@sub.net.au>, who also did the www.vapor.com web
+site design.
+
+The Vpdf plugin was done by Emmanuel Lesueur 
+<lesueur@club-internet.fr>. He also wrote the small
+MorphOS/AmigaOS loader program.
+
+Nicholai Benalal ported the TearOff classes to MorphOS.
+
+Version History
+---------------
+
+[NOTE: Changes prior to version 3.2 have been removed]
+[$Id: V.ReadMe,v 1.1318 2005/01/01 10:57:26 zapek Exp $]
+
+Subsystems:
+-----------
+Bookmarks:
+Cache:
+Cookies:
+CVS:
+Download:
+FTP:
+General:
+GUI:
+Imgdecode:
+JS:
+Layouter:
+Net:
+Parser:
+Plugin:
+Prefs:
+Rexx:
+SSL:
+Startup:
+
+3.2 [release]
+-------------
+- General: added updated SpeedBarButton.mcc class (Olli)
+
+3.2.1
+-----
+- GUI: rewrote the plugin prefs window from scratch. As a side effect gets rid
+  of the random crashes, and is more efficient. A plugin creates its
+  prefsobject only when needed (Zapek)
+- Net: fixed stomping of innocent data when replacing spaces in URLs
+  (Olli)
+- Net: fixed file:/// URLs with spaces (Olli)
+
+3.2.2
+-----
+- Layouter: added support for <BASEFONT FACE> (Olli)
+- General: no more IDCMP_INTUITICKS under MUI4 (Zapek)
+- Layouter: now properly uses the +/- 0 fixed font for
+  <TEXTAREA>, instead of the +1 one (Olli)
+- Layouter: fixed storing of incomplete form data when
+  stopping layout in the mid of a <textarea> due to
+  incremental layout. Fixes half-filled form areas
+  which suddenly appear to be fixed when clicking on
+  form reset (Olli)
+
+3.2.3
+-----
+- Image: now ignores disposal method of last frames of GIF
+  anims and always does "Restore Background", to meet MSIE/NS
+  behavior (Olli)
+- Layouter: added fix for bizarre results with tables which
+  had empty cells used for width spreading (Olli)
+- Layouter: took out input handling-while-layouting again,
+  for causing entirely too many problems ranging from gfx
+  corruption to full crashes (clicking "Reload" while layout,
+  for example) (Olli)
+- Image decoders: added support for GIF F-S dithering (Olli)
+- Prefs: added individual setting for GIF & PNG F-S dithering (Olli)
+
+3.2.4
+-----
+- General: raised default stack size for core and network processes
+  to be on the safe side (Olli)
+
+3.2.5
+-----
+- JS: fixed a problem with the onLoad() handler being called 
+  prematurly if a web site had unspecified image heights 
+  (in 2000 -- grrr!) (Olli)
+- General: rewrote constructor/destructor part for better portability (Zapek)
+- General: fixed possible crashes on low-memory situation when starting V
+  (Zapek)
+- GUI: no longer updates the CachePruner's max slider while pruning (Zapek)
+- JS: <script src=url> now works (Olli)
+- Layouter: added <Tx VALIGN=BASELINE> as an alias for BOTTOM (Olli)
+- GUI: no longer disposes/creates the errorwindow all the time (Zapek)
+- General: remembers where images and links are saved between ASL requests
+  (Zapek)
+
+3.2.6
+-----
+- GUI: there's a new button to call TurboPrefs on the printerrequest window if
+  TurboPrefs is installed (Zapek)
+- Layouter: disabling font face would disable a bit too much, ahem (Zapek)
+- Network: when a download was marked as 'failed' and was still left in the
+  download window, any attempt to resume without using the 'retry' button was
+  corrupting the file (Zapek)
+- GUI: uses complement mode for tracing the imagelink targets (Zapek)
+- GUI: fixed the neverending rotating animation (Zapek)
+- Layouter: should now deal with both 0d0a and 0a0d line endings gracefully
+  (Olli)
+- General: remove the TearOff workaround related with muigfx.library. Not
+  needed anymore with new TearOff versions (Zapek)
+- Parser: strips any useless spaces at the end of an URL (Zapek)
+- Layouter: frameset parsing no longer pukes over rows="" or stuff (Olli)
+- GUI: it's possible to specify a path and filename for the JS error file
+  (Zapek)
+- Layouter: handles all CR/LF, LF, CR and LF/CR (yeah, you can find that on
+  some pages) correctly (Zapek)
+
+3.2.7
+-----
+- Layouter: fixed CR/LF stuffs really this time, sigh (Zapek)
+
+3.2.8
+-----
+- GUI: really saves to the file specified for JS logging instead of
+  JSERROR.LOG everytime (Zapek)
+- Layouter: strips leading spaces in <TITLE> (Zapek)
+- General: added protection against embedded-esc-code exploit (Olli)
+- Layouter: no longer locks networking completely during layout (Olli)
+- Layouter: reenabled <script src> support (Olli)
+
+3.2.9
+-----
+- Image decoders: handling of PNG tRNS for CLUT destinations was totally
+  and utterly and completely botched (Olli)
+- Image decoders: PNG RGB images with alpha channel didn't show at all
+  on CLUT screens (Olli)
+- Image decoders: numerous low level assembler optimizations (Olli)
+- Layouter: now will handle <EMBED TYPE=image/*> like <IMG>
+  (Olli)
+- GUI: "Search" toolbar functionality is now on by default,
+  even with no page loaded (Olli)
+- GUI: "Search" toolbar functionality was improperly named "find"
+  (Olli)
+- Layouter: hopefully fixed <script src> induced lockups (Olli)
+
+3.2.10
+------
+- Parser: Tags exceeding the maximum number of arguments are now
+  properly eaten up till their closing bracket. This fixes the side
+  effect of <tag attribute="value1","value2"...> broken HTML
+  spilling out into the output text, because "value2", "value3"
+  etc. are (correctly) interpreted as attributes [www.kipling.org.uk
+  et.al] (Olli)
+- Parser: fixed a buffer overrun condition in URL assembly.
+  Was unlikely to happen in normal course of operation, but could
+  be triggered by broken HTML [www.digitheatre.com] (Olli)
+- Layouter: fixed a problem with table sizes being cached
+  incorrectly [www.vapor.com/visitors.php3] (Olli)
+- Layouter: fixed a problem with table background being rendered
+  one pixel too large (Olli)
+
+3.2.11
+------
+- Layouter: fixed a rather bizarre interaction between <IMG ALIGN=left|right>
+  and table size caching, which would result in "cell bleeding" due to
+  miscalculated heights [www.amazon.com] (Olli)
+- Layouter: <LI> not in <UL>/<OL> now only indents the current line,
+  and does not internally convert into <UL>-state [www.amazon.com,
+  and numerous other places] (Olli)
+- Layouter: reading <OPTION> data now follows HTML space-digesting
+  semantics [www.amazon.com] (Olli)
+- Parser: no longer pukes over <TBODY> and <THEAD> in unexpected
+  places (Olli)
+
+3.2.12
+------
+- Layouter: fixed a one-pixel-off problem in image backfilling.
+  This was only showing up with GIF anims, or JS image replacing,
+  causing the backdrop to shine through by one pixel (Olli)
+- Layouter: several speed-up operations in the low-level layouter
+  code, yielding about a 20% gain (Olli)
+
+3.2.13
+------
+- General: more low-level optimizations in various places (Olli)
+
+3.3.0
+-----
+- CVS: branched old & new layout engine
+- General: began with completely new layout engine (Olli)
+- GUI: reworked window framework from scratch (Olli)
+- GUI: now runs without TearOff if classes are not installed (Olli)
+- GUI: the navigation panel can now also be attached vertically (Olli)
+- GUI: entering a CM alias in the V url gadget now works (Olli)
+- GUI: auto-scheme-prefixing in V url gadgets now prefixes the
+  host name with "ftp://" if the host name starts with "ftp." (Olli)
+- Network: now enforces content-type "text/html" on all HTTP
+  replies 4xx and 5xx, to cope with really lame servers (Olli)
+- Network: removed old AS225 support (Zapek)
+
+3.3.1
+-----
+- GUI: added NList and Pophotkey so they show up as external classes with MUI4
+  (Zapek)
+- GUI: now uses the correct list background for the Download window (Zapek)
+- General: lots of more work on new layout engine (Olli)
+
+3.3.2
+-----
+- Layouter: lots of work on proper non-image-handling of images:
+  Recessed/Raised frames depending on anchor state, rendering of alt text
+  and border in proper link colors etc.
+- Layouter: several bugfixes in the existing stream layout code (Olli)
+- Layouter: <img align=[vertial_alignments]> now properly implemented for
+  all IE5 variants of this (Olli)
+
+3.3.3
+-----
+- Layouter: made incremental visual refresh work (Olli)
+
+3.3.4
+-----
+- Net: made If-Modified-Since: header carry the correctly offseted date,
+  and not use the nowadays obsolete asctime() date format (Olli)
+- GUI: in the toolbar prefs, 'Add button' didn't add a button but a spacer
+  instead (Zapek)
+- GUI: the network prefs could nuke if there was not enough memory to create
+  the objects of its group (Zapek)
+- GUI: toolbar's prefs' command TextinputscrollObject resizes correctly
+  (Zapek)
+
+3.3.5
+-----
+- Layouter: made tables work again, mostly (Olli)
+
+3.3.6
+-----
+- Layouter: fixed more bugs in new table code (Olli)
+- Layouter: implemented <strike> (Olli)
+
+3.3.7
+-----
+- Layouter: fixed final width/height calculation for images (Olli)
+- Layouter: fixed a few problems of minsizes being ignored (Olli)
+
+3.3.8
+-----
+- Layouter: fixed rendering artifacts (Olli)
+- Layouter: fixed nuke when scrolling due to some nasty screwup
+  with KillNotify (Olli)
+
+3.3.9
+-----
+- Layouter: fixed <BR> handling (Olli)
+- Layouter: images rendering again (Olli)
+- Layouter: fixed initial space state (Olli)
+- GUI: fixed the KillNotify problem in the font preferences as well (Zapek)
+
+3.3.10
+------
+- GUI: fixed visual artifacts when clicking on links (Olli)
+- GUI: reenabled "Show Source" and "Show Document info" window menu
+  items (Olli)
+- Layouter: fixed rowspan handling (Olli)
+- Layouter: fixed a few thousand more table bugs (Olli)
+
+3.3.11
+------
+- Layouter: fixed a load of rowspan-related issues (Olli)
+- Layouter: fixed deadlock on pages without background specifications (Olli)
+- Layouter: fixed many more minor bugs (Olli)
+
+3.3.12
+------
+- Layouter: reinstated default margins (4/4) (Olli)
+- Layouter: reimplemented <Hx> (Olli)
+- Layouter: fixed wipeout hit flood on empty tables (notably during
+  incremental layout) (Olli)
+- Images: broken images are again marked with an "x" in the alttext (Olli)
+- Images: unspeced images now properly communicate size changes 
+  to their containers (Olli)
+- Layout: fixed problems with margins not unrolling at the end of
+  table cells (Olli)
+- Layouter: added heuristic against ultra-lame webmanglers using stuff like
+  <TD WIDTH=3000> (Olli)
+
+3.3.13
+------
+- Layouter: implemented <form> and <input type=(buttons)> (Olli)
+- Layouter: implemented <input type=text> (Olli)
+- General: Added "Force border?" debug option. When set, will enforce
+  a visible border of at least 2 around all tables. Very useful
+  when looking at layout oddities (Olli)
+- General: numerous other minor fixes (Olli)
+
+3.3.14
+------
+- Layouter: fixed deadlock with margins (Olli)
+- Layouter: implemented <BR CLEAR=xx> (Olli)
+- Layouter: fixed <TABLE ALIGN=left|right> (Olli)
+
+3.3.15
+------
+- Layouter: fixed more left/right alignment issues (Olli)
+- GUI: fixed display of link destinations for images (Olli)
+- Layouter: image scaling working again (Olli)
+- Layouter: fixed a quirk in calculating default container sizes (Olli)
+- Layouter: fixed a problem with centering/right alignment of
+  text (Olli)
+- Layouter: fixed a problem with text fields screwing up dimension
+  calculations due to incorrect default width due to an TI bug (Olli)
+
+3.3.16
+------
+- Layouter: brought <BASE HREF> back (Olli)
+- GUI: fixed potential crash when clicking "Reload" during transfer (Olli)
+- Layouter: fixed cell top offset problems during incremental layout (Olli)
+- Layouter: now eats <SCRIPT> again properly (not interpreted yet) (Olli)
+- Layouter: now eats <STYLE> again properly (not interpreted yet) (Olli)
+
+3.3.17
+------
+- Layouter: now follows MSIE layout for <BR CLEAR=xx> [www.amazon.com] (Olli)
+- Layouter: fixed some more table size issues [www.amazon.com] (Olli)
+- General: no longer tries to open vimgdecode_68000.vlib and now gives a
+  useful error message if no decoder vlib is found (Zapek)
+
+3.3.18
+------
+- Layouter: fixed entity conversion not working properly at all,
+  causing text doubling and random crap (Olli)
+- Layouter: Hopefully once and for all fixed object backfill
+  offsets [phew] (Olli)
+- Layouter: <input> without type is now again handled as "TEXT",
+  for compatibility with broken web pages (Olli)
+- General: fixed a few memory buffer overflows in the new
+  layouting code (Olli)
+
+3.3.19
+------
+- Layouter: <font size=-2> and <font size=-1> were exchanged (Olli)
+- Layouter: <small> and <big> weren't implemented; </small> and </big>
+  were, though, causing font style stack confusion [freshmeat.net] (Olli)
+- Layouter: fixed "stacking" of line alignments with mixed <center>,
+  <div> and <p> (Olli)
+- Layouter: readded <INPUT TYPE=radio> class (Olli)
+- Internal: rewrote method stack to be more efficient (Olli)
+
+3.3.20
+------
+- Layout: fixed (internal) MUI layout failures in various places,
+  causing weird sideffects (Olli)
+
+3.3.21
+------
+- Layouter: implemented <th> (Olli)
+- Net: fixed enforcer hitflood with broken URLs without
+  scheme (Olli)
+- Net: fixed another (unlikely) buffer overflow in uri_remerge()
+  (Olli)
+- Layouter: GIF anims now increment their frame counters properly
+  even when being off-screen, to avoid missynchronisation during
+  scroll (Olli)
+- Layouter: fixed a possible nuke when adding table cells
+  to their container (Olli)
+
+3.3.22
+------
+- Layouter: now handles <INPUT TYPE=CHECKBOX> again (Olli)
+- Layouter: added support for transparent background images
+  (grrrr) [www.vapor.com] (grrr²) (Olli)
+- Layouter: added support for ISMAP image maps (Olli)
+
+3.3.23
+------
+- Layouter: client side image maps working again, too (Olli)
+- Layouter: did some work on proper incremental refreshing
+  during layout (Olli)
+
+3.3.24
+------
+- [public alpha]
+
+3.3.25
+------
+- Layouter: viewing of image/* individually works again (Olli)
+- GUI: Netinfo progress gauges weren't displayed at all for FTP transfers
+  (Zapek)
+- GUI: removed "Fastlinks:" label which took up unecessary space (Zapek)
+- Layouter: readded <EM>, <STRONG> and <S> (Olli)
+- Layouter: added <BUTTON> as an alias for <INPUT TYPE=submit|reset|button>
+  (Olli)
+- Layouter: made <INPUT TYPE=password> work (Olli)
+- Layouter: now remembers previous X/Y positions when navigating between
+  pages (Olli)
+- Image decoders: added proper error reporting to the API. Bumped
+  version to 13 (Olli)
+- Layouter: completely rewrote incremental refresh to use a double buffered
+  offscreen bitmap (Olli)
+
+3.3.26
+------
+- Net: mailto: doesn't use TCP: anymore to send mails (Zapek)
+
+3.3.27
+------
+- General: reenabled support for mailto:, news: and telnet: URLs (Olli)
+- General: raised minimum required Textinput version to 28.0, which
+  fixes the problems with incremental buffered refresh (Olli)
+- Layouter: fixed excess refresh & scroll when switching pages (Olli)
+
+3.3.28
+------
+- Layouter: <center> wasn't correctly reinstating "last was blank"
+  mode, causing weird excess spaces (Olli)
+- General: added a NOSPLASHWIN tooltype/commande line argument (Zapek)
+- GUI: fixed the prefs not working, grr (Zapek)
+- General: V can only be run once again (Zapek)
+- Net: the timeout of a socket is settable. Use '0' if you don't want any
+  (Zapek)
+- Net: added automatic retries of downloads (Zapek)
+- Layouter: added <select> object (Olli)
+- Layouter: radio buttons are now properly exclusive again (Olli)
+
+3.3.29
+------
+- Layouter: <AREA> class wasn't getting the context pointer, and thus caused
+  hits galore (Olli)
+- Layouter: <INPUT TYPE=RADIO> checked caused hits (Olli)
+- Layouter: fixed a problem with incremental buffered refresh possibly
+  causing image decoder nuke in a race condition (Olli)
+- Layouter: image placeholders are no longer backfilled (Olli)
+- Layouter: readded <TEXTAREA> (Olli)
+- Layouter: fixed refresh problems with some form objects after
+  an incremental layout (Olli)
+
+3.3.30
+------
+- GUI: fixed historylist once again (Zapek)
+- Layouter: fixed some offsetting problems during incremental
+  refresh (Olli)
+
+3.3.31
+------
+- Layouter: added <INPUT TYPE=FILE> (Olli)
+- Plugins: added VPLUG_ProcessURLString() hook to allow plugins to
+  handle manually entered URLs (Olli)
+- Layouter: made form submission work again (Olli)
+- Layouter: added support for <INPUT xxx DISABLED> (Olli)
+- Layouter: unified HTML object name handling (now also accepts "ID"
+  and "NAME" as the name specifier) (Olli)
+- Image decoders: preferences weren't properly set on the
+  image decoder library on start (Olli)
+- Rexx: added arguments for OpenURL, ScreenToFront and ScreenToBack (Zapek)
+- GUI: added a clock to make RobR happy (Zapek)
+- GUI: rewrote Prefs/Toolbar in a more efficient and robust way (Zapek)
+- General: now uses a brand new scheme which allows to configure any button to
+  execute an internal command. Those are also available externally through the
+  ARexx port of course (Zapek)
+
+3.3.32
+------
+- Layouter: fixed several problems in the <select> class, causing layout
+  failures and nukes (Olli)
+- Layouter: major speedup in the double buffered refresh (Olli)
+- Rexx: fixed 'GoBackward' which wasn't working (Zapek)
+- Layouter: made <pre> and <xmp> work again (Olli)
+- General: ppc.library was closed twice (Zapek)
+- GUI: Historylist will still remember the current page even if it's not
+  finished being loaded and the browser goes to a new location (Zapek)
+- GUI: a window wasn't marked as 'activated' just after being opened.
+  Would cause problems with some ARexx commands relying on that (Zapek)
+- Rexx: fixed 'OpenURL' which was only working with the 'NEWWIN' argument
+  (Zapek)
+- Rexx: implemented 'LoadImages' (Zapek)
+- Rexx: 'GoHome' was doing enforcer hits (Zapek)
+- Rexx: implemented 'ReloadURL' (Zapek)
+
+3.3.33
+------
+- Layouter: fixed enforcer flood when submitting an "empty" form (Olli)
+- Layouter: radio buttons and checkboxes without specific VALUE
+  now submit as "name=on" when selected (Olli)
+- Layouter: fixed radio and checkbox submission (Olli)
+- Layouter: <select> objects weren't submitting data at all (Olli)
+- Layouter: form objects no longer submit when being disabled (Olli)
+- Layouter: added "READONLY" attribute for text and textarea (Olli)
+- Layouter: now understands plain text layout again (Olli)
+- GUI: in Prefs/Toolbar when there's no argument for a certain command, the
+  listview opens empty instead of DisplayBeep()ing around (Zapek)
+- Layouter: fixed form file submission (Olli)
+
+3.3.34
+------
+- Layouter: made <input type=image> work (Olli)
+- Layouter: fixed default background color (Olli)
+- Image decoders: completely changed the call back mechanism
+  in V. To avoid problems with double installations, the 
+  image decoders have been renamed to vimgdec_<cpu>.vlib.
+  (Olli)
+
+3.3.35
+------
+- Layouter: fixed <INPUT TYPE=HIDDEN> submission problems (Olli)
+- Layouter: fixed missing end tag on multipart form submissions (Olli)
+- Layouter: fixed line align stack overflow on many consecutive <P>s (Olli)
+- Layouter: fixed background color problems (Olli)
+[public alpha]
+
+3.3.36
+------
+- Image decoders: added a PPC native version. Runs under MorphOS (Zapek)
+- GUI: the blinking ':' char of the clock doesn't move some fonts around
+  anymore (Zapek)
+- GUI: it's possible to turn on/off the displaying of seconds in the clock
+  (Zapek)
+- GUI: and it's possible to turn off the clock (Zapek)
+- GUI: rewrote the prefs to use proper subclasses. More efficient, and fixes
+  the crash that happened randomly when switching panels too fast (Zapek)
+- Rexx: added boundary checks in the historylist. 'GoBackward' and 'GoForward'
+  won't go into the wonderfull world of random data anymore (Zapek)
+- GUI: minor layout adjustements in the prefs (Zapek)
+
+3.3.37
+------
+- GUI: little imagery isn't allocated in chip memory under graphic card
+  systems anymore (Zapek)
+- GUI: while typing an URL, if the hosts starts with "ftp." it's automatically
+  prefixed by "ftp://" (Zapek)
+- GUI: fixed Sendmailwin which wasn't working at all (Zapek)
+- GUI: HTML windows get their title correctly again (Zapek)
+- GUI: Toolbar was impossible to modify from the prefs, oops (Zapek)
+- GUI: fixed enforcer hits when settings arguments with '/S' in the toolbar
+  (Zapek)
+- Rexx: it's possible to execute AmigaDOS command (Zapek)
+- Rexx: WIN/N/K is now effective for every ARexx command (Zapek)
+- Rexx: 'GoHome' returns 5 if there's no homepage set in the prefs (Zapek)
+
+3.3.38
+------
+- GUI: fixed the imagery to not crash on AGA machines when one image was used
+  twice (Zapek)
+- GUI: no longer bother moving imagery to chip memory if they are already
+  there (Zapek)
+- Rexx: added the possibility to execute programs in Workbench mode. Needs
+  wbstart.library v2 or higher (Zapek)
+- Rexx: added the execution of AmigaDOS scripts (Zapek)
+- Rexx: added the execution of ARexx scripts (Zapek)
+- Rexx: added 'GetActiveWindow' which returns the number of the active (or
+  last activated) window (Zapek)
+- General: fixed 1KB memory leak (Sircus)
+- GUI: imagery is reallocated correctly in case they're reloaded (Zapek)
+- GUI: imagery isn't moved to chip memory if FBlit is running (Zapek)
+- GUI: it wasn't possible to en/disable certificates in the prefs (Zapek)
+- Layouter: minor speedup in text rendering with many mixed styles (Olli)
+- General: hopefully fixed shutdown race condition which could cause V to 
+  hang in the main network process under certain circumstances (Olli)
+- Layouter: fixed incremental refresh problems with form elements again
+  (Olli)
+- Layouter: added support for <LI> (Olli)
+- Layouter: fixed one-off bug when unrolling margins (Olli)
+- GUI: added new imagery in 32 colors, courtesy of Matt Sealey (Zapek)
+
+3.3.39
+------
+- GUI: the 'Download' image was the 'Hyperlinks' one (Zapek)
+- Layouter: <OL> and <UL> now working (Olli)
+- Image class: fixed backfilling of scaled transparent images
+  (often occuring with blank GIFs used for placeholding) (Olli)
+- Layouter: fixed default selection item for form cycles
+  and popup lists (Olli)
+- Rexx: fixed buttons not working in the previous build, ahem (Zapek)
+- Network: fixed V crashing on exit (Zapek)
+- GUI: clock wasn't opening with the right size sometimes (Zapek)
+
+3.3.40
+------
+- Layouter: fixed <INPUT TYPE=TEXT MAXLENGTH=x> being off by one (Olli)
+- Layouter: META HTTP-EQUIV refresh working again (Olli)
+- General: now starts RexxMast if it's not running, to ensure
+  button functionality (Olli)
+- Layouter: readded frames support (incomplete) (Olli)
+- Layouter: made refresh using region-drawing for less unecessary
+  backfilling. Please report whether this is actually faster
+  than before... (Olli)
+
+3.3.41
+------
+- Layouter: fixed target=_parent (Olli)
+- Layouter: fixed target=_top, too (grrr) (Olli)
+- Layouter: major speedup in scrolling and initial rendering by skipping
+  unnecessary backfilling (Olli)
+- General: fixed NC3 key reading (KingGuppy)
+- Image class: fixed refreshing of images showing textual errors (KingGuppy)
+- Layouter: image backfilling should now be properly offset (KingGuppy)
+- General: URLs entered into the URL string should now be prefixed with a
+  scheme under all circumstances (KingGuppy)
+- Layouter: reimplemented <ISINDEX> (KingGuppy)
+- Layouter: fixed handling of <BR> [www.siliconcircus.com] (Olli)
+- Layouter: </Hx> wasn't setting the "last was blank" flag,
+  causing excess indention on the next line (Olli)
+- Imgdecode: no longer leaves libraries opened around when something fails in
+  libinit (Zapek)
+- Imgdecode: added proper reporting of failure to open vapor_toolkit.library
+  (Zapek)
+- Layouter: removed stupid pseudo-3D-style of <LI> images, for better
+  readability and faster rendering (Olli)
+- Layouter: fixed backfilling of html view area when no document at all
+  is loaded (Olli)
+- General: the reload button no longer opens a new window (KingGuppy)
+- Layouter: fixed link hotspots being vertically offset under some
+  conditions (KingGuppy)
+- Layouter: fixed problems with image hspace/vspace > 127 pixels
+  [www.heise.de] (Olli)
+- Layouter: incremental double buffered refresh now uses a non-backfilling
+  layer, for increased rendering speed (Olli)
+
+3.3.42
+------
+- Layouter: implemented <NOBR> and <TD NOWRAP> (Olli)
+- Layouter: now checks text rendering against visible rectangles
+  to speed up scrolling (Olli)
+- Layouter: fixed strikethrough and visited link renderings,
+  broken some revisions ago. Also minor speed increase in
+  style handling during rendering (Olli)
+- GUI: scrolling with cursor keys etc. works again (Olli)
+- Layouter: cycle chain for form objects is now set properly (Olli)
+- Imgdecode: MorphOS build wasn't removing the memhandler on exit (Zapek)
+- Parser: now completely skips whitespaces in URLs during assembly
+  already (Olli)
+- Imgdecode: added detection of completely transparent images,
+  which are optimized to not be scaled or blitted at all. Should
+  reduce memory consumption and improve rendering speed when many blank
+  "filler" images are used. Updated image decoders to V16 (Olli)
+
+3.3.43
+------
+- Layouter: now properly sets font styles after a font change,
+  fixing rendering artefacts [www.vapor.com] (Olli)
+- Imgdecode: fixed various problems with the transparency detection (Olli)
+- Imgdecode: fixed image h/vspace being screwed in 3.3.42 (Olli)
+- GUI: read-only text gadgets now have the correct MUI background (KingGuppy)
+- Layouter: <BUTTON> now defaults to SUBMIT type (KingGuppy)
+- Layouter: Began proper <BUTTON> implementation, not yet very pretty
+  (KingGuppy)
+- GUI: fixed problems with pressing enter in the URL gadget (ahem) (Olli)
+- General: now checks for proper image decoder version again (Olli)
+
+3.3.44
+------
+- Layouter: links are now properly highlited when active (tab cycled) 
+  (Olli)
+- GUI: now skips leading spaces in URLs (useful when pasting)
+- Layouter: fixed handling of <ISINDEX> (stripping of previous
+  query terms) (Olli)
+- Layouter: text parsing now produces proper background color as
+  configured (Olli)
+- Layouter: forms are now auto-submitted when pressing enter inside
+  a string gadget (Olli)
+- JS: reenabled the JS interpreter, currently called of <script>
+  tags only, and no DOM linkage so far (Olli)
+- GUI: added a way to open the ErrorWindow through the 'Windows' menu (Zapek)
+- General: fixed htmlview class to not reference already closed network
+  streams (crash on back/forward, and more) (Olli)
+- General: fixed internal "last active window" state keeping, fixing a lot
+  of related problems (VIPC, View Source etc.) (Olli)
+
+3.3.45
+------
+- General: fixed enforcer hit flood on document.write() (Olli)
+- General: fixed really lame stupid crash-on-exit bug, many thanks to stuntzi
+  for hunting that one :) (Zapek)
+- Image decoder: semaphore-protected the destscreen context, so that no
+  more nukes on screen change/iconify should happen (Olli)
+- JS: document.write() actually working again now (Olli)
+- Layouter: fixed screwup with <obj align=left|right> and center (Olli)
+- JS: javascript: scheme now works (Olli)
+- General: now properly counts and reports missing images in
+  status line (Olli)
+- Layouter: hopefully fixed the font size screwup (grrr) (Olli)
+- Layouter: fixed the "broken entity" bug (Olli)
+
+3.3.46
+------
+- Imgdecode: added protection against looping redirects; will give up
+  after 20 redirects now. Revision raised to 16.2 (Olli)
+- Layouter: fixed <font size>. Really. Take my word on it. (Olli)
+- Layouter: fixed <SCRIPT>/<NOSCRIPT> handling (Olli)
+- Layouter: major speed up when dealing with completely bogus
+  rowspan values (<td rowspan=9999> etc.). Fixes www.orbs.org et.all.
+  (Olli)
+
+3.3.47
+------
+- JS: fixed memory leak in string class (Olli)
+- Layouter: <br clear=xxx> works again (Olli)
+- General: made URL "last visited" history work again (Olli)
+- JS: fixed a "Infinity" conversion error (Olli)
+- Layouter: fixed <P> to no longer screw with the line alignment mode
+  (Olli)
+- Imgdecode: Fixed possible semaphore deadlock race on shutdown.
+  Bumped rev to 16.3 (Olli)
+- Net: fixed possible deadlock condition in network shutdown (Olli)
+
+3.3.48
+------
+- Layouter: <TD WIDTH> now takes precedence over <TD NOWRAP>
+  [www.satirewire.com] (Olli)
+- Layouter: <OPTION> now skips leading blanks from the entry (Olli)
+- Layouter: added clever heuristic to determine if we're actually
+  looking at HTML even if the server said "text/plain" (Olli)
+- General: Fixed DoRexWin, which in turn fixes "GoHome" and
+  various other stuff (Olli)
+- Layouter: fixed handling of already decoded images so that they
+  will be blitted immediately, without going through the placeholder
+  stage (Olli)
+- General: fixed resetting of gauge status when stuff is fetched
+  from the cache (Olli)
+- Imgdecode: fixed possible race condition in image decoder
+  shutdown, and now temporary raises the image decoder's
+  task priority to "0" to avoid V shutdown being hindered by
+  a task running ready at pri "0". Bumped rev to 16.4 (Olli)
+- General: Bookmarks working again (Olli)
+
+3.3.49
+------
+- GUI: added fully configurable context menus (Zapek)
+- Layouter: fixed a evil crash in the frameset layouting
+  routine which could happen when the frameset specified
+  more cols/rows than there were actual frames
+  [www.boob.co.uk] (Olli)
+- Imgdecode: fixed broken semaphore releasing for AGA (Olli)
+- GUI: added 'barlabel' option to the context menus (Zapek)
+- GUI: fixed recursion bug in context menus (Zapek)
+- JS: fixed Window/Location binding [www.thehun.net] (Olli)
+- Layouter: fixed a rather bizarre state screwup in the
+  image class which could force V into a huge relayout swope
+  if a page had many equal images with unspecified sizes
+  [www.adaptec.com] (Olli)
+- JS: fixed a problem with windows being initialized with
+  a javascript: URL causing enforcer orgies [www.ping.be/bios]
+  (Olli)
+- JS: fixed document.write() not properly zero-terminating
+  the pushed string [www.thehun.net] (Olli)
+- GUI: fixed tons of bugs in the context menu editing and turned recursive
+  functions into non recursive ones (Zapek)
+- GUI: removed context menus temporarily since there are still some bugs left
+  (Zapek)
+
+3.3.50
+------
+- General: fixed loader not working at all (Zapek)
+[public alpha]
+
+3.3.51
+------
+- JS: now allows inner functions [www.palm.com] (Olli)
+- JS: no longer attempts to execute <SCRIPT LANGUAGE=VBSCRIPT> and
+  other unknown script types (Olli)
+- JS: fixed problem with navigator.plugins not cleaning up properly
+  (Olli)
+- JS: fixed window.frames array not being created, causing an
+  infinite loop with the standard "escape frameset" code 
+  [www.boerse.de, et.al.] (Olli)
+- GUI: split status line to show unloaded images, frames
+  and other objects individually. Hopefully also fixed all
+  remains of the status not being updated properly (Olli)
+- Parser: fixed problems when comments spanned network
+  blocks (Olli)
+- JS: fixed problems with "location" object bindings (Olli)
+
+3.3.52
+------
+- Layouter: frames no longer have a minimum size of 64
+  pixels (Olli)
+- Layouter: fixed space conversion in plain text layout (Olli)
+- GUI: "Stop" button now actually stops (Olli)
+- JS: fixed problems with document.write() closing all
+  open tables during parse (Olli)
+- GUI: fixed historylist adding global entries for every frames (Zapek)
+- JS: fixed window.frames[] (Olli)
+- JS: fixed window.top (Olli)
+- JS: fixed window.parent (Olli)
+- JS: fixed various more problems with assigning window.location (Olli)
+
+3.3.53
+------
+- JS: fixed problems with <A HREF=javascript:> execution in
+  framesets (Olli)
+- Layouter: added <BASEFONT> (Olli)
+- Layouter: boolean attributes now default to TRUE if only the attribute
+  name is specified (Olli)
+- Parser: now accepts hex notation for integer arguments (Olli)
+- JS: fixed problem with pages which build framesets
+  with JS document.write(), where the frameset where subsequently
+  not executed due to "document incomplete" flagging [www.postbank.de]
+  (Olli)
+- JS: fixed problems with some missing class names, causing
+  havoc on ToString(). Also, window class now returns proper
+  class name depending on whether it's instantiated as
+  a window or a frame object (Olli)
+- Layouter: fixed <NOFRAMES> (Olli)
+- Layouter: fixed shift + click not working for links and imagelinks (Zapek)
+- JS: made event subsystem work (Olli)
+- JS: Anchor now supports OnMouseOut, OnMouseOver and OnClick events (Olli)
+- JS: Anchor class is now correctly named "Link" (Olli)
+
+3.3.54
+------
+- JS: added missing isFinite() function (Olli)
+- SSL: fixed a freeing-static-memory issue in the certificate handling
+  functions. .vlib version raised to 8.7 (Olli)
+- JS: child document member child by name location (Olli)
+- JS: added image object properties [hover images should now work
+  again] (Olli)
+- JS: made document.images[], document.forms[], document.links[],
+  document.anchors[], document.embeds[], document.plugins[]
+  and document.lastModified work (Olli)
+- General: fixed nuke on form submit, introduced in 3.3.53 (Olli)
+
+3.3.55
+------
+- JS: fixed document.lastModified (grr, I suck) (Olli)
+- Rexx: added 'LoadBackground' command (Zapek)
+- GUI: selected entry in context menus was always wrong, sigh (Zapek)
+- GUI: fixed 'GoBackward' and 'GoForward' not working when being called from a
+  context menu (Zapek)
+- General: fixed a recently introduced memleak when closing a frame with a
+  background (Zapek)
+- General: fixed complete nuke when moving mouse pointer over an image
+  inside a frame (ahem) (Olli)
+
+3.3.56
+------
+- JS: fixed access to window.history and document.history object (Olli)
+- JS: added form.submit() (Olli)
+- Parser: no longer strip spaces except from the begining and the ending of
+  an URL (Zapek)
+- GUI: added a nicer way of handling the auto scheme and space stripping when
+  typing an URL (Zapek)
+- JS: form objects now properly list their member objects (Olli)
+- JS: fixed problems with link targets adressing windows which are not
+  part of the current frameset (Olli)
+- JS: reenabled window.open() (Olli)
+- Rexx: removed 'ReloadURL', use 'OpenURL RELOAD' instead (Zapek)
+- Rexx: added command 'OpenSourceView' which does something obvious (Zapek)
+- Rexx: added command 'OpenDocInfo' (Zapek)
+- Image decoder: fixed problem with certain PNG images on hicolor/truecolor
+  destination screens. Bumped version to 16.7 (Olli)
+- Rexx: added a way to open images separately in a new window (Zapek)
+- GUI: fixed imagelinks context menu showing up for non imagelink images
+  (Zapek)
+- Rexx: added command 'SaveURL' (Zapek)
+- General: fixed normal menus not working (Zapek)
+- Prefs: updated defaults (Zapek)
+- Prefs: reset the context menu prefs to fresh defaults (Zapek)
+- GUI: removed context menu editing yet again due to last minute major bug,
+  sigh (Zapek)
+[public alpha]
+
+3.3.57
+------
+- GUI: faster incremental layout on (genuine) CyberGraphX systems (Zapek)
+- GUI: added remapping of the key/ftp/http images (Zapek)
+- Imgdecode: added masking for the MorphOS version (Zapek)
+- Layouter: the double-buffer bitmap and associated layer/region
+  info is now cached, yielding less memory fragmentation and major
+  speed increase in incremental refresh (Olli)
+- Rexx: fixed method being executed on a NULL object (Zapek)
+- Layouter: fixed link target=_self to not open a new 
+  window (ahem) [www.skoda.de] (Olli)
+- GUI: fixed shift + click downloading not working for images (Zapek)
+- GUI: the context menu editor is back (Zapek)
+- GUI: the context menu over an imagelink doesn't ignore the actions for the
+  link anymore (Zapek)
+- GUI: fixed context menu actions being executed on the frameset instead of
+  the real frame everytime (Zapek)
+
+3.3.58
+------
+- General: fixed status counter plurals for "frames" and "objects" (Olli)
+- Layouter: fixed image map areas, broken a few revs ago (Olli)
+- Layouter: pages >10000 pixel are no longer chopped (Olli)
+
+3.3.59
+------
+- General: fixed MUI 3.8 compatibility (ahem) (Olli)
+
+3.3.60
+------
+- Layouter: support for <EMBED>ed plugins reenabled (Olli)
+
+3.3.61
+------
+- General: (hopefully) fixed the lockup-on-shutdown bug (Olli)
+- General: fixed MUI 3.8 compatibility (again, robo-ahem) (Olli)
+- JS: fixed enforcer flood created by debug output of objrefs with
+  NULL or undefined values (Olli)
+- JS: fixed document custom property lifetime issues (Olli)
+- JS: fixed objref "null" string conversion (Olli)
+- JS: fixed objref "null" boolean conversion. Actually, stuff like
+  "var x = null;" with "x" yielded TRUE before... (Olli)
+- JS: fixed a path assembly bug when assigning partial URLs to
+  Image.src (Olli)
+
+3.3.62
+------
+- JS: fixed some problems with with() not working on certain objects
+  (notably "navigator") (Olli)
+- Layouter: the first space in <textarea> text is now eaten up, to
+  conform to usual semantics (Olli)
+- Layouter: form content remembering on back/forward now works
+  again (Olli)
+- Layouter: form "Reset" now works again (Olli)
+- Layouter: fixed broken default value assignment for <INPUT TYPE=FILE>
+  objects (Olli)
+- General: "Ignore Meta Refresh" works again (Olli)
+- General: "Image loading" modes are working again (Olli)
+- JS: fixed a problem with name clashes between user functions and
+  members of the current context object (e.g. "function scroll()")
+  (Olli)
+- JS: JS timers now working (setTimeout()/setIntervall(),
+  clearTimeout()/ClearIntervall()). Resolution is ~100ms. Currently
+  only works with expressions as arguments, not functions (Olli)
+
+3.3.63
+------
+- JS: it's of course setInterval()/clearInterval(), not setIntervall() 
+  (I suck) (Olli)
+- JS: timers now also work with function arguments (JS 1.2) (Olli)
+- Layouter: <erm> another <well> MUI 3.8 <uhm> fix (Olli)
+
+3.3.64
+------
+- JS: fixed a lame bug in object comparision which would cause comparisions
+  like "top == self" to yield bogus results (Olli)
+- JS: taught scanner/parser about regexp literals (Olli)
+- Rexx: OpenURL now detects if the action has to be done on the link or on 
+  the image so "Open link in new window" really works now (Zapek)
+- Layouter: fixed backfill offset problem, introduced in 3.3.58 (Olli)
+- JS: setTimeout/setIntervall now properly returns the timer ID (Olli)
+- JS: scanner now properly detects unterminated regular expressions (Olli)
+- Layouter: target="_parent" was still dysfunctional (Olli)
+- Layouter: fixed backfill for empty pages (Olli)
+- Layouter: embed class would never close the net stream, and thus
+  both loose memory and possibly nuke severly if the object was
+  disposed before the net load finished [www.formel-eins.de] (Olli)
+- GUI: removed last stack recursive function from the menu editing (Zapek)
+- GUI: fixed nasty bug that would trash context menu entries when editing 
+  them (Zapek)
+- GUI: when editing a prefsmenu entry and immediately pressing 'OK' without
+  switching to another entry it's saved correctly (Zapek)
+- GUI: separators weren't saved properly (Zapek)
+
+3.3.65 [1st public beta]
+------------------------
+- Layouter: <BASE TARGET=xxx> now works (Olli)
+- GUI: first click on the context menu editor's list wasn't handled, so
+  editing the entry would do nothing. Listtree bug, grrr (Zapek)
+- GUI: new entries in the context menu editor weren't saved correctly (Zapek)
+- GUI: fixed the 'remove' button in the context menu editor (Zapek)
+
+3.3.66
+------
+- General: Netinfo window would nuke if there were long URLs with "%"
+  in them (Olli)
+- GUI: 'SaveURL' wasn't working when saving the link of an imagelink (Zapek)
+- General: debug level is now settable via menus (Olli)
+- General: minor speed up in refresh clip handling (Olli)
+- General: memory allocated for scaled images was never freed (Olli)
+- General: removed unnecessary prefs/button image copying (Olli)
+
+3.3.67
+------
+- GUI: fixed key image sizes (erm) (Olli)
+- JS: added grammar workaround for websites which produce
+  (wrong, but IE-accepted) code like "if(cond){statement};else{statement}"
+  [translator.go.com] (Olli)
+- JS: fixed bogus line numbers be reported in error window (note that
+  for line counting purposes, only '\n' (linefeeds) are considered
+  line breaks) (Olli)
+- Layouter: now understands <noembed> (Olli)
+- JS: navigator.mimeTypes[] functional (Olli)
+- JS: plugin.enabledPlugin functional (Olli)
+- General: extended plugin interface so that plugin can provide
+  Alias IDs under which they are listed in navigator.plugins --
+  this is mostly to workaround lame JS code which doens't
+  check navigator.mimeTypes[], but also does a name comparision
+  on navigator.plugins[] [www.grow.de] (Olli)
+
+3.3.68
+------
+- JS: do {...} while(cond); now works (Olli)
+- GUI: fixed problem with the mouse pointer being
+  out of area on links etc. not being filtered correctly (Olli)
+- GUI: now remembers tearoff settings for windows again (Olli)
+- GUI: fixed "Goto Bookmarks" (Olli)
+- GUI: fixed "Open Local file" (Olli)
+- GUI: fixed updating of spoof menu entries (Olli)
+- General: fixed plugin seturl() callback (Olli)
+- Plugin: removed Alias IDs (Zapek)
+- JS: fixed a rather bizarre problem with object
+  literal initialization (Olli)
+- JS: "var x;" now properly initializes the object to "undefined"
+  (Olli)
+- JS: fixed comparisions against "undefined" (Olli)
+- JS: switch/case now works (Sircus)
+
+3.3.69
+------
+- JS: Object class now knows the valueOf() method (Olli)
+- JS: setting an unmodifable property of an DOM object
+  now longer causes a major crash [www.08whatever.com] (Olli)
+- JS: document.title can now be set (Olli)
+- JS: regular expressions mostly working (objects and
+  literals) (Olli)
+
+3.3.70
+------
+- JS: numerous bugfixes in RegExp object (sigh) (Olli)
+- General: password fields no longer remember their contents
+  on back/forward (Olli)
+- JS: onmouseclick, onmouseover and onmouseout now works for
+  <AREA> objects (Olli)
+- JS: added toLowerCase()/toUpperCase() to String object (Neko)
+- JS: added missing <input type=button|submit|reset> DOM 
+  functionality (Olli)
+- JS: assigning "null" to a function pointer no longer causes
+  a straight visit to hell (Olli)
+- GUI: fixed the random issues of the Historylist (Zapek)
+- JS: added missing <input type=text|password> DOM functionality
+  (Olli)
+- GUI: fixed 'Open file...' menu crashing (Zapek)
+
+3.3.71
+------
+- General: no longer fails to start if locale.library isn't
+  present for some reason (Olli)
+- JS: added String.concat() (Neko)
+- JS: fixed a rather nasty bug that JS execution context
+  (variables etc.) got mixed up between frame sets when JS
+  code was executed in various frames at the same time (Olli)
+
+3.3.72
+------
+- GUI: fixed Historylist really this time.. as usual (Zapek)
+- General: now doing to a new URL will abort all the images being loaded in
+  the current one (Zapek)
+- Layouter: link underlines are again now rendered at font baseline + 1,
+  like with the previous layout engine (Olli)
+- JS: fixed a problem with the form object not building it's child
+  list properly (Olli)
+- JS: body onload & unonload now work (Olli)
+- JS: fixed onblur/onfocus events in button & textfields (Olli)
+- JS: added missing <SELECT> DOM functionality (except the
+  .options array) (Olli)
+- JS: fixed a problem with the document object not being in the
+  context of event handler executed code [www.vapor.com] (Olli)
+- Network: added semaphore protection to avoid race conditions between the
+  network task and the netinfo window which could lead to methods being pushed
+  on non existent objects, thus crashing (Zapek)
+- JS: added missing <INPUT TYPE=HIDDEN> DOM functionality (Olli)
+
+3.3.73
+------
+- JS: it's now possible to set Form.Select.selectedIndex (Olli)
+- JS: method calls for most DOM objects were blatantly broken (Olli)
+- JS: made focus() and blur() actually work [www.google.com] (Olli)
+- JS: added missing DOM functionality for <INPUT TYPE=CHECKBOX>
+  objects (Olli)
+
+3.3.74
+------
+- JS: added missing <TEXTAREA> DOM functionality (Olli)
+- General: fixed broken IPC (Zapek)
+- Layouter: made <s> equivalent to <strike> (erm), and added <del> (Olli)
+- Layouter: made <tt> work (Olli)
+- Layouter: <... VALIGN> was completely messed up, because the routine
+  used for this actually checked against ALIGN again (Olli)
+- General: due to a cvs merge problem, all links where in fact
+  triggered *twice* (only really showed with mailto: links, though)
+  (Olli)
+- General: fixed internal mailto: being completely broken (The, David, The)
+  (Olli)
+- Imagedecode: fixed low mem handler. Due to some semaphore screwup,
+  it would never free image memory when the low mem situation was caused
+  by the image decoder process itself, which however was very likely.
+  (Olli)
+- Imagedecode: fixed incomplete images not being flushed and
+  reloaded properly (Olli)
+- Imagedecode: fixed a problem with imgdec_abortload() not properly
+  flagging the image as "broken" if the abort happened before any
+  image data was actually loaded, thus screwing up the layouter
+  heavily, causing deadlocks and stuff. Raised version to 16.10 (Olli)
+- General: fixed enforcer hit flood during layout when image loading 
+  was turned off (Olli)
+
+3.3.75 [2nd public beta]
+------------------------
+- JS: implemented window.focus() and window.blur() (the latter
+  being a no-op) (Olli)
+- JS: fixed event handler execution so that "this" properly
+  points to the source object (Olli)
+- JS: the "form" property of several form objects was 
+  undefined (Olli)
+
+3.3.76
+------
+- JS: again, setting properties which weren't settable could cause
+  a major crash, due to the fact that the custom property handlers
+  were trying to interpret a string (or other) value as an object.
+  Now hopefully fixed once and for all, in case such a thing happens,
+  a "Property can't be modified" message is thrown up (Olli)
+- JS: it's now possible to set form.target and form.action
+  [www.teleauskunft.de] (Olli)
+- General: fixed MUI app object contained version string (which
+  is also shown by Exchange) (Olli)
+- JS: added date.toLocaleString(), date.toUTCString(), date.toGMTString(),
+  date.getMilliseconds() and date.setMilliseconds() (Olli)
+- JS: added the UTC versions of the date.getXX() functions (Olli)
+- JS: added the UTC versions of the date.setXX() functions (Olli)
+- JS: made Date.parse() work (Olli)
+- JS: implemented the Date(millis) and Date(string) date class
+  constructors (Olli)
+- JS: serious bug in the scanner would interpret all numeric
+  literals without a decimal point as a 32 bit integer, thus
+  screwing up values which didn't fit into this range (notably
+  Date initializers) (Olli)
+- JS: implemented the Date(year,month,day) etc.pp. constructors
+  (Olli)
+- JS: fixed problem with anchor mouseover event handler return
+  code being ignored under certain circumstances (Olli)
+
+3.3.77
+------
+- JS: added form.reset() (Olli)
+- Layouter: added percentage support for WIDTH and HEIGHT in the <IMG> tag
+  (Zapek)
+- Layouter: fixed a problem in the group class causing it to ignore
+  margins when layouting inner objects (Olli)
+- Layouter: fixed a problem with cascaded <... align=left> objects
+  being not properly layed out (Olli)
+- Layouter: fixed a really bizarre interaction with <li> and
+  left aligned tables [www.tomshardware.com] (Olli)
+- Imagedecode: fixed a very longstanding bug in the AGA c2p code
+  which would write excess data for every 17, 49 etc. column.
+  Also optimized the code a bit while being at it. Version bumped 
+  to 16.11. (Olli)
+- Layouter: added percentage support for WIDTH and HEIGHT in the <EMBED> tag
+  (Zapek)
+
+3.3.78
+------
+- Layouter: fixed the very same layout interaction problem for
+  align=right objects now (ahem) (Olli)
+- Rexx: changed OpenURL to LoadURL and put back the old OpenURL version. ARexx
+  scripts should now work and openurl.library as well (Zapek)
+- Layouter: fixed a problem with the "end of page" operations sometimes
+  not being triggered properly (status update, triggering of meta refresh,
+  etc.) (Olli)
+- Prefs: added automatic conversion of "ReloadURL FORCE" to "LoadURL RELOAD
+  FORCE" for people not reading readmes :) (Zapek)
+- Layouter: fixed a selection problem with large <SELECT> lists which were
+  not in multiple mode [www.xe.com/ucc] (Olli)
+- JS: fixed a potential race condition in setting JS timers which
+  could cause a full lockup (Olli)
+- Net: POSTing to URLs containing #anchors was completely dysfunctional
+  [www.excite.co.uk] (Olli)
+- JS: undefined variables now indeed evaluate to "undefined", instead
+  of causing an error bail out [a good quarter of the www] (Olli)
+- Layouter: added ALIGN=MIDDLE as an alias for ALIGN=CENTER (similiar
+  to the existant VALIGN=CENTER alias for VALIGN=MIDDLE) (Olli)
+- Net: when following a redirect, the target GET is now sent
+  with the ORIGINAL URL as a Referer:, instead of the FORWARDING URL.
+  This fixes problems with scripts checking the Referer: and relying
+  on the MSIE behavior [www.lycos.co.uk SMS service] (Olli)
+- Net: made the date parser a bit more forgiving against slightly
+  offstandard date formats -- should fix some problems with cookies
+  expiring too quickly (like, immediately) (Olli)
+- Prefs: when all cookies were deleted, the list wasn't saved,
+  thus the cookies reappeared after a restart (Olli)
+
+3.3.79 [3rd public beta]
+------------------------
+- Layouter: changes in image sizes didn't cause the necessity
+  of scrollers to be reevaluated. This mostly showed when loading
+  individual po^H^Himages (Olli)
+- Layouter: increased chance that upon showing individual images,
+  image info can be shown in the window title properly (Olli)
+- Layouter: fixed enforcer hits when only one of the image
+  dimensions was specified (Olli)
+- Layouter: now supports transparency in background images (Olli)
+- General: added workaround for broking URLs of the form
+  http://www.theviking.net?blah=blubb (i.e., missing "/" after host) 
+  (Olli)
+- Layouter: now strips off URI arguments when submitting a form
+  (Olli)
+- Prefs: fixed automatic prefs conversion not working for context menus
+  (Zapek)
+- JS: setting of custom properties on the document object works
+  again (Olli)
+- Net: fixed enforcer hits on FTP login (Olli)
+
+3.3.80
+------
+- GUI: context menu for images now shows the image info in
+  the title (Olli)
+- GUI: fixed memory leak everytime a context menu was shown (Olli)
+- JS: V wouldn't execute <script> tags which had an explicit
+  language="Javascript" attribute (Olli)
+- Layouter: fixed a bug in the layout engine which would
+  miscalculate the width of an object if it contained <pre>
+  formatted text (or was a <TD NOWRAP> cell) and certain
+  types of inline objects (notably, anchors) (Olli)
+- Layouter: hopefully finally and for all fixed fancy interactions
+  between <p>, <div>, <center> and <hx> line aling modes (Olli)
+
+3.3.81
+------
+- Layouter: form data stripping (as introduced in 3.3.79)
+  only takes place when the form METHOD is not POST (Olli)
+- Layouter: "#fragment" addressing now works, in both
+  loading and intra-document links (Olli)
+- Layouter: fixed problems with empty <select> lists (Olli)
+- Layouter: fixed problems with div/p alignments going
+  awry sometimes (Olli)
+- Layouter: <LI> now sets last-was-space mode correctly (Olli)
+- JS: made <script src=url> work (Olli)
+- Layouter: made the heuristics which causes V to ignore obviously
+  bogus <TD WIDTHs> less sensitive, to avoid problems with narrow
+  windows ["fixes" table_width.html] (Olli)
+
+3.3.82
+------
+- Layouter: made color code parser more forgiving on ultra-crap
+  HTML (rgb specs with "O" instead of "0", missing "#" etc.)
+  (Olli)
+- Net: fixed the possibility of a reloaded node still catching
+  cached content due to a state race condition (Olli)
+- GUI: fixed context menus which could pick wrong anchors (Zapek)
+- Layouter: empty color specs are now ignored throughout (Olli)
+- Layouter: now understands hex numerical entities (Olli)
+- JS: real-to-string conversion now produces up to 32 digit
+  numbers before reverting to scientific notation (Olli)
+- JS: parseInt() now understands numbers in scientific notation (Olli)
+
+3.3.83
+------
+- JS: for( x in obj ) now works (Olli)
+- JS: fixed function.toString() (Olli)
+- JS: fixed a memory trashing issue when toString()ing an empty
+  array (Olli)
+- Layouter: <p> at the top of an empty container no longer
+  causes blank space (Olli)
+- Layouter: fixed a complicated screwup involving unspecified
+  tables and cellspacing/border/cellpadding induced rounding
+  errors (Olli)
+- General: fixed a potential crash due to a race condition
+  on form submission by pressing enter in a string
+  field (Olli)
+- General: fixed another potential crash when submitting
+  a form twice or more times while the first submit is
+  still ongoing (Olli)
+
+3.3.84
+------
+- Layouter: "Pragma: no-cache" is now also honored when it's specified
+  in HTTP-EQUIV (Olli)
+- Layouter: Meta-Refresh now always triggers a forceful reload (Olli)
+- Layouter: image and table cell relative widths are now clipped between
+  [0%,100%] (Olli)
+- JS: fixed Real class string conversion for more accuracy, too (Olli)
+- Imgdecode: MorphOS imgdecoder's revision was never set (Zapek)
+- Layouter: no more unneccesary screen refresh when switching
+  pages (Olli)
+- Layouter: URL assembly no longer removes blanks; they are
+  converted into %20s later in networking (Olli)
+- Layouter: GIF anims now stop if the window is deactivated (Olli)
+
+3.3.85
+------
+- Imgdecode: removed the 'Optimized updating' option which is now unecessary
+  (Zapek)
+- Prefs: stopping anims on window activation/deactivation is now settable
+  (Zapek)
+- Layouter: GIF anims reactivation do really work (Zapek)
+- GUI: fixed the context menu doing enforcer hits when there was no entry
+  selected and the object was disposed (Zapek)
+- GUI: fixed prefspanel crash when changing panel quickly (Zapek)
+- JS: properly class Select.selectedIndex was broken for <select>
+  objects which were represented as a popup list (Olli)
+- JS: fixed some more (sigh) scoping problems with regards to
+  the this pointer, and the default scoping object [www.autobild.de]
+  (Olli)
+- JS: implemented select.options[] (read-only, so far) (Olli)
+- Layouter: fixed status not updating properly problems with frames
+  pages (Olli)
+
+3.3.86
+------
+- Imgdecode: oops, line decoding was turned on (Zapek)
+- Layouter: fixed a problem with interpretating relative widths
+  of tables when any margin constraint was active (i.e, an
+  left-aligned image or table) (Olli)
+- JS: parent of topmost window is now the topmost window itself.
+  No, I'm not going to comment on this. Really. I don't. I'm in
+  full control of my emotions. [www.nvidia.com] (Olli)
+- JS: function pointers now evaluate to boolean TRUE in
+  bool conversion, instead of throwing a "invalid type
+  conversion" fit [www.t-online.de] (Olli)
+- Imgdecode: raised PPC's stacksize and added priority setting like the 68k
+  version (Zapek)
+- Layouter: now ignores duplicate <body> tags [www.planetquake.com] (Olli)
+- JS: window.scrollXX() now works (Olli)
+- JS: moved toString() implementation into the interpreter, no more
+  per-object implementations are necessary. This closes some holes
+  with objects which didn't properly implement toString (notably
+  document) (Olli)
+- JS: fixed Object.valueOf() (Olli)
+- General: reduced per-object memory consumption a bit (Olli)
+- JS: read-access to variables of other frames is now possible (Olli)
+- JS: fixed a nice collection of problems with typeof(), notable
+  it causing a "too many objects in expression" error [www.palm.com]
+  (Olli)
+- JS: fixed a problem with array references used in expressions (Olli)
+- General: source view now no longer opens for anything which is not
+  text/* (Olli)
+
+3.3.87
+------
+- Layouter: fixed a problem with the image buffer and nested
+  html views (i.e., frames), causing nukes with MUI 3.8 and
+  inefficiency with MUI 4 (Olli)
+- JS: removed document.parent property (doesn't exist by
+  DOM spec, and creates ambiguity with window.parent) 
+  [www.jschoenfeld.com] (Olli)
+- JS: fixed problems with line numbers in error reports (Olli)
+
+3.3.88
+------
+- JS: fixed remaining line number counting problem in
+  conjunction with document.write() (Olli)
+- JS: fixed problems with document.forms[] et.all. not
+  being up to date properly (Olli)
+- JS: fixed document.embeds/plugins[] -- really, this time (Olli)
+- JS: implemented proper mark&sweep garbage collector for maintaining
+  object lifetimes. Should fix all niggling random bugs induced by
+  the previous broken (by implementation and design) refcounting
+  approach (Olli)
+- Layouter: fixed a crash-o-bang problem with lists with a
+  nesting depth > 6 (Olli)
+- JS: now supports line continuation in strings properly ("\" at
+  end of line) (Olli)
+- JS: fixed problems with certain types of object member
+  addressing crashing hard when the object is undefined/null (Olli)
+- Layouter: fixed a problem with the network module confusing
+  Referer and actual URL, causing problems with redirects (Olli)
+- JS: implemented missing "Radio" class DOM functionality (Olli)
+- Layouter: fixed a problem where RectFill() could be called
+  with broken parameters (top<bottom), thus wrecking havoc
+  (Olli)
+
+3.3.89
+------
+- JS: fixed a problem with window.frames[] possibly being
+  incomplete when being referenced "too quickly" (Olli)
+- JS: building of window.frames[] was seriously broken
+  with nested framesets (Olli)
+- JS: button.value is now settable (Olli)
+- General: "Stop" would crash on frames pages (Olli)
+- Layouter: removed &comma; entity, to avoid freak interactions
+  with the IE precedent of converting entites in URLs (grrr),
+  and IE not knowing &comma; (grrr) (Olli)
+- JS: fixed GC issue with navigator.plugins[] and 
+  navigator.mimetypes[] (Olli)
+- JS: fixed GC issues with document custom properties (Olli)
+- JS: implemented missing String.split() method (Olli)
+- JS: fixed Radio.onClick() event handler (Olli)
+- JS: fixed an GC issue with radio buttons (Olli)
+- Layouter: will now remove the last spaces in a container (Olli)
+- General: authentications and history won't be saved to disk if V
+  failed to start (Zapek)
+- Cache: doesn't save the cache on exit if V didn't start (Zapek)
+- Imgdecode: recompiled with MorphOS directcalls and added new PPC direct
+  callback API (Zapek)
+- GUI: SpeedBarObjects failing to be created would lead to a crash (Zapek)
+- General: cleaned up brush memory handling functions mess (Zapek)
+- Layouter: added completely kewl new table sizing algorithm(tm)
+  (Sircus)
+- JS: implemented document.cookie (read only) (Olli)
+
+3.3.90
+------
+- Layouter: rendering speedup with lots of anchors, divs, paragraphs
+  or manual linebreaks (Olli)
+- Layouter: fully transparent background images are now dropped
+  completely (Olli)
+- GUI: fastlink buttons failing to be created would lead to a crash (Zapek)
+- Layouter: fixed table border rendering, broken in 3.3.89 (Olli)
+- JS: fixed a GC issue with form cycles, causing crashes when
+  the options array was referenced (Olli)
+- Layouter: due to a silly string comparision mistake, image map areas
+  types DEFAULT, POLY/GON or CIRCLE didn't work (always interpreted
+  as RECT) (Olli)
+- Layouter: <input type=image> objects would have their name
+  padded out with bogus spaces (Olli)
+- JS: javascript: links used as a src for new frames or windows
+  would nuke horribly (Olli)
+- Layouter: non-multi-select listview <select> items would retain
+  the previous selected entry without any chance to reset it when
+  going back through navigation (Olli)
+
+3.3.91
+------
+- JS: fixed a problem with timers eating up all available memory
+  due to constantly allocating new bytecode space (Olli)
+- JS: the garbage collector is now run regularly after executing
+  event handlers or timers (Olli)
+- JS: fixed another bizarre problem involving the garbage collector
+  object handling order -- fixes various random crashes on quit,
+  on leaving framesets etc. (Olli)
+- Layouter: now handles TABs in <pre> formatted text
+  properly (Olli)
+
+3.3.92
+------
+- JS: fixed initialization of the random number generator used
+  for Math.random() (Olli)
+- Imgdecode: Now detects if an GIF or PNG is marked as being
+  transparent without the mask being actually used. This allows
+  for much more efficient blitting, esspecially when "transparent"
+  images are used for backgrounds by Dreamweaver-class webdesigners
+  [www.unreal2.com, and others]. Image decoder version raised to
+  18.0 (Olli)
+- Layouter: double buffering was accidentally disabled after
+  the first refresh, causing heavy flickery on subsequent
+  refreshes (Olli)
+- JS: fixed another GC issue involving window' class custom
+  properties (Olli)
+- JS: fixed Yet Another issue with array.toString() (Olli)
+- Layouter: now stores the horizontal and vertical positions of visited
+  webpages in the Historylist (Zapek)
+- General: if a small critical memory allocation failed, V wouldn't 
+  display an alert message (Zapek)
+
+3.3.93
+------
+- JS: fixed a memory leak in array class (Olli)
+- JS: "Reload" with active timers would eventually nuke (Olli)
+- Layouter: added support for <ins>, <code>, <samp>, <kbd>,
+  <cite>, <dfn> and <var> style tags (Olli)
+- JS: fixed another GC issue with frames [www.gelbepost.de]
+- Layouter: fixed the storing of horizontal/vertical position of visited
+  webpages. Now always sets them correctly, hopefully (Zapek)
+- JS: added navigator.platform (Olli)
+- Layouter: fixed problems with "vanishing" empty cells 
+  [www.heise.de] (Olli)
+
+3.3.94
+------
+- Net: Anon ftp now uses "anonymous" instead of "ftp" as the login name
+  to avoid problems with some strange ftpd installations
+  [www.haage-partner.com] (Olli)
+- JS: window.open( "" ) no longer causes the base URL to be loaded
+  into the new window (Olli)
+- JS: <frame src=""> would cause the base URL to be loaded into the
+  frame, possibly causing evil loops [www.cinefil.com] (Olli)
+- JS: fixed for MorphOS (Zapek)
+
+3.3.95 [4th public beta]
+------------------------
+- JS: fixed window.open() with just two arguments [http://www.collegia.de/]
+  (Olli)
+
+3.3.96
+------
+- Layouter: <P ALIGN=x>s at top of a container would cause the alignment
+  to get lost [www.dcecom.de] (Olli)
+- Layouter: fixed <P> leading space at top of containers (Olli)
+- Layouter: now supports <IMG LOWSRC=x> attribute, solely to support
+  JS code which uses this attribute to store image rollover helper
+  data [www.dcecom.de] (Olli)
+- General: fixed a (temporary) memory leak when a plugin was setting an URL
+  (Zapek)
+- General: iconifing V when using the clockclass would go into a busyloop
+  after deiconifying it (Zapek)
+- Layouter: now ignores <IMG WIDTH=""> or HEIGHT="" [www.amazon.co.uk]
+  (Olli)
+- JS: fixed a parsing problem causing some strange behavior with missing
+  ';' [www.zdf.de] (Olli)
+- JS: fixed String() function (Olli)
+- Network: directory scanning now uses ExAll() instead of ExNext() (Zapek)
+- JS: location.replace() was missing a string termination, and
+  thus sometimes produced bogus URLs [VTS: js_garbage.html] (Olli)
+- Layouter: (hopefully) fixed a problem with heavily nested frames
+  screwing up the cache bitmap/layer combo [www.vakantje4u.nl] (Olli)
+
+3.3.97
+------
+- Layouter: the X/Y position is no longer set back if the user moved during
+  layouting (Zapek)
+- Cache: ExAll() to the prunecache process and certs scanning (Zapek)
+- Image decoders: will now properly reload images which were
+  aborted by user (either by pressing "STOP" or aborting load due to
+  a navigation action). Fixes various problems with going backwards
+  or forwards in pages, or induced by javascript frames escape code.
+  Raised image decoder version to 18.1 (Olli)
+- Image decoders: an image which was used as a background and which 
+  had a transparency channel which wasn't used would not refresh
+  correctly upon finishing of download [www.sasg.com] (Olli)
+- General: fixed another problem with typing in the URL
+  gadget causing form image objects to be randomly activated (Olli)
+- JS: implemented document.open() and document.close() (Olli)
+- JS: fixed a problem with the order of evaluation of variable names,
+  which could cause an object property to hide a actual variable
+  (i.e. "window.name" hiding "name") (Olli)
+- JS: fixed 1001 problems with window.open() (Olli)
+- JS: implemented window.close() (Olli)
+- JS: implemented String.match() and String.search() (Olli)
+- Imgdecode: oops, MorphOS version would wrongly try to open a 68k image
+  decoder if the PPC version wasn't there then violently crash (Zapek)
+- Plugin: ExAll() to the plugin scanning (Zapek)
+- Plugin: MorphOS version works again, new API addition (Zapek)
+- Layouter: fixed a problem with zero-sized cells [www.heise.de] (Sircus)
+- Layouter: fixed a problem with relative width tables causing
+  a discrepancy between sizing and layouting stage, thus causing excess
+  wrapping [numerous sites] (Olli)
+- GUI: added smooth scrolling for MUI4 (Zapek)
+- General: fixed enforcer hits and malfunctions when launching an external app
+  (Zapek)
+- Net: no longer hangs when the size of a FTP download is unknown (Zapek)
+- Net: FTP errors are reported correctly (Zapek)
+- Layouter: fixed a rather complicated interaction which caused constructs
+  like <script src=> to get table contexts lost when, and only when, the core
+  document was already completely in memory (Olli)
+- JS: added support for the optional start index for both String.indexOf()
+  and String.lastIndexOf(). This actually fixes some sites which were
+  otherwise getting entangled in neverending JS loops trying to iterate
+  over cookies [www.amazon.com, for example] (Olli)
+- JS: fixed a problem with "javascript:" URLs in form action submission
+  [www.sainsburys.com] (Olli)
+- Layouter: no longer aborts if documents contain strain zero bytes (Olli)
+- Layouter: exchanged default followed and not followed link colors to
+  match IE (only applies to new V installations without existing prefs
+  files) (Olli)
+- Layouter: ACCESSKEY now also works for image map areas (Olli)
+- JS: implemented String.fromCharCode(), and the global static "String" 
+  object [www.rtlworld.de] (Olli)
+- Layouter: several of the style tags (<cite> etc.) were missing their
+  negation counterparts, thus causing style "leakage" (Olli)
+- JS: implemented RegExp.toString() according to IE behavior (Olli)
+
+3.3.98
+------
+- JS: implemented Link.href (Olli)
+- Layouter: form images are now properly included in the cycle chain (Olli)
+- Layouter: fixed a problem with the status line not properly resetting
+  when leaving image map areas [www.yahoo.com] (Olli)
+- Image decoder: scaled bitmaps are now allocated with a safety margin,
+  to protect against rounding errors in BitMapScale() implementations.
+  Might (or might not) fix various reported strange memory trashing
+  problems (Olli)
+- JS: documents created with document.open() had no proper base URL,
+  thus causing all kind of weird problems [www.rtl.de] (Olli)
+- Layouter: plaintext layout no longer wraps (Olli)
+- Layouter: major improvement in rendering and esspecially scrolling
+  speed by various optimizations in the redraw & backfilling code (Olli)
+
+3.3.99
+------
+- JS: fixed form radio group name building (Olli)
+- Bookmarks: CManager is now optional and no longer loaded on startup so V
+  loads faster (Zapek)
+- GUI: context menus won't pick up the wrong link anymore (Zapek)
+- GUI: the download window is now created dynamically (Zapek)
+- GUI: imagelinks menus show up over imagemaps when needed (Zapek)
+- JS: fixed a potential endless loop caused by weird <script src>
+  URLs [www.musenet.fr.st] (Olli)
+- Rexx: added 'CopyToClip' command (Zapek)
+- Prefs: fixed possible crash in the smooth scrolling prefs
+  with MUI 3.8 (Olli)
+
+3.3.100
+-------
+- JS: raised the maximum nesting depth of symbolic expressions
+  to 32 levels (from 10) -- this fixes errors with statements of
+  the form "a=b=c=d=e=f=g=h=i=j=k=l=m=n=o=p=q=r=s=t=u=v=''"
+  (Olli)
+- JS: added support for top and left attributes for the window.open features
+  argument (Neko)
+- JS: fixed missing "?" in location.search string (Olli)
+- JS: setting document.location now works like setting window.location (Olli)
+- JS: fixed an issue with timers, arguments and the GC (Olli)
+- Bookmarks: pressing the 'Add' button works even if CManager wasn't started
+  by some other means first (Zapek)
+- Bookmarks: fixed typing aliases in the URL string (Zapek)
+- GUI: V won't rewrite 'bla' into 'http://www.bla.com/' since this is a brain
+  damage for local networks (Zapek)
+- GUI: no smooth virtgroup without user interaction (Zapek)
+- GUI: added single window mode (Olli)
+- GUI: closing a window removes its entry from the 'Windows' menu properly
+  (Zapek)
+- JS: now supports the unary "+" operator (for people writing stuff like
+  "+5.0") (Olli)
+- Layouter: fixed a severe memory leak when viewing individual images
+  causing the image data to never be freed again (not on quit, not on
+  flush, not on "Flush image cache"). Very bad on pages with lots of
+  individual images (i.e. porn sites) (Olli)
+- JS: various array functions which should have returned the array
+  in fact didn't (Olli)
+- JS: array.unshift() and array.push() would cause bogus "Expression stack
+  empty" errors (Olli)
+- JS: added workaround for "var undefined;" (Olli)
+
+3.3.101
+-------
+- JS: implemented document.getElementById() and document.all[] (Olli)
+- JS: array.push() now returns the new array length (Olli)
+- JS: implemented location.protocol (Olli)
+- GUI: fixed window closing in single window mode (Olli)
+- JS: no longer stumbles over document.write( "</SCRIPT>" );-alike
+  stuff (Olli)
+- Layouter: now really only wraps on whitespaces, not on consecutive
+  objects (e.g. images) (Olli)
+- JS: fixed nuke problem with the array toString() and join() methods 
+  and self refereneces [www.faz.net] (Olli)
+- JS: error reporting now includes the true URL of the file causing
+  the error, instead of the document base URL (Olli)
+- JS: the new func() constructor call was leaving trash on the
+  expression stack, potentially screwing with assignment operations
+  [www.dds.dk] (Olli)
+
+3.3.102
+-------
+- JS: setting window.status from a frameset now updates the real
+  status text (Olli)
+- JS: one call to ToString() was missing the radix parameter, and
+  thus caused conversion to random bases [www.niblet.co.uk] (Olli)
+- GUI: main prefs window was screwed with MUI 3.8 (Olli)
+- JS: hopefully fixed remaining problems with silly HTML comment
+  wrapping of code (Olli)
+- JS: <A OnClick=...> now works properly (Olli)
+- Layouter: cloned IE behavior with </form> in void space
+  in tables (Olli)
+- Layouter: <pre> linefeed inserting behavior now matches IE
+  (Olli)
+- GUI: fixed download window not displaying the progress of the download
+  causing its first opening, and some enforcer hits (Zapek)
+- Layouter: interaction between calcminmax and dolayout could case
+  <nobr> or <pre> formatted text to break out of table cells (Olli)
+- Layouter: <[obj] ALIGN=CENTER|RIGHT> is now relative to the visible
+  window width, as opposed to the real document width for the outer
+  container (Olli)
+- JS: document.close() without a previous .open() or a .write()
+  would cause havoc (Olli)
+
+3.3.103
+-------
+- JS: String.substring() would crash quite impressivly with 
+  an starting index > size of the string (Olli)
+- GUI: fixed a crash bug regarding opening of new windows
+  when all previous browser windows had been closed (Olli)
+
+3.3.104 [5th public beta]
+-------------------------
+- JS: "null + <something>" would cause enforcer orgy (Olli)
+- Imgdecode: now will always show the size and type of the pictures when
+  viewed individually, even when the network connection is slow (Zapek)
+- Imgdecode: no longer eats up a few lines when displaying individual pictures
+  progressively (Zapek)
+
+3.3.105 [MorphOS public beta fix]
+-------
+- JS: finally tracked down the bug producing random JS crashes on MorphOS. It
+  turned out to be a bug in libnix. Thanks to Emmanuel Lesueur for fixing it
+  (Zapek)
+- Imgdecode: same bugfix as the previous one. Bumped version to 18.3 (Zapek)
+
+3.3.106
+-------
+- JS: fixed problems with /* */ comments sometimes screwing up parsing (Olli)
+- Layouter: fixed <frame marginwidth|height> being ignored (Olli)
+- JS: Math.round() would yield bogus results for values exceeding integer
+  range [http://ff-elze.de/html/calc.html] (Olli)
+- JS: document.<objectname> addressing was completely dysfunctional
+  [half of JS-using sites] (Olli)
+- JS: resolved conflicts between NAME and ID attributes (Olli)
+- GUI: fixed mousewheel, cursorkey and numpad scrolling (even with
+  MUI 3.8) (Olli)
+- Layouter: allocated pens (for text, borders etc.) were not freed
+  properly 95% of the time (Olli)
+
+3.3.107
+-------
+- GUI: the Action in the Context menu editor can now be cycled without losing
+  each context's content (Zapek)
+- General: V wouldn't execute user supplied DOS commands correctly (Zapek)
+- General: added the following flags for the customization of context menus:
+  %u == object's URL, %l == object's link URL, %w == object's window URL,
+  %p == public screen name. Those don't need to be specified for V internal
+  commands which will pick up the correct object in an intuitive way (Zapek)
+- GUI: switching of scrollbar and clock modes no longer requires a restart
+  (Olli)
+- JS: <A onClick> was mostly dysfunctional (Olli)
+- JS: now properly honors return code from OnClick handlers (Olli)
+- JS: fixed enforcer orgy caused by NAME/ID parsing change (Olli)
+- GUI: (hopefully) fixed potential crash problems with mouse
+  wheel scrolling (Olli)
+- GUI: changed backspace to page up (Zapek)
+- GUI: (hopefully) fixed crashes when closing a tab in single
+  window mode (Olli)
+- GUI: added history per frames (Zapek)
+- JS: line/file ID opcodes were written *after* the real opcodes, thus
+  error reporting could be off by a line (or even a file, if the very
+  first instruction of a block already failed) (Olli)
+- JS: fixed problems with document.open()/close() appearing in
+  normal script blocks (Olli)
+- Layouter: fixed display problems with frames less than 8 pixels
+  width or height (Olli)
+- JS: "$" is now a valid symbol character (Olli)
+- Layouter: <frameset frameborder> and <frameset border> are now 
+  inherited from the outer frameset (Olli)
+- Layouter: <frameset framespacing> is now supported as an alias
+  to <frameset border> (Olli)
+
+3.3.108
+-------
+- JS: added document.frames[] as an alias to window.frames[] (Olli)
+- JS: "var x;" no longer overwrites the value of "x" (if it has any)
+  (Olli)
+- JS: fixed lame bug in internal function pop_as_bool() causing
+  nukes [showed more frequently with recent event handler changes,
+  but was present all the time] (Olli)
+- Layouter: "fixed" a possible division-by-zero in the table
+  weighting code (Olli)
+- JS: accessing form object would "freeze" the child list, even when
+  now childs appeared after an incremental layout run (Olli)
+- Layouter: fixed various table layouting issues (Sircus)
+- JS: added window.moveTo() and window.moveBy() functions
+  [www.bwgame.com] (Neko)
+- JS: added window.resizeTo() and window.resizeBy() functions (Neko)
+- Network: fixed some FTP servers hanging V after a LIST reply when using
+  'keep FTP connection' (Zapek)
+- JS: fixed JS not really working correctly under MorphOS. Was Laire's
+  fault :) (Zapek)
+- JS: fixed NaN and Infinity results for the MorphOS build (Zapek)
+- Prefs: added options to individually disable display of image
+  placeholder borders and ALT text while loading (Neko)
+- JS: support for window.open(.. "fullscreen=yes"); feature (Neko)
+- GUI: Added the ability to switch any window in and out of Fullscreen
+  mode via the Window menu (Neko)
+- Rexx: Added 'FullScreen' command (Neko)
+- GUI: Added a 'Close window' menu item (Neko)
+- JS: fixed a serious bug in pop_as_string() which would cause
+  length/output discrepancies for "NaN" and "Infinity", thus
+  causing buffer overflows (Olli)
+- JS: Added window.inner/outerWidth/Height properties (Neko)
+
+3.3.109
+-------
+- Imgdecode: images no longer limited to 2048x2048 pixels for CGFX users.
+  Bumped version to 18.4 (Zapek)
+- JS: Added window.screenX/Y/pageXOffset/YOffset properties (Neko)
+- JS: Added document.domain property (Neko)
+- JS: Added document.width/height properties (Neko)
+- JS: when executing a <script src=url> statement, V would ignore
+  possibly other JS code between the <script> and </script> tags (Olli)
+- Layouter: various table layout fixes (Sircus)
+
+3.3.110
+-------
+- GUI: fixed 'LoadURL RELOAD' not working from the context menus (Zapek)
+- Plugins: fixed multiple VPLUG_Query_RegisterURLMethod per plugins not being
+  honoured (Zapek)
+- GUI: fixed ramiga + window number not activating the window (Zapek)
+- JS: window.move/resize functions no longer work if they're being called
+  from inside a frame (Neko)
+- JS: unqualified functions and properties (like open();) are now directed
+  to the window rather than the document object [www.planetarion.com] (Neko)
+- GUI: window will be put to front too on menu/hotkey activation (Zapek)
+- General: V is now independent from system clock changes for most time
+  computations (download speeds, etc..) (Zapek)
+- JS: fixed Yet Another Problem with variable scopes. This bug showed
+  mostly with Dreamweaver Jockey JS code (Olli)
+- JS: unknown string escape codes (like "\!") now produce the escaped
+  character in vanilla form (following C semantics) (Olli)
+
+3.3.111
+-------
+- Parser: entities for &beta; &bullet; and &bull; added (Neko)
+- JS: added workaround to ignore randomly appearing HTML
+  comment escape codes in script blocks [www.compusa.com] (Olli)
+- Layouter: changed leading and trailing spacing for <Hx> tags (Olli)
+- Parser: removed the &num; entity so that dumbass webboards didn't
+  nuke when they used it as a variable name [IE5 doesn't support the
+  &num; entity, BAH!] (Neko)
+- Rexx: now enables the Rexx switch within MUI if needed (Zapek)
+- Layouter: fixed text calculation functions for MorphOS. This automagically
+  fixed www.vapor.com hanging.. erm.. (Zapek)
+- JS: Garbage Collector is now run after window close, to minimize stale
+  window object lifetime (Olli)
+- General: fixed a nasty enforcer hit introduced with document.domain (Neko)
+- JS: fixed Math.round() (Olli)
+- JS: fixed looping forever on switch() end-of-case with no break (Sircus)
+- JS: window.open() width and height parameters now specify the internal
+  dimensions for the window - this now matches Internet Explorer (Neko/Zapek)
+- JS: window.alert() and window.confirm() had a 256 char limit on the
+  string, and upon exceeding it would not properly cut it off, but
+  append lots of trash (Olli)
+- JS: window.open() with no URL and subsequent poking of
+  document.location is now relative to the opener's URL (completely
+  logical, eh? Well, IE...) (Olli)
+- Layouter: fixed similiar problem with <frame src=""> (Olli)
+- Layouter: modified handling of incomplete HTML tags to
+  match IE (Olli)
+- GUI: download window uses less memory per entries, minor cleanups, many
+  glitches fixed (Zapek)
+- GUI: download window displays when the file is cached (Zapek)
+- GUI: added the time a download is taking and its current estimation into the
+  download window (Zapek)
+- Network: fixed resume trashing the file result, sigh (Zapek)
+- Image decoder: fixed a semaphore deadlock situation which would block
+  the network process when the image decoder was waiting on a valid
+  destination screen info. Situation was more likely to occur when V
+  was iconified, but was prone all the time. Bumped image decode
+  revision to 18.5 (Olli)
+
+3.3.112
+-------
+- Layouter: fixed dealing with incomplete <title> and <option>
+  tags (Olli)
+- JS: window.open() no longer opens windows of less than 100 pixels width or
+  height, regardless of arguments, to match JS specifications (Neko)
+- Plugins: now fully native PPC plugins (aka MorphOS plugins) wishing to use a
+  direct PPC callback table without gates can do so by supplying the tag
+  VPLUG_Query_PPC_DirectCallbacks (BOOL/VPLUG_QUERYBASE+12) (Zapek)
+- General: rewrote the download window from scratch, new subsystem section
+  for the readme: 'Download' (Zapek)
+- Download: no longer limited to 30 chars filenames when saving files (Zapek)
+- Download: immediate CPS display during the last 4 seconds (Zapek)
+- Download: fixed an obscure bug which must have been there for a long time.
+  Depending on some timing issues resume could append the start of the network
+  stream to the file instead of doing it from the proper offset resulting to
+  an almost useless file (Zapek)
+- General: major overall speedup when dealing with many links and/or
+  table cells (Olli)
+- Network: added support for multiple simultaneous resumes or resuming of a
+  current download (Zapek)
+- JS: added workaround for an exploited IE bug where it would
+  except an ELSE with no following statement at the end of a script
+  [gb.buy.com] (Olli)
+- Layouter: <form> now adds an unconditional linebreak before it; this is to
+  temporarily fix sites that rely on this behaviour (www.dvdboxoffice.com),
+  although it will add strange extra space on others (notably www.dictionary.com)
+  until the functionality is made to be properly conditional (Neko)
+- JS: added special hackery for <a href="javascript:" or href=javascript:void>
+  code in links (Olli)
+- Prefs: fixed smooth scrolling not possible to activate on some setups
+  (Zapek)
+- JS: window.open now supports "resizable" and "scrollbars" attributes (Neko)
+- Download: added a smart non blocking, stackable requester system (Zapek)
+- Download: reimplemented overwriting of current files (Zapek)
+- Download: more verbosity when comparing locale / remote files (Zapek)
+- Imgdecode: better protection against low memory situation on initialization.
+  Bumped to v19 and required 3.3.112 or higher (Zapek)
+- General: now V checks that the image decoders started properly before
+  continuing (Zapek)
+- JS: window.open now supports the "dependent" attribute (Neko)
+
+3.3.113
+-------
+- JS: window.resizeBy() and window.resizeTo() limited to produce windows only
+  of 100 pixels minimum size for each dimension (thanks Ng :) (Neko)
+- Download: added automatic retry support with resume (Zapek)
+- Download: added redirect support (Zapek)
+- Download: added handling of unknown mimetypes and the 'Ask' mode of
+  Mimeprefs (Zapek)
+- Layouter: pre-<form>-linebreak behaviour improved (Neko)
+- General: mimetype matching doesn't open ENV:MIME.prefs all the time anymore
+  (Zapek)
+- Layouter: the "html autodection" which silently converts
+  text/plain into text/html documents now only checks for <HTML>
+  or <!DOCTYPE at the beginning of documents, to avoid confusion
+  with certain embedded MIME constructs [c't browser check] (Olli)
+- GUI: no more crashing upon closing a page using the "Window" menu item
+  (Olli)
+- GUI: window no longer cleared unnecessarily when switching
+  between pages (Olli)
+
+3.3.114
+-------
+- Layouter: </small> and </big> weren't processed, causing
+  style screwups [www.freshmeat.net] (Olli)
+- JS: now deals with quotes properly when looking for </SCRIPT>
+  tags, to avoid screwing up with stuff like document.write("</SCRIPT>");
+  (Olli)
+- General: fixed binary version string (Zapek)
+- General: fixed stupid bug in some library cleanup code in the MorphOS
+  version. I wonder how actually it went unnoticed for so long (Zapek)
+- Rexx: fixed 'OpenURL' and 'LoadURL' always opening a new window when they
+  shouldn't (Zapek)
+- General: fixed some time calculation to stop using emulated instructions on
+  060 (Zapek)
+- Layouter: disabled "html autodetection" for local files (Zapek)
+- Download: added asl requesters for saving (Zapek)
+- Download: reimplemented 'Rename' (Zapek)
+- JS: end of line now escapes quote escaping during </script> search
+  [www.dilbert.com] (Olli)
+- Network: fixed mime filename recognition not working when V was set to
+  ignore the server sent mimetypes (Zapek)
+- Layouter: small transparent background images are now blown up to
+  a reasonable size for efficient blitting [amiga.nvg.org] (Olli)
+- Download: reimplemented view and viewer selection (Zapek)
+- Download: fixed a lame crash bug introduced by Zapek (Neko)
+- Download: fixed path construction bug when saving files (Zapek)
+
+3.3.115
+-------
+- Download: fixed failing downloads making enforcer hits and listview entries
+  screwups (Zapek)
+- Download: fixed a stupid path construction bug (Zapek)
+- Download: when exiting while files are being downloaded, stale locks don't
+  stay around anymore (Zapek)
+- Download: fixed rename not working (Zapek)
+- Download: fixed the filename pointer not being set properly sometimes thus
+  screwing up the path construction when renaming to a file existing already
+  (Zapek)
+- Download: optimized refresh of stalled entries (Zapek)
+
+3.3.116
+-------
+- GUI: preference listview makes the last selected page visible when reopening
+  the window (Zapek)
+- Prefs: hopefully fixed a preference crash happening after closing the
+  preference window under certain circumstances (Zapek)
+- Layouter: major speed up during incremental layout (Zapek)
+- Layouter: fixed deadly loop with <FRAME SRC=""> stuff -- liked to
+  happen with some redirectors [www.ulimit.com, e.g.] (Olli)
+
+3.3.117
+-------
+[beta release]
+- Package: updated vapor_toolkit, Textinput, MimePrefs and CManager
+
+3.3.118
+-------
+- JS: when assigning the special value "undefined" to variables,
+  an object reference with value "null" was created -- this esspecially
+  happened when function calls where made with less parameters than
+  the function expected. Now, the variables are properly undefined.
+  This fixes comparisions against the string literal "undefined"
+  (oh my, webmasters) [www.advance-bank.de] (Olli)
+- Download: now displays the full pathname instead of the file in the download
+  listview (Zapek)
+- Imgdecode: added PNG alpha support, MorphOS only and with the latest CGFX
+  (Zapek)
+- General: fixed possible crash when window.open() failed due to
+  lack of resources (Olli)
+- General: fixed possible crash when a window with dependant subwindows
+  was closed (Olli)
+- JS: fixed crash-o-nuke with onChange handlers for certain types
+  of popups [www.orb.de, et.al.] (Olli)
+- General: hopefully fixed screwed up cookie dates for the MorphOS build
+  (Zapek)
+- General: fixed processing of multiple placeholder into strings like %p, %u,
+  etc.. (Zapek)
+- General: <form action="blah.html"> is not merged with the base URL anymore
+  on parsing (to be more like Netscape and IE), instead they are now merged
+  on submission [www.bootbox.net] (Neko)
+- General: fixed various problems with anchor fragment addressing (Olli)
+
+3.3.119
+-------
+- Network: main network loop could crash by reusing a already
+  freed URL node under certain circumstances... (Olli)
+- Network: fixed a potential problem with the network cache
+  low memory handler not working under certain circumstances (Olli)
+- Image decoder: fixed a low memory issue in the image
+  decoders, raised version to 19.1 (Olli)
+- General: global speed up of the PPC version (Zapek)
+- Image decoder: fixed a crash issue with images > 2048 pixels.
+  Raised version to 19.2 [www.sport1.de] (Olli)
+- JS: fixed several problems with JS variable scoping
+  (like differentiating between local and global variables,
+  and "leaking" of variables across function contexts), and
+  assignments to "undefined" [numerous sites] (Olli)
+- JS: now deals with illegal octal constants (08 etc.)
+  like IE, by treating them as decimal (Olli)
+- JS: string.search(), string.replace() and string.match()
+  now also accept a plain string as an argument; a temporary
+  regexp object is automatically created then (Olli)
+- JS: location.pathname now has the leading "/"; fixes some
+  document.location based string trickery on various
+  sites [www.speednames.com] (Olli)
+- Layouter: images without SRC no longer throw up a "host not found:
+  undefined" error [www.google.co.uk] (Olli)
+- JS: string.replace now functional (JS 1.2 only) (Olli)
+- JS: fixed various problems with instantiating literal regular
+  expressions (Olli)
+- Download: now decodes urls containing %20 et al. for saving to disk,
+  so File%20With%20Spaces.zip becomes "File With Spaces.zip" (Neko)
+- FTP: now displays filesizes in Kilo-, Mega- and Gigabytes where
+  appropriate (Neko)
+- Layouter: fixed tab interpretation for pure text layout (Olli)
+
+3.3.120
+-------
+- updated package with current classes and libraries (Olli)
+- no longer quits on beta timeout (Olli)
+
+3.3.121
+-------
+- JS: document.cookie is now writable (Olli)
+- Download: no longer crashes when removing an entry in failed state (Zapek)
+- GUI: Splashwin updates itself even in SIMPLE_REFRESH mode to make Henes
+  happy (Zapek)
+- Parser: <body marginwidth="x" marginheight="y"> now supported like NS (Neko)
+- Parser: <body left/right/top/bottommargin="x"> fully supported to match
+  Internet Explorer behaviour, and override marginwidth/height above if both
+  are set (Neko)
+- Layouter: submitting Forms could hit unallocated memory, causing
+  URL trashing or worse [www.google.com] (Olli)
+- Parser: Default document margins are now larger, to match IE (Neko)
+
+3.3.122
+-------
+[beta release]
+
+3.3.123
+-------
+- General: fixed V.MorphOS not starting on old MorphOS versions (aka
+  public ones :) (Zapek)
+
+3.3.124
+-------
+- Download: fixed possible buffer overflow in the download requester (Zapek)
+- Rexx: ARexx is no longer mandatory for V to run (Zapek)
+- Imgdec: V68k no longer uses the PPC image decoder (Zapek)
+- Imgdec: faster handling of alpha png images (Zapek)
+- Imgdec: no longer creates useless masks for true alpha rendering (Zapek)
+- Imgdec: fixed alpha png to work with latest cgx (Zapek)
+
+3.3.125
+-------
+- Imgdec: transparent images could have their background not refreshed
+  properly (Zapek)
+- General: V wouldn't execute any external command when being started from CLI
+  (Zapek)
+- General: disabled single window mode since it is the cause of 99% of peoples'
+  experienced crashes. It'll be back when it works (Neko)
+- JS: fixed crash happening with some "popup" windows, thanks to Henes (Zapek)
+- Layouter: pen allocation precision was slightly wrong (Zapek)
+- GUI: more efficient prefspage switching (Zapek)
+- Net: fixed some possible buffer overflows in POST requests (Zapek)
+- General: fixed small internal memoryleak which could happen with some custom
+  context menus (Zapek)
+- JS: fixed V.MorphOS crashing on most string from real datatype conversions,
+  libc bug (Zapek)
+- General: no longer barfs when Busy.mcc isn't installed (Zapek)
+- General: no longer barfs when Listtree.mcc isn't installed (Zapek)
+- Network: added SSL support to the MorphOS version (Zapek)
+
+3.3.126
+-------
+- General: disabled some optimizations for the 68k version, sigh (Zapek)
+
+3.3.127
+-------
+- General: fixed general date handling functions for the MorphOS version. They
+  would display sightly wrong dates (Zapek)
+- Cookies: added a workaround for servers sending a cookie with empty data
+  [www.ann.lu], sigh (Zapek)
+- SSL: fixed crash in certs window with the MorphOS version (Zapek)
+- FTP: parses filenames with a space properly in list output (Zapek)
+- Download: fixed some internal memory leaks when retrying downloads (Zapek)
+- General: fullscreen mode is now saved with the config (Zapek)
+- Layouter: major speed up on text rendering (Zapek)
+- JS: fixed location.protocol not appending a ':' at the end of the protocol
+  (Zapek)
+- JS: fixed window.open to work in frames (Zapek)
+- Parser: increased internal URL length, fixes sites using large URLs
+  [images.google.com] (Zapek)
+- General: stops calling the first window "New" but "" to match IE (Zapek)
+- HTTP: added support for mimetype identification when uploading files
+  [www.morphzone.org] (Zapek)
+- Rexx: 'LoadURL NEW' will just open a new empty window instead of doing
+  nothing (Zapek)
+- General: fixed enforcer hits when V couldn't start for various reasons
+  (Zapek)
+- General: fixed crash which could happen during a double start (Zapek)
+- General: fixed tons of crashes which could happen with empty windows (Zapek)
+- Layouter: fixed gifanims that I blatantly broke for the MorphOS version a
+  long time ago. They wouldn't work if there's a mask (Zapek)
+
+3.4
+---
+- Layouter: heavily improved scrolling speed (Olli)
+- General: Border scroller mode functional again (Olli)
+
+3.4.1
+-----
+- Layouter: fixed various issues with word wrap (Olli)
+
+3.4.2
+-----
+- Layouter: added a workaround against looping framesets 
+  (http://www.amigaone.at/blank.html) (Olli)
+  
+3.4.3
+-----
+- Layouter: fixed another text sizing issue on MorphOS (Olli)
+- Network: now removes username and password from Referer:
+  headers (Olli)
+- General: MorphOS version now runs without keyfile (Olli)
+
+3.4.4
+-----
+- Network: some race condition and buffer overflow fixes (Olli)
+
+3.4.5
+-----
+- Layouter: fixed <PRE> not dealing with \r properly (Olli)
+- Layouter: now uses double buffered resizes (Zapek)
+
+3.4.6
+-----
+- Layouter: added preliminary support for DD/DT/DL (Olli)
+- GUI: added support for custom pointers (Zapek)
+- GUI: V is uniconified when a new window is opened through user interaction
+  (Zapek)
+- Network: yet another attempt at fixing those sockets referencing non
+  existing objects (Zapek)
+- GUI: typing words into the URL string will search them using google (Zapek)
+- Plugins: PPC plugins are no longer detected with their filenames (Zapek)
+- General: multitasking was killed off if no arexx was running (Zapek)
+- Layouter: small speedup when the mouse is hovering (Zapek)
+- GUI: disabled mousewheel since it crashes randomly (Zapek)
+
+3.4.7
+-----
+- General: updated the version just for the fun of it (Zapek)
+
+3.4.8
+-----
+- General: fixed zeropage hits (Zapek)
+- General: fixed mouse wheel scrolling memtrashing (Zapek)
+- General: fixed hits when starting another V copy (Henes)
+- JS: added navigator.cookieEnabled (Zapek)
+- JS: added navigator.onLine (Zapek)
+- JS: added navigator.cpuClass (Zapek)
+- JS: added navigator.vendor (Zapek)
+- GUI: switched back to MUI's lists (Zapek)
+
+3.4.9
+-----
+- General: updated the version just for the fun of it (Zapek)
+

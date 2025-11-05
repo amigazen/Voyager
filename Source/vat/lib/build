@@ -1,0 +1,5 @@
+sc vatlib open_iff open_icon open_rexx open_datatypes open_diskfont
+failat 30
+delete T:vatlib.lib
+oml T:vatlib.lib a vatlib.o open_iff.o open_icon.o open_rexx.o open_datatypes.o open_diskfont.o
+copy T:vatlib.lib LIB:

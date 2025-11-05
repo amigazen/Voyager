@@ -1,0 +1,25 @@
+########################################################################
+#
+# ASM stuffs (SAS/C's asm really sucks)
+#
+# $Id: makefile.68kasm,v 1.2 2001/07/04 16:59:13 zapek Exp $
+
+mynexto.o: mynexto.s
+	$(CROSSAS) $(SOURCE)mynexto.s
+	mv ../../mynexto.o .
+
+hash.o: hash.s
+	$(CROSSAS) $(SOURCE)hash.s
+	mv ../../hash.o .
+
+sup.o: sup.s
+	$(CROSSAS) $(SOURCE)sup.s
+	mv ../../sup.o .
+   
+idea68k.o: idea68k.s
+	$(CROSSAS) $(SOURCE)idea68k.s
+	mv ../../idea68k.o .
+   
+textfit.o: textfit.s
+	$(CROSSAS) $(SOURCE)textfit.s
+	mv ../../textfit.o .

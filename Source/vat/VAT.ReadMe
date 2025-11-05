@@ -1,0 +1,273 @@
+Vapor_Toolkit
+=============
+
+The vapor_toolkit.library is a library of support functions which
+are used by most Vapor applications and thus can be shared to
+reduce individual application code size.
+
+History
+-------
+
+4.1
+---
+- fixed startup crash problems when vapor_toolkit.library was the 
+  first opener of muimaster.library (Thou Shalt Not OpenLibrary()
+  From UserLibInit())
+
+5.0
+---
+- added VAT_SetFmt()/VAT_SetTxtFmt() calls
+
+6.0
+---
+- added VAT_GetAppScreen()
+
+7.0
+---
+- added registration library calling stub
+
+8.0
+---
+- added Datatype identification functions
+- added MIME.prefs parsing functions
+- fixed VAT_SetLastUsedDir()
+
+9.0
+---
+- fixed a serious bug in the URL detection code
+- added VAT_GetAppScreenName()
+- changed VAT_SetLastUsedDir() to verify whether
+  the ENVARC: contents really changed, to avoid
+  unnecessary writes to the HD in case of a
+  crash condition
+
+9.1
+---
+- modified URL scanner to not report "empty" URLs,
+  i.e only "mailto:" or "http://"
+
+9.2
+---
+- fixed recognizing of e-mail addresses at the start of
+  a line
+
+9.3
+---
+- fixed recognition of e-mail addresses to no longer
+  grab IRC userhost notation
+- fixed URL scanner to not recognite something like
+  "http://" as an URL
+
+9.4
+---
+[internal]
+
+9.5
+---
+- fixed broken URL structure (which nuked URL
+  scanning in MD-2 and AmIRC)
+
+10.0
+----
+- added VAT_FGets()
+
+10.1
+----
+- URL scanner now also finds https://
+
+11.0
+----
+- added VAT_NewShowRegUtil()
+
+11.1
+----
+- sending IPC messages to Voyager is now asynchronous.
+  Fixes deadlock problems with TI inside V, and generally
+  when a crashed V is around.
+
+11.2
+----
+- rewrote IPC reply handler to use two different message
+  ports for processing rexx and Voyager IPC replies.
+  Fixes bug introduced in 11.1, and also a possible nuke
+  when MIME.prefs were modified while a rexx msg was
+  outstanding
+
+12.0
+----
+- added VAT_IsOnline() call to detect whether a TCP/IP
+  is available and online. Deals with both Miami
+  and Genesis.
+
+12.1
+----
+- fixed VAT_GetAppScreenName() to traverse the system
+  Pub screen list and actually *find* the application screen,
+  instead of relying on the MUI prefs item. Fixes «FrontMost»
+  and other crap (Olli)
+
+12.2
+----
+- VAT_ExpandTemplate() was blatantly ignoring the maxlen
+  parameter, allowing Buffer-Overflow® (Entity)
+
+12.3
+----
+- changed SetLastUsedDir() to check whether ENV:/ENVARC:Vapor
+  exist before doing a CreateDir(), to not confuse people who
+  have their SYS: drives locked (Olli)
+
+12.4
+----
+- ultra-lame bug in the notification handler for MIMEPrefs
+  caused the filehandlers in question (mostly RAM) to do
+  a Signal( NULL, ... ) (Olli)
+
+12.5
+----
+- VAT_OpenLibrary() now no longer tries to open Libs/<libname>
+  and /Libs/<libname> if the Library name already contains
+  path components (Olli)
+
+12.6
+----
+- now tries to flush libs if VAT_OpenLibrary() fails, to
+  encourage loading of a current version from disk (Olli)
+- did the same for vat.lib and loading of vapor_toolkit
+  in the first place (Olli)
+- updated to open vapor_registration V7 (Olli)
+
+12.7
+----
+- fixed a possible race condition with
+  MIME prefs notification on first init (Olli)
+
+12.8
+----
+- VAT_IsOnline() now checks ENV:VAPOR/VAT_ISONLINE_MIAMIDEVICE
+  for the Miami device name to check. Defaults to "mi0" when
+  unset. Mainly for script writers with advanced configuration 
+  (Olli)
+- Fixed VAT_OpenLibrary() to not flush memory even if 
+  library opened successfully (Olli)
+
+12.9
+----
+- Fixed URL scanner to expect a space (or begin of line)
+  before recognizing "ftp." and "www." as URL introducers
+  (Olli)
+
+13.0
+----
+- added WB version verification (Olli)
+
+13.1
+----
+- added "Don't warn again" button to WB version warning (Olli)
+
+13.2
+----
+- bump for free :)
+
+13.3
+----
+- VAT_IsOnline() was broken for Genesis (Zapek)
+
+14.0
+----
+- made the "wrong vapor toolkit lib" requester more clear
+  by stating that a reboot might be required if an old version
+  is still in memory (Olli)
+
+14.1
+----
+- fixed URL scanner seeing blah@*.something as email (Entity)
+
+14.2
+----
+- fixed URL scanner to properly cut off stuff like
+  ". from URLs (tends to happen in topics) (Olli)
+
+15.0
+----
+- fixed URL scanner to not recognize "www." or "ftp." alone
+  as URLs (Olli)
+- fixed URL scanner to recognize URLs in () or [] (Olli)
+
+15.1
+----
+- VAT_SendRXMsg() didn't work if the path part of the script invoked
+  contained spaces (such as "Ram Disk:") (Entity)
+
+15.2
+----
+- Fixed buffer overflow caused by last changes to VAT_SendRXMsg() (Entity)
+
+15.3
+----
+- Fixed VAT_SendRxMsg() to handle 'escaped' commands properly (Entity/Olli)
+
+15.4
+----
+- Improved the random noise generator a bit (Olli)
+- Fixed URL scanner to not regard stuff like "ftp.x" or "www.x" alone as
+  URLs (Olli)
+
+15.5
+----
+- Fixed some functions returning garbage on memory allocation failure (Zapek)
+- Added MorphOS version (Zapek)
+
+15.6
+----
+- fixed VAT_FreeVecPooled() not always working for the MorphOS version (Zapek)
+- fixed VAT_VFPrintfAsync() stupidly crashing under MorphOS (Zapek)
+
+15.7
+----
+- recompiled with MorphOS directcalls (Zapek)
+- fixed crashes with the MorphOS version and Microdot2 (Zapek)
+
+15.8
+----
+- fixed a problem with MPZ_Pow() not being reentrant, thus causing
+  crashes when multiple applications were started quickly together
+  (Olli)
+
+15.9
+----
+- more error checking in the library initialization (Zapek)
+- optimized memory usage for some functions (Zapek)
+- added "html" as built-in file extension (Zapek)
+- rewrote MIME handling functions. Much faster and more efficient (Zapek)
+- fixed a potential crash from VAT's ARexx handler (Zapek)
+
+15.10
+-----
+- fixed the saving path of MIME entries not being always set :o) (Zapek)
+- fixed the ARexx handler task crashing when the library was flushed then
+  reloaded again (Zapek)
+
+15.11
+-----
+- fixed MIME extensions list which would only add the first one of each
+  mimetype :o) (Zapek)
+- fixed screwup in the class dir handling :o) (Zapek)
+
+15.12
+-----
+- unzapeked MIME_FindByType to deal with classifiers
+  (fixes "image/jpeg; charset=..." alike stuff) (Olli)
+
+15.13
+-----
+- modified URL detection so that all chars >127 are now
+  detected to terminate an URL; this should fix the
+  AmIRC «url» problem with the french catalog (Olli)
+- now recognizes URLs without a scheme in quotes ["www.blah.com"]
+  (Olli)
+- reduced default URL detector memory consumption (Olli)
+
+15.14
+-----
+- vat would not fail its initialization even when there was a problem (Zapek)

@@ -1,0 +1,6 @@
+sc vat.c asyncio.c sup.s md5.c random.c string.c time.c mui.c mime.c tcpip.c
+sc parms=both malloc.c
+/rev/rev libid vapor_toolkit
+slink lib:libent.o,lib:libinit.o,vat.o,asyncio.o,sup.o,md5.o,random.o,string.o,time.o,malloc.o,mui.o,mime.o,tcpip.o to vapor_toolkit.library addsym sc sd lib lib:sc.lib,lib:small.lib,lib:libgmp.lib,lib:debug.lib libversion $libver librevision $librev libid "$libid" libfd fd/vat_lib.fd map vat.map hxfslo with lib:utillib.with
+slink vapor_toolkit.library to libs:vapor_toolkit.library nd noicons
+flushlib vapor_toolkit.library

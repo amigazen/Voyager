@@ -1,0 +1,542 @@
+vapor_toolkit.library   03-Oct-01 23:56:32  Hunk Section                Page 1-1
+
+ num hunk         size filename         punit    type         base  alv     size
+   0 text         6dd8 lib:libent.o     libent   code            0    0       20
+                       lib:libinit.o    libinit. code           20    0      138
+                       vat.o            vat.c    code          158    0     1580
+                       asyncio.o        asyncio. code         16d8    0      c50
+                       sup.o            sup.s    code         2328    0       c8
+                       md5.o            md5.c    code         23f0    0      c08
+                       random.o         random.c code         2ff8    0      9b4
+                       string.o         string.c code         39ac    0      4e8
+                       time.o           time.c   code         3e94    0       74
+                       malloc.o         malloc.c code         3f08    0      150
+                       mui.o            mui.c    code         4058    0      1fc
+                       mime.o           mime.c   code         4254    0      624
+                       tcpip.o          tcpip.c  code         4878    0       e0
+                       T:P24HGB.0001    __Libfun code         4958    0      138
+                       lib:sc.lib       _cxamemc code         4a90    0       94
+                       lib:sc.lib       newlist  code         4b24    0       14
+                       lib:sc.lib       strnicmp code         4b38    0       a8
+                       lib:sc.lib       strins.c code         4be0    0       48
+                       lib:sc.lib       stricmp. code         4c28    0       3c
+                       lib:sc.lib       stpblk.o code         4c64    0       1c
+                       lib:sc.lib       _stcd_i. code         4c80    0       54
+                       lib:sc.lib       stccpy.c code         4cd4    0       3c
+                       lib:sc.lib       _UCXD22. code         4d10    0       10
+                       lib:sc.lib       _UCXD33. code         4d20    0       10
+                       lib:sc.lib       _UCXM33. code         4d30    0       10
+                       lib:sc.lib       _UCXM22. code         4d40    0       10
+                       lib:sc.lib       strrchr. code         4d50    0       18
+                       lib:sc.lib       strpbrk. code         4d68    0       2c
+                       lib:sc.lib       strchr.o code         4d94    0       18
+                       lib:sc.lib       strcat.o code         4dac    0       18
+                       lib:sc.lib       strncpy. code         4dc4    0       24
+                       lib:sc.lib       memmove. code         4de8    0       2c
+                       lib:sc.lib       rand.c   code         4e14    0       40
+                       lib:sc.lib       atoi.c   code         4e54    0       34
+                       lib:small.lib    <noname> code         4e88    0      240
+                       lib:libgmp.lib   stack-al code         50c8    0       ec
+                       lib:libgmp.lib   memory.c code         51b4    0       2c
+                       lib:libgmp.lib   powm.c   code         51e0    0      4d4
+                       lib:libgmp.lib   mul.c    code         56b4    0      218
+                       lib:libgmp.lib   clear.c  code         58cc    0       14
+                       lib:libgmp.lib   cmp.c    code         58e0    0       44
+                       lib:libgmp.lib   submul_1 code         5924    0      114
+                       lib:libgmp.lib   sub_n.c  code         5a38    0       78
+                       lib:libgmp.lib   rshift.c code         5ab0    0       70
+                       lib:libgmp.lib   mul_n.c  code         5b20    0      6e0
+                       lib:libgmp.lib   mul_1.c  code         6200    0      100
+                       lib:libgmp.lib   lshift.c code         6300    0       70
+                       lib:libgmp.lib   inlines. code         6370    0      16c
+                       lib:libgmp.lib   divrem.c code         64dc    0      774
+                       lib:libgmp.lib   addmul_1 code         6c50    0      114
+                       lib:libgmp.lib   add_n.c  code         6d64    0       74
+   1 __MERGED      9fc lib:libent.o     libent   data            0    0        4
+                       lib:libinit.o    libinit. data            4    0       10
+vapor_toolkit.library   03-Oct-01 23:56:32  Hunk Section                Page 1-2
+
+ num hunk         size filename         punit    type         base  alv     size
+                       vat.o            vat.c    data           14    0      54c
+                       md5.o            md5.c    data          560    0       40
+                       random.o         random.c data          5a0    0       c4
+                       string.o         string.c data          664    0       3c
+                       mui.o            mui.c    data          6a0    0        c
+                       mime.o           mime.c   data          6ac    0       d0
+                       tcpip.o          tcpip.c  data          77c    0       54
+                       lib:sc.lib       ctype.c  data          7d0    0      104
+                       lib:sc.lib       rand.c   data          8d4    0        4
+                       lib:libgmp.lib   stack-al data          8d8    0       18
+                       lib:libgmp.lib   mp_clz_t data          8f0    0      100
+                       lib:libgmp.lib   memory.c data          9f0    0        c
+                       lib:libinit.o    libinit. bss           9fc    0        4
+                       vat.o            vat.c    bss           a00    0       94
+                       random.o         random.c bss           a94    0      47c
+                       malloc.o         malloc.c bss           f10    0        4
+                       mime.o           mime.c   bss           f14    0       64
+vapor_toolkit.library  03-Oct-01 23:56:32  Symbol Section               Page 2-1
+
+symbol     offset:hunk symbol     offset:hunk symbol     offset:hunk
+@atoi        4e58:0    @cleanup     3f30:0    @exitmim     4652:0   
+@fill_mi     4752:0    @find_mi     4670:0    @free        3f9c:0   
+@initmim     4638:0    @init_gl     3f08:0    @lib_cle      52c:0   
+@lib_ini      3ca:0    @lib_ope      3d6:0    @loadmim     4254:0   
+@malloc      3f52:0    @memmove     4df4:0    @mpn_add     63de:0   
+@mpn_add     6c60:0    @mpn_add     6380:0    @mpn_add     6d76:0   
+@mpn_cmp     58ec:0    @mpn_div     64f8:0    @mpn_imp     5bfa:0   
+@mpn_imp     5b32:0    @mpn_imp     5f60:0    @mpn_imp     5ea4:0   
+@mpn_lsh     6310:0    @mpn_mul     56ca:0    @mpn_mul     6210:0   
+@mpn_mul     616a:0    @mpn_rsh     5ac0:0    @mpn_sub     6496:0   
+@mpn_sub     5934:0    @mpn_sub     6432:0    @mpn_sub     5a4a:0   
+@mpz_cle     58d0:0    @mpz_pow     51f4:0    @NewList     4b28:0   
+@rand        4e14:0    @random_     2ff8:0    @realloc     3fca:0   
+@run_reg     143e:0    @srand       4e4a:0    @stccpy      4ce0:0   
+@stpblk      4c68:0    @stpbrk      4d70:0    @stpchr      4d9c:0   
+@strcat      4db4:0    @strchr      4d9c:0    @strcmpi     4c30:0   
+@stricmp     4c30:0    @strins      4be8:0    @strncpy     4dd0:0   
+@strnicm     4b44:0    @strpbrk     4d70:0    @strrchr     4d58:0   
+@Transfo     2604:0    @_mp_def     51b8:0    @_mp_def     51d8:0   
+@_mp_def     51c8:0    @__stcd_     4c88:0    @__tmp_a     50cc:0   
+@__tmp_f     516e:0    @__tmp_m     5158:0    _AsmAllo     4f06:0   
+_AsmCrea     4e88:0    _AsmDele     4ed0:0    _AsmFree     5028:0   
+_atoi        4e54:0    _call_do     23ca:0    _call_re     23e2:0   
+_call_rx     23d6:0    _cleanup     3f30:0    _DataTyp      a20:1   
+_dofpi       21da:0    _DOSBase      a10:1    _fmtfunc       14:1   
+_free        3f98:0    _GfxBase      a18:1    _initpoo     2334:0   
+_init_gl     3f08:0    _Intuiti      a0c:1    _libarra      22a:1   
+_LinkerD       (0:*)   _LVOAbor fffffe20:*    _LVOAddD fffffe50:*   
+_LVOAddH ffffff10:*    _LVOAddI ffffff58:*    _LVOAddL fffffe74:*   
+_LVOAddM fffffcfa:*    _LVOAddM fffffd96:*    _LVOAddP fffffe9e:*   
+_LVOAddR fffffe1a:*    _LVOAddS fffffda8:*    _LVOAddT ffffff0a:*   
+_LVOAddT fffffee6:*    _LVOAler ffffff94:*    _LVOAllo ffffff34:*   
+_LVOAllo ffffff46:*    _LVOAllo ffffff22:*    _LVOAllo ffffff3a:*   
+_LVOAllo fffffd3c:*    _LVOAllo fffffeb6:*    _LVOAllo fffffeaa:*   
+_LVOAllo fffffd54:*    _LVOAtte fffffdc0:*    _LVOAtte fffffd30:*   
+_LVOAvai ffffff28:*    _LVOCach fffffd7e:*    _LVOCach fffffd84:*   
+_LVOCach fffffd78:*    _LVOCach fffffd00:*    _LVOCach fffffd06:*   
+_LVOCaus ffffff4c:*    _LVOChec fffffe2c:*    _LVOChil fffffd1e:*   
+_LVOChil fffffd18:*    _LVOChil fffffd12:*    _LVOChil fffffd0c:*   
+_LVOClos fffffe3e:*    _LVOClos fffffe62:*    _LVOCold fffffd2a:*   
+_LVOCopy fffffd90:*    _LVOCopy fffffd8a:*    _LVOCrea fffffd72:*   
+_LVOCrea fffffd66:*    _LVOCrea fffffd48:*    _LVODeal ffffff40:*   
+_LVODebu ffffff8e:*    _LVODele fffffd6c:*    _LVODele fffffd60:*   
+_LVODele fffffd42:*    _LVODisa ffffff88:*    _LVODisp ffffffc4:*   
+_LVODoIO fffffe38:*    _LVOEnab ffffff82:*    _LVOEnqu fffffef2:*   
+_LVOExce ffffffbe:*    _LVOExec fffffce8:*    _LVOExec fffffce2:*   
+_LVOExec fffffcdc:*    _LVOExec fffffcca:*    _LVOExit ffffffdc:*   
+_LVOFind fffffeec:*    _LVOFind fffffe7a:*    _LVOFind ffffffa0:*   
+_LVOFind fffffdae:*    _LVOFind fffffeda:*    _LVOForb ffffff7c:*   
+_LVOFree ffffff1c:*    _LVOFree ffffff2e:*    _LVOFree fffffd36:*   
+_LVOFree fffffeb0:*    _LVOFree fffffea4:*    _LVOFree fffffd4e:*   
+_LVOGetC fffffdf0:*    _LVOGetM fffffe8c:*    _LVOInit ffffffb8:*   
+_LVOInit ffffff9a:*    _LVOInit fffffdd2:*    _LVOInit ffffffb2:*   
+vapor_toolkit.library  03-Oct-01 23:56:32  Symbol Section               Page 2-2
+
+symbol     offset:hunk symbol     offset:hunk symbol     offset:hunk
+_LVOInse ffffff16:*    _LVOMake ffffffa6:*    _LVOMake ffffffac:*   
+_LVOObta fffffcee:*    _LVOObta fffffdcc:*    _LVOObta fffffdba:*   
+_LVOObta fffffd5a:*    _LVOOldO fffffe68:*    _LVOOpen fffffe44:*   
+_LVOOpen fffffdd8:*    _LVOOpen fffffe0e:*    _LVOPerm ffffff76:*   
+_LVOProc fffffde4:*    _LVOPutM fffffe92:*    _LVORawD fffffdf6:*   
+_LVORawI fffffe08:*    _LVORawM fffffe02:*    _LVORawP fffffdfc:*   
+_LVORead fffffcd0:*    _LVORele fffffdc6:*    _LVORele fffffdb4:*   
+_LVORemD fffffe4a:*    _LVORemH fffffefe:*    _LVORemI ffffff52:*   
+_LVORemL fffffe6e:*    _LVORemM fffffcf4:*    _LVORemo ffffff04:*   
+_LVORemP fffffe98:*    _LVORemR fffffe14:*    _LVORemS fffffda2:*   
+_LVORemT fffffef8:*    _LVORemT fffffee0:*    _LVORepl fffffe86:*   
+_LVOResc ffffffd0:*    _LVOSche ffffffd6:*    _LVOSend fffffe32:*   
+_LVOSetE fffffec8:*    _LVOSetF fffffe5c:*    _LVOSetI ffffff5e:*   
+_LVOSetS fffffece:*    _LVOSetS ffffff70:*    _LVOSetT fffffed4:*   
+_LVOSign fffffebc:*    _LVOStac fffffd24:*    _LVOSumK fffffd9c:*   
+_LVOSumL fffffe56:*    _LVOSupe ffffff6a:*    _LVOSupe ffffffe2:*   
+_LVOSwit ffffffca:*    _LVOTagg fffffcd6:*    _LVOType fffffdea:*   
+_LVOUser ffffff64:*    _LVOVaca fffffdde:*    _LVOWait fffffec2:*   
+_LVOWait fffffe26:*    _LVOWait fffffe80:*    _malloc      3f4e:0   
+_memmove     4de8:0    _mpn_add     63c8:0    _mpn_add     6c50:0   
+_mpn_add     6370:0    _mpn_add     6d64:0    _mpn_cmp     58e0:0   
+_mpn_div     64dc:0    _mpn_imp     5be2:0    _mpn_imp     5b20:0   
+_mpn_imp     5f4e:0    _mpn_imp     5e98:0    _mpn_lsh     6300:0   
+_mpn_mul     56b4:0    _mpn_mul     6200:0    _mpn_mul     6158:0   
+_mpn_rsh     5ab0:0    _mpn_sub     6480:0    _mpn_sub     5924:0   
+_mpn_sub     6422:0    _mpn_sub     5a38:0    _mpz_cle     58cc:0   
+_mpz_pow     51e0:0    _MUIMast      a1c:1    _NEWDATA       (0:*)  
+_NewList     4b24:0    _NUMJMPS       (0:*)   _rand        4e14:0   
+_realloc     3fc2:0    _regutil     1404:0    _RESBASE       (0:*)  
+_RESLEN        (0:*)   _RexxSys      a04:1    _rxhandl      182:0   
+_sprintf      158:0    _srand       4e46:0    _stccpy      4cd4:0   
+_stpblk      4c64:0    _stpbrk      4d68:0    _stpchr      4d94:0   
+_strcat      4dac:0    _strchr      4d94:0    _strcmpi     4c28:0   
+_stricmp     4c28:0    _strins      4be0:0    _strncpy     4dc4:0   
+_strnicm     4b38:0    _strpbrk     4d68:0    _strrchr     4d50:0   
+_SysBase      a14:1    _TimerBa      a08:1    _Utility      a00:1   
+_VAT_All     235c:0    _VAT_All     2390:0    _VAT_Cal     2f78:0   
+_VAT_Che     1636:0    _VAT_Che      834:0    _VAT_Che      d92:0   
+_VAT_Cle      d2c:0    _VAT_Clo     1ab2:0    _VAT_Cre     2340:0   
+_VAT_Del     234e:0    _VAT_Exp     39ac:0    _VAT_FGe     15f0:0   
+_VAT_FGe     20cc:0    _VAT_FGe     2150:0    _VAT_Fre     236a:0   
+_VAT_Fre     3e6e:0    _VAT_Fre     237c:0    _VAT_Fte     2262:0   
+_VAT_Get     4142:0    _VAT_Get     41f4:0    _VAT_Get     14f0:0   
+_VAT_Get     22da:0    _VAT_Ini      bb0:0    _VAT_IsA     15aa:0   
+_VAT_IsO     4878:0    _VAT_MD5     2fcc:0    _VAT_MD5     2fb6:0   
+_VAT_MD5     2fe2:0    _VAT_MIM     481e:0    _VAT_MIM     4850:0   
+_VAT_MPZ     13ca:0    _VAT_MPZ     1380:0    _VAT_Mul     4058:0   
+_VAT_New     14d8:0    _VAT_Ope     17e8:0    _VAT_Ope      970:0   
+_VAT_Ope      b76:0    _VAT_Ran     394a:0    _VAT_Ran     3906:0   
+_VAT_Ran     38c6:0    _VAT_Rea     1b3c:0    _VAT_Rea     1c3a:0   
+_VAT_Rem     3a68:0    _VAT_Sca     3abc:0    _VAT_See     1df2:0   
+_VAT_Sen      e88:0    _VAT_Set     4098:0    _VAT_Set      5d0:0   
+_VAT_Set     40ec:0    _VAT_Sho     14be:0    _VAT_Sho     1044:0   
+vapor_toolkit.library  03-Oct-01 23:56:32  Symbol Section               Page 2-3
+
+symbol     offset:hunk symbol     offset:hunk symbol     offset:hunk
+_VAT_Str     23ae:0    _VAT_Tim     3e94:0    _VAT_Tim     3ed6:0   
+_VAT_UnG     2290:0    _VAT_VFP     2212:0    _VAT_Wri     1c96:0   
+_VAT_Wri     1da4:0    __BSSBAS       (0:*)   __BSSLEN       (0:*)  
+__CoverL       (0:*)   __CoverS       (0:*)   __CXAMEM     4a90:0   
+__CXD22      4d10:0    __CXD33      4d20:0    __CXM22      4d40:0   
+__CXM33      4d30:0    __LibClo       d6:0    __LibExp      100:0   
+__LibFun     4958:0    __LibID      4a6c:0    __LibIni       20:0   
+__LibIni        4:1    __Libmer        0:1    __LibNam     4a54:0   
+__LibOpe       c4:0    __LibRev       (0:*)   __LibRom        4:0   
+__LibVer       (0:*)   __mp_all      9f0:1    __mp_def     51b4:0   
+__mp_def     51d0:0    __mp_def     51bc:0    __mp_fre      9f8:1   
+__mp_rea      9f4:1    __UCXD22     4d10:0    __UCXD33     4d20:0   
+__UCXM22     4d40:0    __UCXM33     4d30:0    __WBench      9fc:1   
+___clz_t      8f0:1    ___ctype      7d0:1    ___stcd_     4c80:0   
+___tmp_a     50c8:0    ___tmp_f     516a:0    ___tmp_m     5154:0   
+___UserL      5ba:0    ___UserL      4f2:0   
+vapor_toolkit.library   03-Oct-01 23:56:32  Xref Section                Page 3-1
+
+symbol   (Def) Module  Off (Ref) Module  Off (Ref) Module  Off (Ref) Module  Off
+@atoi    atoi.c          4 mime.c        2bc
+@cleanup malloc.c       28 vat.c         41e
+@exitmim mime.c        3fe vat.c         404
+@free    malloc.c       94 memory.c       26
+@initmim mime.c        3e4 vat.c         340
+@init_gl malloc.c        0 vat.c         2aa
+@loadmim mime.c          0 vat.c         186
+@malloc  malloc.c       4a memory.c        6
+@memmove memmove.        c stccpy.c       2c strins.c       36
+@mpn_add addmul_1       10 mul_n.c        a2 mul_n.c       142 mul_n.c       168
+                           mul_n.c       40e mul_n.c       496 mul_n.c       4bc
+                           mul.c          d6
+@mpn_add inlines.       10 mul_n.c       32c mul_n.c       36c mul_n.c       5f2
+                           mul_n.c       62c mul.c         1b8 mul.c         1fa
+@mpn_add add_n.c        12 divrem.c      744 inlines.       8c mul_n.c        92
+                           mul_n.c       294 mul_n.c       2ce mul_n.c       318
+                           mul_n.c       358 mul_n.c       3fe mul_n.c       58e
+                           mul_n.c       5de mul_n.c       618 mul.c          c4
+                           mul.c         1a6 mul.c         1ea
+@mpn_cmp cmp.c           c divrem.c      516 mul_n.c       1c2 mul_n.c       1f8
+                           mul_n.c       510
+@mpn_div divrem.c       1c powm.c        184 powm.c        362 powm.c        3aa
+                           powm.c        438
+@mpn_lsh lshift.c       10 powm.c        10e powm.c        3e4
+@mpn_mul mul.c          16 powm.c        384
+@mpn_mul mul_1.c        10 mul_n.c        5e mul_n.c       3cc mul.c          90
+@mpn_mul mul_n.c       64a powm.c        33a
+@mpn_rsh rshift.c       10 powm.c        44a powm.c        47c
+@mpn_sub inlines.      126 powm.c        48e
+@mpn_sub submul_1       10 divrem.c      72e
+@mpn_sub sub_n.c        12 divrem.c      526 inlines.      144 mul_n.c       1d6
+                           mul_n.c       1ea mul_n.c       218 mul_n.c       226
+                           mul_n.c       2b6 mul_n.c       52a mul_n.c       59e
+@mpz_cle clear.c         4 vat.c        1296
+@mpz_pow powm.c         14 vat.c        125a
+@NewList newlist         4 mime.c         40 mime.c        15e vat.c          c6
+@rand    rand.c          0 random.c      56c
+@random_ random.c        0 vat.c         33c
+@realloc malloc.c       c2 memory.c       18
+@stccpy  stccpy.c        c mime.c        56a mime.c        592 mime.c        5ae
+                           string.c       70 vat.c        142c
+@stpblk  stpblk.o        4 string.c       ce
+@stpbrk  strpbrk.        8 mime.c         ac
+@strcat  strcat.o        8 string.c      496 vat.c         db0 vat.c         dca
+                           vat.c         dd4 vat.c         e20 vat.c         e5c
+                           vat.c        10bc vat.c        1136 vat.c        1140
+                           vat.c        114c
+@strchr  strchr.o        8 mime.c         da mime.c        146 mime.c        168
+                           mime.c        216 mime.c        23e mime.c        29c
+                           mime.c        2c8 mime.c        346 string.c       7c
+                           string.c       e6 vat.c         712 vat.c         d8c
+                           vat.c         dba
+@stricmp stricmp.        8 mime.c        4be mime.c        4de
+vapor_toolkit.library   03-Oct-01 23:56:32  Xref Section                Page 3-2
+
+symbol   (Def) Module  Off (Ref) Module  Off (Ref) Module  Off (Ref) Module  Off
+@strins  strins.c        8 vat.c        112a
+@strncpy strncpy.        c vat.c         942 vat.c         ca2
+@strnicm strnicmp        c mime.c        47c string.c      1a8 string.c      1ea
+                           string.c      22e string.c      26c string.c      288
+                           string.c      2a4 string.c      2c0
+@strpbrk strpbrk.        8 vat.c         852 vat.c         88a vat.c        14ca
+@strrchr strrchr.        8 mime.c        43a
+@Transfo md5.c         214 random.c      14e random.c      2d0
+@__stcd_ _stcd_i.        8 atoi.c         2a
+@__tmp_a stack-al        4 mul_n.c       686 mul_n.c       6bc mul.c         10c
+                           mul.c         15a powm.c         ae powm.c        14a
+                           powm.c        212 powm.c        242 powm.c        26c
+                           powm.c        2ae
+@__tmp_f stack-al       a6 mul_n.c       6d4 mul.c         204 powm.c        4c8
+@__tmp_m stack-al       90 mul_n.c       660 mul.c         100 powm.c         9c
+_AsmAllo     4f06:0        sup.s          3c sup.s          74
+_AsmCrea     4e88:0        sup.s          20
+_AsmDele     4ed0:0        sup.s          2e
+_AsmFree     5028:0        sup.s          4e sup.s          62
+_call_do sup.s          a2 asyncio.      b68
+_call_re sup.s          ba vat.c        1342
+_call_rx sup.s          ae vat.c         378
+_dofpi   asyncio.      b02 sup.s          a8
+_DOSBase vat.c          10 tcpip.c        3e mime.c         48 mime.c        3ac
+                           mime.c        3c0 random.c      498 random.c      4d2
+                           random.c      4e6 random.c      532 random.c      6e8
+                           random.c      70c random.c      886 random.c      8aa
+                           asyncio.       50 asyncio.       d8 asyncio.       fe
+                           asyncio.      156 asyncio.      16a asyncio.      188
+                           asyncio.      1aa asyncio.      1bc asyncio.      1e8
+                           asyncio.      1fe asyncio.      210 asyncio.      21e
+                           asyncio.      232 asyncio.      256 asyncio.      286
+                           asyncio.      3c8 asyncio.      42a asyncio.      436
+                           asyncio.      452 asyncio.      788 asyncio.      7d4
+                           asyncio.      84e asyncio.      950 asyncio.      97a
+                           asyncio.      9c6 asyncio.      ba8 asyncio.      c2e
+_fmtfunc vat.c           0 mui.c          50 mui.c          a4
+_free    malloc.c       90 stack-al       d0
+_GfxBase vat.c          18 random.c      810
+_initpoo sup.s           c vat.c         2a6
+_Intuiti vat.c           c mui.c          22 mui.c          7c mui.c          d4
+                           mui.c         110 mui.c         136 mui.c         152
+                           mui.c         16c mui.c         1ba mui.c         1da
+                           random.c      678 random.c      7ca
+_LinkerD       (0:*)       tcpip.c         a mime.c        5d6 mime.c        602
+                           mui.c           e mui.c          4a mui.c          9e
+                           mui.c          f4 mui.c         1a4 time.c          a
+                           time.c         4c string.c       18 string.c       c4
+                           string.c      11e string.c      4ca random.c      8d6
+                           random.c      916 random.c      95a md5.c         b92
+                           md5.c         bcc md5.c         be2 md5.c         bf8
+                           asyncio.      130 asyncio.      3e4 asyncio.      47c
+                           asyncio.      56c asyncio.      5c8 asyncio.      6d6
+vapor_toolkit.library   03-Oct-01 23:56:32  Xref Section                Page 3-3
+
+symbol   (Def) Module  Off (Ref) Module  Off (Ref) Module  Off (Ref) Module  Off
+                           asyncio.      72a asyncio.      a04 asyncio.      a88
+                           asyncio.      b0a asyncio.      b44 asyncio.      b92
+                           asyncio.      bc8 asyncio.      c18 vat.c         3a2
+                           vat.c         468 vat.c         482 vat.c         6ea
+                           vat.c         826 vat.c         a26 vat.c         a66
+                           vat.c         bdc vat.c         c48 vat.c         d42
+                           vat.c         ef6 vat.c        1232 vat.c        127a
+                           vat.c        136e vat.c        1386 vat.c        13a6
+                           vat.c        145c vat.c        14a0 vat.c        14e8
+_LVOAler ffffff94:*            50bc:0       
+_LVOAllo ffffff46:*            4f3c:0       
+_LVOAllo ffffff3a:*            5018:0            4eac:0       
+_LVOAllo fffffd3c:*            4f10:0       
+_LVOCrea fffffd48:*            4e92:0       
+_LVODeal ffffff40:*            5062:0       
+_LVODele fffffd42:*            4eda:0       
+_LVOFree ffffff2e:*            50ae:0            4f04:0            4ef2:0       
+_LVOFree fffffd36:*            5032:0       
+_malloc  malloc.c       46 stack-al       54
+_mpn_imp mul_n.c        c2 mul.c         13c mul.c         196
+_mpn_imp mul_n.c         0 mul.c         126 mul.c         17e
+_MUIMast vat.c          1c mui.c          fe
+_NEWDATA       (0:*)       libinit.       44
+_regutil vat.c        12ac sup.s          c4
+_RESLEN        (0:*)       libinit.        0
+_rxhandl vat.c          2a sup.s          b8
+_sprintf vat.c           0 random.c      50a
+_SysBase vat.c          14 tcpip.c        16 tcpip.c        6c tcpip.c        7e
+                           tcpip.c        a6 tcpip.c        b2 tcpip.c        c6
+                           mime.c         18 mime.c         2c mime.c         74
+                           mime.c         bc mime.c         ec mime.c        118
+                           mime.c        1ac mime.c        1ca mime.c        1e8
+                           mime.c        266 mime.c        306 mime.c        37a
+                           mime.c        38e mime.c        3d4 mime.c        3f2
+                           mime.c        410 mime.c        512 mime.c        5ba
+                           mui.c          5c mui.c          b0 malloc.c       16
+                           malloc.c       3a malloc.c       6c malloc.c       ae
+                           malloc.c       fe string.c      42e string.c      45c
+                           string.c      4da random.c        e random.c      58c
+                           random.c      5a2 random.c      5b8 random.c      5d2
+                           random.c      5e6 random.c      5f4 random.c      602
+                           random.c      614 random.c      626 random.c      63a
+                           random.c      64e random.c      670 random.c      68e
+                           random.c      7c2 random.c      8e2 random.c      900
+                           random.c      922 random.c      940 random.c      966
+                           random.c      9a2
+_TimerBa vat.c           8 time.c         12 time.c         58 random.c      546
+                           random.c      736 random.c      83c
+_Utility vat.c           0 addmul_1       5c divrem.c       52 divrem.c       aa
+                           divrem.c      1b2 divrem.c      32a divrem.c      5ac
+                           mul_1.c        5c submul_1       5c powm.c         60
+                           _UCXM22.        4 _UCXM33.        4 _UCXD33.        4
+                           _UCXD22.        4 asyncio.      272 asyncio.      834
+vapor_toolkit.library   03-Oct-01 23:56:32  Xref Section                Page 3-4
+
+symbol   (Def) Module  Off (Ref) Module  Off (Ref) Module  Off (Ref) Module  Off
+_VAT_All sup.s          34 __Libfun       5c
+_VAT_All sup.s          68 __Libfun       64
+_VAT_Cal md5.c         b88 __Libfun       70
+_VAT_Che vat.c        14de __Libfun       f4
+_VAT_Che vat.c         6dc __Libfun       a8
+_VAT_Che vat.c         c3a __Libfun       20
+_VAT_Cle vat.c         bd4 __Libfun       14
+_VAT_Clo asyncio.      3da __Libfun       28
+_VAT_Cre sup.s          18 __Libfun       54
+_VAT_Del sup.s          26 __Libfun       58
+_VAT_Exp string.c        0 __Libfun       94
+_VAT_FGe vat.c        1498 __Libfun       e8
+_VAT_FGe asyncio.      9f4 __Libfun       40
+_VAT_FGe asyncio.      a78 __Libfun       50
+_VAT_Fre sup.s          42 __Libfun       60
+_VAT_Fre string.c      4c2 __Libfun       bc
+_VAT_Fre sup.s          54 __Libfun       68
+_VAT_Fte asyncio.      b8a __Libfun       48
+_VAT_Get mui.c          ea __Libfun       cc vat.c        1300
+_VAT_Get mui.c         19c __Libfun       e4
+_VAT_Get vat.c        1398 __Libfun       d4
+_VAT_Get asyncio.      c02 __Libfun       b4
+_VAT_Ini vat.c         a58 __Libfun       10
+_VAT_IsA vat.c        1452 __Libfun       d8
+_VAT_IsO tcpip.c         0 __Libfun       f0
+_VAT_MD5 md5.c         bdc __Libfun       78
+_VAT_MD5 md5.c         bc6 __Libfun       74
+_VAT_MD5 md5.c         bf2 __Libfun       7c
+_VAT_MIM mime.c        5ca __Libfun       dc
+_VAT_MIM mime.c        5fc __Libfun       e0
+_VAT_MPZ vat.c        1272 __Libfun       90
+_VAT_MPZ vat.c        1228 __Libfun       8c
+_VAT_Mul mui.c           0 __Libfun       c0
+_VAT_New vat.c        1380 __Libfun       ec
+_VAT_Ope asyncio.      110 __Libfun       24
+_VAT_Ope vat.c         818 __Libfun       18
+_VAT_Ope vat.c         a1e __Libfun       1c
+_VAT_Ran random.c      952 __Libfun       84
+_VAT_Ran random.c      90e __Libfun       88
+_VAT_Ran random.c      8ce __Libfun       80
+_VAT_Rea asyncio.      464 __Libfun       2c
+_VAT_Rea asyncio.      562 __Libfun       30
+_VAT_Rem string.c       bc __Libfun       98
+_VAT_Sca string.c      110 __Libfun       b8
+_VAT_See asyncio.      71a __Libfun       3c
+_VAT_Sen vat.c         d30 __Libfun       ac
+_VAT_Set mui.c          40 __Libfun       c4
+_VAT_Set vat.c         478 __Libfun       a4
+_VAT_Set mui.c          94 __Libfun       c8
+_VAT_Sho vat.c        1366 __Libfun       d0
+_VAT_Sho vat.c         eec __Libfun       b0
+_VAT_Str sup.s          86 __Libfun       6c
+_VAT_Tim time.c          0 __Libfun       9c
+vapor_toolkit.library   03-Oct-01 23:56:32  Xref Section                Page 3-5
+
+symbol   (Def) Module  Off (Ref) Module  Off (Ref) Module  Off (Ref) Module  Off
+_VAT_Tim time.c         42 __Libfun       a0
+_VAT_UnG asyncio.      bb8 __Libfun       4c
+_VAT_VFP asyncio.      b3a __Libfun       44
+_VAT_Wri asyncio.      5be __Libfun       34
+_VAT_Wri asyncio.      6cc __Libfun       38
+__CXAMEM _cxamemc        0 random.c      2be
+__LibClo libinit.       b6 __Libfun        4
+__LibExp libinit.       e0 __Libfun        8
+__LibFun __Libfun        0 libinit.        4
+__LibID  __Libfun      114 libinit.       3a libent         16
+__LibIni libinit.        0 libent         1a
+__Libmer libent          0 libinit.       54 libinit.       66
+__LibNam __Libfun       fc libinit.       14 libent         12
+__LibOpe libinit.       a4 __Libfun        0
+__LibRev       (0:*)       libinit.       30
+__LibRom libent          4 __Libfun        c
+__LibVer       (0:*)       libinit.       22 libent          e
+__mp_all memory.c        0 powm.c        1f2
+__mp_fre memory.c        8 clear.c         e powm.c        1e8 powm.c        4be
+___clz_t mp_clz_t        0 powm.c         f0 powm.c        312
+___ctype ctype.c         0 atoi.c         18 stpblk.o        8 strnicmp       22
+                           string.c       fa string.c      13e string.c      1b6
+                           string.c      1f8 string.c      23c string.c      2ee
+                           string.c      374 string.c      3a2 vat.c         aaa
+___UserL vat.c         462 libinit.       fe
+___UserL vat.c         39a libinit.       8c
+vapor_toolkit.library   03-Oct-01 23:56:32  File Section                Page 4-1
+
+filename         punit    hunk     type       offset:hunk     size
+lib:libent.o     libent   text     code            0:0          20
+                          __MERGED data            0:1           4
+                          data     code            -:-           0
+lib:libinit.o    libinit. text     code           20:0         138
+                          __MERGED bss           9fc:1           4
+                          data     data            4:1          10
+vat.o            vat.c    text     code          158:0        1580
+                          __MERGED data           14:1         54c
+                          __MERGED bss           a00:1          94
+asyncio.o        asyncio. text     code         16d8:0         c50
+sup.o            sup.s    text     code         2328:0          c8
+md5.o            md5.c    text     code         23f0:0         c08
+                          __MERGED data          560:1          40
+random.o         random.c text     code         2ff8:0         9b4
+                          __MERGED data          5a0:1          c4
+                          __MERGED bss           a94:1         47c
+string.o         string.c text     code         39ac:0         4e8
+                          __MERGED data          664:1          3c
+time.o           time.c   text     code         3e94:0          74
+malloc.o         malloc.c text     code         3f08:0         150
+                          __MERGED bss           f10:1           4
+mui.o            mui.c    text     code         4058:0         1fc
+                          __MERGED data          6a0:1           c
+mime.o           mime.c   text     code         4254:0         624
+                          __MERGED data          6ac:1          d0
+                          __MERGED bss           f14:1          64
+tcpip.o          tcpip.c  text     code         4878:0          e0
+                          __MERGED data          77c:1          54
+T:P24HGB.0001    __Libfun <noname> code         4958:0         138
+vapor_toolkit.library 03-Oct-01 23:56:32  Library Section               Page 5-1
+
+filename         punit    hunk     type       offset:hunk     size
+lib:sc.lib       _cxamemc text     code         4a90:0          94
+                 newlist  text     code         4b24:0          14
+                 ctype.c  text     code            -:-           0
+                          __MERGED data          7d0:1         104
+                 strnicmp text     code         4b38:0          a8
+                 strins.c text     code         4be0:0          48
+                 stricmp. text     code         4c28:0          3c
+                 stpblk.o text     code         4c64:0          1c
+                 _stcd_i. text     code         4c80:0          54
+                 stccpy.c text     code         4cd4:0          3c
+                 _UCXD22. text     code         4d10:0          10
+                 _UCXD33. text     code         4d20:0          10
+                 _UCXM33. text     code         4d30:0          10
+                 _UCXM22. text     code         4d40:0          10
+                 strrchr. text     code         4d50:0          18
+                 strpbrk. text     code         4d68:0          2c
+                 strchr.o text     code         4d94:0          18
+                 strcat.o text     code         4dac:0          18
+                 strncpy. text     code         4dc4:0          24
+                 memmove. text     code         4de8:0          2c
+                 rand.c   text     code         4e14:0          40
+                          __MERGED data          8d4:1           4
+                 atoi.c   text     code         4e54:0          34
+lib:small.lib    exec_LVO OFFSET   data            -:-           0
+                          exec_LVO code            -:-           0
+                          exec_LVO code            -:-           0
+                 <noname> Pools    code         4e88:0         240
+lib:libgmp.lib   stack-al text     code         50c8:0          ec
+                          __MERGED data          8d8:1          18
+                 mp_clz_t text     code            -:-           0
+                          __MERGED data          8f0:1         100
+                 memory.c text     code         51b4:0          2c
+                          __MERGED data          9f0:1           c
+                 powm.c   text     code         51e0:0         4d4
+                 mul.c    text     code         56b4:0         218
+                 clear.c  text     code         58cc:0          14
+                 cmp.c    text     code         58e0:0          44
+                 submul_1 text     code         5924:0         114
+                 sub_n.c  text     code         5a38:0          78
+                 rshift.c text     code         5ab0:0          70
+                 mul_n.c  text     code         5b20:0         6e0
+                 mul_1.c  text     code         6200:0         100
+                 lshift.c text     code         6300:0          70
+                 inlines. text     code         6370:0         16c
+                 divrem.c text     code         64dc:0         774
+                 addmul_1 text     code         6c50:0         114
+                 add_n.c  text     code         6d64:0          74

@@ -1,0 +1,506 @@
+;******************************************************************************
+;     __  __                                   ______ __                  __          
+;    / / / /                                  / __  // /                 /_/         
+;   / / / /______ ______ ______ _____        / /_/ // /  __  __  ______ __   ______ ______
+;  / / / // __  // __  // __  // .__/______ / ____// /  / / / / / __  // /  / __  // ____/
+; / /_/ // __  // /_/ // /_/ // /   /_____// /    / /_ / /_/ / / /_/ // /_ / / / /_\__  /
+; \____//_/ /_// ____//_____//_/          /_/    /___//_____/ _\__  //___//_/ /_//_____/
+;             / /                                            /_____/            
+;            /_/   For Image Decoder and VFlash                                                            
+;
+; $VER: VaporPlugins_Installer 03.7 (March-08-2000) 
+; Installer by Robert C. Reiswig ©1998,1999,2000
+;
+; If you wish to use any part of this installer you must ask. May not be 
+; integrated/placed into any other package. Changes, suggestions or problems:
+; voyager@vgr.com or vgr@best.com
+;******************************************************************************
+
+;*** System Stuff ***
+(set cpu (database "cpu"))  (set vblank (database "vblank"))
+(set graphmem (database "graphics-mem")) (set totmem (database "total-mem"))
+(set osver (/ (getversion "LIBS:version.library") 65536))
+(if (= vblank "60") ((set blank "NTSC")) ((set blank "PAL")))
+(set fastmem (- totmem graphmem))
+
+(if (= osver 37) (set workbench "2.0")) (if (= osver 38) (set workbench "2.1"))
+(if (= osver 39) (set workbench "3.0")) (if (= osver 40) (set workbench "3.1"))
+(if (= osver 41) (set workbench "3.5"))
+
+(set cpu (database "cpu"))
+(if (> (exists ("sys:libs/68060.library")) 0) (set #cpu 5) )
+(if (> (exists ("68060.library") (resident)) 0) (set #cpu 5) )
+(if (= cpu 68000) (set #cpu 0)) (if (= cpu 68010) (set #cpu 1))
+(if (= cpu 68020) (set #cpu 2)) (if (= cpu 68030) (set #cpu 3))
+(if (= cpu 68040) (set #cpu 4)) (if (= cpu 68050) (set #cpu 5)) 
+
+(set cpupick cpu)
+
+(set #vflashW "") (set #iflashW "") (set #sflashW "")
+
+(if (> (exists "Plugins/voyager_ssl.vlib") 0)
+ (
+  (set vernum1 (getversion "Plugins/voyager_ssl.vlib")) (set ver1 (/ vernum1 65536))
+  (set rev1 (- vernum1 (* ver1 65536) ) ) (set imagever (cat ver1 "." rev1))
+  
+  (set #sflashW (cat "\n\nVoyager SSL Plugin v" imagever ""))
+
+ )
+) 
+
+(if (> (exists "Plugins/vimgdecode_68020.vlib") 0)
+ (
+  (set vernum1 (getversion "Plugins/vimgdecode_68020.vlib")) (set ver1 (/ vernum1 65536))
+  (set rev1 (- vernum1 (* ver1 65536) ) ) (set imagever (cat ver1 "." rev1))
+  
+  (set #iflashW (cat "\n\nImage Decoder Plugin v" imagever "\n©1998-2000 by Oliver Wagner <owagner@vapor.com>"))
+
+ )
+) 
+
+  (if (> (exists "Plugins") 0) (set vplugdir1 "Plugins") )
+  (if (> (exists "plugin") 0)  (set vplugdir1 "plugin") )
+  (if (> (exists "VFlash.VPlug") 0)  (set vplugdir1 "") )
+
+(if (> (exists (tackon vplugdir1 "VFlash.VPlug")) 0)
+ (
+  (set vernum1 (getversion (tackon vplugdir1 "VFlash.VPlug"))) (set ver1 (/ vernum1 65536))
+  (set rev1 (- vernum1 (* ver1 65536) ) ) (set flashver (cat ver1 "." rev1))
+  
+  (set #vflashW (cat "\n\nVFlash Plugin v" flashver "\n©1999-2000 by David Gerber <zapek@vapor.com>"))
+
+ )
+) 
+
+
+;********************************************************************
+; English Strings
+;********************************************************************
+(set #about (cat "\nWelcome to" #iflashW  "" #vflashW "" #sflashW "\n\nhttp://v3.vapor.com/") )
+
+(set #whereVoyagerP "Please select the dir where Voyager is installed, not the Plugin dir.")
+
+(set #updatesetpatch "\nThe installer looked for 'c:setpatch' and did not find it or you have a version lower then 40.16. Voyager needs version 40.16 to work correctly. You wany want to upgrade soon. (NOTE: if you keep 'setpatch' in a different place than 'c:' and its 40.16 or higher then this message is void.)")
+(set #updateinstaller "\nJust to let you know ESCOM AG has released a new version of the installer program.\n\n\nVersion 43.3 can be found on Aminet in:\n\n/util/misc/Installer-43_3.lha\n\n\nYou might want to upgrade soon, if you can.")
+
+(set #updateplug "\n\n\nInstalling or Updating Plugins")
+
+
+(set #askimageP1 "What version of the Image Decoder would you like to install (or update)? The average size for a Image Decoder plugin is about: ")
+(set #askimageP2 "Total for all ")
+(set #askimageP3 " *=Not found in archive.")
+(set #askflashP1 "What version of the VFlash plugin would you like to install (or update)? The average size for a VFlash plugin is about ")
+(set #askflashP2 "Total for all ")
+(set #askflashP3 " *=Not found in archive.")
+(set #flashno000 "\n\nNOTE\n~~~~~~~~~~~~~~~~~~~~~~~~~~~\nThe VFlash plugin needs to be installed on an Amiga with at least a 68020 CPU. The installer did not find this. You can install the VFlash plugin but it will not work on 68000 and 68010 based Amigas.")
+(set #imageno000 "\n\nNOTE\n~~~~~~~~~~~~~~~~~~~~~~~~~~~\nThe Image plugin needs to be installed on an Amiga with at least a 68020 CPU. The installer did not find this. You can install the Image plugin but it will not work on 68000 and 68010 based Amigas.")
+(set #noppclib   "\n\nNOTE\n~~~~~~~~~~~~~~~~~~~~~~~~~~~\nYou selected a PPC plugin that needs PowerUp installed. The installer did not find 'libs:ppc.library' or the library resident. The installer will install the _ppc version of the plugin, if it is in the archive, but without a PPC (with PowerUp) it will not work and you may need to install a different version of the plugin if you did not select another version also.")
+(set #noplugfound "\n\nNOTE\n~~~~~~~~~~~~~~~~~~~~~~~~~~~\nThe Plugin you selected was not found it this archive. You will need to install a different version.\n\nPlugin not found:\n")
+
+; #updatedlibs different
+(set #updatedlibs "\nInstall/Update the Vapor Libraries?\nCheckmark = In this archive\n(Click 'Help' for more info on the libs.)\n")
+(set #lib1 " Update library")
+(set #lib2 " Toolkit library")
+(set #lib3 " Registration library")
+(set #libC " CManager lib [Bookmarks]")
+(set #libhelp1 "vapor_update.library:\nIf installed every Vapor app will automagically check for updates by querying the Vapor server via Internet. You will be informed and offered automatic downloading if there is an update.")
+(set #libhelp2 "\n\nvapor_toolkit.library:\nContains support functions which are used by most Vapor applications and thus can be shared to reduce individual application code size. ie: Async I/O library, crytographically strong random number generator, math support.")
+(set #libhelp3 "\n\nvapor_registration.library:\nContains the core code for the registration utility\n")
+(set #libhelpC "\n\nCManager.library:\nThe Contact Manager is a unique product for the Amiga. It's best described as a diary / address book which allows you to store all your contacts' user information, favourite web & ftp sites and IRC server/channels. Voyager uses CManager.library for its 'Bookmarks section'")
+(set #wherelibs "Where do you wish to place the Vapor lib(s), 'Libs:' is default.")
+(set #flushing "\n\nTrying to flush old Vapor libraries from memory.")
+
+(set #libdiff "\nThe installer found one of the Vapor libraries in 'LIBS:' to be a different version than a resident Vapor library (loaded in memory).")
+(set #rebootnote1 "\n\nNOTE: If you currently have a Vapor program running now it might have one of the Vapor libraries open. This may prevent the next Vapor application, that may need a newer library from this archive, from working. The installer has already tried to flush the old libraries. If this did not work you may need to reboot.")
+(set #rebootnote  "\n\nNOTE: It is strongly recommended that you reboot, after the installer is finished, to ensure that all updated libraries have been flushed. The libraries may be held open by VaporWare applications or MUI custom classes which are currently running.")
+
+
+;********************************************************************
+; German Strings
+;********************************************************************
+(if (= lan 1) (set OlliShareSomePizza TRUE_But_From_Long_Ago) )
+
+
+;********************************************************************
+; Check on New installer 
+;********************************************************************
+(set InstallerVer 0)
+(set vernum1 @installer-version) (set ver1 (/ vernum1 65536)) 
+(set rev1 (- vernum1 (* ver1 65536) ) ) (set InstallerVer (cat ver1 "." rev1))
+(set current_installer "43.3")
+(if (< InstallerVer current_installer) (message #updateinstaller) )
+
+;********************************************************************
+; Check on Setpatch 
+;********************************************************************
+(set vernum1 (getversion "c:setpatch")) (set ver1 (/ vernum1 65536)) 
+(set rev1 (- vernum1 (* ver1 65536) ) ) (set setpatchver (cat ver1 "." rev1))
+(set current_setpatch "40.16")
+(if (< setpatchVer current_setpatch) (message #updatesetpatch) )
+
+;********************************************************************
+; Hello
+;********************************************************************
+(message #about)
+ 
+(welcome) 
+
+;********************************************************************
+; Check Last ENV
+;********************************************************************
+(if (> (exists "env:Vapor/Voyager_LASTUSEDDIR") 0) 
+ (
+  (set lastdir (getenv "Vapor/Voyager_LASTUSEDDIR"))
+  (set lastdirlen (strlen lastdir))
+  ;;(set tricklen (+ 1 (strlen (fileonly lastdir))))
+  ;;(set lastdir (substr lastdir 0 (- lastdirlen tricklen) ) )
+  (if (= 0 (exists lastdir (noreq))) (set lastdir (cat lastdir ":"))) 
+ )
+ (set lastdir 0)
+)
+
+
+;********************************************************************
+; Ask where to put Voyager & Make dir if needed
+;********************************************************************
+(set Package (getassign "AmiTCP"))
+(if (= Package "") (set Package (getassign "Inet")) )
+(if (<> lastdir 0) (set Package lastdir))
+
+(set Voyagerdir  (askdir (prompt #whereVoyagerP)
+		        (help   #whereVoyagerP)
+     		        (default Package)
+               )  
+)
+
+(set where Voyagerdir)
+
+;******************************************************************************** 
+; Copy over Plugins stuff
+;********************************************************************************
+(procedure install_plugins
+
+  (if (< (exists (tackon where "Plugins")) 2) (makedir (tackon where "Plugins") (infos)) )    
+  (if (exists "Plugins.info")
+   (copyfiles (source "Plugins.info") (dest where) (optional "nofail") ) 
+  )
+
+  (if (= cpuPick 0) (set defvimgd 0)) (if (= cpuPick 1) (set defvimgd 0)) 
+  (if (= cpuPick 2) (set defvimgd 1)) (if (= cpuPick 3) (set defvimgd 2)) 
+  (if (= cpuPick 4) (set defvimgd 4)) (if (= cpuPick 5) (set defvimgd 8)) 
+  (if (AND (exists "libs:ppc.library")  (exists "Plugins/vimgdecode_ppc.vlib")) (set defvimgd 16))
+  (if (AND (exists "ppc.library" (resident)) (exists "Plugins/vimgdecode_ppc.vlib")) (set defvimgd 16))
+ 
+ ;***** Image Decoder Plugin  ******************************
+ (if (> (exists "Plugins/vimgdecode_68020.vlib") 0)
+ (
+  (if (< cpuPick 2) (message #imageno000)) 
+
+  (set size 0) (set totalplug 0)
+  (foreach "Plugins" "vimgdecode#?"  (set size (+ size (getsize (tackon "Plugins" @each-name)))) (set totalplug (+ totalplug 1)) )
+  (set sizek-vimg (/ size 1024))
+
+  (if (exists "Plugins/vimgdecode_68020.vlib")    (set vimgd020 "") (set vimgd020 " (*)") ) 
+  (if (exists "Plugins/vimgdecode_68030fpu.vlib") (set vimgd030 "") (set vimgd030 " (*)") ) 
+  (if (exists "Plugins/vimgdecode_68040fpu.vlib") (set vimgd040 "") (set vimgd040 " (*)") ) 
+  (if (exists "Plugins/vimgdecode_68060.vlib")    (set vimgd060 "") (set vimgd060 " (*)") ) 
+  (if (exists "Plugins/vimgdecode_ppc.vlib")      (set vimgdppc "") (set vimgdppc " (*)") ) 
+
+  (set cpuPickI (askoptions (choices (cat " 68020" vimgd020) (cat " 68030+FPU" vimgd030) 
+                                     (cat " 68040+FPU" vimgd040) (cat " 68060" vimgd060)
+                                     (cat " PPC (PowerUp)" vimgdppc)
+                            ) 
+    			  (prompt (cat #askimageP1 (/ sizek-vimg totalplug) "K. " #askimageP2 sizek-vimg "K." #askimageP3) )
+	                  (help   (cat #askimageP1 (/ sizek-vimg totalplug) "K. " #askimageP2 sizek-vimg "K." #askimageP3) )
+          		  (default defvimgd)
+	        )
+  )
+
+  (working #updateplug)
+
+  (procedure updatevimg_plug
+    (if (exists (tackon "Plugins" (cat "vimgdecode_" imageplugin ".vlib")) )
+       (copylib (source (tackon "Plugins" (cat "vimgdecode_" imageplugin ".vlib"))) (dest (tackon where "Plugins")) (optional "nofail") ) 
+    )
+  )
+
+  (set PPCthere 0)
+   (if (exists "libs:ppc.library") (set PPClibthere 1)  )
+   (if (exists "ppc.library" (resident)) (set PPClibthere 1) )
+  (if (AND (= PPClibthere 0) (IN cpuPickI 4)) (message #noppclib)) 
+  
+  (if (IN cpuPickI 0) ((set imageplugin "68020")    (updatevimg_plug)) ) 
+  (if (IN cpuPickI 1) ((set imageplugin "68030fpu") (updatevimg_plug)) )
+  (if (IN cpuPickI 2) ((set imageplugin "68040fpu") (updatevimg_plug)) )
+  (if (IN cpuPickI 3) ((set imageplugin "68060")    (updatevimg_plug)) )
+  (if (IN cpuPickI 4) ((set imageplugin "PPC")      (updatevimg_plug)) )
+
+ )
+ )
+
+ ;*********** Recheck CPU/PPC and file
+  (if (= cpuPick 0) (set defvimgd 0)) (if (= cpuPick 1) (set defvimgd 0)) 
+  (if (= cpuPick 2) (set defvimgd 1)) (if (= cpuPick 3) (set defvimgd 2)) 
+  (if (= cpuPick 4) (set defvimgd 4)) (if (= cpuPick 5) (set defvimgd 8)) 
+  (if (AND (exists "libs:ppc.library")  (exists "Plugins/VFlash_ppc.module")) (set defvimgd 16))
+  (if (AND (exists "ppc.library" (resident)) (exists "Plugins/VFlash_ppc.module")) (set defvimgd 16))
+ 
+
+ ;***** VFlash Plugin ******************************
+  (if (> (exists "Plugins") 0)  
+   (
+    (set vplugdir "Plugins") (set vplugdir1 "Plugins") 
+    (set cpuplugdir020 "")  (set cpuplugdir030 "")
+    (set cpuplugdir040 "") (set cpuplugdir060 "") (set cpuplugdirppc "") 
+   ) 
+  )
+
+  (if (> (exists "plugin") 0)    
+   (
+    (set vplugdir "build")   (set vplugdir1 "plugin") 
+    (set cpuplugdir020 "020")    (set cpuplugdir030 "030fpu")
+    (set cpuplugdir040 "040fpu") (set cpuplugdir060 "060") (set cpuplugdirppc "ppc") 
+   ) 
+  )
+
+  (if (> (exists "VFlash.VPlug") 0)  
+   (
+    (set vplugdir "") (set vplugdir1 "") 
+    (set cpuplugdir020 "")  (set cpuplugdir030 "")
+    (set cpuplugdir040 "") (set cpuplugdir060 "") (set cpuplugdirppc "") 
+   ) 
+  )
+
+
+ (if (> (exists (tackon vplugdir1 "VFlash.VPlug")) 0)
+ (
+    (if (< cpuPick 2) (message #flashno000)) 
+ 
+    (set size 0) (set totalplug 0)
+    (foreach vplugdir "VFlash_#?"  (set size (+ size (getsize (tackon vplugdir @each-name)))) (set totalplug (+ totalplug 1)) )
+    (set sizek-vflash (/ size 1024))
+
+    ;(if (exists "libs:ppc.library") (set #cpuguess 5))
+    ;(if (exists "ppc.library" (resident)) (set #cpuguess 5))
+   
+    (if (exists (tackon vplugdir (tackon cpuplugdir020 "VFlash_68020.module")))    (set vflash020 "") (set vflash020 " (*)") ) 
+    (if (exists (tackon vplugdir (tackon cpuplugdir030 "VFlash_68030fpu.module"))) (set vflash030 "") (set vflash030 " (*)") ) 
+    (if (exists (tackon vplugdir (tackon cpuplugdir040 "VFlash_68040fpu.module"))) (set vflash040 "") (set vflash040 " (*)") ) 
+    (if (exists (tackon vplugdir (tackon cpuplugdir060 "VFlash_68060.module")))    (set vflash060 "") (set vflash060 " (*)") ) 
+    (if (exists (tackon vplugdir (tackon cpuplugdirppc "VFlash_ppc.module")))      (set vflashppc "") (set vflashppc " (*)") ) 
+
+    (if (= sizek-vflash 0)
+     (set #askflashP100 "")
+     (set #askflashP100 (cat #askflashP1a (/ sizek-vflash totalplug) "K. " #askflashP2 sizek-vflash "K."))
+    )
+
+    (set cpuPickI (askoptions (choices (cat " 68020" vflash020) (cat " 68030+FPU" vflash030) 
+                                      (cat " 68040+FPU" vflash040) (cat " 68060" vflash060)
+                                      (cat " PPC (PowerUp)" vflashppc)
+                             ) 
+         			  (prompt (cat #askflashP1 #askflashP100 #askflashP3))
+	                          (help   (cat #askflashP1 #askflashP100 #askflashP3))
+          	                  (default defvimgd)
+	          )
+    )
+
+    (working #updateplug)
+
+    (procedure updateflash_plug
+      (if (exists (tackon vplugdir (tackon cpuplugdir (cat "VFlash_" flashplugin ".module"))) ) 
+         (copylib (source (tackon vplugdir (tackon cpuplugdir (cat "VFlash_" flashplugin ".module")))) (dest (tackon where "Plugins")) (optional "nofail") ) 
+      )
+    )
+
+    (set PPCthere 0)
+     (if (exists "libs:ppc.library") (set PPClibthere 1)  )
+     (if (exists "ppc.library" (resident)) (set PPClibthere 1) )
+    (if (AND (= PPClibthere 0) (IN cpuPickI 4)) (message #noppclib)) 
+  
+    (if (IN cpuPickI 0) ((set flashplugin "68020")    (set cpuplugdir cpuplugdir020)  (updateflash_plug)) ) 
+    (if (IN cpuPickI 1) ((set flashplugin "68030fpu") (set cpuplugdir cpuplugdir030)  (updateflash_plug)) )
+    (if (IN cpuPickI 2) ((set flashplugin "68040fpu") (set cpuplugdir cpuplugdir040)  (updateflash_plug)) )
+    (if (IN cpuPickI 3) ((set flashplugin "68060")    (set cpuplugdir cpuplugdir060)  (updateflash_plug)) )
+    (if (IN cpuPickI 4) ((set flashplugin "PPC")      (set cpuplugdir cpuplugdirppc)  (updateflash_plug)) )
+
+    (copylib (source (tackon vplugdir1 "VFlash.VPlug")) (dest (tackon where "Plugins")) (optional "nofail") ) 
+ )
+ )
+
+
+ ;***** ssl Plugin ******************************
+  ;(set USA (askchoice (choices #yesc  #noc)
+  ;	              (prompt #nossl)
+  ;	              (help #nossl)
+  ;                     (default 1)
+  ;	   )
+  ;)
+
+  ;(if (= USA 0) ; 0=InUSA
+  ; (message #okssl)
+  ; (copylib (source (tackon "Plugins" "voyager_ssl.vlib")) (dest (tackon where "Plugins")) (optional "nofail") ) 
+  ;)
+
+ ;***** About & Search Plugin ******************************
+  (if (exists (tackon "Plugins" "voyager_about.vlib"))
+   (copylib (source (tackon "Plugins" "voyager_about.vlib")) (dest (tackon where "Plugins")) (optional "nofail") ) 
+  )
+  (if (exists (tackon "Plugins" "Search.VPlug")) 
+   (copylib (source (tackon "Plugins" "Search.VPlug")) (dest (tackon where "Plugins")) (optional "nofail") ) 
+  )
+  (if (exists (tackon "Plugins" "voyager_ssl.vlib"))
+   (copylib (source (tackon "Plugins" "voyager_ssl.vlib")) (dest (tackon where "Plugins")) (optional "nofail") ) 
+  )
+)
+
+
+
+(if (OR (OR (exists "Plugins") (exists "build")) (exists "VFlash.VPlug"))   
+ (install_plugins)
+)
+
+(if (exists "flushlib")  (run "flushlib QUIET #?.VPlug #?.vlib vimgdecode#? VFlash#?")   )
+
+
+
+;********************************************************************
+; Copy update Lib if wanted 
+;********************************************************************
+(set deflibs 15)
+(if (> (exists "libs") 0)
+ (
+  (set deflibs 0)
+  (if (> (exists (tackon "libs" "vapor_update.library")) 0)       (set deflibs (+ deflibs 1)))
+  (if (> (exists (tackon "libs" "vapor_toolkit.library")) 0)      (set deflibs (+ deflibs 2)))
+  (if (> (exists (tackon "libs" "vapor_registration.library")) 0) (set deflibs (+ deflibs 4)))
+  (if (> (exists (tackon "libs" "CManager.library")) 0)           (set deflibs (+ deflibs 8)))
+
+  (set libPick (askoptions (choices #lib1 #lib2 #lib3 #libC)
+			  (prompt #updatedlibs)
+	                  (help   (cat #libhelp1 #libhelp2 #libhelp3 #libhelpC))
+          		  (default deflibs)
+	       )
+  )
+
+  (if (> libPick 0)
+   (
+    (set wherelibs (askdir (prompt #wherelibs)
+		          (help   #wherelibs)
+     		          (default "LIBS:")
+                   )  
+    )
+    
+    (if (IN libPick 0)
+     (if (> (exists (tackon "libs" "vapor_update.library")) 0)
+      (copylib (source (tackon "libs" "vapor_update.library")) (dest wherelibs) (optional "nofail"))  
+     )
+    )
+
+    (if (IN libPick 1)
+     (if (> (exists (tackon "libs" "vapor_toolkit.library")) 0)
+      (copylib (source (tackon "libs" "vapor_toolkit.library")) (dest wherelibs) (optional "nofail"))  
+     )
+    )
+
+    (if (IN libPick 2)
+     (if (> (exists (tackon "libs" "vapor_registration.library")) 0)
+      (copylib (source (tackon "libs" "vapor_registration.library")) (dest wherelibs) (optional "nofail"))  
+     )
+    )
+
+    (if (IN libPick 3)
+     (if (> (exists (tackon "libs" "CManager.library")) 0)
+      (copylib (source (tackon "libs" "CManager.library")) (dest wherelibs) (optional "nofail"))  
+     )
+    )
+
+   ;(working #flushing) (run "avail flush > NIL:") (run "avail flush > NIL:") (run "avail flush > NIL:")
+
+   ; Run David's flushlib if there - 0=ok , 20=FlushFail
+    (if (exists "flushlib")
+     (run "flushlib QUIET vapor_#?.library CManager.#?")
+    )
+   
+
+   )
+
+  )
+ )
+)
+
+;********************************************************************
+; Check version of libs resident VS in libs: then note reboot
+;********************************************************************
+(if (> (exists "libs") 0)
+ (
+  (set lib_localdir "Libs:")
+
+  (procedure checkversion
+   (set vernum1 (getversion (tackon lib_localdir ver_checkfile)))
+   (set ver1 (/ vernum1 65536))  (set rev1 (- vernum1 (* ver1 65536) ) )
+   (set ver_result (cat ver1 "." rev1))
+  )
+  (procedure checkversionR
+   (set vernum1 (getversion (tackon lib_localdir ver_checkfile) (resident)))
+   (set ver1 (/ vernum1 65536))  (set rev1 (- vernum1 (* ver1 65536) ) )
+   (set ver_result (cat ver1 "." rev1))
+  )
+
+  (set ver_checkfile "vapor_toolkit.library") (checkversion) (set toolkit_ver ver_result)
+  (set ver_checkfile "vapor_update.library") (checkversion) (set update_ver ver_result)
+  (set ver_checkfile "vapor_registration.library") (checkversion) (set reg_ver ver_result)
+  (set ver_checkfile "CManager.library") (checkversion) (set cman_ver ver_result)
+
+  (if (= toolkit_ver "0.0") (set toolkit_ver "None"))
+  (if (= update_ver "0.0") (set update_ver "None"))
+  (if (= reg_ver "0.0") (set reg_ver "None"))
+  (if (= cman_ver "0.0") (set cman_ver "None"))
+
+  (set lib_localdir "")
+  (set ver_checkfile "vapor_toolkit.library") (checkversionR) (set toolkit_verR ver_result)
+  (set ver_checkfile "vapor_update.library") (checkversionR) (set update_verR ver_result)
+  (set ver_checkfile "vapor_registration.library") (checkversionR) (set reg_verR ver_result)
+  (set ver_checkfile "CManager.library") (checkversionR) (set cman_verR ver_result)
+
+  (if (= toolkit_verR "0.0") (set toolkit_verR "None"))
+  (if (= update_verR "0.0") (set update_verR "None"))
+  (if (= reg_verR "0.0") (set reg_verR "None"))
+  (if (= cman_verR "0.0") (set cman_verR "None"))
+
+
+  (set #verchecklib (cat "Vapor Library Version Check\n------------------------------------\n"
+                         "vapor_toolkit.library\nIn 'LIBS:' " toolkit_ver " (In memory: " toolkit_verR ")" 
+                         "\n\nvapor_update.library\nIn 'LIBS:' " update_ver " (In memory: " update_verR ")" 
+                         "\n\nvapor_registration.library\nIn 'LIBS:' " reg_ver " (In memory: " reg_verR ")"
+                         "\n\nCManager.library\nIn 'LIBS:' " cman_ver " (In memory: " cman_verR ")"
+                    ) 
+  )
+  
+  (set libdiff 0)
+  (if (<> toolkit_ver toolkit_verR) (set libdiff 1)) 
+  (if (<> update_ver update_verR)   (set libdiff 1))
+  (if (<> reg_ver reg_verR)         (set libdiff 1)) 
+  (if (<> cman_ver cman_verR)       (set libdiff 1))
+
+  (if (= libdiff 1)
+   (
+    (message #verchecklib)
+    (message (cat #libdiff #rebootnote))
+   )
+  )
+
+ )
+)
+
+
+;********************************************************************
+; End Bye 
+;********************************************************************
+(if (> (exists ("c:multiview")) 0) (set #mpath "c:") )
+(if (> (exists ("sys:Utilities/multiview")) 0) (set #mpath "sys:Utilities") )
+(run (cat " " #mpath "/multiview README") )
+(run (cat "run " #mpath "/multiview VFlash.readme") )
+
+(set @default-dest (tackon where "Plugins"))
+
+(exit #byebye)

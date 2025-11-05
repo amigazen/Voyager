@@ -1,0 +1,789 @@
+#########################################################################
+#
+# Rules
+#
+# $Id: makefile.rules,v 1.85 2003/06/22 19:24:04 zapek Exp $
+#
+
+voyager.gst: gst.h prefs.h config.h gst.c
+	gst unload voyager.gst
+	$(NATVCC) $(HOSTCCOPTS) CODE=FAR $(VDEBUG) noobjname ign 105 makegst=voyager.gst $(SOURCE)gst.c
+
+#
+# MUI GCC preprocessor
+#
+# I keep just to show that gmake sucks. This won't work. $*.c is not evaluated
+# despite what the manual says. So the conclusion is: avoid define even if they
+# could save typo as they will not always work like you'd like it to.
+#
+#define compile
+#$(CROSSCC) $(CCOPTS) $(VDEBUG $(PPSOURCE)$*.c
+#endef
+#
+#define compile-debug
+#    $(CROSSCC) $(CCOPTS) $(VDEBUG $(PPSOURCE)$*.c
+#endef
+#
+#define compile-pregcc
+#    $(CROSSPP) <$(SOURCE)$*.c >$(PPSOURCE)$*.c
+#    $(CROSSCC) $(CCOPTS)  $(VDEBUG) $(PPSOURCE)$*.c
+#endef
+
+###############################################################################
+# This is a hack to force make to load the bash shell - for msdos long cmd lines !
+# Note: the macro must be followed by a ; \ combination. see below
+
+ifeq ($(BUILD), MBX)
+COMPILEHACK = @echo "Compiling $*.c"; echo "$(CROSSCC) $(CCOPTS) $*.c"
+else
+COMPILEHACK =
+endif
+
+################################################################################
+#
+# Catalogue rules (might seem redundant at first but it's all fine)
+#
+ifeq ($(BUILD), AMIGAOS)
+voyager_cat.h: voyager.cd rev.h
+	$(CATMAKER) $(SOURCE)voyager.cd $(SOURCE)voyager_cat.h
+	-$(DELETE) $(TMPDIR)cattmp.a
+endif
+
+ifeq ($(BUILD), MORPHOS)
+voyager_cat.h: voyager.cd rev.h catmaker_mbx
+	$(CATMAKER) //voyager.cd //voyager_cat.h cfile
+	$(DELETE) cattmp.c
+endif
+
+ifeq ($(BUILD), MBX)
+voyager_cat.h: voyager.cd rev.h catmaker_mbx
+	$(CATMAKER) $(SOURCE)voyager.cd $(SOURCE)voyager_cat.h cfile
+endif
+
+
+ifeq ($(BUILD), AMIGAOS)
+voyager_cat.o: voyager_cat.h
+	$(CATMAKER) $(SOURCE)voyager.cd $(TMPDIR)voyager_cat.h
+	$(DELETE) $(TMPDIR)voyager_cat.h
+	$(CROSSAS) -ovoyager_cat.o $(TMPDIR)cattmp.a
+endif
+
+ifeq ($(BUILD), MORPHOS)
+voyager_cat.o: voyager_cat.h catmaker_mbx
+	$(CATMAKER) //voyager.cd t:voyager_cat.h cfile
+	$(DELETE) t:voyager_cat.h
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) -o voyager_cat.o cattmp.c
+endif
+
+ifeq ($(BUILD), MBX)
+voyager_cat.o: voyager_cat.h catmaker_mbx
+	$(CATMAKER) $(SOURCE)voyager.cd $(TMPDIR)voyager_cat.h cfile
+	$(DELETE) $(TMPDIR)voyager_cat.h
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) -o voyager_cat.o cattmp.c
+endif
+
+catmaker_mbx:
+	$(NATVCC) $(HOSTCCOPTS) $(VDEBUG) $(SOURCE)catmaker_mbx.c
+	$(NATVCC) $(LDOPTS) catmaker_mbx catmaker_mbx.o
+
+mui.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+mbx.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+init.o:
+	$(CROSSCC) $(CCOPTS) $(LCCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+win.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+http.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+amicon.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+buttonbitmaps.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+frame.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+malloc.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+frameset.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+plugins.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+sourceview.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+docinfowin.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+# not used at all currently
+postwin.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+sendmailwin.o:
+ifeq ($(BUILD), AMIGAOS)
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) ign=181 $(SOURCE)$*.c
+else
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+endif
+
+dns.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+ftp.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+urlstring.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+certificates.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+netinfo.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+
+fastlinkbutton.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+printrequest.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+jscript.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+cache.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+cookies.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+smartscrollgroup.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+main.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+prefswin_main.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+prefswin_cache.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+prefswin_certs.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+prefswin_colors.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+prefswin_fastlinks.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+prefswin_fonts.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+prefswin_general.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+prefswin_hyperlinks.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+prefswin_images.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+prefswin_javascript.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+prefswin_languages.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+prefswin_mailnews.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+prefswin_network.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+prefswin_security.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+prefswin_spoof.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+prefswin_toolbar.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+prefswin_download.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+prefswin_list.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+prefswin_contextmenu.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+mbx_menu.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+mbx_cross.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+prefs.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+download.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+keyparse.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+prefsimages.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+imgdecode.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+colortable.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+formpost.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+network.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+autoproxy.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+embedded_object.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+searchrequest.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+mbx_gauge.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+authenticate.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+charmap.h:
+ifeq ($(BUILD),MORPHOS)
+	$(NATVCC) $(HOSTCCOPTS) $(VDEBUG) $(SOURCE)makecharmap.c
+	$(NATVCC) $(LDOPTS) makecharmap makecharmap.o
+	./makecharmap >$(SOURCE)charmap.h
+endif
+ifeq ($(BUILD),AMIGAOS)
+	$(NATVCC) $(HOSTCCOPTS) $(VDEBUG) link $(SOURCE)makecharmap.c
+	../../makecharmap >../../charmap.h   # Makefile uses unix path
+endif
+ifeq ($(BUILD),MBX)
+	$(NATVCC) $(HOSTCCOPTS) $(VDEBUG) $(SOURCE)makecharmap.c
+	$(NATVCC) $(LDOPTS) ./makecharmap makecharmap.o
+	./makecharmap >$(SOURCE)charmap.h
+endif
+
+rev.h: .revinfo
+ifeq ($(BUILD),MBX)
+	$(NATVCC) $(HOSTCCOPTS) $(VDEBUG) $(SOURCE)crev.c
+	$(NATVCC) $(LDOPTS) ./crev crev.o
+	./crev
+else
+	rev DIRECTORY=//
+endif
+
+parse.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+cookiebrowser.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+authbrowser.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+history.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+historylist.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+app.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+gauge.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+nagwin.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+applet.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+fastlinkgroup.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+formbutton.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+formcheckbox.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+formcycle.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+formelement.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+formfile.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+formhidden.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+formlist.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+formpopup.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+formradio.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+formtextfield.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+frameborder.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+ledclass.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+scrollgroupclass.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+ruler.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+smartlabel.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+button.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+toolbar.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+errorwin.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+prunecache.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+splashwin.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+imgstub.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+debug.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+pluginswin.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+pluginswin_list.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+tearoff.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+textfit2.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+locale.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+rexx.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+commandclass.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+clock.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+file.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+win_func.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+remap.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+menus.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+ifneq ($(BUILD), AMIGAOS)
+hash.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+endif
+
+urlparser.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+ddstring.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+mime.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+fonttestclass.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+fontcache.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+hooks.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+host_os.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+methodstack.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+mui_func.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+time_func.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+update.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+vatstart.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+ifneq ($(BUILD), AMIGAOS)
+textfit.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+endif
+
+mybrush.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+executive.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+readkey.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+bitmapclone.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+clip.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+cmanager.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+template.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+mui_stubs.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+nlist.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+sizegroup.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+snprintf.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+smartreq.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+sur_gauge.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+lineread.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+minmax.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+
+#########################################################################
+#
+# Layout subsystem
+#
+
+htmlwin.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+htmlview.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+layout_main.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+layout_parse.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+lo_group.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+lo_button.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+lo_formbutton.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+lo_formtext.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+lo_formcycle.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+lo_form.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+lo_dummy.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+lo_table.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+lo_image.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+lo_anchor.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+lo_div.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+lo_hr.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+lo_frameset.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+lo_br.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+lo_formhidden.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+lo_radio.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+lo_checkbox.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+lo_formtextfield.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+lo_formfile.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+lo_map.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+lo_area.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+lo_li.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+lo_pip.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+lo_margin.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+lo_embed.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+lo_form_option.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+
+
+#########################################################################
+#
+# JS subsystem
+#
+
+ifeq ($(BUILD), MBX)
+js_parser.o: js.l js.y
+	flex -ojs_scanner.h -B $(SOURCE)js.l
+	bison -ojs_parser.c $(SOURCE)js.y
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) js_parser.c
+else
+js_parser.o: js.l js.y
+	flex -ojs_scanner.h -B ../../js.l
+	cp js_scanner.h ../../
+	bison -ojs_parser.c ../../js.y
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) js_parser.c
+endif
+
+js_string.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+js_navigator.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+js_real.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+js_bool.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+js_object.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+js_math.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+js_screen.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+js_location.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+js_link.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+js_objref.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+js_array.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+js_func.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+js_date.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+js_regexp.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+js_event.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+js_plugin.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+js_mimetype.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+js_gc.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+js_stb_root.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+js_stb_cdplayer.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+
+
+
+js_stb_gc.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)js_stb_gc.c
+
+#########################################################################
+#
+# CSS subsystem
+#
+
+ifeq ($(BUILD), MBX)
+css_parser.o: css.l css.y css.h
+	flex -Pcss -ocss_scanner.h -B $(SOURCE)css.l
+	bison -p css -ocss_parser.c $(SOURCE)css.y
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) css_parser.c
+else
+css_parser.o: css.l css.y css.h
+	flex -Pcss -ocss_scanner.h -B ../../css.l
+	cp css_scanner.h ../../
+	bison -p css -ocss_parser.c ../../css.y
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) css_parser.c
+endif
+
+cssengine.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+
+#########################################################################
+#
+# Regular expressions
+#
+regcomp.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+regexec.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+regfree.o:
+	$(CROSSCC) $(CCOPTS)  $(VDEBUG) $(SOURCE)$*.c
+
+regerror.o:
+	$(CROSSCC) $(CCOPTS) $(VDEBUG) $(SOURCE)$*.c
+
+
+#########################################################################
+#
+# Imagedecoders
+#
+ifeq ($(COMPILER),gnuc)
+imgdecode/%.o : imgdecode/%.c
+	$(CROSSCC) $(IMGCFLAGS)  $(VDEBUG) -o $@ $<
+else
+imgdecode/%.o : imgdecode/%.c
+	$(CROSSCC) $(IMGCFLAGS)  -o $@ $<
+endif
+
+#########################################################################
+#
+# VFlash (this is temporary, lame, etc... still OpenModule() works with dos
+#
+ifeq ($(COMPILER),gnuc)
+libvflash/plugin/%.o : libvflash/plugin/%.c
+	$(CROSSCC) $(VFLASHFLAGS)  $(VDEBUG) -o $@ $<
+else
+ifeq ($(findstring inux,$(OSTYPE)),inux)
+libvflash/plugin/%.o : libvflash/plugin/%.c
+	$(CROSSCC) $(VFLASHFLAGS) -o $@ $<
+else
+../flash/plugin/%.o : ../flash/plugin/%.c
+	$(CROSSCC) $(VFLASHFLAGS) -o $@ $<
+endif
+endif
+
+#########################################################################
+#
+# SSL
+#
+ifeq ($(COMPILER),gnuc)
+vsslstubs/%.o : vsslstubs/%.c
+	$(CROSSCC) $(SSLCFLAGS) $(VDEBUG) -o $@ $<
+else
+vsslstubs/%.o : vsslstubs/%.c
+	@$(CROSSCC) $(SSLCFLAGS) -o $@ $<
+endif
+
+$(LIBVFLASH) : #libvflash/$(LIBVFLASH) makefile
+	make -w -C libvflash -f makefile.caos

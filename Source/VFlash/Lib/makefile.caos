@@ -1,0 +1,114 @@
+# Makefile for the Flash Library (CaOS)
+#
+# $Id: makefile.caos,v 1.1.1.1 2002/10/07 12:52:19 zapek Exp $
+#
+#DEBUG=off
+export SHELL=/bin/bash
+include $(SRCDIR)makefile.config
+
+ ifeq ($(COMPILER),gnuc)
+#  CFLAGS = -c -nostdlib -nostdinc -fpack-struct -funsigned-char -ffreestanding  -Wno-parentheses \
+#	-fpcc-struct-return -fno-common -Wall -Wpointer-arith -fno-builtin \
+#	-DTARGET=$(TARGET) -DPLATFORM=$(PLATFORM) -DSUBTARGET=$(SUBTARGET) -DCPUMATH64=1 -gstabs+
+  CFLAGS += \
+        -DNOSOUND -DMBX=1 -I../.. -I$(SRCDIRH)lib/include -I$(SRCDIR)modules $(CINCLUDES) \
+        -idirafter $(SRCDIR)executables/voyager_exe -I../../plugin
+  CPPFLAGS = $(CFLAGS)
+ endif
+
+ ifeq ($(COMPILER),diab)
+#  CFLAGS = -c -X23 -Xbss-common-off -DTARGET=mcf -DPLATFORM=mbx -DSUBTARGET=v3core -DCPUMATH64=1 \
+#         -Xalloca-inline=2 -ew1551 -ew1552 -Xconst-in-text=0x7 -tMCF5307FS:simple
+  ifeq ($(findstring ygwin,$(OSTYPE)),ygwin)
+  CFLAGS += \
+        -DNOSOUND -DMBX=1 -I../.. -I$(SRCDIRH)lib/include -I$(SRCDIRH)modules $(CINCLUDES) \
+        -I../../voyager -I../../plugin -DNOINLINESTUBS=1
+
+#        -I$(shell cygpath -w -p -a $(SRCDIR)executables/voyager_exe) -I../../plugin -DNOINLINESTUBS=1
+  else
+  CFLAGS += \
+        -DNOSOUND -DMBX=1 -I../.. -I$(SRCDIRH)lib/include -I$(SRCDIRH)modules $(CINCLUDES) \
+        -I$(SRCDIRH)executables/voyager_exe -I../../plugin -DNOINLINESTUBS=1
+  endif
+  CPPFLAGS = $(CFLAGS)
+ endif
+
+CFLAGS += -DCLIB_NOPOSIXNAMES=1
+
+#srcdir = Lib
+#VPATH := $(srcdir)
+
+
+INCLUDES = \
+	adpcm.h \
+	cxform.h \
+	graphic.h \
+	script.h \
+	bitmap.h \
+	displaylist.h \
+	matrix.h \
+	shape.h \
+	swf.h \
+	button.h \
+	flash.h \
+	program.h \
+	sound.h \
+	text.h \
+	character.h \
+	font.h \
+	rect.h \
+	sprite.h \
+	movie.h
+
+SWFOBJS = \
+	amiga.o \
+	flash.o \
+	character.o \
+	shape.o \
+	button.o \
+	program.o \
+	bitmap.o \
+	displaylist.o \
+	font.o \
+	graphic.o \
+	text.o \
+	matrix.o \
+	script.o \
+	sound.o \
+	sprite.o \
+	movie.o \
+	cxform.o \
+	adpcm.o
+
+
+all: libjpeg.a libflash.a
+
+# this needs fixing as libjpeg.a or libz.a aren't rebuild when needed :|
+libflash.a: $(SWFOBJS)
+	echo "*** Rebuilding link library" ; \
+	$(AR) $(AR_ADD) libflash.a $? ; \
+	$(AR) $(AR_IDX) libflash.a
+
+#    $(CC) $(LDFLAGS) -r -o $@ $(SWFOBJS) libz.a
+
+%.o : %.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+%.o : %.cc
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(SWFOBJS): $(INCLUDES)
+
+libjpeg.a:
+	$(MAKE) -C Jpeg -f makefile.caos
+
+libz.a:
+	$(MAKE) -C Zlib -f Makefile
+
+clean:
+	-rm -f $(SWFOBJS) libflash.o
+	$(MAKE) -C Jpeg -f makefile.caos clean
+	$(MAKE) -C Zlib -f Makefile clean
+
+.PHONY: plugin jpeg all
+# DO NOT DELETE
