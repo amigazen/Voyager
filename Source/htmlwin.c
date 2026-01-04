@@ -47,8 +47,7 @@
 #include "gfxcompat.h"
 #include "init.h"
 #include "rexx.h"
-
-/* keyimages.h removed - keyfile/copy protection no longer used */
+#include "keyimages.h"
 
 #include "mybrush.h"
 #include "historylist.h"

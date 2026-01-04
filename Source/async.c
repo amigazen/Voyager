@@ -9,8 +9,26 @@
 
 #include <proto/exec.h>
 #include <proto/dos.h>
+#include <proto/utility.h>
+#include <proto/intuition.h>
+#include <proto/rexxsyslib.h>
+#include <proto/muimaster.h>
+#include <proto/graphics.h>
+#include <intuition/intuitionbase.h>
+#include <libraries/mui.h>
+#include <rexx/storage.h>
+#include <string.h>
+#include <stdlib.h>
 
+#include "globals.h"
 #include "async.h"
+
+/* External library bases */
+extern struct Library *MUIMasterBase;
+
+/* Utility library functions - explicit declarations */
+APTR AllocVecPooled(APTR poolheader, ULONG memsize);
+void FreeVecPooled(APTR poolheader, APTR memory);
 
 /*****************************************************************************/
 
@@ -878,5 +896,450 @@ LONG GetFilesizeAsync(struct AsyncFile *file)
 		return( -1 );
 
 	return( fib->fib_Size );
+}
+
+/*****************************************************************************/
+/* VAT_ functions - hardcoded implementations */
+
+#define MYPROC ((struct Process*)(SysBase->ThisTask))
+
+/* Library code array for VAT_OpenLibraryCode */
+static char *vat_libarray[] = {
+	"graphics",
+	"utility",
+	"workbench",
+	"icon",
+	"commodities",
+	"layers",
+	"iffparse",
+	"cybergraphics",
+	"datatypes",
+	"diskfont",
+	"rexxsyslib",
+	"asl",
+	"intuition",
+	"mathtrans",
+	"mathffp",
+	"mathieeedoubtrans",
+	"mathieeedoubbas"
+};
+
+/* Library code enum values */
+enum {
+	VATOC_GFX,
+	VATOC_UTIL,
+	VATOC_WB,
+	VATOC_ICON,
+	VATOC_COMMODITIES,
+	VATOC_LAYERS,
+	VATOC_IFFPARSE,
+	VATOC_CYBERGRAPHICS,
+	VATOC_DATATYPES,
+	VATOC_DISKFONT,
+	VATOC_REXXSYS,
+	VATOC_ASL,
+	VATOC_INTUITION,
+	VATOC_MATHTRANS,
+	VATOC_MATHFFP,
+	VATOC_MATHIEEEDOUBTRANS,
+	VATOC_MATHIEEEDOUBBAS
+};
+
+/* Pool functions */
+APTR VAT_CreatePool(ULONG flag, ULONG puddlesize, ULONG threshsize)
+{
+	return CreatePool(flag, puddlesize, threshsize);
+}
+
+void VAT_DeletePool(APTR poolheader)
+{
+	DeletePool(poolheader);
+}
+
+APTR VAT_AllocPooled(APTR poolheader, ULONG memsize)
+{
+	return AllocPooled(poolheader, memsize);
+}
+
+void VAT_FreePooled(APTR poolheader, APTR memory, ULONG memsize)
+{
+	FreePooled(poolheader, memory, memsize);
+}
+
+APTR VAT_AllocVecPooled(APTR poolheader, ULONG memsize)
+{
+	return (APTR)AllocVecPooled(poolheader, memsize);
+}
+
+void VAT_FreeVecPooled(APTR poolheader, APTR memory)
+{
+	FreeVecPooled(poolheader, memory);
+}
+
+/* OpenLibrary functions */
+struct Library *VAT_OpenLibrary(STRPTR libname, ULONG libversion)
+{
+	struct Library *l;
+	char tpath[128];
+	int triedflush = FALSE;
+
+retry:
+	l = OpenLibrary(libname, libversion);
+	if (!l && !strpbrk(libname, ":/"))
+	{
+		Strncpy(tpath, "LIBS:", sizeof(tpath) - 1);
+		Strncpy(tpath + 5, libname, sizeof(tpath) - 6);
+		tpath[sizeof(tpath) - 1] = '\0';
+		l = OpenLibrary(tpath, libversion);
+	}
+	if (!l && !strpbrk(libname, ":/"))
+	{
+		Strncpy(tpath, "LIBS/", sizeof(tpath) - 1);
+		Strncpy(tpath + 5, libname, sizeof(tpath) - 6);
+		tpath[sizeof(tpath) - 1] = '\0';
+		l = OpenLibrary(tpath, libversion);
+	}
+
+	if (!l && !triedflush)
+	{
+		APTR x;
+		triedflush = TRUE;
+		x = AllocVec(0xfffffff, 0);
+		if (x)
+			FreeVec(x);
+		goto retry;
+	}
+
+	return l;
+}
+
+struct Library *VAT_OpenLibraryCode(ULONG libcode)
+{
+	char buffer[32];
+	ULONG len;
+
+	if (libcode >= sizeof(vat_libarray) / sizeof(vat_libarray[0]))
+		return NULL;
+
+	Strncpy(buffer, vat_libarray[libcode], sizeof(buffer) - 8);
+	len = strlen(buffer);
+	Strncpy(buffer + len, ".library", sizeof(buffer) - len - 1);
+	buffer[sizeof(buffer) - 1] = '\0';
+	return VAT_OpenLibrary(buffer, 0);
+}
+
+/* SetLastUsedDir function */
+void VAT_SetLastUsedDir(STRPTR appid)
+{
+	char buff[128];
+	char path[128];
+	BPTR f;
+	int envarcchanged = TRUE;
+
+	NameFromLock(GetProgramDir(), buff, sizeof(buff));
+
+	if (!(f = Lock("ENV:Vapor", SHARED_LOCK)))
+		f = CreateDir("ENV:Vapor");
+	UnLock(f);
+	if (!(f = Lock("ENVARC:Vapor", SHARED_LOCK)))
+		f = CreateDir("ENVARC:Vapor");
+	UnLock(f);
+
+	Strncpy(path, "ENVARC:Vapor/", sizeof(path) - 1);
+	Strncpy(path + 13, appid, sizeof(path) - 14);
+	Strncpy(path + 13 + strlen(appid), "_LASTUSEDDIR", sizeof(path) - 13 - strlen(appid) - 1);
+	path[sizeof(path) - 1] = '\0';
+
+	f = Open(path, MODE_OLDFILE);
+	if (f)
+	{
+		char buff2[128];
+		if (Read(f, buff2, sizeof(buff2)) == strlen(buff))
+		{
+			if (!memcmp(buff, buff2, strlen(buff)))
+				envarcchanged = FALSE;
+		}
+		Close(f);
+	}
+
+	if (envarcchanged)
+	{
+		f = Open(path, MODE_NEWFILE);
+		if (f)
+		{
+			Write(f, buff, strlen(buff));
+			Close(f);
+		}
+	}
+
+	Strncpy(path, "ENV:Vapor/", sizeof(path) - 1);
+	Strncpy(path + 10, appid, sizeof(path) - 11);
+	Strncpy(path + 10 + strlen(appid), "_LASTUSEDDIR", sizeof(path) - 10 - strlen(appid) - 1);
+	path[sizeof(path) - 1] = '\0';
+	f = Open(path, MODE_NEWFILE);
+	if (f)
+	{
+		Write(f, buff, strlen(buff));
+		Close(f);
+	}
+}
+
+/* IsOnline function - simplified version */
+int VAT_IsOnline(void)
+{
+	struct Library *l;
+
+	/* Check for bsdsocket.library */
+	if (l = OpenLibrary("bsdsocket.library", 3))
+	{
+		CloseLibrary(l);
+		return TRUE;
+	}
+
+	return FALSE;
+}
+
+/* Random number generator - simplified implementation */
+#define RANDOM_STATE_BYTES 1024
+
+typedef struct
+{
+	unsigned char state[RANDOM_STATE_BYTES];
+	unsigned int next_available_byte;
+	unsigned int add_position;
+} RandomState;
+
+static struct SignalSemaphore vat_randsem;
+static RandomState vat_random_state;
+static int vat_rand_isinit = FALSE;
+static int vat_randsem_init = FALSE;
+
+static void vat_random_stir(void)
+{
+	unsigned int i;
+	for (i = 0; i < RANDOM_STATE_BYTES; i++)
+	{
+		vat_random_state.state[i] ^= (unsigned char)(SysBase->IdleCount + i);
+		vat_random_state.state[i] ^= (unsigned char)(SysBase->DispCount + i);
+	}
+	vat_random_state.next_available_byte = 0;
+}
+
+static unsigned int vat_random_get_byte(void)
+{
+	if (vat_random_state.next_available_byte >= RANDOM_STATE_BYTES)
+	{
+		vat_random_stir();
+	}
+	return vat_random_state.state[vat_random_state.next_available_byte++];
+}
+
+static void vat_random_initialize(void)
+{
+	struct timeval tv;
+	BPTR f;
+	int rc;
+	char buffer[1024];
+
+	vat_random_state.next_available_byte = 0;
+	vat_random_state.add_position = 0;
+
+	/* Initialize with system state */
+	GetSysTime(&tv);
+	memcpy(vat_random_state.state, &tv, sizeof(tv));
+	memcpy(&vat_random_state.state[sizeof(tv)], SysBase, sizeof(struct ExecBase));
+
+	/* Try to load saved seed */
+	f = Open("S:VaporToolkit.Randseed", MODE_OLDFILE);
+	if (f)
+	{
+		rc = Read(f, buffer, sizeof(buffer));
+		Close(f);
+		if (rc > 0)
+		{
+			unsigned int i;
+			for (i = 0; i < rc && i < RANDOM_STATE_BYTES; i++)
+				vat_random_state.state[i] ^= buffer[i];
+		}
+	}
+
+	vat_random_stir();
+	vat_rand_isinit = TRUE;
+}
+
+void VAT_RandomStir(void)
+{
+	if (!vat_randsem_init)
+	{
+		InitSemaphore(&vat_randsem);
+		vat_randsem_init = TRUE;
+	}
+	ObtainSemaphore(&vat_randsem);
+	if (!vat_rand_isinit)
+		vat_random_initialize();
+	vat_random_stir();
+	ReleaseSemaphore(&vat_randsem);
+}
+
+ULONG VAT_RandomByte(void)
+{
+	ULONG x;
+
+	if (!vat_randsem_init)
+	{
+		InitSemaphore(&vat_randsem);
+		vat_randsem_init = TRUE;
+	}
+	ObtainSemaphore(&vat_randsem);
+	if (!vat_rand_isinit)
+		vat_random_initialize();
+	x = vat_random_get_byte();
+	ReleaseSemaphore(&vat_randsem);
+
+	return x;
+}
+
+/* GetAppScreen function */
+struct Screen *VAT_GetAppScreen(APTR app)
+{
+	struct Screen *scr;
+	char *pubname;
+
+	if (MUIMasterBase && MUIMasterBase->lib_Version >= 13)
+	{
+		struct List *l;
+		APTR ostate, o;
+
+		get(app, MUIA_Application_WindowList, &l);
+		ostate = l->lh_Head;
+		while (o = NextObject(&ostate))
+		{
+			scr = 0;
+			get(o, MUIA_Window_Screen, &scr);
+			if (scr)
+				return scr;
+		}
+	}
+
+	pubname = 0;
+	get(app, MUIA_Application_PubScreenName, &pubname);
+	scr = LockPubScreen(pubname);
+	UnlockPubScreen(NULL, scr);
+
+	return scr;
+}
+
+/* GetAppScreenName function */
+STRPTR VAT_GetAppScreenName(APTR app)
+{
+	struct Screen *scr = VAT_GetAppScreen(app);
+
+	if (scr)
+	{
+		struct List *psl = LockPubScreenList();
+		struct PubScreenNode *psn;
+
+		for (psn = FIRSTNODE(psl); NEXTNODE(psn); psn = NEXTNODE(psn))
+		{
+			if (psn->psn_Screen == scr)
+				break;
+		}
+		UnlockPubScreenList();
+
+		if (NEXTNODE(psn))
+			return psn->psn_Node.ln_Name;
+	}
+	return "Workbench";
+}
+
+/* SendRXMsg function - simplified version */
+static struct MsgPort *vat_rxhandler_rxport = NULL;
+
+int VAT_SendRXMsg(STRPTR cmd, STRPTR basename, STRPTR suffix)
+{
+	struct RexxMsg *rm;
+	struct MsgPort *rexxhost;
+	TEXT buffer[1024];
+
+	/* Initialize port if needed */
+	if (!vat_rxhandler_rxport)
+	{
+		vat_rxhandler_rxport = CreateMsgPort();
+		if (!vat_rxhandler_rxport)
+			return -1;
+	}
+
+	rm = CreateRexxMsg(vat_rxhandler_rxport, suffix, basename);
+	if (!rm)
+		return -1;
+
+	if (*cmd != '"' && *cmd != 39) /* is command not rexx code? */
+	{
+		STRPTR mark = strchr(cmd, ' ');
+		BPTR l;
+
+		if (mark)
+			*mark = 0; /* split file/args */
+
+		strcpy(buffer, "CALL \"PROGDIR:Rexx/");
+		strcat(buffer, cmd);
+		if (!strchr(buffer, '.'))
+		{
+			strcat(buffer, ".");
+			strcat(buffer, suffix);
+		}
+		l = Lock(&buffer[6], SHARED_LOCK);
+		if (l)
+		{
+			NameFromLock(l, &buffer[6], 256);
+			UnLock(l);
+		}
+		else
+			strcpy(&buffer[6], cmd);
+
+		strcat(buffer, "\"(\"");
+
+		if (mark) /* do we have any arguments behind filename */
+		{
+			STRPTR p = &buffer[strlen(buffer)];
+			*p = *mark++ = ' ';
+
+			/* copy args doubling any quotes for rexx func call */
+			while (*mark)
+			{
+				*p = *mark++;
+				if (*p++ == '"')
+					*p++ = '"';
+			}
+			*p = 0;
+		}
+
+		strcat(buffer, "\")");
+
+		rm->rm_Args[0] = buffer;
+		FillRexxMsg(rm, 1, 0);
+		rm->rm_Action = RXCOMM | RXFF_NOIO | RXFF_STRING;
+	}
+	else
+	{
+		rm->rm_Args[0] = cmd;
+		FillRexxMsg(rm, 1, 0);
+		rm->rm_Action = RXCOMM | RXFF_NOIO;
+	}
+
+	Forbid();
+	rexxhost = FindPort("REXX");
+	if (rexxhost)
+	{
+		PutMsg(rexxhost, (APTR)rm);
+	}
+	else
+	{
+		ClearRexxMsg(rm, 1);
+		DeleteRexxMsg(rm);
+	}
+	Permit();
+
+	return 0;
 }
 

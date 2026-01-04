@@ -146,10 +146,6 @@ extern char shorthelpinfotext[ 512 ];
 #ifndef __MORPHOS__
 int sscanf(const char *, const char *, ...);
 #endif /* __MORPHOS__ */
-#ifdef __SASC
-int STDARGS sprintf( char *, const char *, ... );
-int STDARGS vsprintf( char *, const char *, void * );
-#endif /* __SASC */
 
 // http.c
 int stripentity( char *bf, char *name, char *to, int tolen );
