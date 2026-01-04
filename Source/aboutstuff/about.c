@@ -7,13 +7,14 @@
 
 /** "vaporlogo" created by ShapeMe 1.6 ((7.12.96)) from "VaporLogo.jpg" **/ 
 
-#include "../../include/macros/compilers.h" /* XXX: hackish.. */
+#include "/includestuff/macros/compilers.h" /* XXX: hackish.. */
 
 #ifdef __MORPHOS__
 struct ExecBase *SysBase; /* lazy */
 #define FAR
-#else
-#define FAR FAR
+#endif
+#ifdef __SASC
+#define FAR far
 #endif
 
 UBYTE FAR vaporlogoData[6698]={0xFF,0xD8,0xFF,0xE0,0x00,0x10,0x4A,0x46,0x49,0x46,0x00,0x01,0x01,0x00,0x00,0x01,
@@ -1445,7 +1446,7 @@ STRPTR ASM SAVEDS VABOUT_GetAboutPtr(
 "<HTML>\n"
 "<HEAD>\n"
 "\n"
-"<!--  About V³ HTML by Ben Preece (beej@vapor.com)  -->\n"
+"<!--  About Vï¿½ HTML by Ben Preece (beej@vapor.com)  -->\n"
 "\n"
 "<TITLE>About</TITLE>\n"
 "</HEAD>\n"
@@ -1457,7 +1458,7 @@ STRPTR ASM SAVEDS VABOUT_GetAboutPtr(
 "\n"
 "\n"
 "<A HREF='http://v3.vapor.com/'>\n"
-"<IMG SRC='v3logo' WIDTH=220 HEIGHT=194 ALT='V³' BORDER=0><BR>\n"
+"<IMG SRC='v3logo' WIDTH=220 HEIGHT=194 ALT='Vï¿½' BORDER=0><BR>\n"
 "</A>\n"
 "\n"
 "\n"
@@ -1500,7 +1501,7 @@ STRPTR ASM SAVEDS VABOUT_GetAboutPtr(
 "   <TABLE BORDER=0 CELLSPACING=0 CELLPADDING=10 WIDTH='100%%'>\n"
 "    <TR>\n"
 "     <TD BGCOLOR='White' ALIGN=CENTER>\n"
-"      <B>V³ uses <A HREF='http://www.sasg.com/'>MUI</A></B><BR>\n"
+"      <B>Vï¿½ uses <A HREF='http://www.sasg.com/'>MUI</A></B><BR>\n"
 "      &copy; 1992-2003 Stefan Stuntz<BR>\n"
 "      <FONT SIZE='-1'>Without MUI, Voyager would not exist</FONT>\n"
 "     </TD>\n"
