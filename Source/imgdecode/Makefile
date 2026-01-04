@@ -90,7 +90,7 @@ COBJS += adler32.o c2p_generic.o callbackfunctable.o crc32.o errorreq.o gif.o im
 	pngrutil.o pngset.o pngtrans.o zutil.o
 
 ASMOBJS := c2p.o saveds.o
-AMIGAOBJS :=
+AMIGAOBJS := executive.o
 
 
 #########################################################################
@@ -203,15 +203,16 @@ build:
 	@echo ""
 	@echo "Imgdecoder build in progress... MOTD: plop"
 	@echo ""
-	@echo ""
-	@echo -n "Making "
-	@echo -n 68020
-	@echo " version ..."
-	@echo ""
-	@mkdir -p $(BUILDDIR)/68020
-	@cd $(BUILDDIR)/68020; \
-		cp //SCOPTIONS SCOPTIONS; \
-		$(MAKE) -f //Makefile all CPU=68020
+	@-for i IN $(CPU-TYPES); \
+		DO (echo ""; \
+			echo -n "Making "; \
+			echo -n $$i; \
+			echo " version ..."; \
+			echo ""; \
+			mkdir -p $(BUILDDIR)/$$i; \
+			cd $(BUILDDIR)/$$i; \
+			cp ../../SCOPTIONS SCOPTIONS; \
+			$(MAKE) -f ../../Makefile all CPU=$$i ) ; DONE
 
 ifeq ($(BUILD),AMIGAOS)
 vimgdec_$(LIBPOSTFIX).vlib: $(OBJS)
@@ -403,6 +404,8 @@ endif
 #
 # Amiga specific C files
 #
+executive.o: ../executive.c
+	$(CROSSCC) $(CCOPTS) INCDIR=//// $(DEBUG) $(SOURCE)/executive.c
 
 
 #########################################################################
