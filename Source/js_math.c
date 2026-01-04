@@ -226,8 +226,7 @@ DECSMETHOD( JS_CallMethod )
 
 				msg->argcnt = 0;
 
-				// rval = v1 > v2 ? v1 : v2;
-				rval = max( v1, v2 );
+				rval = v1 > v2 ? v1 : v2;
 			}
 			break;
 
@@ -243,8 +242,7 @@ DECSMETHOD( JS_CallMethod )
 
 				msg->argcnt = 0;
 
-				//rval = v1 < v2 ? v1 : v2;
-				rval = min( v1, v2 );
+				rval = v1 < v2 ? v1 : v2;
 			}
 			break;
 

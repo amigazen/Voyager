@@ -27,6 +27,7 @@
 #include <exec/memory.h>
 #include <exec/interrupts.h>
 #include <proto/exec.h>
+#include <proto/dos.h>
 #include <proto/graphics.h>
 #include <intuition/screens.h>
 #endif
@@ -53,30 +54,53 @@ struct bmclone {
 struct BitMap fakebitmap;
 int fblitinstalled;
 int iscybermap;
+#if USE_CGX
 struct Library *CyberGfxBase;
+#endif
 extern struct Screen *destscreen;
 
 void init_fakebitmap( void )
 {
 	D( db_init, bug( "initializing..\n" ) );
 	
+#if USE_CGX
 	CyberGfxBase = OpenLibrary( "cybergraphics.library", 0 );
+#endif
 
 	InitBitMap( &fakebitmap, 1, 1024, 1024 );
 
-	Forbid();
-	if( FindPort( "FBlit" ) )
+	/* FBlit is optional - check for it but don't fail if not present */
+	fblitinstalled = FALSE;
+	Printf( "[INIT] Checking for FBlit message port...\n" );
+	if( SysBase != NULL )
 	{
-		fblitinstalled = TRUE;
+		Forbid();
+		if( FindPort( "FBlit" ) != NULL )
+		{
+			fblitinstalled = TRUE;
+			Printf( "[INIT] FBlit found, fblitinstalled=TRUE\n" );
+		}
+		else
+		{
+			Printf( "[INIT] FBlit not found, fblitinstalled=FALSE\n" );
+		}
+		Permit();
 	}
-	Permit();
+	else
+	{
+		Printf( "[INIT] SysBase is NULL, skipping FBlit check\n" );
+	}
+	Printf( "[INIT] init_fakebitmap() complete\n" );
 
 }
 
 void close_cybergfx( void )
 {
 	D( db_init, bug( "cleaning up..\n" ) );
-	CloseLibrary( CyberGfxBase );
+#if USE_CGX
+	if( CyberGfxBase )
+		CloseLibrary( CyberGfxBase );
+#endif
 }
 
 

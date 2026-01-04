@@ -34,9 +34,9 @@
 /*
  * Release options (mutually exclusive !)
  */
-#define IBETA_RELEASE 1
+#define IBETA_RELEASE 0
 #define BETA_RELEASE  0
-#define FINAL_RELEASE 0
+#define FINAL_RELEASE 1
 #define GREX_RELEASE 0
 #define PEGASOS_RELEASE 0
 
@@ -226,6 +226,28 @@ struct dnsmsg;
 #ifdef MBX
 #define VAPOR_H_BROKEN
 #include "mbx.h"
+#endif /* MBX */
+
+/* GS() macro for non-MBX builds */
+#ifndef MBX
+#ifndef GS
+/* Ensure CATCOMP_NUMBERS and CATCOMP_STRINGS are defined so MSG_* constants are available from voyager_cat.h */
+#ifndef CATCOMP_NUMBERS
+#define CATCOMP_NUMBERS
+#endif
+#ifndef CATCOMP_STRINGS
+#define CATCOMP_STRINGS
+#endif
+/* Forward declarations - these will be properly defined when voyager_cat.h is included */
+#ifndef EXEC_TYPES_H
+#include <exec/types.h>
+#endif
+extern struct Catalog *CatalogBase;
+/* GetCatalogStr will be provided by proto/locale.h when included */
+/* Use NULL as default string - GetCatalogStr will use the built-in string from the catalog */
+#define GS(x) GetCatalogStr(CatalogBase, MSG_##x, NULL)
+#define GSI(x) GetCatalogStr(CatalogBase, x, NULL)
+#endif /* GS */
 #endif /* MBX */
 
 /*

@@ -27,6 +27,7 @@
 /* public */
 #if defined( AMIGAOS ) || defined( __MORPHOS__ )
 #include <proto/exec.h>
+#include <proto/dos.h>
 #include <libraries/gadtools.h>
 #include <libraries/asl.h>
 #include <proto/icon.h>
@@ -199,28 +200,44 @@ int initstuff( void )
 #endif /* USE_KEYFILES */
 #ifndef MBX
 	init_fakebitmap();
+	Printf( "[INIT] After init_fakebitmap()\n" );
 #endif /* !MBX */
 
 #if USE_NET
-	if( !init_verify() ) return( FALSE );
+	Printf( "[INIT] Calling init_verify()...\n" );
+	if( !init_verify() ) { Printf( "[INIT] init_verify() failed!\n" ); return( FALSE ); }
+	Printf( "[INIT] init_verify() succeeded\n" );
 #endif /* USE_NET */
 #if USE_NET
-	if( !init_auth() ) return( FALSE );
+	Printf( "[INIT] Calling init_auth()...\n" );
+	if( !init_auth() ) { Printf( "[INIT] init_auth() failed!\n" ); return( FALSE ); }
+	Printf( "[INIT] init_auth() succeeded\n" );
 #endif /* USE_NET */
 
+	Printf( "[INIT] Calling init_progdir()...\n" );
 	init_progdir();
-	if( !create_ledclass() ) return( FALSE );
+	Printf( "[INIT] Calling create_ledclass()...\n" );
+	if( !create_ledclass() ) { Printf( "[INIT] create_ledclass() failed!\n" ); return( FALSE ); }
+	Printf( "[INIT] create_ledclass() succeeded\n" );
 
 #if USE_STB_NAV
 	if( !create_crossclass() ) return( FALSE );
 #endif
 
-	if( !init_netprocess() ) return( FALSE );
+	Printf( "[INIT] Calling init_netprocess()...\n" );
+	if( !init_netprocess() ) { Printf( "[INIT] init_netprocess() failed!\n" ); return( FALSE ); }
+	Printf( "[INIT] init_netprocess() succeeded\n" );
 
-	if( !init_locale() ) return( FALSE );
+	Printf( "[INIT] Calling init_locale()...\n" );
+	if( !init_locale() ) { Printf( "[INIT] init_locale() failed!\n" ); return( FALSE ); }
+	Printf( "[INIT] init_locale() succeeded\n" );
+	Printf( "[INIT] Calling init_internalipc()...\n" );
 	init_internalipc();
+	Printf( "[INIT] init_internalipc() complete\n" );
 
-	if( !mcccheck() ) return( FALSE );
+	Printf( "[INIT] Calling mcccheck()...\n" );
+	if( !mcccheck() ) { Printf( "[INIT] mcccheck() failed!\n" ); return( FALSE ); }
+	Printf( "[INIT] mcccheck() succeeded\n" );
 #if USE_NLIST
 	check_for_nlist();
 #endif /* USE_NLIST	*/
@@ -327,9 +344,13 @@ int initstuff( void )
 	if( !load_diskobj() ) return( FALSE );
 #endif /* USE_DOS */
 	if( !create_amiconclass() ) return( FALSE );
-	if( !create_appclass() ) return( FALSE );
+	Printf( "[INIT] Calling create_appclass()...\n" );
+	if( !create_appclass() ) { Printf( "[INIT] create_appclass() failed!\n" ); return( FALSE ); }
+	Printf( "[INIT] create_appclass() succeeded\n" );
 #if USE_NET
-	if( !create_authbrowserwinclass() ) return( FALSE );
+	Printf( "[INIT] Calling create_authbrowserwinclass()...\n" );
+	if( !create_authbrowserwinclass() ) { Printf( "[INIT] create_authbrowserwinclass() failed!\n" ); return( FALSE ); }
+	Printf( "[INIT] create_authbrowserwinclass() succeeded\n" );
 	if( !create_cookiebrowserwinclass() ) return( FALSE );
 #endif /* USE_NET */
 	if( !create_docinfowinclass() ) return( FALSE );
@@ -457,6 +478,7 @@ int initstuff( void )
 #endif /* USE_PLUGINS */
 
 	D( db_init, bug( "all right, initstuff() succeeded\n" ) );
+	Printf( "[INIT] initstuff() complete, returning TRUE\n" );
 
 	return( TRUE );
 }

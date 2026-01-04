@@ -29,6 +29,7 @@
 #include <exec/memory.h>
 #include <exec/interrupts.h>
 #include <proto/exec.h>
+#include <proto/dos.h>
 #ifdef __SASC
 #include <proto/utility.h>
 #endif
@@ -3287,19 +3288,27 @@ int init_netprocess( void )
 	char name[ 32 ];
 
 	D( db_init, bug( "initializing..\n" ) );
+	Printf( "[NET] init_netprocess() starting...\n" );
 
+	Printf( "[NET] Initializing netpoolsem...\n" );
 	InitSemaphore( &netpoolsem );
+	Printf( "[NET] Creating netpool...\n" );
 	if( netpool = CreatePool( 0, 4096, 2048 ) )
 	{
+		Printf( "[NET] netpool created successfully\n" );
 #if USE_NET
+		Printf( "[NET] About to create DNS processes\n" );
+		Printf( "[NET] Entering DNS process creation loop\n" );
 		for( c = 0; c < DNSTASKS; c++ )
 		{
+			Printf( "[NET] DNS loop iteration %ld\n", (long)(c + 1) );
 #ifdef __SASC
 			SNPrintf( name, sizeof(name), "V's DNS Server %d", c + 1 );
 #else
 			sprintf( name, "V's DNS Server %d", c + 1 );
 #endif
 
+			Printf( "[NET] Creating DNS process: %s\n", name );
 			dnsproc[ c ] = CreateNewProcTags(
 				NP_Entry, dnshandler,
 				NP_Name, name,
@@ -3315,16 +3324,44 @@ int init_netprocess( void )
 				TAG_DONE
 			);
 
+			if( !dnsproc[ c ] )
+			{
+				Printf( "[NET] ERROR: DNS process %ld creation failed immediately!\n", (long)(c + 1) );
+			}
+			else
+			{
+				Printf( "[NET] DNS process %ld created, waiting for port...\n", (long)(c + 1) );
+			}
+
 			#ifndef __MORPHOS__
-			while( dnsproc[ c ] && !dnsport[ c ] )
-				Delay( 1 );
+			{
+				int waitcount = 0;
+				while( dnsproc[ c ] && !dnsport[ c ] && waitcount < 100 )
+				{
+					Delay( 1 );
+					waitcount++;
+					if( (waitcount % 10) == 0 )
+						Printf( "[NET] Still waiting for DNS port %ld (waited %ld ticks)...\n", (long)(c + 1), (long)waitcount );
+				}
+				if( dnsport[ c ] )
+					Printf( "[NET] DNS port %ld created successfully\n", (long)(c + 1) );
+				else if( waitcount >= 100 )
+					Printf( "[NET] ERROR: DNS port %ld timeout after 100 ticks!\n", (long)(c + 1) );
+				else
+					Printf( "[NET] WARNING: DNS port %ld not created (process may have exited)!\n", (long)(c + 1) );
+			}
 			#endif
 
 			if( !dnsproc[ c ] )
+			{
+				Printf( "[NET] ERROR: DNS process %ld creation failed!\n", (long)(c + 1) );
 				return( FALSE );
+			}
+			Printf( "[NET] DNS process %ld created successfully\n", (long)(c + 1) );
 		}
 
 #if USE_CONNECT_PROC
+		Printf( "[NET] Creating connect processes (MAXNETPROC=%ld)...\n", (long)MAXNETPROC );
 		for( c = 0; c < MAXNETPROC; c++ )
 		{
 #ifdef __SASC
@@ -3332,6 +3369,7 @@ int init_netprocess( void )
 #else
 			sprintf( name, "V's connect() Handler %02d", c + 1 );
 #endif
+			Printf( "[NET] Creating connect process %ld: %s\n", (long)(c + 1), name );
 			connectproc[ c ] = CreateNewProcTags(
 				NP_Entry, connecthandler,
 				NP_Name, name,
@@ -3340,11 +3378,24 @@ int init_netprocess( void )
 				NP_StackSize, 10 * 1024,
 				TAG_DONE
 			);
-			while( connectproc[ c ] && !connectport[ c ] )
-				Delay( 1 );
+			if( connectproc[ c ] )
+			{
+				Printf( "[NET] Waiting for connect port %ld to be created...\n", (long)(c + 1) );
+				while( connectproc[ c ] && !connectport[ c ] )
+					Delay( 1 );
+				if( connectport[ c ] )
+					Printf( "[NET] Connect port %ld created successfully\n", (long)(c + 1) );
+				else
+					Printf( "[NET] WARNING: Connect port %ld not created!\n", (long)(c + 1) );
+			}
 			if( !connectproc[ c ] )
+			{
+				Printf( "[NET] ERROR: Connect process %ld creation failed!\n", (long)(c + 1) );
 				return( FALSE );
+			}
+			Printf( "[NET] Connect process %ld created successfully\n", (long)(c + 1) );
 		}
+		Printf( "[NET] All connect processes created\n" );
 #endif
 
 		// allocate buffers for hostnames and FTP passwords
@@ -3356,6 +3407,7 @@ int init_netprocess( void )
 
 #endif /* USE_NET */
 
+		Printf( "[NET] Creating main network process...\n" );
 		netproc = CreateNewProcTags(
 			NP_Entry, nethandler,
 			NP_Name, "V's Network & File Server",
@@ -3370,16 +3422,33 @@ int init_netprocess( void )
 			TAG_DONE
 		);
 
-		while( netproc && !netport )
-			Delay( 1 );
+		if( netproc )
+		{
+			Printf( "[NET] Main network process created, waiting for netport...\n" );
+			while( netproc && !netport )
+			{
+				Delay( 1 );
+			}
+			if( netport )
+				Printf( "[NET] netport created successfully\n" );
+			else
+				Printf( "[NET] WARNING: netport not created (process may have exited)!\n" );
+		}
+		else
+		{
+			Printf( "[NET] ERROR: Main network process creation failed!\n" );
+		}
 
 		if( !netproc )
 			return( FALSE );
 
 #if USE_NET
+		Printf( "[NET] Calling proxy_init()...\n" );
 		proxy_init();
+		Printf( "[NET] proxy_init() complete\n" );
 #endif /* USE_NET */
 
+		Printf( "[NET] init_netprocess() complete, returning TRUE\n" );
 		return( TRUE );
 	}
 	else

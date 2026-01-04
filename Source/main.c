@@ -27,6 +27,7 @@
 /* public */
 #if defined( AMIGAOS ) || defined( __MORPHOS__ )
 #include <proto/exec.h>
+#include <proto/dos.h>
 #include <exec/memory.h>
 /* vup/vupdate.h - update functionality, may not be available */
 /* #include "vup/vupdate.h" */
@@ -719,12 +720,15 @@ int vmain( void )
 	__ctype[ 11 + 1 ] |= _S;
 #endif
 	
+	Printf( "[MAIN] Calling initstuff()...\n" );
 	if( !initstuff() )
 	{
+		Printf( "[MAIN] *** COULDN'T INITIALIZE! SHUTTING DOWN..\n" );
 		D( db_init, bug( "*** COULDN'T INITIALIZE! SHUTTING DOWN..\n" ) );
 		closestuff();
 		goto ex;
 	}
+	Printf( "[MAIN] initstuff() succeeded, app_started=TRUE\n" );
 	app_started = TRUE;
 
 #if USE_KEYFILES
@@ -758,15 +762,20 @@ int vmain( void )
 #endif /* USE_KEYFILES */
 	if( openurls )
 	{
+		Printf( "[MAIN] Creating browser windows from command line URLs...\n" );
 		while( *openurls )
 		{
+			Printf( "[MAIN] Creating window for URL: %s\n", *openurls );
 			win_create( "", *openurls, NULL, NULL, FALSE, FALSE, FALSE/*getflag( VFLG_FULLSCREEN )*/ );
 			openurls++;
 		}
+		Printf( "[MAIN] All command line windows created\n" );
 	}
 	else
 	{
+		Printf( "[MAIN] Creating first browser window (homepage)...\n" );
 		win_create( "", getflag( VFLG_HOMEPAGE_AUTOLOAD ) ? getprefs( DSI_HOMEPAGE ) : "" , NULL, NULL, FALSE, FALSE, FALSE /*getflag( VFLG_FULLSCREEN )*/ );
+		Printf( "[MAIN] First browser window created\n" );
 	}
 
 #if USE_SPLASHWIN

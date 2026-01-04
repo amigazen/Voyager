@@ -33,6 +33,7 @@
 /* public */
 #if defined( AMIGAOS ) || defined( __MORPHOS__ )
 #include <proto/exec.h>
+#include <proto/dos.h>
 #endif
 
 /* private */
@@ -197,6 +198,13 @@ void SAVEDS dnshandler( void )
 	int mytasknum;
 	char *p;
 	ULONG *ip[ 2 ], ipn;
+	struct Library *DOSBase = NULL;
+	
+	/* Open DOSBase for Printf - child processes need to open it themselves */
+	DOSBase = OpenLibrary( "dos.library", 0 );
+	if( DOSBase )
+		Printf( "[DNS] dnshandler() entry point called\n" );
+	
 #if USE_EXECUTIVE
 	APTR executivemsg;
 
@@ -208,12 +216,58 @@ void SAVEDS dnshandler( void )
 	}
 #endif /* USE_EXECUTIVE */
 
+	Printf( "[DNS] After USE_EXECUTIVE block\n" );
+	
 	ip[ 0 ] = &ipn;
 	ip[ 1 ] = 0;
 	hent.h_addr_list = (APTR)&ip[ 0 ];
+	
+	Printf( "[DNS] Before task name parsing\n" );
 
-	p = strchr( FindTask( 0 )->tc_Node.ln_Name, 0 ) - 1;
-	mytasknum = *p - '1';
+	/* Parse task number from process name - must be safe! */
+	mytasknum = 0;
+	{
+		struct Task *mytask;
+		char *taskname;
+		
+		mytask = FindTask( 0 );
+		Printf( "[DNS] FindTask returned: %lx\n", (long)mytask );
+		if( mytask != NULL && mytask->tc_Node.ln_Name != NULL )
+		{
+			taskname = mytask->tc_Node.ln_Name;
+			Printf( "[DNS] Task name: %s\n", taskname );
+			p = strchr( taskname, 0 );
+			if( p != NULL && p > taskname )
+			{
+				p--; /* Point to last character */
+				Printf( "[DNS] Last character: '%c'\n", *p );
+				if( *p >= '1' && *p <= '9' )
+				{
+					mytasknum = *p - '1';
+					Printf( "[DNS] Parsed mytasknum: %ld\n", (long)mytasknum );
+				}
+				else
+				{
+					Printf( "[DNS] Last character not a digit 1-9\n" );
+				}
+			}
+			else
+			{
+				Printf( "[DNS] Failed to find end of task name\n" );
+			}
+		}
+		else
+		{
+			Printf( "[DNS] FindTask returned NULL or name is NULL\n" );
+		}
+	}
+
+	/* Bounds check - mytasknum must be valid array index */
+	if( mytasknum < 0 || mytasknum >= DNSTASKS )
+	{
+		/* Invalid task number - set to 0 as safe default */
+		mytasknum = 0;
+	}
 
 #ifdef IPLOG
 	if( !mytasknum )
@@ -221,16 +275,31 @@ void SAVEDS dnshandler( void )
 #endif
 
 	D( db_dns, bug( "starting up DNS handler %ld\r\n", mytasknum ));
+	if( DOSBase )
+		Printf( "[DNS] DNS handler starting, mytasknum=%ld\n", (long)mytasknum );
 
 	#ifndef __MORPHOS__
+	if( DOSBase )
+		Printf( "[DNS] Creating message port for handler %ld...\n", (long)mytasknum );
 	dnsport[ mytasknum ] = CreateMsgPort();
-	if( !dnsport[ mytasknum ] )
+	if( dnsport[ mytasknum ] )
 	{
+		if( DOSBase )
+			Printf( "[DNS] Message port created successfully for handler %ld\n", (long)mytasknum );
+		psig = 1L<<dnsport[ mytasknum ]->mp_SigBit;
+		if( DOSBase )
+			Printf( "[DNS] Handler %ld initialized, entering main loop\n", (long)mytasknum );
+	}
+	else
+	{
+		if( DOSBase )
+			Printf( "[DNS] ERROR: Failed to create message port for handler %ld!\n", (long)mytasknum );
 		dnsproc[ mytasknum ] = NULL;
+		if( DOSBase )
+			CloseLibrary( DOSBase );
 		return;
 	}
 	#endif
-	psig = 1L<<dnsport[ mytasknum ]->mp_SigBit;
 
 	while( !dnshandler_die )
 	{
@@ -245,7 +314,11 @@ void SAVEDS dnshandler( void )
 
 		while( dnsmsg = (struct dnsmsg*)GetMsg( dnsport[ mytasknum ] ) )
 		{
-			dnsmsg->dcn = dnscache_find( dnsmsg->name );
+			/* dnscache_find may access uninitialized globals - check first */
+			if( dnscachepool != NULL )
+				dnsmsg->dcn = dnscache_find( dnsmsg->name );
+			else
+				dnsmsg->dcn = NULL;
 			if( !dnsmsg->dcn )
 			{
 				if( !netopen )
