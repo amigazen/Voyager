@@ -1,5 +1,7 @@
+#ifdef __GNUC__
 #pragma pack(2)
 #pragma pack(2)
+#endif
 /*
 
 		MCC_Pophotkey (c) by kMel, Klaus Melchior
@@ -17,11 +19,15 @@
 #define POPHOTKEY_MCC_H
 
 #ifndef LIBRARIES_MUI_H
+#ifdef __GNUC__
 #pragma pack()
 #pragma pack()
+#endif
 #include "libraries/mui.h"
+#ifdef __GNUC__
 #pragma pack(2)
 #pragma pack(2)
+#endif
 #endif
 
 
@@ -82,6 +88,7 @@ struct MUIP_Pophotkey_Open {
 
 /* PrMake.rexx 0.10 (16.2.1996) Copyright 1995 kmel, Klaus Melchior */
 
-
+#ifdef __GNUC__
 #pragma pack()
 #pragma pack()
+#endif

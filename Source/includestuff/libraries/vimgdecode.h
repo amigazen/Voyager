@@ -1,5 +1,7 @@
+#ifdef __GNUC__
 #pragma pack(2)
 #pragma pack(2)
+#endif
 #ifndef VIMGDECODE_H
 #define VIMGDECODE_H
 /*
@@ -11,27 +13,39 @@
  */
 
 #ifdef MBX
+#ifdef __GNUC__
 #pragma pack()
 #pragma pack()
+#endif
 #include "mbx.h"
+#ifdef __GNUC__
 #pragma pack(2)
 #pragma pack(2)
+#endif
 #else
+#ifdef __GNUC__
 #pragma pack()
 #pragma pack()
+#endif
 #include <exec/types.h>
+#ifdef __GNUC__
 #pragma pack(2)
 #pragma pack(2)
 #pragma pack()
 #pragma pack()
+#endif
 #include <exec/nodes.h>
+#ifdef __GNUC__
 #pragma pack(2)
 #pragma pack(2)
 #pragma pack()
 #pragma pack()
+#endif
 #include <graphics/gfx.h>
+#ifdef __GNUC__
 #pragma pack(2)
 #pragma pack(2)
+#endif
 #endif /* !MBX */
 
 struct imgclient {
@@ -56,5 +70,7 @@ struct imgframenode {
 
 #endif /* !VIMGDECODE_H */
 
+#ifdef __GNUC__
 #pragma pack()
 #pragma pack()
+#endif

@@ -1,5 +1,7 @@
+#ifdef __GNUC__
 #pragma pack(2)
 #pragma pack(2)
+#endif
 /*
   NListview.mcc (c) Copyright 1996 by Gilles Masson
   Registered MUI class, Serial Number: 1d51                            0x9d510020 to 0x9d51002F
@@ -11,19 +13,27 @@
 #define MUI_NListview_MCC_H
 
 #ifndef LIBRARIES_MUI_H
+#ifdef __GNUC__
 #pragma pack()
 #pragma pack()
+#endif
 #include <libraries/mui.h>
+#ifdef __GNUC__
 #pragma pack(2)
 #pragma pack(2)
 #endif
+#endif
 
 #ifndef MUI_NList_MCC_H
+#ifdef __GNUC__
 #pragma pack()
 #pragma pack()
+#endif
 #include <MUI/NList_mcc.h>
+#ifdef __GNUC__
 #pragma pack(2)
 #pragma pack(2)
+#endif
 #endif
 
 #define MUIC_NListview "NListview.mcc"
@@ -68,5 +78,7 @@
 
 #endif /* MUI_NListview_MCC_H */
 
+#ifdef __GNUC__
 #pragma pack()
 #pragma pack()
+#endif

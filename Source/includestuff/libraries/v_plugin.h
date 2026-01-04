@@ -1,5 +1,7 @@
+#ifdef __GNUC__
 #pragma pack(2)
 #pragma pack(2)
+#endif
 #ifndef V_PLUGIN_LIB_H
 #define V_PLUGIN_LIB_H
 
@@ -97,21 +99,29 @@
 #endif
 
 #ifndef MBX
+#ifdef __GNUC__
 #pragma pack()
 #pragma pack()
+#endif
 #include <exec/types.h>
+#ifdef __GNUC__
 #pragma pack(2)
 #pragma pack(2)
 #pragma pack()
 #pragma pack()
+#endif
 #include <utility/tagitem.h>
+#ifdef __GNUC__
 #pragma pack(2)
 #pragma pack(2)
 #pragma pack()
 #pragma pack()
+#endif
 #include <utility/hooks.h>
+#ifdef __GNUC__
 #pragma pack(2)
 #pragma pack(2)
+#endif
 #endif
 
 #define VPLUG_TAGBASE (TAG_USER+0x87112)
@@ -379,5 +389,7 @@ struct VPlugInfo {
 
 #endif /* V_PLUGIN_H */
 
+#ifdef __GNUC__
 #pragma pack()
 #pragma pack()
+#endif

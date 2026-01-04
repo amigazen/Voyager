@@ -5,20 +5,40 @@
  * VaporWare Macros
  * ----------------
  *
- * � 1999-2000 by VaporWare CVS team <ibcvs@vapor.com>
- * � 2006 by Ambient Open Source Team
+ * © 1999-2000 by VaporWare CVS team <ibcvs@vapor.com>
  * All rights reserved
  *
  *
- * $Id: vapor.h,v 1.1 2012/05/04 21:14:11 bigfoot Exp $
+ * $Id: vapor.h,v 1.5 2012/05/15 20:08:24 jacadcaps Exp $
  *
 */
+
+#include <sys/types.h>
 
 #ifdef __SASC
 #include <clib/alib_protos.h>
 #endif /* __SASC */
 
-#define MAINTASK
+#ifdef __MORPHOS__
+#ifndef  CLIB_ALIB_PROTOS_H
+#include <clib/alib_protos.h>
+#endif
+#ifndef EMUL_EMULINTERFACE_H
+#include <emul/emulinterface.h>
+#endif
+#ifndef EMUL_EMULREGS_H_
+#include <emul/emulregs.h>
+#endif
+#ifndef INTUITION_CLASSUSR_H
+#include <intuition/classusr.h>
+#endif
+#ifndef LIBRARIES_MUI_H
+#include <libraries/mui.h>
+#endif
+#ifndef PROTO_MUIMASTER_H
+#include <proto/muimaster.h>
+#endif
+#endif
 
 /* MUI Macros */
 #ifndef MAKE_ID
@@ -34,168 +54,157 @@
  * Use DISPATCHERREF to give the dispatcher to the MUI_CreateCustomClass() call, eg:
  * mcc = MUI_CreateCustomClass(NULL, MUIC_Area, NULL, sizeof(struct Data), DISPATCHERREF);
  */
-#ifdef __AROS__
-#define DISPATCHERREF dispatch
-#define DISPATCHERREF2(name) name##_dispatch
-#else
 #ifdef __MORPHOS__
 #define DISPATCHERREF &GATE_dispatch
-#define DISPATCHERREF2(name) &GATE_##name##_dispatch
+#define DISPATCHERREF2(name) &GATE##name##_dispatch
 #else
 #define DISPATCHERREF dispatch
 #define DISPATCHERREF2(name) name##_dispatch
 #endif /* !__MORPHOS__ */
+
+#if !defined(__MORPHOS__)
+	#if defined(__VBCC__)
+		#define REG(a,b) __reg(#a) b
+		#define ASM
+		#define SAVEDS
+	#elif defined(__SASC)
+		#define ASM __asm
+		#define SAVEDS __saveds
+	#else
+		#error unsupported platform or compiler
+	#endif
+
+	/* DoSuperNew is declared in mui_func.h - use that one instead */
+	APTR GetHead(APTR list);
+	APTR GetSucc(APTR node);
+	int stccpy(char *p, const char *q, int n);
 #endif
 
 /*
  * Use BEGINMTABLE to start the description of a dispatcher (BEGINMTABLE2 if you need a name)
  */
 #ifdef __GNUC__
-#ifdef __AROS__
-#define BEGINMTABLE static BOOPSI_DISPATCHER(IPTR, dispatch, cl, obj, msg){switch(msg->MethodID){
-#else
 #ifdef __MORPHOS__
-#define BEGINMTABLE static ULONG dispatch(void); \
-    static struct EmulLibEntry GATE_dispatch = \
-    { \
-        TRAP_LIB, 0, (void (*)(void)) dispatch \
-    }; \
-    static ULONG dispatch(void) \
-    { \
-        struct IClass *cl = (struct IClass *)REG_A0; \
-        Msg msg = (Msg)REG_A1; \
-        Object *obj = (Object *)REG_A2; \
-        MAINTASK; \
-        switch (msg->MethodID) \
-        {
+#define BEGINMTABLE static size_t dispatch(void); \
+	static struct EmulLibEntry GATE_dispatch = \
+	{ \
+		TRAP_LIB, 0, (void (*)(void)) dispatch \
+	}; \
+	static size_t dispatch(void) \
+	{ \
+		struct IClass *cl = (struct IClass *)REG_A0; \
+		Msg msg = (Msg)REG_A1; \
+		Object *obj = (Object *)REG_A2; \
+		switch (msg->MethodID) \
+		{
+
+#define BEGINMTABLE2(name) static size_t name##_dispatch(void); \
+	struct EmulLibEntry GATE ##name##_dispatch = \
+	{ \
+		TRAP_LIB, 0, (void (*)(void)) name##_dispatch \
+	}; \
+	static size_t name##_dispatch(void) \
+	{ \
+		struct IClass *cl = (struct IClass *)REG_A0; \
+		Msg msg = (Msg)REG_A1; \
+		Object *obj = (Object *)REG_A2; \
+		switch (msg->MethodID) \
+		{
+
+#define BEGINMTABLE2_NOGATE(name) \
+	size_t name##_dispatch(void) \
+	{ \
+		struct IClass *cl = (struct IClass *)REG_A0; \
+		Msg msg = (Msg)REG_A1; \
+		Object *obj = (Object *)REG_A2; \
+		switch (msg->MethodID) \
+		{
 
 #else
-#define BEGINMTABLE static ULONG dispatch( __reg(a0, struct IClass *cl), __reg(a2, Object *obj), __reg(a1, Msg msg)){switch(msg->MethodID){
+#define BEGINMTABLE static size_t dispatch( __reg(a0, struct IClass *cl), __reg(a2, Object *obj), __reg(a1, Msg msg)){switch(msg->MethodID){
+#define BEGINMTABLE2(name) static size_t name##_Dispatcher( __reg(a0, struct IClass *cl), __reg(a2, Object *obj), __reg(a1, Msg msg)){switch(msg->MethodID){
 #endif /* !__MORPHOS__ */
-#endif
 #else
-#define BEGINMTABLE static ULONG __asm __saveds dispatch( register __a0 struct IClass *cl, register __a2  Object *obj, register __a1 Msg msg ){switch(msg->MethodID){
+#define BEGINMTABLE static size_t ASM SAVEDS dispatch(REG(a0, struct IClass *) cl, REG(a2, Object *) obj, REG(a1, Msg) msg ){switch(msg->MethodID){
+#define BEGINMTABLE2(name) static size_t ASM SAVEDS name##_Dispatcher(REG(a0, struct IClass *) cl, REG(a2, Object *)obj, REG(a1, Msg) msg){switch(msg->MethodID){
 #endif /* __GNUC__ */
 
 /*
  * Some common methods
  */
-#define DECNEW case OM_NEW:return(handleOM_NEW(cl, obj, (struct opSet *)msg));
-#ifdef __SASC
-/* DECCONST should expand to function definition (like DEFNEW), not case statement */
-/* We define it directly here to avoid forward reference issues */
-#define DECCONST static ULONG ASM SAVEDS handleOM_NEW(__reg(a0, struct IClass *cl), __reg(a2, Object *obj), __reg(a1, struct opSet *msg))
-#else
+#define DECNEW case OM_NEW:return(handleOM_NEW(cl, obj, (APTR)msg));
 #define DECCONST DECNEW // obsolete
-#endif
-#define DECDISPOSE case OM_DISPOSE:return(handleOM_DISPOSE(cl, obj, (struct opSet *)msg));
+#define DECDISPOSE case OM_DISPOSE:return(handleOM_DISPOSE(cl, obj, (APTR)msg));
 #define DECDISP DECDISPOSE // obsolete
-#define DECSET case OM_SET:return(handleOM_SET(cl, obj, (struct opSet *)msg));
-#define DECGET case OM_GET:return(handleOM_GET(cl, obj, (struct opGet *)msg));
+#define DECSET case OM_SET:return(handleOM_SET(cl, obj, (APTR)msg));
+#define DECGET case OM_GET:return(handleOM_GET(cl, obj, (APTR)msg));
 #define DECADDMEMBER case OM_ADDMEMBER:return(handleOM_ADDMEMBER(cl, obj, (APTR)msg));
 #define DECREMMEMBER case OM_REMMEMBER:return(handleOM_REMMEMBER(cl, obj, (APTR)msg));
-#define DECMMETHOD(methodid) case MUIM_##methodid:return(handleMUIM_##methodid(cl,obj,(struct MUIP_##methodid *)msg));
-#ifdef __SASC
-/* For SAS/C, DECMETHOD and DECSMETHOD can be used as function definitions */
-/* Define them directly to avoid forward reference issues */
-#define DECMETHOD(methodid,type) static ULONG ASM SAVEDS handleMM_##methodid(__reg(a0, struct IClass *cl), __reg(a2, Object *obj), __reg(a1, type *msg))
-#define DECSMETHOD(methodid) static ULONG ASM SAVEDS handleMM_##methodid(__reg(a0, struct IClass *cl), __reg(a2, Object *obj), __reg(a1, struct MP_##methodid *msg))
-#else
-#define DECMETHOD(methodid) case MM_##methodid:return(handleMM_##methodid(cl,obj,(type) msg));
-#define DECSMETHOD(methodid) case MM_##methodid:return(handleMM_##methodid(cl,obj,(struct MP_##methodid *)msg));
-#endif
-#define DECTMETHOD(methodid) case MM_##methodid:return(handleMM_##methodid(cl,obj,(Msg) msg));
+#define DECMMETHOD(methodid) case MUIM_##methodid:return(handleMUIM_##methodid(cl,obj,(APTR)msg));
+#define DECMETHOD(methodid) case MM_##methodid:return(handleMM_##methodid(cl,obj,(APTR)msg));
+#define DECSMETHOD(methodid) case MM_##methodid:return(handleMM_##methodid(cl,obj,(APTR)msg));
+#define DECTMETHOD(methodid) case MM_##methodid:return(handleMM_##methodid(cl,obj,(APTR)msg));
 
 /*
  * Use ENDMTABLE to end the description of a dispatcher
  */
-#ifndef __AROS__
 #define ENDMTABLE }return(DOSUPER);}
-#else
-#define ENDMTABLE }return(DOSUPER);}BOOPSI_DISPATCHER_END
-#endif
 
-/*
- * Dispatcher helper macros - for use inside BEGINMTABLE...ENDMTABLE
- * These handle the case where DEFMETHOD/DEFSMETHOD are called with one argument
- */
-#ifdef __SASC
-/* When DEFMETHOD is called with one arg in dispatcher, it should be a case statement */
-/* Since C89 can't detect missing args, we provide dispatcher-specific macros */
-/* These expand to case statements for use in BEGINMTABLE...ENDMTABLE */
-#define DEFMETHOD_DISPATCH(methodid) case MM_##methodid:return(handleMM_##methodid(cl,obj,(Msg)msg));
-#define DEFSMETHOD_DISPATCH(methodid) case MM_##methodid:return(handleMM_##methodid(cl,obj,(Msg)msg));
-/* For compatibility with existing code using DEFMETHOD(methodid) in dispatchers, */
-/* we'll try to make it work by redefining DEFMETHOD before BEGINMTABLE */
-/* But that's complex. Better: update dispatcher entries to use DEFMETHOD_DISPATCH */
-/* Or use a trick: redefine DEFMETHOD to handle both cases */
-/* Actually, let's try: make DEFMETHOD expand to case when second arg is a special token */
-/* But simplest: Make DEFMETHOD(methodid) work by using empty second arg trick */
-/* If code uses DEFMETHOD(methodid, ), we can detect empty and use case */
-/* But code uses DEFMETHOD(methodid) with no second arg at all */
-/* Final solution: Right before BEGINMTABLE sections, redefine DEFMETHOD */
-/* But that requires code changes. Let's provide the macro for now. */
-#endif
 
 /* Methods */
-
-#ifdef __INLINED_METHODS
-#define METHOD_INLINE inline
-#else
-#define METHOD_INLINE
-#endif
 
 /*
  * MUI method (ie. MUIM_List_InsertSingle)
  */
-#ifdef __SASC
-#define DEFMMETHOD(methodid) static ULONG ASM SAVEDS handleMUIM_##methodid(__reg(a0, struct IClass *cl), __reg(a2, Object *obj), __reg(a1, struct MUIP_##methodid *msg))
-/* DEFMETHOD - when used with one arg in dispatcher, it's a case statement; with two args it's a function definition */
-/* We need to handle both cases. For dispatcher usage with one arg, we'll use overload-style detection */
-#define _DEFMETHOD_FUNC(methodid,type) static ULONG ASM SAVEDS handleMM_##methodid(__reg(a0, struct IClass *cl), __reg(a2, Object *obj), __reg(a1, type *msg))
-#define _DEFMETHOD_CASE(methodid) case MM_##methodid:return(handleMM_##methodid(cl,obj,(Msg)msg));
-/* For dispatcher: DEFMETHOD(methodid) with one arg should be case statement */
-/* For function def: DEFMETHOD(methodid, type) with two args should be function definition */
-/* Since C89 doesn't support variadic macros well, we'll use a helper that detects empty second arg */
-/* When second arg is provided and non-empty, use function definition; otherwise use case statement */
-/* For SAS/C: DEFMETHOD with one arg (dispatcher) = case statement, with two args = function definition */
-/* Since C89 can't detect missing args, we'll make DEFMETHOD work for dispatcher use (1 arg) */
-/* For dispatcher: DEFMETHOD(methodid) should expand to case statement */
-#define DEFMETHOD(methodid) case MM_##methodid:return(handleMM_##methodid(cl,obj,(Msg)msg));
-/* For function definitions, use DECMETHOD(methodid, type) instead */
-#define DEFTMETHOD(methodid) static ULONG ASM SAVEDS handleMM_##methodid(__reg(a0, struct IClass *cl), __reg(a2, Object *obj), __reg(a1, Msg msg))
-#define _DEFSMETHOD_FUNC(name) static ULONG ASM SAVEDS handleMM_##name(__reg(a0, struct IClass *cl), __reg(a2, Object *obj), __reg(a1, struct MP_##name *msg))
-#define _DEFSMETHOD_CASE(methodid) case MM_##methodid:return(handleMM_##methodid(cl,obj,(Msg)msg));
-/* For SAS/C: DEFSMETHOD with one arg (dispatcher) = case statement */
-/* For function definitions, use DECSMETHOD(methodid) instead */
-#define DEFSMETHOD(methodid) case MM_##methodid:return(handleMM_##methodid(cl,obj,(Msg)msg));
-#define DEFSMETHOD_DISPATCH(methodid) _DEFSMETHOD_CASE(methodid)
-/* For SAS/C: DEFNEW in dispatcher must be case statement, not function definition */
-/* Function definitions use DECCONST instead */
-#define DEFNEW case OM_NEW:return(handleOM_NEW(cl, obj, (struct opSet *)msg));
+#define DEFMMETHOD(methodid) static size_t handleMUIM_##methodid(struct IClass *cl,Object*obj,struct MUIP_##methodid *msg)
+
+/*
+ * Custom method with ONE argument only (no msg[n] please)
+ */
+#define DEFMETHOD(methodid,type) static size_t handleMM_##methodid(struct IClass *cl, Object *obj, type *msg)
+
+/*
+ * Custom method with NO real arguments (Msg still passed for DSM etc.)
+ */
+#define DEFTMETHOD(methodid) static size_t handleMM_##methodid(struct IClass *cl, Object *obj, Msg msg)
+
+/*
+ * Custom structured method
+ */
+#define DEFSMETHOD(name) static size_t handleMM_##name(struct IClass *cl,Object*obj,struct MP_##name *msg)
+
+/*
+ * OM_NEW method (construct)
+ */
+#define DEFNEW static size_t handleOM_NEW(struct IClass *cl,Object*obj,struct opSet *msg)
 #define DEFCONST DEFNEW
-#define DEFSET static ULONG ASM SAVEDS handleOM_SET(__reg(a0, struct IClass *cl), __reg(a2, Object *obj), __reg(a1, struct opSet *msg))
-#define DEFGET static ULONG ASM SAVEDS handleOM_GET(__reg(a0, struct IClass *cl), __reg(a2, Object *obj), __reg(a1, struct opGet *msg))
-#define DEFADDMEMBER static ULONG ASM SAVEDS handleOM_ADDMEMBER(__reg(a0, struct IClass *cl), __reg(a2, Object *obj), __reg(a1, struct opMember *msg))
-#define DEFREMMEMBER static ULONG ASM SAVEDS handleOM_REMMEMBER(__reg(a0, struct IClass *cl), __reg(a2, Object *obj), __reg(a1, struct opMember *msg))
-#define DEFDISPOSE static ULONG ASM SAVEDS handleOM_DISPOSE(__reg(a0, struct IClass *cl), __reg(a2, Object *obj), __reg(a1, struct opSet *msg))
+
+/*
+ * OM_SET method
+ */
+#define DEFSET static size_t handleOM_SET(struct IClass *cl,Object*obj,struct opSet *msg)
+
+/* 
+ * OM_GET method
+ */
+#define DEFGET static size_t handleOM_GET(struct IClass *cl,Object*obj,struct opGet *msg)
+
+/*
+ * OM_ADDMEMBER method
+ */
+#define DEFADDMEMBER static size_t handleOM_ADDMEMBER(struct IClass *cl,Object*obj,struct opMember *msg)
+
+/*
+ * OM_REMMEMBER method
+ */
+#define DEFREMMEMBER static size_t handleOM_REMMEMBER(struct IClass *cl,Object*obj,struct opMember *msg)
+
+/*
+ * OM_DISPOSE method (destruct)
+ */
+#define DEFDISPOSE static size_t handleOM_DISPOSE( struct IClass *cl,Object*obj,struct opSet *msg)
 #define DEFDEST DEFDISPOSE
 #define DEFDISP DEFDISPOSE
-#else
-#define DEFMMETHOD(methodid) METHOD_INLINE static IPTR __attribute__ ((noinline)) handleMUIM_##methodid(struct IClass *cl,Object*obj,struct MUIP_##methodid *msg)
-#define DEFMETHOD(methodid,type) METHOD_INLINE static IPTR __attribute__ ((noinline)) handleMM_##methodid(struct IClass *cl, Object *obj, type *msg)
-#define DEFTMETHOD(methodid) METHOD_INLINE static IPTR __attribute__ ((noinline)) handleMM_##methodid(struct IClass *cl, Object *obj, Msg msg)
-#define DEFSMETHOD(name) METHOD_INLINE static IPTR __attribute__ ((noinline)) handleMM_##name(struct IClass *cl,Object*obj,struct MP_##name *msg)
-#define DEFNEW METHOD_INLINE static IPTR __attribute__ ((noinline)) handleOM_NEW(struct IClass *cl,Object*obj,struct opSet *msg)
-#define DEFCONST DEFNEW
-#define DEFSET METHOD_INLINE static IPTR __attribute__ ((noinline)) handleOM_SET(struct IClass *cl,Object*obj,struct opSet *msg)
-#define DEFGET METHOD_INLINE static IPTR handleOM_GET(struct IClass *cl,Object*obj,struct opGet *msg)
-#define DEFADDMEMBER METHOD_INLINE static IPTR __attribute__ ((noinline)) handleOM_ADDMEMBER(struct IClass *cl,Object*obj,struct opMember *msg)
-#define DEFREMMEMBER METHOD_INLINE static IPTR __attribute__ ((noinline)) handleOM_REMMEMBER(struct IClass *cl,Object*obj,struct opMember *msg)
-#define DEFDISPOSE METHOD_INLINE static IPTR __attribute__ ((noinline)) handleOM_DISPOSE( struct IClass *cl,Object*obj,struct opSet *msg)
-#define DEFDEST DEFDISPOSE
-#define DEFDISP DEFDISPOSE
-#endif
 
 
 /* Classes */
@@ -203,86 +212,120 @@
 /*
  * Get the instance data
  */
-#define GETDATA struct Data *data = (struct Data *) INST_DATA(cl, obj)
+#define GETDATA struct Data *data = INST_DATA(cl, obj)
 /* same but named one */
-#define GETDATANAME(name) struct name##_Data *data = (struct name##_Data *) INST_DATA(cl,obj)
+#define GETDATANAME(name) struct name##_Data *data=INST_DATA(cl,obj)
 
 /*
  * Creates a subclass (constructor type)
  */
 #define DECSUBCLASS(super,name,pri) struct MUI_CustomClass *classp##name;\
-    CONSTRUCTOR_P(init##name,pri){\
-        classp##name=MUI_CreateCustomClass(NULL,super,NULL,sizeof(struct Data),(APTR)DISPATCHERREF);\
-        if(classp##name&&MUIMasterBase->lib_Version>=20)classp##name->mcc_Class->cl_ID=#name;\
-        return(classp##name?0:-1);\
-    }\
-    DESTRUCTOR_P(init##name,pri){if(classp##name)MUI_DeleteCustomClass(classp##name);}\
-    APTR get##name(void){return(classp##name->mcc_Class);}
+	CONSTRUCTOR_P(init##name,pri){\
+		classp##name=MUI_CreateCustomClass(NULL,super,NULL,sizeof(struct Data),DISPATCHERREF);\
+		if(classp##name&&MUIMasterBase->lib_Version>=20)classp##name->mcc_Class->cl_ID=#name;\
+		return(classp##name?0:-1);\
+	}\
+	DESTRUCTOR_P(init##name,pri){if(classp##name)MUI_DeleteCustomClass(classp##name);}\
+	APTR get##name(void){return(classp##name->mcc_Class);}
 
 /*
- * Creates a subclass of one of your own subclass (constructor type)
+ * Creates a busclass of one of your own subclass (constructor type)
  */
 #define DECSUBCLASSPTR(super,name,pri) struct MUI_CustomClass *classp##name;\
-    CONSTRUCTOR_P(init##name,pri){\
-        extern struct MUI_CustomClass *classp##super;\
-        classp##name=MUI_CreateCustomClass(NULL,NULL,classp##super,sizeof(struct Data),(APTR)DISPATCHERREF);\
-        if(classp##name&&MUIMasterBase->lib_Version>=20)classp##name->mcc_Class->cl_ID=#name;\
-        return(classp##name?0:-1);\
-    }\
-    DESTRUCTOR_P(init##name,pri){if(classp##name)MUI_DeleteCustomClass(classp##name);}\
-    IClass *get##name(void){return(classp##name->mcc_Class);}
+	CONSTRUCTOR_P(init##name,pri){\
+		extern struct MUI_CustomClass *classp##super;\
+		classp##name=MUI_CreateCustomClass(NULL,NULL,classp##super,sizeof(struct Data),DISPATCHERREF);\
+		if(classp##name&&MUIMasterBase->lib_Version>=20)classp##name->mcc_Class->cl_ID=#name;\
+		return(classp##name?0:-1);\
+	}\
+	DESTRUCTOR_P(init##name,pri){if(classp##name)MUI_DeleteCustomClass(classp##name);}\
+	APTR get##name(void){return(classp##name->mcc_Class);}
 
 /*
  * Creates a subclass (no constructor)
  */
 #define DECSUBCLASS_NC(super,name) static struct MUI_CustomClass *mcc##name; \
-    ULONG create_##name(void) \
-    { \
-        if (!(mcc##name = (struct MUI_CustomClass *)MUI_CreateCustomClass(NULL, super, NULL, sizeof(struct Data), (APTR)DISPATCHERREF))) \
-            return (FALSE); \
-            if (MUIMasterBase->lib_Version >= 20) \
-                mcc##name->mcc_Class->cl_ID = (CONST_STRPTR) #name; \
-        return (TRUE); \
-    } \
-    void delete_##name(void) \
-    { \
-        if (mcc##name) \
-            MUI_DeleteCustomClass(mcc##name); \
-    } \
-    IClass *get##name(void) \
-    { \
-        return (mcc##name->mcc_Class); \
-    } \
-    APTR get##name##root(void) \
-    { \
-        return (mcc##name); \
-    }
+	size_t create_##name(void) \
+	{ \
+		if (!(mcc##name = (struct MUI_CustomClass *)MUI_CreateCustomClass(NULL, super, NULL, sizeof(struct Data), DISPATCHERREF))) \
+			return (FALSE); \
+			if (MUIMasterBase->lib_Version >= 20) \
+				mcc##name->mcc_Class->cl_ID = #name; \
+		return (TRUE); \
+	} \
+	void delete_##name(void) \
+	{ \
+		if (mcc##name) \
+			MUI_DeleteCustomClass(mcc##name); \
+	} \
+	APTR get##name(void) \
+	{ \
+		return (mcc##name->mcc_Class); \
+	} \
+	APTR get##name##root(void) \
+	{ \
+		return (mcc##name); \
+	}
+
+/*
+ * Creates a subclass (no constructor) with given dispatcher
+ */
+#define DECSUBCLASS2_NC(super,name) static struct MUI_CustomClass *mcc##name; \
+	size_t create_##name(void) \
+	{ \
+		if (!(mcc##name = (struct MUI_CustomClass *)MUI_CreateCustomClass(NULL, super, NULL, sizeof(struct Data), (APTR)DISPATCHERREF2(name)))) \
+			return (FALSE); \
+			if (MUIMasterBase->lib_Version >= 20) \
+				mcc##name->mcc_Class->cl_ID = #name; \
+		return (TRUE); \
+	} \
+	void delete_##name(void) \
+	{ \
+		if (mcc##name) \
+			MUI_DeleteCustomClass(mcc##name); \
+	} \
+	APTR get##name(void) \
+	{ \
+		return (mcc##name->mcc_Class); \
+	} \
+	APTR get##name##root(void) \
+	{ \
+		return (mcc##name); \
+	}
+
 
 /*
  * Creates a subclass of one of your own subclass (no constructor)
  */
 #define DECSUBCLASSPTR_NC(super,name) static struct MUI_CustomClass *mcc##name; \
-    ULONG create_##name(void) \
-    { \
-        if (!(mcc##name = (struct MUI_CustomClass *)MUI_CreateCustomClass(NULL, NULL, (struct MUI_CustomClass *) get##super##root(), sizeof(struct Data), (APTR)DISPATCHERREF))) \
-            return (FALSE); \
-            if (MUIMasterBase->lib_Version >= 20) \
-                mcc##name->mcc_Class->cl_ID = (CONST_STRPTR) #name; \
-        return (TRUE); \
-    } \
-    void delete_##name(void) \
-    { \
-        if (mcc##name) \
-            MUI_DeleteCustomClass(mcc##name); \
-    } \
-    IClass *get##name(void) \
-    { \
-        return (mcc##name->mcc_Class); \
-    } \
-    APTR get##name##root(void) \
-    { \
-        return (mcc##name); \
-    }
+	size_t create_##name(void) \
+	{ \
+		if (!(mcc##name = (struct MUI_CustomClass *)MUI_CreateCustomClass(NULL, NULL, get##super##root(), sizeof(struct Data), (APTR)DISPATCHERREF))) \
+			return (FALSE); \
+			if (MUIMasterBase->lib_Version >= 20) \
+				mcc##name->mcc_Class->cl_ID = #name; \
+		return (TRUE); \
+	} \
+	void delete_##name(void) \
+	{ \
+		if (mcc##name) \
+			MUI_DeleteCustomClass(mcc##name); \
+	} \
+	APTR get##name(void) \
+	{ \
+		return (mcc##name->mcc_Class); \
+	} \
+	APTR get##name##root(void) \
+	{ \
+		return (mcc##name); \
+	}
+
+/*
+ * Declares a subclass
+ */
+#define DEFSUBCLASS(name) size_t create_##name##(void); \
+	APTR get##name##(void); \
+	void delete_##name##(void)
 
 
 /* get()/set() */
@@ -292,19 +335,11 @@
 #define ENDASTORE }
 #define ASTORE(t,x) case t: data->x = tag->ti_Data;break;
 #define ASTOREP(t,x) case t: data->x = (APTR)tag->ti_Data;break;
-#define STOREP(x) *msg->opg_Storage=(IPTR)(x)
-#define STOREATTR(i,x) case i:*msg->opg_Storage=(IPTR)(x);return(TRUE);
+#define STOREP(x) *msg->opg_Storage=(size_t)(x)
+#define STOREATTR(i,x) case i:*msg->opg_Storage=(size_t)(x);return(TRUE);
 
 /* Hooks */
 
-#ifdef __AROS__
-
-#define MUI_HOOK(n, y, z) \
-    static IPTR n##_func(struct Hook * n, y, z); \
-    static struct Hook n##_hook = {{0, 0}, (APTR)n##_func, NULL, NULL}; \
-    static IPTR n##_func(struct Hook * n, y, z)
-
-#else
 #ifdef __MORPHOS__
 #define __callback
 
@@ -317,42 +352,32 @@
  * return type is LONG
  */
 #define MUI_HOOK(n, y, z) \
-    static LONG n##_GATE(void); \
-    static LONG n##_GATE2(struct Hook *h, y, z); \
-    struct EmulLibEntry n = { \
-    TRAP_LIB, 0, (void (*)(void))n##_GATE }; \
-    static LONG n##_GATE(void) { \
-    return (n##_GATE2((struct Hook *)REG_A0, (void *)REG_A2, (void *)REG_A1)); } \
-    static struct Hook n##_hook = { { 0, 0}, (ULONG (*)(void))&n, (ULONG (*)(void))&n##_GATE2 , NULL }; \
-    static LONG n##_GATE2(struct Hook *h, y, z)
+	static LONG n##_GATE(void); \
+	static LONG n##_GATE2(struct Hook *h, y, z); \
+	struct EmulLibEntry n = { \
+	TRAP_LIB, 0, (void (*)(void))n##_GATE }; \
+	static LONG n##_GATE(void) { \
+	return (n##_GATE2((void *)REG_A0, (void *)REG_A2, (void *)REG_A1)); } \
+	static struct Hook n##_hook = { { 0, 0}, (void *)&n, (void *)&n##_GATE2 }; \
+	static LONG n##_GATE2(struct Hook *h, y, z)
 #else
 #define DEFHOOK(n) static struct Hook n##_hook={0,0,(HOOKFUNC)n##_func}
 
 #define MUI_HOOK(n, y, z) \
-    static LONG ASM SAVEDS n##_func(__reg(a0, struct Hook *h), __reg(a2, y), __reg(a1, z)); \
-    static struct Hook n##_hook = { 0, 0, (HOOKFUNC)n##_func }; \
-    static LONG ASM SAVEDS n##_func(__reg(a0, struct Hook *h), __reg(a2, y), __reg(a1, z))
+	static LONG ASM SAVEDS n##_func(__reg(a0, struct Hook *h), __reg(a2, y), __reg(a1, z)); \
+	static struct Hook n##_hook = { 0, 0, (HOOKFUNC)n##_func }; \
+	static LONG ASM SAVEDS n##_func(__reg(a0, struct Hook *h), __reg(a2, y), __reg(a1, z))
 
 #define __callback __asm __saveds
 #endif /* !_MORPHOS__ */
-#endif /* !__AROS__ */
 #define _reg(x) register __##x
 
-
-/* catmaker */
-#define CATCOMP_NUMBERS
-extern const char * const __stringtable[];
-#ifdef __SASC
-#define GSI(x) __stringtable[x]
-#else
-#define GSI(x) (char *)__stringtable[x]
-#endif
 
 /* Long word alignement (mainly used to get
  * FIB or DISK_INFO as auto variables)
  */
 #define D_S(type,name) char a_##name[sizeof(type)+3]; \
-                       type *name = (type *)((IPTR)(a_##name+3) & ~3)
+					   type *name = (type *)((LONG)(a_##name+3) & ~3);
 
 
 /* Exec list support macros */
@@ -370,19 +395,11 @@ extern const char * const __stringtable[];
 #endif
 
 #ifndef NEXTNODE
-#if !defined(__cplusplus)   
 #define NEXTNODE(n) ((APTR)((struct Node*)n)->ln_Succ)
-#else
-#define NEXTNODE(n) ((APTR)((struct ::Node*)n)->ln_Succ)
-#endif
 #endif
 
 #ifndef PREVNODE
-#if !defined(__cplusplus)
 #define PREVNODE(n) ((APTR)((struct Node*)n)->ln_Pred)
-#else
-#define PREVNODE(n) ((APTR)((struct ::Node*)n)->ln_Pred)
-#endif
 #endif
 
 #ifndef FINDNAME

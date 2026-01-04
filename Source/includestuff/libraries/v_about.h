@@ -1,5 +1,7 @@
+#ifdef __GNUC__
 #pragma pack(2)
 #pragma pack(2)
+#endif
 #ifndef V_ABOUT_LIB_H
 #define V_ABOUT_LIB_H
 /*
@@ -14,5 +16,7 @@
 
 #endif /* !V_ABOUT_LIB_H */
 
+#ifdef __GNUC__
 #pragma pack()
 #pragma pack()
+#endif

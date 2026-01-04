@@ -1,5 +1,7 @@
+#ifdef __GNUC__
 #pragma pack(2)
 #pragma pack(2)
+#endif
 /***************************************************************************
 **
 ** MUI - MagicUserInterface
@@ -111,43 +113,63 @@
 #ifndef MBX /* private */
 
 #ifndef EXEC_TYPES_H
+#ifdef __GNUC__
 #pragma pack()
 #pragma pack()
+#endif
 #include "exec/types.h"
+#ifdef __GNUC__
 #pragma pack(2)
 #pragma pack(2)
+#endif
 #endif
 
 #ifndef DOS_DOS_H
+#ifdef __GNUC__
 #pragma pack()
 #pragma pack()
+#endif
 #include "dos/dos.h"
+#ifdef __GNUC__
 #pragma pack(2)
 #pragma pack(2)
+#endif
 #endif
 
 #ifndef INTUITION_CLASSES_H
+#ifdef __GNUC__
 #pragma pack()
 #pragma pack()
+#endif
 #include "intuition/classes.h"
+#ifdef __GNUC__
 #pragma pack(2)
 #pragma pack(2)
+#endif
 #endif
 
 #ifndef INTUITION_SCREENS_H
+#ifdef __GNUC__
 #pragma pack()
 #pragma pack()
+#endif
 #include "intuition/screens.h"
+#ifdef __GNUC__
 #pragma pack(2)
 #pragma pack(2)
 #endif
+#endif
 
 #ifdef __MORPHOS__
+#ifdef __GNUC__
 #pragma pack()
 #pragma pack()
+#endif
 #include "emul/emulinterface.h"
+#ifdef __GNUC__
 #pragma pack(2)
 #pragma pack(2)
+#endif
 #endif
 
 #endif /* private */
@@ -209,7 +231,7 @@ struct MUI_PenSpec
 #define PSD_INITIAL_TITLE  "MUI Public Screen"
 #define PSD_ID_MPUB        MAKE_ID('M','P','U','B')
 
-#define PSD_NAME_FRONTMOST "«Frontmost»"
+#define PSD_NAME_FRONTMOST "ï¿½Frontmostï¿½"
 
 #define PSD_FILENAME_SAVE "envarc:mui/PublicScreens.iff"
 #define PSD_FILENAME_USE  "env:mui/PublicScreens.iff"
@@ -3915,7 +3937,7 @@ struct MUI_AreaData
 /* Mask for pens from MUI_ObtainPen() */
 
 #ifdef MBX /* private */
-#define MUIPEN_MASK 0xffffffff /* private */
+#define MUIPEN_MASK 0xffffffffï¿½/* private */
 #define MUIPEN(pen) (pen) /* private */
 #else /* private */
 #define MUIPEN_MASK 0x0000ffff
@@ -4206,5 +4228,7 @@ struct MUI_CustomClass
 
 #endif /* MUI_H */
 
+#ifdef __GNUC__
 #pragma pack()
 #pragma pack()
+#endif

@@ -1,5 +1,7 @@
+#ifdef __GNUC__
 #pragma pack(2)
 #pragma pack(2)
+#endif
 /*
 
 		MCC_Busy (c) by kMel, Klaus Melchior
@@ -17,11 +19,15 @@
 #define BUSY_MCC_H
 
 #ifndef LIBRARIES_MUI_H
+#ifdef __GNUC__
 #pragma pack()
 #pragma pack()
+#endif
 #include "libraries/mui.h"
+#ifdef __GNUC__
 #pragma pack(2)
 #pragma pack(2)
+#endif
 #endif
 
 
@@ -110,6 +116,7 @@ struct MUIP_Busy_Ticks {
 
 /* PrMake.rexx 0.9 (26.12.1995) Copyright 1995 kmel, Klaus Melchior */
 
-
+#ifdef __GNUC__
 #pragma pack()
 #pragma pack()
+#endif

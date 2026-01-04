@@ -1,5 +1,7 @@
+#ifdef __GNUC__
 #pragma pack(2)
 #pragma pack(2)
+#endif
 /*
   NList.mcc (c) Copyright 1996-1997 by Gilles Masson
   Registered MUI class, Serial Num: 1d51     0x9d510030 to 0x9d51009F / 0x9d5100C0 to 0x9d5100FF
@@ -19,11 +21,15 @@
 #define MUI_NList_MCC_H
 
 #ifndef LIBRARIES_MUI_H
+#ifdef __GNUC__
 #pragma pack()
 #pragma pack()
+#endif
 #include <libraries/mui.h>
+#ifdef __GNUC__
 #pragma pack(2)
 #pragma pack(2)
+#endif
 #endif
 
 
@@ -587,6 +593,7 @@ struct NList_CopyColumnToClipMessage
 
 #endif /* MUI_NList_MCC_H */
 
-
+#ifdef __GNUC__
 #pragma pack()
 #pragma pack()
+#endif
