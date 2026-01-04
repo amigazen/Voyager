@@ -38,7 +38,7 @@ COBJS = plugins.o parse.o urlparser.o network.o init.o \
 	regcomp.o regfree.o regexec.o regerror.o menus.o nlist.o template.o sizegroup.o \
 	sur_gauge.o lineread.o async.o
 
-COBJS_NODEP = voyager_cat.o js_parser.o css_parser.o
+COBJS_NODEP = voyager_cat.o js_parser.o css_parser.o snprintf.o
 
 ASMOBJS = hash.o sup.o idea68k.o textfit.o
 
@@ -48,11 +48,17 @@ AMIGAOBJS = mybrush.o nagwin.o \
 
 PLATFORMOBJS = prefsimages.o
 
-OBJ = $(COBJS) $(COBJS_NODEP) $(ASMOBJS) $(PLATFORMOBJS) $(AMIGAOBJS)
+# libmath64 objects
+MATH64OBJS = libmath64/qtod.o libmath64/q_add.o libmath64/q_div.o libmath64/q_div020.o \
+	libmath64/q_div64.o libmath64/q_divu64.o libmath64/q_divu.o libmath64/q_divu020.o \
+	libmath64/q_mod.o libmath64/q_mod020.o libmath64/q_modu.o libmath64/q_mul020.o \
+	libmath64/q_sub.o libmath64/uqtoud.o libmath64/q_mulu.o
+
+OBJ = $(COBJS) $(COBJS_NODEP) $(ASMOBJS) $(PLATFORMOBJS) $(AMIGAOBJS) $(MATH64OBJS)
 
 V.amigaos: rev.h $(OBJ)
 	slink from lib:c.o $(OBJ) to V.debug noicons addsym sc sd \
-	with lib:utillib.with lib lib:scmieee.lib,vat/vatlib.lib,lib:sc.lib,lib:small.lib,lib:debug.lib,libmath64/libmath64ieee.lib \
+	with lib:utillib.with lib sc:lib/scmieee.lib,sc:lib/sc.lib,lib:small.lib,lib:debug.lib \
 	define _codeid=49 map v.map hsflxo swidth 32 noicons
 	slink v.debug to V.amigaos stripdebug
 
@@ -475,18 +481,23 @@ lineread.o: lineread.c
 	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE lineread.c
 
 # Auto-generated objects
-voyager_cat.o: voyager_cat.h voyager.cd
+voyager_cat.o: voyager.cd voyager_cat.h
+	catcomp voyager.cd cfile voyager_cat.h objfile voyager_cat.o
+# Original catmaker-based build (commented out):
+#voyager_cat.o: voyager_cat.h voyager.cd
 #	catmaker voyager.cd voyager_cat.h
 #	catmaker voyager.cd t:voyager_cat.h
 #	-delete t:voyager_cat.h
 #	asm -ovoyager_cat.o t:cattmp.a
 
 js_parser.o: js.l js.y
+# Uncomment if you really want to rebuild with flex and bison - make sure you have working versions of both!
 #	flex -B -ojs_scanner.h js.l
 #	bison -ojs_parser.c js.y
 	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE js_parser.c
 
 css_parser.o: css.l css.y css.h
+# Uncomment if you really want to rebuild with flex and bison - make sure you have working versions of both!
 #	flex -B -Pcss -ocss_scanner.h css.l
 #	bison -p css -ocss_parser.c css.y
 	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE css_parser.c
@@ -542,7 +553,9 @@ prefswin_contextmenu.o: prefswin_contextmenu.c
 download.o: download.c
 	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE download.c
 
-# snprintf.o removed - using SNPrintf from utility.library instead
+# snprintf.o - simple standalone implementation using VSNPrintf
+snprintf.o: snprintf.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE snprintf.c
 
 smartreq.o: smartreq.c
 	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE smartreq.c
@@ -551,8 +564,90 @@ smartreq.o: smartreq.c
 prefsimages.o: prefsimages.c
 	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE prefsimages.c
 
+# libmath64 build rules
+libmath64/qtod.o: libmath64/qtod.c libmath64/math64.h libmath64/types64.h
+	cd libmath64
+	sc DEF=AMIGAOS CODE=FAR CPU=68020 MATH=IEEE qtod.c
+	cd ..
+
+libmath64/q_div.o: libmath64/q_div.c libmath64/math64.h libmath64/types64.h
+	cd libmath64
+	sc DEF=AMIGAOS CODE=FAR CPU=68020 MATH=IEEE q_div.c
+	cd ..
+
+libmath64/q_divu.o: libmath64/q_divu.c libmath64/math64.h libmath64/types64.h
+	cd libmath64
+	sc DEF=AMIGAOS CODE=FAR CPU=68020 MATH=IEEE q_divu.c
+	cd ..
+
+libmath64/q_mod.o: libmath64/q_mod.c libmath64/math64.h libmath64/types64.h
+	cd libmath64
+	sc DEF=AMIGAOS CODE=FAR CPU=68020 MATH=IEEE q_mod.c
+	cd ..
+
+libmath64/q_modu.o: libmath64/q_modu.c libmath64/math64.h libmath64/types64.h
+	cd libmath64
+	sc DEF=AMIGAOS CODE=FAR CPU=68020 MATH=IEEE q_modu.c
+	cd ..
+
+libmath64/q_div64.o: libmath64/q_div64.c libmath64/math64.h libmath64/types64.h
+	cd libmath64
+	sc DEF=AMIGAOS CODE=FAR CPU=68020 MATH=IEEE q_div64.c
+	cd ..
+
+libmath64/q_divu64.o: libmath64/q_divu64.c libmath64/math64.h libmath64/types64.h
+	cd libmath64
+	sc DEF=AMIGAOS CODE=FAR CPU=68020 MATH=IEEE q_divu64.c
+	cd ..
+
+libmath64/uqtoud.o: libmath64/uqtoud.c libmath64/math64.h libmath64/types64.h
+	cd libmath64
+	sc DEF=AMIGAOS CODE=FAR CPU=68020 MATH=IEEE uqtoud.c
+	cd ..
+
+libmath64/q_add.o: libmath64/q_add.s
+	cd libmath64
+	sc CPU=68020 q_add.s
+	cd ..
+
+libmath64/q_sub.o: libmath64/q_sub.s
+	cd libmath64
+	sc CPU=68020 q_sub.s
+	cd ..
+
+libmath64/q_mulu.o: libmath64/q_mulu.s
+	cd libmath64
+	sc CPU=68020 q_mulu.s
+	cd ..
+
+libmath64/q_div020.o: libmath64/q_div020.s
+	cd libmath64
+	sc CPU=68020 q_div020.s
+	cd ..
+
+libmath64/q_divu020.o: libmath64/q_divu020.s
+	cd libmath64
+	sc CPU=68020 q_divu020.s
+	cd ..
+
+libmath64/q_mod020.o: libmath64/q_mod020.s
+	cd libmath64
+	sc CPU=68020 q_mod020.s
+	cd ..
+
+libmath64/q_mul020.o: libmath64/q_mul020.s
+	cd libmath64
+	sc CPU=68020 q_mul020.s
+	cd ..
+
+install:
+	-copy V.amigaos /Internet/Voyager/V
+
 clean:
 	-delete \#?.(o|map|lnk)
 	-delete V.amigaos
 	-delete V.debug
+	cd libmath64
+	-delete \#?.(o|map|lnk) ALL QUIET
+	cd ..
 

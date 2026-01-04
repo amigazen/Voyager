@@ -23,6 +23,12 @@
 */
 
 #include "voyager.h"
+/* Toggle VAPOR_H_BROKEN for lo_ files - opposite of global config */
+#ifdef VAPOR_H_BROKEN
+#undef VAPOR_H_BROKEN
+#else
+#define VAPOR_H_BROKEN
+#endif
 
 /* public */
 #if defined( AMIGAOS ) || defined( __MORPHOS__ )
@@ -230,13 +236,13 @@ DECMMETHOD( AskMinMax )
 }
 
 BEGINMTABLE
-DECCONST
-DEFGET
-DEFSET
-DEFSMETHOD( Layout_CalcMinMax )
-DEFSMETHOD( Layout_DoLayout )
-DEFMMETHOD( Draw )
-DEFMMETHOD( AskMinMax )
+case OM_NEW: { return(handleOM_NEW(cl, obj, (APTR)msg)); }
+case OM_GET: { return(handleOM_GET(cl, obj, (APTR)msg)); }
+case OM_SET: { return(handleOM_SET(cl, obj, (APTR)msg)); }
+case MM_Layout_CalcMinMax: { return(handleMM_Layout_CalcMinMax(cl, obj, (APTR)msg)); }
+case MM_Layout_DoLayout: { return(handleMM_Layout_DoLayout(cl, obj, (APTR)msg)); }
+case MUIM_Draw: { return(handleMUIM_Draw(cl, obj, (APTR)msg)); }
+case MUIM_AskMinMax: { return(handleMUIM_AskMinMax(cl, obj, (APTR)msg)); }
 ENDMTABLE
 
 int create_lohrclass( void )

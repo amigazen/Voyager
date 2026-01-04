@@ -1,32 +1,41 @@
+/**************************************************************************
+
+  =======================
+  The Voyager Web Browser
+  =======================
+
+  Copyright (C) 1995-2003 by
+   Oliver Wagner <owagner@vapor.com>
+   All Rights Reserved
+
+  Parts Copyright (C) by
+   David Gerber <zapek@vapor.com>
+   Jon Bright <jon@siliconcircus.com>
+   Matt Sealey <neko@vapor.com>
+
+**************************************************************************/
+
 /*
- * Throughout the book I use snprintf() because it's safer than sprintf().
- * But as of the time of this writing, not all systems provide this
- * function.  The function below should only be built on those systems
- * that do not provide a real snprintf().
- * The function below just acts like sprintf(); it is not safe, but it
- * tries to detect overflow.
- *
- * (ripped off from Steven's UNP)
- *
- * $Id: snprintf.c,v 1.1 2001/08/15 18:47:22 zapek Exp $
+ * Simple snprintf implementation using utility.library VSNPrintf
+ * $Id: snprintf.c,v 1.1 2003/07/06 16:51:33 olli Exp $
  */
 
-#include "voyager.h"
+#include <exec/types.h>
+#include <proto/utility.h>
+#include <stdarg.h>
 
-#ifdef __SASC
-#include <stdarg.h>		 /* ANSI C header file */
+#ifndef size_t
+#define size_t ULONG
+#endif
 
-int snprintf(char *buf, size_t size, const char *fmt, ...)
+int snprintf(char *str, size_t size, const char *format, ...)
 {
-	int			n;
-	va_list		ap;
+	va_list args;
+	int result;
 
-	va_start(ap, fmt);
-	vsprintf(buf, fmt, ap);	/* Sigh, some vsprintf's return ptr, not length */
-	n = strlen(buf);
-	va_end(ap);
-	if (n >= size)
-		DB( ("snprintf: '%s' overflowed array", fmt) );
-	return(n);
+	va_start(args, format);
+	result = VSNPrintf(str, size, (const STRPTR)format, (APTR)args);
+	va_end(args);
+
+	return result;
 }
-#endif /* __SASC */

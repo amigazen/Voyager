@@ -21,6 +21,12 @@
 */
 
 #include "voyager.h"
+/* Toggle VAPOR_H_BROKEN for lo_ files - opposite of global config */
+#ifdef VAPOR_H_BROKEN
+#undef VAPOR_H_BROKEN
+#else
+#define VAPOR_H_BROKEN
+#endif
 #include "classes.h"
 #include <proto/vimgdecode.h>
 #include "prefs.h"

@@ -23,6 +23,12 @@
 */
 
 #include "voyager.h"
+/* Toggle VAPOR_H_BROKEN for lo_ files - opposite of global config */
+#ifdef VAPOR_H_BROKEN
+#undef VAPOR_H_BROKEN
+#else
+#define VAPOR_H_BROKEN
+#endif
 #include "classes.h"
 #include <proto/vimgdecode.h>
 #include "prefs.h"
@@ -494,27 +500,27 @@ DECSMETHOD( Layout_Anchor_FindByName )
 
 
 BEGINMTABLE
-DECCONST
-DEFDISPOSE
-DEFGET
-DEFSET
-DEFSMETHOD( Layout_CalcMinMax )
-DEFSMETHOD( Layout_DoLayout )
-DEFMMETHOD( GoActive )
-DEFMMETHOD( GoInactive )
-DEFMMETHOD( AskMinMax )
+case OM_NEW: { return(handleOM_NEW(cl, obj, (APTR)msg)); }
+case OM_DISPOSE: { return(handleOM_DISPOSE(cl, obj, (APTR)msg)); }
+case OM_GET: { return(handleOM_GET(cl, obj, (APTR)msg)); }
+case OM_SET: { return(handleOM_SET(cl, obj, (APTR)msg)); }
+case MM_Layout_CalcMinMax: { return(handleMM_Layout_CalcMinMax(cl, obj, (APTR)msg)); }
+case MM_Layout_DoLayout: { return(handleMM_Layout_DoLayout(cl, obj, (APTR)msg)); }
+case MUIM_GoActive: { return(handleMUIM_GoActive(cl, obj, (APTR)msg)); }
+case MUIM_GoInactive: { return(handleMUIM_GoInactive(cl, obj, (APTR)msg)); }
+case MUIM_AskMinMax: { return(handleMUIM_AskMinMax(cl, obj, (APTR)msg)); }
 #ifdef SHOWHIDE
-DEFMMETHOD( Show )
-DEFMMETHOD( Hide )
+case MUIM_Show: { return(handleMUIM_Show(cl, obj, (APTR)msg)); }
+case MUIM_Hide: { return(handleMUIM_Hide(cl, obj, (APTR)msg)); }
 #endif
-DEFMMETHOD( Draw )
-DEFSMETHOD( Layout_Anchor_HandleAccessKey )
-DEFSMETHOD( Layout_Anchor_FindByName )
-DEFSMETHOD( Layout_Anchor_HandleMouseEvent )
-DEFSMETHOD( JS_HasProperty )
-DEFSMETHOD( JS_SetProperty )
-DEFSMETHOD( JS_GetProperty )
-DEFSMETHOD( JS_ListProperties )
+case MUIM_Draw: { return(handleMUIM_Draw(cl, obj, (APTR)msg)); }
+case MM_Layout_Anchor_HandleAccessKey: { return(handleMM_Layout_Anchor_HandleAccessKey(cl, obj, (APTR)msg)); }
+case MM_Layout_Anchor_FindByName: { return(handleMM_Layout_Anchor_FindByName(cl, obj, (APTR)msg)); }
+case MM_Layout_Anchor_HandleMouseEvent: { return(handleMM_Layout_Anchor_HandleMouseEvent(cl, obj, (APTR)msg)); }
+case MM_JS_HasProperty: { return(handleMM_JS_HasProperty(cl, obj, (APTR)msg)); }
+case MM_JS_SetProperty: { return(handleMM_JS_SetProperty(cl, obj, (APTR)msg)); }
+case MM_JS_GetProperty: { return(handleMM_JS_GetProperty(cl, obj, (APTR)msg)); }
+case MM_JS_ListProperties: { return(handleMM_JS_ListProperties(cl, obj, (APTR)msg)); }
 ENDMTABLE
 
 int create_loanchorclass( void )

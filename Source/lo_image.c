@@ -23,6 +23,12 @@
 */
 
 #include "voyager.h"
+/* Toggle VAPOR_H_BROKEN for lo_ files - opposite of global config */
+#ifdef VAPOR_H_BROKEN
+#undef VAPOR_H_BROKEN
+#else
+#define VAPOR_H_BROKEN
+#endif
 
 /* public */
 #if defined( AMIGAOS ) || defined( __MORPHOS__ )

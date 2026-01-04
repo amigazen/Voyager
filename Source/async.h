@@ -69,5 +69,16 @@ LONG GetFilesizeAsync(struct AsyncFile *file);
 
 /*****************************************************************************/
 
+/* Utility library functions - implementations based on tbLib */
+APTR AllocVecPooled(APTR poolheader, ULONG memsize);
+void FreeVecPooled(APTR poolheader, APTR memory);
+
+/* VAT functions */
+struct Screen *VAT_GetAppScreen(APTR app);
+STRPTR VAT_GetAppScreenName(APTR app);
+int VAT_SendRXMsg(STRPTR cmd, STRPTR basename, STRPTR suffix);
+
+/*****************************************************************************/
+
 #endif /* ASYNC_H */
 

@@ -23,6 +23,12 @@
 */
 
 #include "voyager.h"
+/* Toggle VAPOR_H_BROKEN for lo_ files - opposite of global config */
+#ifdef VAPOR_H_BROKEN
+#undef VAPOR_H_BROKEN
+#else
+#define VAPOR_H_BROKEN
+#endif
 
 /* public */
 #if defined( AMIGAOS ) || defined( __MORPHOS__ )
@@ -851,27 +857,27 @@ DECTMETHOD( JS_GetGCMagic )
 }
 
 BEGINMTABLE
-DECCONST
-DEFDISPOSE
-DEFGET
-DEFSET
-DEFSMETHOD( Layout_CalcMinMax )
-DEFSMETHOD( Layout_DoLayout )
-DEFTMETHOD( Layout_FormCycle_Finish )
-DEFTMETHOD( Layout_FormCycle_SelectEntry )
-DEFTMETHOD( Layout_RefreshAfterIncrementalDump );
-DEFSMETHOD( Layout_FormCycle_AddOption )
-DEFSMETHOD( Layout_FormElement_ReportValue )
-DEFTMETHOD( Layout_FormElement_Store )
-DEFTMETHOD( Layout_FormElement_Reset )
-DEFTMETHOD( Layout_FormCycle_TriggerChange )
-DEFSMETHOD( JS_HasProperty )
-DEFSMETHOD( JS_SetProperty )
-DEFSMETHOD( JS_GetProperty )
-DEFSMETHOD( JS_CallMethod )
-DEFSMETHOD( JS_ListProperties )
-DEFSMETHOD( JS_SetGCMagic )
-DEFSMETHOD( JS_GetGCMagic )
+case OM_NEW: { return(handleOM_NEW(cl, obj, (APTR)msg)); }
+case OM_DISPOSE: { return(handleOM_DISPOSE(cl, obj, (APTR)msg)); }
+case OM_GET: { return(handleOM_GET(cl, obj, (APTR)msg)); }
+case OM_SET: { return(handleOM_SET(cl, obj, (APTR)msg)); }
+case MM_Layout_CalcMinMax: { return(handleMM_Layout_CalcMinMax(cl, obj, (APTR)msg)); }
+case MM_Layout_DoLayout: { return(handleMM_Layout_DoLayout(cl, obj, (APTR)msg)); }
+case MM_Layout_FormCycle_Finish: { return(handleMM_Layout_FormCycle_Finish(cl, obj, (APTR)msg)); }
+case MM_Layout_FormCycle_SelectEntry: { return(handleMM_Layout_FormCycle_SelectEntry(cl, obj, (APTR)msg)); }
+case MM_Layout_RefreshAfterIncrementalDump: { return(handleMM_Layout_RefreshAfterIncrementalDump(cl, obj, (APTR)msg)); }
+case MM_Layout_FormCycle_AddOption: { return(handleMM_Layout_FormCycle_AddOption(cl, obj, (APTR)msg)); }
+case MM_Layout_FormElement_ReportValue: { return(handleMM_Layout_FormElement_ReportValue(cl, obj, (APTR)msg)); }
+case MM_Layout_FormElement_Store: { return(handleMM_Layout_FormElement_Store(cl, obj, (APTR)msg)); }
+case MM_Layout_FormElement_Reset: { return(handleMM_Layout_FormElement_Reset(cl, obj, (APTR)msg)); }
+case MM_Layout_FormCycle_TriggerChange: { return(handleMM_Layout_FormCycle_TriggerChange(cl, obj, (APTR)msg)); }
+case MM_JS_HasProperty: { return(handleMM_JS_HasProperty(cl, obj, (APTR)msg)); }
+case MM_JS_SetProperty: { return(handleMM_JS_SetProperty(cl, obj, (APTR)msg)); }
+case MM_JS_GetProperty: { return(handleMM_JS_GetProperty(cl, obj, (APTR)msg)); }
+case MM_JS_CallMethod: { return(handleMM_JS_CallMethod(cl, obj, (APTR)msg)); }
+case MM_JS_ListProperties: { return(handleMM_JS_ListProperties(cl, obj, (APTR)msg)); }
+case MM_JS_SetGCMagic: { return(handleMM_JS_SetGCMagic(cl, obj, (APTR)msg)); }
+case MM_JS_GetGCMagic: { return(handleMM_JS_GetGCMagic(cl, obj, (APTR)msg)); }
 DEFMMETHOD( GoActive )
 DEFMMETHOD( GoInactive )
 ENDMTABLE

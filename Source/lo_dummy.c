@@ -23,6 +23,12 @@
 */
 
 #include "voyager.h"
+/* Toggle VAPOR_H_BROKEN for lo_ files - opposite of global config */
+#ifdef VAPOR_H_BROKEN
+#undef VAPOR_H_BROKEN
+#else
+#define VAPOR_H_BROKEN
+#endif
 #include "classes.h"
 #include "htmlclasses.h"
 #include "layout.h"
@@ -56,8 +62,8 @@ DECMMETHOD( AskMinMax )
 }
 
 BEGINMTABLE
-DECCONST
-DEFMMETHOD( AskMinMax )
+case OM_NEW: { return(handleOM_NEW(cl, obj, (APTR)msg)); }
+case MUIM_AskMinMax: { return(handleMUIM_AskMinMax(cl, obj, (APTR)msg)); }
 ENDMTABLE
 
 int create_lodummyclass( void )

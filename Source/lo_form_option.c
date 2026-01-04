@@ -23,6 +23,12 @@
 */
 
 #include "voyager.h"
+/* Toggle VAPOR_H_BROKEN for lo_ files - opposite of global config */
+#ifdef VAPOR_H_BROKEN
+#undef VAPOR_H_BROKEN
+#else
+#define VAPOR_H_BROKEN
+#endif
 #include "classes.h"
 #include <proto/vimgdecode.h>
 #include "prefs.h"
@@ -245,14 +251,14 @@ DECSMETHOD( JS_SetProperty )
 DS_LISTPROP
 
 BEGINMTABLE
-DECCONST
-DEFDISPOSE
-DEFGET
-DEFSET
-DEFSMETHOD( JS_HasProperty )
-DEFSMETHOD( JS_SetProperty )
-DEFSMETHOD( JS_GetProperty )
-DEFSMETHOD( JS_ListProperties )
+case OM_NEW: { return(handleOM_NEW(cl, obj, (APTR)msg)); }
+case OM_DISPOSE: { return(handleOM_DISPOSE(cl, obj, (APTR)msg)); }
+case OM_GET: { return(handleOM_GET(cl, obj, (APTR)msg)); }
+case OM_SET: { return(handleOM_SET(cl, obj, (APTR)msg)); }
+case MM_JS_HasProperty: { return(handleMM_JS_HasProperty(cl, obj, (APTR)msg)); }
+case MM_JS_SetProperty: { return(handleMM_JS_SetProperty(cl, obj, (APTR)msg)); }
+case MM_JS_GetProperty: { return(handleMM_JS_GetProperty(cl, obj, (APTR)msg)); }
+case MM_JS_ListProperties: { return(handleMM_JS_ListProperties(cl, obj, (APTR)msg)); }
 ENDMTABLE
 
 int create_loform_optionclass( void )

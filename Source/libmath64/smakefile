@@ -1,0 +1,66 @@
+# SMakefile for libmath64
+#
+# libmath64 - a SAS/C math linklib with 64-bit support
+#
+# Copyright (C) 2001 by David Gerber <zapek@meanmachine.ch>
+# All Rights Reserved
+#
+# $Id: smakefile,v 1.1 2001/09/27 14:00:44 zapek Exp $
+
+# Objects to build
+MATH64OBJS = qtod.o q_add.o q_div.o q_div020.o q_div64.o q_divu64.o q_divu.o q_divu020.o \
+	q_mod.o q_mod020.o q_modu.o q_mul020.o q_sub.o uqtoud.o q_mulu.o
+
+# Default target
+all: $(MATH64OBJS)
+
+# C source files
+qtod.o: qtod.c math64.h types64.h
+	sc DEF=AMIGAOS CODE=FAR CPU=68020 MATH=IEEE qtod.c
+
+q_div.o: q_div.c math64.h types64.h
+	sc DEF=AMIGAOS CODE=FAR CPU=68020 MATH=IEEE q_div.c
+
+q_divu.o: q_divu.c math64.h types64.h
+	sc DEF=AMIGAOS CODE=FAR CPU=68020 MATH=IEEE q_divu.c
+
+q_mod.o: q_mod.c math64.h types64.h
+	sc DEF=AMIGAOS CODE=FAR CPU=68020 MATH=IEEE q_mod.c
+
+q_modu.o: q_modu.c math64.h types64.h
+	sc DEF=AMIGAOS CODE=FAR CPU=68020 MATH=IEEE q_modu.c
+
+q_div64.o: q_div64.c math64.h types64.h
+	sc DEF=AMIGAOS CODE=FAR CPU=68020 MATH=IEEE q_div64.c
+
+q_divu64.o: q_divu64.c math64.h types64.h
+	sc DEF=AMIGAOS CODE=FAR CPU=68020 MATH=IEEE q_divu64.c
+
+uqtoud.o: uqtoud.c math64.h types64.h
+	sc DEF=AMIGAOS CODE=FAR CPU=68020 MATH=IEEE uqtoud.c
+
+# Assembler source files
+q_add.o: q_add.s
+	sc CPU=68020 q_add.s
+
+q_sub.o: q_sub.s
+	sc CPU=68020 q_sub.s
+
+q_mulu.o: q_mulu.s
+	sc CPU=68020 q_mulu.s
+
+q_div020.o: q_div020.s
+	sc CPU=68020 q_div020.s
+
+q_divu020.o: q_divu020.s
+	sc CPU=68020 q_divu020.s
+
+q_mod020.o: q_mod020.s
+	sc CPU=68020 q_mod020.s
+
+q_mul020.o: q_mul020.s
+	sc CPU=68020 q_mul020.s
+
+clean:
+	-delete \#?.(o|map|lnk) ALL QUIET
+

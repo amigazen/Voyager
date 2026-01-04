@@ -23,6 +23,12 @@
 */
 
 #include "voyager.h"
+/* Toggle VAPOR_H_BROKEN for lo_ files - opposite of global config */
+#ifdef VAPOR_H_BROKEN
+#undef VAPOR_H_BROKEN
+#else
+#define VAPOR_H_BROKEN
+#endif
 
 /* public */
 #if defined( AMIGAOS ) || defined( __MORPHOS__ )
@@ -452,7 +458,7 @@ DECDISP
 	if( data->bgbitmap_free )
 	{
 		FreeBitMap( data->bgbitmap );
-		if( data->bgmask > 0 && data->bgmask != ( APTR )-1 )
+		if( data->bgmask != NULL && data->bgmask != ( APTR )-1 )
 		{
 			FreeBitMap( data->bgmask );
 		}
@@ -1252,7 +1258,7 @@ DECSMETHOD( Layout_DoLayout )
 	int maxx = 0;
 	struct MinList marginfloat_left, marginfloat_right;
 #ifdef VDEBUG
-	clock_t ts = 0;
+	/* clock_t ts = 0; */ /* Unused variable */
 #endif
 	struct marginnode *left_margin = NULL, *right_margin = NULL;
 	int linealign = data->default_linealign, newalign;
@@ -1759,11 +1765,11 @@ DECMMETHOD( Backfill )
 		mbfh.xo = - _left( obj );
 		mbfh.yo = - _vtop( obj );
 
-		mbfh.bm = getclone( data->bgbitmap, ( data->bgmask > 0 && data->bgmask != ( APTR )-1 ) ? TRUE : FALSE );
+		mbfh.bm = getclone( data->bgbitmap, ( data->bgmask != NULL && data->bgmask != ( APTR )-1 ) ? TRUE : FALSE );
 
 		//DB( ( "data->bgmask: 0x%lx\n", data->bgmask ) );
 
-		if( data->bgmask > 0 && data->bgmask != ( APTR )-1 )
+		if( data->bgmask != NULL && data->bgmask != ( APTR )-1 )
 			mbfh.maskbm = getclone( data->bgmask, TRUE );
 		else
 			mbfh.maskbm = data->bgmask;
@@ -1798,7 +1804,7 @@ DECMMETHOD( Backfill )
 	#if USE_FAST_LISTWALK
 	if( data->last_tnr ) /* XXX: kill it if that's a new page !! */
 	{
-		int ty;
+		/* int ty; */ /* Unused variable */
 
 		/*
 		 * Find which direction we have to go.
@@ -1955,7 +1961,7 @@ DECTMETHOD( ImgDecode_Done )
 		if( data->bgbitmap_free )
 		{
 			FreeBitMap( data->bgbitmap );
-			if( data->bgmask > 0 && data->bgmask != ( APTR )-1 )
+			if( data->bgmask != NULL && data->bgmask != ( APTR )-1 )
 			{
 				FreeBitMap( data->bgmask );
 			}
@@ -1971,7 +1977,7 @@ DECTMETHOD( ImgDecode_Done )
 
 		//DB( ( "data->bgmask: 0x%lx\n", data->bgmask ) );
 
-		if( rc && data->bgmask > 0 )
+		if( rc && data->bgmask != NULL )
 		{
 			data->bgbitmap_has_mask = 1; /* TOFIX: sigh.. */
 		}
@@ -2146,7 +2152,7 @@ DECMMETHOD( HandleEvent )
 				else
 				{
 					APTR o = NULL;
-					APTR optr, ostate;
+					APTR ostate;
 					struct List *l;
 					//o = (APTR)DoMethod( obj, MUIM_WhichObject, msg->imsg->MouseX, msg->imsg->MouseY );
 					get( _win( obj ), MUIA_Window_MouseObject, &o );
@@ -2537,11 +2543,11 @@ DECSMETHOD( Layout_Backfill )
 		mbfh.xo = -_mleft(obj);//-msg->left;
 		mbfh.yo = -_mtop(obj);//-msg->top;
 
-		mbfh.bm = getclone( data->bgbitmap, ( ( data->bgmask > 0 && data->bgmask != ( APTR )-1 ) ? TRUE : FALSE ) );
+		mbfh.bm = getclone( data->bgbitmap, ( ( data->bgmask != NULL && data->bgmask != ( APTR )-1 ) ? TRUE : FALSE ) );
 
 		//DB( ( "data->bgmask: 0x%lx\n", data->bgmask ) );
 
-		if( data->bgmask > 0 && data->bgmask != ( APTR )-1 )
+		if( data->bgmask != NULL && data->bgmask != ( APTR )-1 )
 			mbfh.maskbm = getclone( data->bgmask, TRUE );
 		else
 			mbfh.maskbm = data->bgmask;
@@ -2825,38 +2831,38 @@ DECMMETHOD( Hide )
 }
 
 BEGINMTABLE
-DECCONST
-DEFDISPOSE
-DEFGET
-DEFSET
+case OM_NEW: { return(handleOM_NEW(cl, obj, (APTR)msg)); }
+case OM_DISPOSE: { return(handleOM_DISPOSE(cl, obj, (APTR)msg)); }
+case OM_GET: { return(handleOM_GET(cl, obj, (APTR)msg)); }
+case OM_SET: { return(handleOM_SET(cl, obj, (APTR)msg)); }
 //DEFMMETHOD( Setup )
-DEFMMETHOD( Cleanup )
-DEFMMETHOD( Draw )
-DEFMMETHOD( Show )
-DEFMMETHOD( Hide )
-DEFMMETHOD( HandleEvent )
-DEFMMETHOD( ContextMenuBuild )
-DEFMMETHOD( ContextMenuChoice )
-DEFSMETHOD( Layout_Group_AddText )
-DEFSMETHOD( Layout_Group_AddObject )
-DEFSMETHOD( Layout_CalcMinMax )
-DEFSMETHOD( Layout_DoLayout )
-DEFSMETHOD( Layout_CheckLayout )
-DEFSMETHOD( Layout_Group_HighliteAnchor )
-DEFSMETHOD( Layout_Group_ActiveAnchor )
-DEFMMETHOD( Backfill ) //TOFIX
-DEFSMETHOD( Layout_Backfill )
-DEFTMETHOD( ImgDecode_Done )
-DEFSMETHOD( JS_FindByName )
-DEFSMETHOD( JS_FindByID )
-DEFSMETHOD( HTMLRexx_SetURLFromObject )
-DEFSMETHOD( HTMLRexx_OpenDocInfo )
-DEFSMETHOD( HTMLRexx_SaveURL )
-DEFMETHOD( HTMLRexx_OpenSourceView )
-DEFMETHOD( HTMLWin_Backward )
-DEFMETHOD( HTMLWin_Forward )
-DEFMETHOD( HTMLRexx_LoadBG )
-DEFTMETHOD( HTMLRexx_SetClipFromObject )
+case MUIM_Cleanup: { return(handleMUIM_Cleanup(cl, obj, (APTR)msg)); }
+case MUIM_Draw: { return(handleMUIM_Draw(cl, obj, (APTR)msg)); }
+case MUIM_Show: { return(handleMUIM_Show(cl, obj, (APTR)msg)); }
+case MUIM_Hide: { return(handleMUIM_Hide(cl, obj, (APTR)msg)); }
+case MUIM_HandleEvent: { return(handleMUIM_HandleEvent(cl, obj, (APTR)msg)); }
+case MUIM_ContextMenuBuild: { return(handleMUIM_ContextMenuBuild(cl, obj, (APTR)msg)); }
+case MUIM_ContextMenuChoice: { return(handleMUIM_ContextMenuChoice(cl, obj, (APTR)msg)); }
+case MM_Layout_Group_AddText: { return(handleMM_Layout_Group_AddText(cl, obj, (APTR)msg)); }
+case MM_Layout_Group_AddObject: { return(handleMM_Layout_Group_AddObject(cl, obj, (APTR)msg)); }
+case MM_Layout_CalcMinMax: { return(handleMM_Layout_CalcMinMax(cl, obj, (APTR)msg)); }
+case MM_Layout_DoLayout: { return(handleMM_Layout_DoLayout(cl, obj, (APTR)msg)); }
+case MM_Layout_CheckLayout: { return(handleMM_Layout_CheckLayout(cl, obj, (APTR)msg)); }
+case MM_Layout_Group_HighliteAnchor: { return(handleMM_Layout_Group_HighliteAnchor(cl, obj, (APTR)msg)); }
+case MM_Layout_Group_ActiveAnchor: { return(handleMM_Layout_Group_ActiveAnchor(cl, obj, (APTR)msg)); }
+case MUIM_Backfill: { return(handleMUIM_Backfill(cl, obj, (APTR)msg)); } //TOFIX
+case MM_Layout_Backfill: { return(handleMM_Layout_Backfill(cl, obj, (APTR)msg)); }
+case MM_ImgDecode_Done: { return(handleMM_ImgDecode_Done(cl, obj, (APTR)msg)); }
+case MM_JS_FindByName: { return(handleMM_JS_FindByName(cl, obj, (APTR)msg)); }
+case MM_JS_FindByID: { return(handleMM_JS_FindByID(cl, obj, (APTR)msg)); }
+case MM_HTMLRexx_SetURLFromObject: { return(handleMM_HTMLRexx_SetURLFromObject(cl, obj, (APTR)msg)); }
+case MM_HTMLRexx_OpenDocInfo: { return(handleMM_HTMLRexx_OpenDocInfo(cl, obj, (APTR)msg)); }
+case MM_HTMLRexx_SaveURL: { return(handleMM_HTMLRexx_SaveURL(cl, obj, (APTR)msg)); }
+case MM_HTMLRexx_OpenSourceView: { return(handleMM_HTMLRexx_OpenSourceView(cl, obj, (APTR)msg)); }
+case MM_HTMLWin_Backward: { return(handleMM_HTMLWin_Backward(cl, obj, (APTR)msg)); }
+case MM_HTMLWin_Forward: { return(handleMM_HTMLWin_Forward(cl, obj, (APTR)msg)); }
+case MM_HTMLRexx_LoadBG: { return(handleMM_HTMLRexx_LoadBG(cl, obj, (APTR)msg)); }
+case MM_HTMLRexx_SetClipFromObject: { return(handleMM_HTMLRexx_SetClipFromObject(cl, obj, (APTR)msg)); }
 
 case MM_ImgDecode_HasInfo:
 case MM_ImgDecode_GotScanline:

@@ -104,7 +104,7 @@ DECSMETHOD( JS_GetProperty )
 			{
 				char buffer[ 16 ]; /* should be enough for everyone (tm) */
 
-				snprintf( buffer, sizeof( buffer ), "%s:", purl.scheme );
+				SNPrintf( buffer, sizeof( buffer ), (const STRPTR)"%s:", purl.scheme );
 
 				storestrprop( msg, buffer );
 			}

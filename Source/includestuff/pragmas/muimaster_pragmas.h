@@ -54,4 +54,10 @@
 #pragma libcall MUIMasterBase MUI_BeginRefresh C0 0802
 #pragma libcall MUIMasterBase MUI_EndRefresh C6 0802
 
+/* Private MUI APIs */
+#pragma libcall MUIMasterBase MUI_Hide DE 801
+#pragma libcall MUIMasterBase MUI_Offset EA 3210803
+#pragma libcall MUIMasterBase MUI_LayoutObj E4 43210806
+#pragma libcall MUIMasterBase MUIP_GetVirtualRect F0 9802
+
 #endif /* PRAGMAS_MUIMASTER_PRAGMAS_H */

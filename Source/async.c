@@ -26,9 +26,45 @@
 /* External library bases */
 extern struct Library *MUIMasterBase;
 
-/* Utility library functions - explicit declarations */
-APTR AllocVecPooled(APTR poolheader, ULONG memsize);
-void FreeVecPooled(APTR poolheader, APTR memory);
+/* Utility library functions - implementations based on tbLib */
+/* AllocVecPooled and FreeVecPooled implementations */
+#define POOL_MAGIC 0xa0b18c9e
+
+APTR AllocVecPooled(APTR poolheader, ULONG memsize)
+{
+	ULONG *result;
+	ULONG totalsize;
+
+	/* Allocate extra space for magic number and size */
+	totalsize = memsize + sizeof(ULONG) * 2;
+	result = (ULONG *)AllocPooled(poolheader, totalsize);
+	
+	if (result != NULL)
+	{
+		result[0] = POOL_MAGIC;
+		result[1] = totalsize;
+		return (APTR)&result[2];
+	}
+	else
+	{
+		return NULL;
+	}
+}
+
+void FreeVecPooled(APTR poolheader, APTR memory)
+{
+	ULONG *tmp;
+
+	if (memory != NULL)
+	{
+		tmp = (ULONG *)memory;
+		/* Check magic number and free the actual allocation */
+		if (tmp[-2] == POOL_MAGIC && tmp[-1] != 0)
+		{
+			FreePooled(poolheader, (APTR)&tmp[-2], tmp[-1]);
+		}
+	}
+}
 
 /*****************************************************************************/
 

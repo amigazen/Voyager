@@ -23,6 +23,12 @@
 */
 
 #include "voyager.h"
+/* Toggle VAPOR_H_BROKEN for lo_ files - opposite of global config */
+#ifdef VAPOR_H_BROKEN
+#undef VAPOR_H_BROKEN
+#else
+#define VAPOR_H_BROKEN
+#endif
 
 /* private */
 #include "classes.h"
@@ -403,24 +409,24 @@ DECMMETHOD( GoInactive )
 }
 
 BEGINMTABLE
-DECCONST
-DEFDISPOSE
-DEFGET
-DEFSET
-DEFSMETHOD( Layout_CalcMinMax )
-DEFSMETHOD( Layout_DoLayout )
-DEFMMETHOD( AskMinMax )
-DEFSMETHOD( Layout_FormElement_ReportValue )
-DEFTMETHOD( Layout_FormElement_Store )
-DEFTMETHOD( Layout_FormElement_Reset )
-DEFSMETHOD( JS_HasProperty )
-DEFSMETHOD( JS_SetProperty )
-DEFSMETHOD( JS_GetProperty )
-DEFSMETHOD( JS_ListProperties )
-DEFSMETHOD( JS_CallMethod )
+case OM_NEW: { return(handleOM_NEW(cl, obj, (APTR)msg)); }
+case OM_DISPOSE: { return(handleOM_DISPOSE(cl, obj, (APTR)msg)); }
+case OM_GET: { return(handleOM_GET(cl, obj, (APTR)msg)); }
+case OM_SET: { return(handleOM_SET(cl, obj, (APTR)msg)); }
+case MM_Layout_CalcMinMax: { return(handleMM_Layout_CalcMinMax(cl, obj, (APTR)msg)); }
+case MM_Layout_DoLayout: { return(handleMM_Layout_DoLayout(cl, obj, (APTR)msg)); }
+case MUIM_AskMinMax: { return(handleMUIM_AskMinMax(cl, obj, (APTR)msg)); }
+case MM_Layout_FormElement_ReportValue: { return(handleMM_Layout_FormElement_ReportValue(cl, obj, (APTR)msg)); }
+case MM_Layout_FormElement_Store: { return(handleMM_Layout_FormElement_Store(cl, obj, (APTR)msg)); }
+case MM_Layout_FormElement_Reset: { return(handleMM_Layout_FormElement_Reset(cl, obj, (APTR)msg)); }
+case MM_JS_HasProperty: { return(handleMM_JS_HasProperty(cl, obj, (APTR)msg)); }
+case MM_JS_SetProperty: { return(handleMM_JS_SetProperty(cl, obj, (APTR)msg)); }
+case MM_JS_GetProperty: { return(handleMM_JS_GetProperty(cl, obj, (APTR)msg)); }
+case MM_JS_ListProperties: { return(handleMM_JS_ListProperties(cl, obj, (APTR)msg)); }
+case MM_JS_CallMethod: { return(handleMM_JS_CallMethod(cl, obj, (APTR)msg)); }
 DOM_JS_GC_HOOK
-DEFMMETHOD( GoActive )
-DEFMMETHOD( GoInactive )
+case MUIM_GoActive: { return(handleMUIM_GoActive(cl, obj, (APTR)msg)); }
+case MUIM_GoInactive: { return(handleMUIM_GoInactive(cl, obj, (APTR)msg)); }
 ENDMTABLE
 
 int create_loformtextclass( void )
