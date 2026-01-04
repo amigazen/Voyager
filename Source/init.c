@@ -83,31 +83,12 @@ UnicodeData_p UnicodeBase;
 #define VSPEC ""
 #endif
 
-char copyright[] = { "Voyager " LVERTAG " " VSPEC "© 1995-2003 Oliver Wagner & David Gerber, All Rights Reserved" };
+char copyright[] = { "Voyager " LVERTAG " " VSPEC "ï¿½ 1995-2003 Oliver Wagner & David Gerber, All Rights Reserved" };
 
 int app_started;
 static int app_doublestart;
 
-#ifdef AMIGAOS
-
-/*
- * Detect patched VAT
- */
-
-static unsigned char md5verify_data[] = {153,19,122,17,137,224,175,175,86,47,155,94,186,103,153,16,228,44,61,231,194,36,114,152,97,167,41,160,183,0};
-#define MD5VERIFY_DATALENGTH 29
-static unsigned char md5verify_md5[16] = {72,182,158,52,215,70,139,192,144,16,50,16,181,103,88,184};
-
-static int check_md5( void )
-{
-	char md5buff[ 16 ];
-
-	VAT_CalcMD5( md5verify_data, MD5VERIFY_DATALENGTH, md5buff );
-
-	return !memcmp( md5verify_md5, md5buff, sizeof( md5buff ) );
-}
-
-#endif
+/* check_md5() and VAT patching detection removed - copy protection no longer used */
 
 /*
  * The init does far too much and causes random problems
@@ -122,7 +103,11 @@ int handle_doublestart( void )
 	if( FindPort( "VOYAGER" ) )
 	{
 		Permit();
+#if USE_VAT
 		VAT_SendRXMsg( "'LoadURL NEW'", VREXXPORT, VREXXEXT );
+#else
+		/* VAT not available - can't send Rexx message */
+#endif
 		app_doublestart = 1;
 		return ( FALSE );
 	}
@@ -412,9 +397,7 @@ int initstuff( void )
 #endif	
 	if( !make_app() ) return( FALSE );
 
-#ifdef AMIGAOS
-	if( !check_md5() ) return( FALSE );
-#endif
+/* check_md5() removed - copy protection no longer used */
 
 #if USE_NET
 	load_cookies();
@@ -1083,7 +1066,7 @@ int load_diskobj( void )
 			{
 				ULONG id = 0;
 
-#define PREFSFILEID MAKE_ID('V','Y','²',0)
+#define PREFSFILEID MAKE_ID('V','Y','ï¿½',0)
 				Read( f, &id, sizeof( id ) );
 				Close( f );
 
@@ -1418,7 +1401,7 @@ static int buildapp( void )
 	app = NewObject( getappclass(), NULL,
 		MUIA_Application_Title, "" APPNAME "",
 		MUIA_Application_Version, lversion,
-		MUIA_Application_Copyright, "© 1995-2002 Oliver Wagner & David Gerber, All Rights Reserved",
+		MUIA_Application_Copyright, "ï¿½ 1995-2002 Oliver Wagner & David Gerber, All Rights Reserved",
 		MUIA_Application_Author, "Oliver Wagner",
 		MUIA_Application_UsedClasses, classlist,
 		MUIA_Application_Description, GS( APP_DESC ),

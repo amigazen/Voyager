@@ -61,8 +61,8 @@
 #define EXTRA_DEBUG 1
 #define BETA_VERSTRING 0
 #define ALPHA_WARNING 1
-#define NEED_KEYFILE 1
-#define USE_KEYFILES 1
+#define NEED_KEYFILE 0
+#define USE_KEYFILES 0
 #define VAT_ECRYPT_CHECK 0
 #define CHECK_TIMEOUT 0
 #define BAIL_ON_TIMEOUT 0
@@ -96,7 +96,7 @@
 #define BETA_VERSTRING 0
 #define ALPHA_WARNING 0
 #define NEED_KEYFILE 0
-#define USE_KEYFILES 1
+#define USE_KEYFILES 0
 #define VAT_ECRYPT_CHECK 0
 #define CHECK_TIMEOUT 0
 #define BAIL_ON_TIMEOUT 0
@@ -286,14 +286,14 @@ struct dnsmsg;
 #define USE_AUTOCOMPLETE   1
 #define USE_BLOCKING_CONN  0
 #define USE_BUSY           1
-#define USE_CGX            1
+#define USE_CGX            0
 #define USE_CLIPBOARD      1
 #define USE_CLOCK          1
-#define USE_CMANAGER       1
+#define USE_CMANAGER       0
 #define USE_CONNECT_PROC   0
 #define USE_DOS            1
 #define USE_DBUF_RESIZE    0
-#define USE_EXECUTIVE      1
+#define USE_EXECUTIVE      0
 #define USE_GETSYSTIME     1
 #define USE_EXTERNAL_PREFS 0
 #define USE_JS             1
@@ -302,28 +302,28 @@ struct dnsmsg;
 #define USE_LO_PIP         0
 #define USE_MALLOC         1
 #define USE_MENUS          1
-#define USE_MIAMI          1
+#define USE_MIAMI          0
 #define USE_NET            1
 #define USE_NETFILE        1
 #define USE_NLIST          1
 #define USE_PLUGINS        1
 #define USE_POPHOTKEY      1
-#define USE_POPPH          1
+#define USE_POPPH          0
 #define USE_REXX           1
 #define USE_SINGLEWINDOW   0 /* nasty hack */
 #define USE_SMOOTH_SCROLLING 0 /* doesn't work properly */
-#define USE_SPEEDBAR       1
-#define USE_SPLASHWIN      1
+#define USE_SPEEDBAR       0
+#define USE_SPLASHWIN      0
 #define USE_SSCREEN        1
-#define USE_SSL            1
+#define USE_SSL            0
 #define USE_STB_NAV        0
 #define USE_TEAROFF        1
 #define USE_TESTFILE       1
 #define USE_TMPRAS         1
-#define USE_TURBOPRINT     1
-#define USE_VAPOR_UPDATE   1
-#define USE_VAT            1
-#define USE_WBSTART        1
+#define USE_TURBOPRINT     0
+#define USE_VAPOR_UPDATE   0
+#define USE_VAT            0
+#define USE_WBSTART        0
 
 #elif defined( __MORPHOS__ )
 

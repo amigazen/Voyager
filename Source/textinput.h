@@ -22,12 +22,6 @@
  * $Id: textinput.h,v 1.2 2001/07/01 22:03:32 owagner Exp $
  */
 
-#ifdef __MORPHOS__
 #include <mui/textinput_mcc.h>
-#endif /* __MORPHOS__ */
-
-#ifdef AMIGAOS
-#include <textinput/textinput_mcc.h>
-#endif /* AMIGAOS */
 
 #endif /* VOYAGER_TEXTINPUT_H */

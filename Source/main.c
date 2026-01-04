@@ -65,7 +65,7 @@
 #include "prefs.h"
 #include "mime.h"
 #include "init.h"
-#include "nagwin.h"
+/* nagwin.h removed - registration nag window no longer used */
 #include "win_func.h"
 #ifdef MBX
 #include <mcp_lib_calls.h>
@@ -737,11 +737,7 @@ int vmain( void )
 		closestuff();
 		goto ex;
 #endif /* NEED_KEYFILE */
-		if( !donag( 1 ) )
-		{
-			closestuff();
-			goto ex;
-		}
+		/* donag() removed - registration nag window no longer used */
 	}
 #endif /* !USE_KEYFILE */
 

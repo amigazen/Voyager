@@ -382,7 +382,22 @@ int checkincache( struct unode *un, time_t *expires )
 	if( !gp_cachesize )
 		return( rc );
 
+#if USE_VAT
 	VAT_CalcMD5( un->url, strlen( un->url ), md5 );
+#else
+	/* VAT not available - use simple hash instead of MD5 */
+	{
+		ULONG hash = 0;
+		char *p = un->url;
+		while( *p )
+			hash = (hash * 31) + *p++;
+		memset( md5, 0, 16 );
+		md5[0] = (hash >> 24) & 0xff;
+		md5[1] = (hash >> 16) & 0xff;
+		md5[2] = (hash >> 8) & 0xff;
+		md5[3] = hash & 0xff;
+	}
+#endif
 	oldcd = chcache( md5[ 0 ] );
 	makepname( md5, pname );
 
@@ -507,7 +522,22 @@ void un_memtocache( struct unode *un )
 
 	memset( &ch, 0, sizeof( ch ) );
 
+#if USE_VAT
 	VAT_CalcMD5( un->url, strlen( un->url ), md5 );
+#else
+	/* VAT not available - use simple hash instead of MD5 */
+	{
+		ULONG hash = 0;
+		char *p = un->url;
+		while( *p )
+			hash = (hash * 31) + *p++;
+		memset( md5, 0, 16 );
+		md5[0] = (hash >> 24) & 0xff;
+		md5[1] = (hash >> 16) & 0xff;
+		md5[2] = (hash >> 8) & 0xff;
+		md5[3] = hash & 0xff;
+	}
+#endif
 	oldcd = chcache( md5[ 0 ] );
 	makepname( md5, pname );
 

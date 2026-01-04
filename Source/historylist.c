@@ -22,7 +22,7 @@
  * - Handles the history of the URLs. Supports adding of entries and
  *   easy getting of the current/previous/next entry. Handles framesets gracefully (soon, actually)
  *
- * © 1999-2003 by VaporWare CVS team <ibcvs@vapor.com>
+ * ï¿½ 1999-2003 by VaporWare CVS team <ibcvs@vapor.com>
  * All rights reserved
  *
  * Started by David Gerber <zapek@vapor.com> on 13-10-1999 after saying:

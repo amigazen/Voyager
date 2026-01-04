@@ -1,6 +1,6 @@
 # Makefile for Voyager
 #
-# © 1999-2001 VaporWare CVS team <ibcvs@vapor.com>
+# ï¿½ 1999-2001 VaporWare CVS team <ibcvs@vapor.com>
 # All rights reserved
 #
 # $Id: makefile,v 1.150 2004/11/16 16:01:15 zapek Exp $
@@ -82,7 +82,7 @@ HOSTAS = asm
 CROSSAS = asm
 HOSTLINK = slink
 CROSSLINK = slink
-SCOPTS = ../../SCOPTIONS
+SCOPTS = SCOPTIONS
 CATMAKER = catmaker
 
 OBJS = $(COBJS) $(COBJS_NODEP) $(ASMOBJS) $(PLATFORMOBJS) $(AMIGAOBJS)
@@ -90,7 +90,7 @@ OBJS = $(COBJS) $(COBJS_NODEP) $(ASMOBJS) $(PLATFORMOBJS) $(AMIGAOBJS)
 CPU-TYPES = 68020
 
 # Includes are also in SCOPTIONS for SAS/C
-INCLUDES = -I/include -I. -I.. -I../vat -I../include -I../libmath64 -I/netinclude/ -Iimgdecode -Ipluginapi -Iaboutstuff
+INCLUDES = -I/include -I. -I.. -I./vat -I./include -I./libmath64 -I/netinclude/ -Iimgdecode -Ipluginapi -Iaboutstuff
 DEPINCLUDES = $(INCLUDES)
 
 # Since every serious Amiga programmer runs under
@@ -220,7 +220,6 @@ build:
 			echo ""; \
 			mkdir -p $(BUILDDIR)/$$i; \
 			cd $(BUILDDIR)/$$i; \
-			copy //SCOPTIONS SCOPTIONS; \
 			$(MAKE) -f ../../$(MAKEFILENAME) flat -I../.. CPU=$$i ) ; done
 
 flat: prebuild_$(CVSUSERNAME) $(VEXE) postbuild_$(CVSUSERNAME)

@@ -47,11 +47,13 @@
 #include <proto/keymap.h>
 #include <proto/commodities.h>
 #include <proto/input.h>
+#if USE_WBSTART
 #include <proto/wbstart.h>
+#endif
 #include <proto/battclock.h>
 #if USE_CGX
 #include <cybergraphx/cybergraphics.h>
-//#include <proto/cybergraphics>
+#include <proto/cybergraphics.h>
 #endif /* USE_CGX */
 
 /*
@@ -67,12 +69,22 @@
 #include <clib/alib_protos.h>
 
 /* _DCC -- Hack to get MUIC_xxx defines as extern char[] */
+#ifdef __GNUC__
 #define _DCC
 extern struct Library *MUIMasterBase;
 #include "//morphos/mui/muimaster_protos.h"
 #include "//morphos/mui/muimaster_pragmas.h"
 #include "//morphos/mui/mui.h"
 #undef _DCC
+#elif defined(__SASC)
+/* SAS/C - use includestuff MUI headers */
+#define _DCC
+extern struct Library *MUIMasterBase;
+#include <clib/muimaster_protos.h>
+#include <pragmas/muimaster_pragmas.h>
+#include <libraries/mui.h>
+#undef _DCC
+#endif
 
 #include <workbench/workbench.h>
 #include <workbench/startup.h>

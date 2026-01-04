@@ -23,12 +23,8 @@
  */
 
 #if USE_TEAROFF
-#ifdef __MORPHOS__
 #include <mui/TearOffBay_mcc.h>
 #include <mui/tearoffpanel_mcc.h>
-#else
-#include <tearoff/TearOffBay_mcc.h>
-#include <tearoff/tearoffpanel_mcc.h>
 #endif /* !__MORPHOS__ */
 
 /*

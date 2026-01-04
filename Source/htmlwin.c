@@ -48,7 +48,7 @@
 #include "init.h"
 #include "rexx.h"
 
-#include "keyimages.h"
+/* keyimages.h removed - keyfile/copy protection no longer used */
 
 #include "mybrush.h"
 #include "historylist.h"

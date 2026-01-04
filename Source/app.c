@@ -21,7 +21,7 @@
  * ---------
  * - ..
  *
- * © 1999-2003 VaporWare CVS team <ibcvs@vapor.com>
+ * ï¿½ 1999-2003 VaporWare CVS team <ibcvs@vapor.com>
  * All rights reserved
  *
  * $Id: app.c,v 1.103 2003/11/21 07:48:49 zapek Exp $
@@ -42,7 +42,7 @@
 #include "htmlwin.h"
 #include "htmlclasses.h"
 #include <proto/vimgdecode.h>
-#include "nagwin.h"
+/* nagwin.h removed - registration nag window no longer used */
 #include "mui_func.h"
 #include "prefs.h"
 #include "methodstack.h"

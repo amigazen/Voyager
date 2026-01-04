@@ -29,6 +29,9 @@
 #include <exec/memory.h>
 #include <exec/interrupts.h>
 #include <proto/exec.h>
+#ifdef __SASC
+#include <proto/utility.h>
+#endif
 #endif
 
 /* private */
@@ -45,7 +48,7 @@
 #include "time_func.h"
 #include "file.h"
 #include "mime.h"
-#include "keyparse.h"
+/* keyparse.h removed - keyfile/copy protection no longer used */
 #include "mui_func.h"
 #include "autoproxy.h"
 #include <proto/vimgdecode.h>
@@ -355,12 +358,14 @@ struct Library *SocketBase;
 #if USE_SSL
 struct Library *VSSLBase;
 #endif /* USE_SSL */
+/* MiamiSSL deprecated - commented out
 #if USE_MIAMI
 struct Library *MiamiBase;
 #if USE_SSL
 struct Library *MiamiSSLBase;
-#endif /* USE_SSL */
-#endif /* USE_MIAMI */
+#endif
+#endif
+*/
 #else /* !MBX */
 NETBASE;
 #endif /* MBX */
@@ -385,9 +390,11 @@ static int opennet( void )
 		if( SocketBase )
 		{
 			netopen = 1;
+/* MiamiSSL deprecated - commented out
 #if USE_MIAMI
 			MiamiBase = OpenLibrary( "miami.library", 5 );
-#endif /* USE_MIAMI */
+#endif
+*/
 		}
 #else /* !MBX */
 		NetBase = (NetData_p) OpenModule( NETNAME, NETVERSION );
@@ -414,6 +421,7 @@ int openssl( void )
 	VSSLBase = OpenLibrary( "PROGDIR:Plugins/voyager_ssl.vlib", 8 );
 	if( !VSSLBase )
 	{
+/* MiamiSSL deprecated - commented out
 #if USE_MIAMI
 		if( MiamiBase && MiamiBase->lib_Version >= 7 )
 			MiamiSSLBase = MiamiOpenSSL( 0 );
@@ -421,8 +429,9 @@ int openssl( void )
 			return( FALSE );
 		ssl_ctx = SSL_CTX_new();
 		if( !ssl_ctx )
-#endif /* USE_MIAMI */
-			return( FALSE );
+#endif
+*/
+		return( FALSE );
 	}
 	else
 #endif
@@ -464,20 +473,24 @@ void closessl( void )
 		if( VSSLBase )
 #endif
 			VSSL_Free_CTX( ssl_ctx );
+/* MiamiSSL deprecated - commented out
 #if USE_MIAMI
 		else
 			SSL_CTX_free( ssl_ctx );
 #endif
+*/
 		ssl_ctx = NULL;
 	}
 #ifndef MBX
 	CloseLibrary( VSSLBase );
 	VSSLBase = NULL;
 #endif
+/* MiamiSSL deprecated - commented out
 #if USE_MIAMI
 	CloseLibrary( MiamiSSLBase );
 	MiamiSSLBase = NULL;
-#endif /* USE_MIAMI */
+#endif
+*/
 }
 #endif /* USE_SSL && USE_NET */
 
@@ -492,10 +505,12 @@ void un_netclose( struct unode *un )
 		if( VSSLBase )
 #endif
 			VSSL_Close( un->sslh );
+/* MiamiSSL deprecated - commented out
 #if USE_MIAMI
 		else
 			SSL_free( un->sslh );
 #endif
+*/
 		un->sslh = NULL;
 	}
 #endif /* USE_SSL */
@@ -729,7 +744,7 @@ static void addstream( struct nstream *ns )
 		{
 			if( p[ 1 ] == '{' )
 			{
-				if( strstr( p, "}¿" ) )
+				if( strstr( p, "}ï¿½" ) )
 					*p = 0;
 			}
 		}
@@ -747,7 +762,7 @@ static void addstream( struct nstream *ns )
 			p = db;
 			while( isdigit( *p ) )
 				p++;
-			if( !strcmp( p, "}¿" ) )
+			if( !strcmp( p, "}ï¿½" ) )
 			{
 				un->postid = atoi( db );
 				db[ -2 ] = 0;
@@ -934,10 +949,16 @@ void STDARGS pushfmt( struct unode *un, char *fmt, ... )
 {
 	char buffer[ 2048 ];
 	va_list va;
+	LONG len;
 
 	va_start( va, fmt );
 
+#ifdef __SASC
+	/* VSNPrintf takes va_list as data stream pointer for RawDoFmt */
+	len = VSNPrintf( buffer, sizeof(buffer), (const STRPTR)fmt, (APTR)va );
+#else
 	vsnprintf( buffer, sizeof(buffer), (const STRPTR)fmt, (APTR)va );
+#endif
 	va_end( va );
 	pushdata( un, buffer, strlen( buffer ) );
 }
@@ -975,7 +996,11 @@ void makeneterror( struct unode *un, char *str, int err )
 
 	errstr = dummy[ 1 ];
 	un->errorcode = err;
+#ifdef __SASC
+	SNPrintf( un->errorstring, sizeof( un->errorstring ), str, err, errstr ? errstr : "" );
+#else
 	snprintf( un->errorstring, sizeof( un->errorstring ), str, err, errstr ? errstr : "" );
+#endif
 
 	puterror( LT_NET, LL_ERROR, un->errorcode, un->url, un->errorstring );
 	sur_gauge_clear( un );
@@ -1289,9 +1314,17 @@ static void un_setup_file( struct unode *un )
 filerr:
 	// file error!
 	Fault( IoErr(), NULL, error, sizeof( error ) );
+#ifdef __SASC
+	SNPrintf( un->errorstring, sizeof(un->errorstring), GS( NWM_ERROR_FILEOPENFAILED ), path, IoErr(), error );
+#else
 	snprintf( un->errorstring, sizeof(un->errorstring), GS( NWM_ERROR_FILEOPENFAILED ), path, IoErr(), error );
+#endif
+#else
+#ifdef __SASC
+	SNPrintf( un->errorstring, sizeof(un->errorstring), "Can't open file %s", path );
 #else
 	snprintf( un->errorstring, sizeof(un->errorstring), "Can't open file %s", path );
+#endif
 #endif
 
 	un->errorcode = -4;
@@ -1307,12 +1340,19 @@ static char *ip2a( ULONG ip )
 {
 	static char ipabuff[ 32 ];
 
+#ifdef __SASC
+	SNPrintf( ipabuff, sizeof(ipabuff), "%lu.%lu.%lu.%lu",
+		( ip >> 24 ) ,
+		( ip >> 16 ) & 0xff,
+		( ip >> 8 ) & 0xff,
+		ip & 0xff );
+#else
 	sprintf( ipabuff, "%lu.%lu.%lu.%lu",
 		( ip >> 24 ) ,
 		( ip >> 16 ) & 0xff,
 		( ip >> 8 ) & 0xff,
-		ip & 0xff
-	);
+		ip & 0xff );
+#endif
 	return( ipabuff );
 }
 
@@ -1925,20 +1965,32 @@ static void un_setup( struct unode *un )
 				extern struct Library *VIDBase;
 
 #if USE_NET
-				#if USE_KEYFILES
+				/* Keyfile registration info removed - copy protection no longer used */
+				/* USE_KEYFILES - keyfile/copy protection removed */
+				/* Disabled keyfile code removed - using simple version string instead */
+				#if 0 /* disabled */
 				if( getserial() != ~0 )
 				{
+#ifdef __SASC
+					SNPrintf( bf2, sizeof(bf2), "Registered to %s [%s]", getowner(), getserialtext() );
+#else
 					sprintf( bf2, "Registered to %s [%s]", getowner(), getserialtext() );
+#endif
 				}
 				else
-					strcpy( bf2, "· Unregistered Demo Copy ·" );
+					strcpy( bf2, "ï¿½ Unregistered Demo Copy ï¿½" );
 				#else
 				#ifdef __MORPHOS__
-				strcpy( bf2, "· MorphOS licensed version ·" );
+				strcpy( bf2, "ï¿½ MorphOS licensed version ï¿½" );
 				#endif
+				#endif /* disabled keyfile code */
+				#ifdef __MORPHOS__
+				strcpy( bf2, " MorphOS licensed version" );
+				#else
+				strcpy( bf2, "Voyager" );
 				#endif
 #else /* USE_NET */
-				strcpy( bf2, "· Freely distributable NoNet version ·" );
+				strcpy( bf2, "ï¿½ Freely distributable NoNet version ï¿½" );
 #endif /* USE_NET */
 
 				data = VABOUT_GetAboutPtr( LVERTAG, bf2, VIDBase->lib_IdString );
@@ -1974,7 +2026,11 @@ static void un_setup( struct unode *un )
 		}
 		else
 		{
+#ifdef __SASC
+			SNPrintf( un->errorstring, sizeof(un->errorstring), "Not in the cache" /*, purl.scheme*/ );
+#else
 			sprintf( un->errorstring, "Not in the cache" /*, purl.scheme*/ );
+#endif
 			un->errorcode = -1;
 			un->state = UNS_FAILED;
 			makehtmlerror( un );
@@ -1983,7 +2039,11 @@ static void un_setup( struct unode *un )
 	else if( !strcmp( purl.scheme, "https" ) ) /* https: */
 	{
 #ifdef ISSPECIALDEMO
+#ifdef __SASC
+		SNPrintf( un->errorstring, sizeof(un->errorstring), "Protocol %s not available in this special version.", purl.scheme );
+#else
 		sprintf( un->errorstring, "Protocol %s not available in this special version.", purl.scheme );
+#endif
 		un->errorcode = -1;
 		un->state = UNS_FAILED;
 		makehtmlerror( un );
@@ -2010,7 +2070,11 @@ static void un_setup( struct unode *un )
 		}
 		else
 		{
+#ifdef __SASC
+			SNPrintf( un->errorstring, sizeof(un->errorstring), "Not in the cache" /*, purl.scheme*/ );
+#else
 			sprintf( un->errorstring, "Not in the cache" /*, purl.scheme*/ );
+#endif
 			un->errorcode = -1;
 			un->state = UNS_FAILED;
 			makehtmlerror( un );
@@ -2020,7 +2084,11 @@ static void un_setup( struct unode *un )
 	else if( !strcmp( purl.scheme, "ftp" ) ) /* ftp: */
 	{
 #ifdef ISSPECIALDEMO
+#ifdef __SASC
+		SNPrintf( un->errorstring, sizeof(un->errorstring), "Protocol %s not available in this special version.", purl.scheme );
+#else
 		sprintf( un->errorstring, "Protocol %s not available in this special version.", purl.scheme );
+#endif
 		un->errorcode = -1;
 		un->state = UNS_FAILED;
 		makehtmlerror( un );
@@ -2035,7 +2103,11 @@ static void un_setup( struct unode *un )
 		}
 		else
 		{
+#ifdef __SASC
+			SNPrintf( un->errorstring, sizeof(un->errorstring), "Not in the cache" /*, purl.scheme*/ );
+#else
 			sprintf( un->errorstring, "Not in the cache" /*, purl.scheme*/ );
+#endif
 			un->errorcode = -1;
 			un->state = UNS_FAILED;
 			makehtmlerror( un );
@@ -2055,7 +2127,11 @@ static void un_setup( struct unode *un )
 			un_setup_http( un, proxy_host, proxy_port );
 		else
 		{
+#ifdef __SASC
+			SNPrintf( un->errorstring, sizeof(un->errorstring), "Not in the cache" /*, purl.scheme*/ );
+#else
 			sprintf( un->errorstring, "Not in the cache" /*, purl.scheme*/ );
+#endif
 			un->errorcode = -1;
 			un->state = UNS_FAILED;
 			makehtmlerror( un );
@@ -2083,7 +2159,11 @@ static void un_setup( struct unode *un )
 	else
 	{
 		// unknown method
+#ifdef __SASC
+		SNPrintf( un->errorstring, sizeof(un->errorstring), GS( NWM_ERROR_UNKNOWNMETHOD ), purl.scheme );
+#else
 		snprintf( un->errorstring, sizeof(un->errorstring), GS( NWM_ERROR_UNKNOWNMETHOD ), purl.scheme );
+#endif
 		un->errorcode = -1;
 		un->state = UNS_FAILED;
 		makehtmlerror( un );
@@ -2192,7 +2272,11 @@ static void un_dnsdone( struct unode *un )
 
 		DL( DEBUG_WARNING, db_net, bug("dnsfailed(%s)\n", un->url ));
 
+#ifdef __SASC
+		SNPrintf( buff, sizeof(buff), GS( NWM_ERROR_NODNS ), un->dnsmsg.name );
+#else
 		sprintf( buff, GS( NWM_ERROR_NODNS ), un->dnsmsg.name );
+#endif
 		makeneterror( un, buff, -1 );
 		un->errorcode = -2;
 		un->doinform = TRUE;
@@ -2233,10 +2317,12 @@ int uns_write( struct unode *un, STRPTR data, int len )
 			if( VSSLBase )
 #endif
 				rc = VSSL_Write( un->sslh, data, len );
+/* MiamiSSL deprecated - commented out
 #if USE_MIAMI
 			else
 				rc = SSL_write( un->sslh, data, len );
 #endif
+*/
 		}
 		else
 #endif /* USE_SSL */
@@ -2268,10 +2354,12 @@ int uns_read( struct unode *un, char *buffer, int maxlen )
 		if( VSSLBase )
 #endif
 			rc = VSSL_Read( un->sslh, buffer, maxlen );
+/* MiamiSSL deprecated - commented out
 #if USE_MIAMI
 		else
 			rc = SSL_read( un->sslh, buffer, maxlen );
 #endif
+*/
 	}
 	else
 #endif /* USE_SSL */
@@ -3091,13 +3179,15 @@ static void SAVEDS nethandler( void )
 			}
 #endif
 
+/* MiamiSSL deprecated - commented out
 #if USE_MIAMI
 			if (MiamiBase)
 			{
 				CloseLibrary( MiamiBase );
 				MiamiBase = NULL;
 			}
-#endif /* USE_MIAMI */
+#endif
+*/
 			netopen = FALSE;
 #endif /* USE_NET */
 			netclose_requested = 0;
@@ -3176,9 +3266,11 @@ static void SAVEDS nethandler( void )
 #else
 	CloseModule( &NetBase->net_Module );
 #endif
+/* MiamiSSL deprecated - commented out
 #if USE_MIAMI
 	CloseLibrary( MiamiBase );
-#endif /* USE_MIAMI */
+#endif
+*/
 
 	DeleteMsgPort( dnsreply );
 #endif /* USE_NET */
@@ -3202,7 +3294,11 @@ int init_netprocess( void )
 #if USE_NET
 		for( c = 0; c < DNSTASKS; c++ )
 		{
+#ifdef __SASC
+			SNPrintf( name, sizeof(name), "V's DNS Server %d", c + 1 );
+#else
 			sprintf( name, "V's DNS Server %d", c + 1 );
+#endif
 
 			dnsproc[ c ] = CreateNewProcTags(
 				NP_Entry, dnshandler,
@@ -3231,7 +3327,11 @@ int init_netprocess( void )
 #if USE_CONNECT_PROC
 		for( c = 0; c < MAXNETPROC; c++ )
 		{
+#ifdef __SASC
+			SNPrintf( name, sizeof(name), "V's connect() Handler %02d", c + 1 );
+#else
 			sprintf( name, "V's connect() Handler %02d", c + 1 );
+#endif
 			connectproc[ c ] = CreateNewProcTags(
 				NP_Entry, connecthandler,
 				NP_Name, name,

@@ -24,7 +24,7 @@
  * - Select debugging output. Authors are encouraged to put debug output as much as possible
  *   in their sources. It's easy and the betatesters can give very usefull outputs.
  *
- * © 2000 by VaporWare CVS team <ibcvs@vapor.com>
+ * ï¿½ 2000 by VaporWare CVS team <ibcvs@vapor.com>
  * All rights reserved
  *
  * How to use:
@@ -37,10 +37,27 @@
  *
  */
 
-#ifdef VDEBUG
+/* SAS/C - completely disable all debug functionality */
+#ifdef __SASC
+#define DB(x)
+#define DBL(lvl,x)
+#define DBD(x)
+#define D(class,x)
+#define DL(lvl,class,x)
+#define bug
+#define ALERT(m)
+#define ASSERT(x)
+#define DEBUG_ERROR 0
+#define DEBUG_WARNING 1
+#define DEBUG_IMPORTANT 2
+#define DEBUG_INFO 3
+#define DEBUG_CHATTY 4
+#elif defined(VDEBUG)
 
 #ifdef __GNUC__ /* GCC */
 #define __FUNC__ __FUNCTION__
+#else
+#define __FUNC__ ""
 #endif
 
 #ifdef AMIGAOS
@@ -100,11 +117,21 @@ void dprintf(char *, ... );
  *
  * Only outputted if db_level is >= the level given to DL
  */
+#ifdef __GNUC__
 #if (VDEBUG == 1)
 #define DL(lvl,class,x) if ( class && db_level >= lvl ) { ##x; }
 #endif
 #if (VDEBUG == 2)
 #define DL(lvl,class,x) if ( db_level >= lvl ) { ##x; }
+#endif
+#else
+/* SAS/C and other compilers - token pasting not supported, use direct call */
+#if (VDEBUG == 1)
+#define DL(lvl,class,x) if ( class && db_level >= lvl ) { x; }
+#endif
+#if (VDEBUG == 2)
+#define DL(lvl,class,x) if ( db_level >= lvl ) { x; }
+#endif
 #endif
 
 
@@ -113,11 +140,21 @@ void dprintf(char *, ... );
  *
  * Example: D(db_html,bug("you suck HTML %ld times\n", num));
  */
+#ifdef __GNUC__
 #if (VDEBUG == 1)
 #define D(class,x) if (class) { ##x; }
 #endif
 #if (VDEBUG == 2)
 #define D(class,x) if (1) { ##x; }
+#endif
+#else
+/* SAS/C and other compilers - token pasting not supported, use direct call */
+#if (VDEBUG == 1)
+#define D(class,x) if (class) { x; }
+#endif
+#if (VDEBUG == 2)
+#define D(class,x) if (1) { x; }
+#endif
 #endif
 
 #define bug kprintf(__FILE__ "[%4ld]/" __FUNC__ "() : ",__LINE__); kprintf
@@ -161,7 +198,10 @@ extern char STDARGS kgetchar( void );
 
 #define ASSERT(x) { if (!x) { kprintf("*** assertion failed at: " __FILE__ "[%4ld]/" __FUNC__ "()\n",__LINE__); } }
 
+/* Function declaration only needed when debugging is enabled */
+#if defined(VDEBUG) && VDEBUG > 0
 void dump_image(UBYTE *p, ULONG size, ULONG width);
+#endif
 
 /*
  * Special debugging features (enabled from config.h)
@@ -218,8 +258,7 @@ extern int db_misc;
 
 extern int db_level;
 
-
-#else
+#else /* !VDEBUG and !__SASC */
 #define DB(x)
 #define DBL(lvl,x)
 #define DBD(x)
@@ -228,6 +267,11 @@ extern int db_level;
 #define bug
 #define ALERT(m)
 #define ASSERT(x)
-#endif /* VDEBUG */
+#define DEBUG_ERROR 0
+#define DEBUG_WARNING 1
+#define DEBUG_IMPORTANT 2
+#define DEBUG_INFO 3
+#define DEBUG_CHATTY 4
+#endif /* VDEBUG / __SASC */
 
 #endif /* VOYAGER_DEBUG_H */

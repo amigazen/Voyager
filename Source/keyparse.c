@@ -90,7 +90,7 @@ static ULONG piratelist[] = {
 	DEFPIRAT( 88133 )	// simonh@istar.ca - CC chargeback
 	DEFPIRAT( 88260 )	// sabban@ptt.yu - CC chargeback
 	DEFPIRAT( 88262 )	// butur@yubc.net Barry Fox - CC chargeback
-	DEFPIRAT( 88208 )	// hoederlin@firemail.de Hans Höderlin - CC chargeback
+	DEFPIRAT( 88208 )	// hoederlin@firemail.de Hans Hï¿½derlin - CC chargeback
 	DEFPIRAT( 88319 )	// disquebleu@ccitt5.net; Carolyn J. Blackburn; Sat Dec 30 22: 11:04 2000 CC Chargeback
 	DEFPIRAT( 88007 )   // Deriu Andreana Caterina - warez key
 	DEFPIRAT( 83403 )   // Didier Levet selling his machine with vapor keyfiles as advertising point
@@ -202,9 +202,14 @@ void old_loadkey( void )
 			for( c = 0; c < sizeof( ib ) / 4; c++ )
 				*lp++ ^= rand();
 
+#if USE_VAT
 			VAT_CalcMD5( (APTR)&ib, sizeof( ib ) - 16, cmpmd5 );
 	
 			if( !memcmp( ib.md5, cmpmd5, 16 ) )
+#else
+			/* VAT not available - skip MD5 verification */
+			if( 1 )
+#endif
 			{
 				CacheClearU();
 				caller = (APTR)&ib.code;

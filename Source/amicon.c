@@ -200,7 +200,7 @@ DECGET
 	}
 	else if( msg->opg_AttrID == MA_DropObject_Name )
 	{
-		*msg->opg_Storage = (ULONG)"About V³";
+		*msg->opg_Storage = (ULONG)"About Vï¿½";
 		return( TRUE );
 	}
 	return( DOSUPER );

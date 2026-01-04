@@ -21,7 +21,7 @@
  * ------------------------
  * - Displays a list with authentications
  *
- * © 1999 VaporWare CVS team <ibcvs@vapor.com>
+ * ï¿½ 1999 VaporWare CVS team <ibcvs@vapor.com>
  * All rights reserved
  *
  * $Id: authbrowser.c,v 1.22 2003/07/06 16:51:32 olli Exp $

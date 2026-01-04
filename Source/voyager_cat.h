@@ -827,3 +827,16 @@
 #define MSG_NO 2
 #define MSG_OK 0
 #define NUMCATSTRING 828
+
+/* GS/GSI macros for non-MBX builds */
+#ifndef MBX
+#ifdef __SASC
+extern struct Locale *CatalogBase;
+#define GS(x) GetCatalogStr(CatalogBase, MSG_##x, (STRPTR)"")
+#define GSI(x) GetCatalogStr(CatalogBase, x, (STRPTR)"")
+#else
+/* For GCC/MorphOS - may need different implementation */
+#define GS(x) GetCatalogStr(CatalogBase, MSG_##x, (STRPTR)"")
+#define GSI(x) GetCatalogStr(CatalogBase, x, (STRPTR)"")
+#endif
+#endif

@@ -1,0 +1,555 @@
+# SMakefile for Voyager
+#
+# $Id: smakefile,v 1.151 2004/11/16 16:01:15 zapek Exp $
+#
+
+# Objects
+COBJS = plugins.o parse.o urlparser.o network.o init.o \
+	amicon.o autoproxy.o gauge.o history.o \
+	urlstring.o frameborder.o jscript.o printrequest.o \
+	searchrequest.o fastlinkbutton.o fastlinkgroup.o ddstring.o \
+	sendmailwin.o frame.o prefs.o \
+	sourceview.o colortable.o netinfo.o \
+	authenticate.o cookies.o certificates.o http.o \
+	ledclass.o mime.o smartlabel.o \
+	docinfowin.o ftp.o cache.o dns.o imgstub.o \
+	fonttestclass.o fontcache.o main.o \
+	cookiebrowser.o authbrowser.o historylist.o \
+	js_object.o js_navigator.o js_real.o js_string.o js_bool.o \
+	js_location.o js_screen.o js_link.o js_event.o js_regexp.o \
+	js_objref.o js_array.o js_func.o js_date.o js_plugin.o \
+	js_mimetype.o app.o button.o errorwin.o prunecache.o \
+	js_gc.o js_math.o \
+	prefswin_main.o prefswin_cache.o prefswin_certs.o \
+	prefswin_colors.o prefswin_fastlinks.o prefswin_fonts.o \
+	prefswin_general.o prefswin_hyperlinks.o prefswin_images.o \
+	prefswin_javascript.o prefswin_languages.o prefswin_mailnews.o \
+	prefswin_network.o prefswin_security.o prefswin_spoof.o \
+	prefswin_toolbar.o prefswin_download.o prefswin_list.o debug.o pluginswin.o \
+	pluginswin_list.o lo_anchor.o lo_group.o lo_table.o htmlview.o lo_frameset.o \
+	htmlwin.o layout_main.o layout_parse.o lo_div.o lo_br.o lo_dummy.o lo_form.o \
+	lo_image.o lo_hr.o lo_button.o lo_formbutton.o lo_formtext.o toolbar.o \
+	lo_formhidden.o lo_formcycle.o formpost.o lo_radio.o lo_checkbox.o \
+	lo_formtextfield.o lo_formfile.o lo_map.o lo_area.o lo_li.o locale.o \
+	lo_margin.o lo_embed.o lo_form_option.o \
+	clock.o host_os.o methodstack.o mui_func.o time_func.o update.o \
+	file.o malloc.o win_func.o rexx.o \
+	cssengine.o clip.o \
+	regcomp.o regfree.o regexec.o regerror.o menus.o nlist.o template.o sizegroup.o \
+	sur_gauge.o lineread.o
+
+COBJS_NODEP = voyager_cat.o js_parser.o css_parser.o
+
+ASMOBJS = hash.o sup.o idea68k.o textfit.o
+
+AMIGAOBJS = mybrush.o nagwin.o \
+	executive.o tearoff.o bitmapclone.o textfit2.o \
+	splashwin.o commandclass.o cmanager.o prefswin_contextmenu.o download.o smartreq.o
+
+PLATFORMOBJS = prefsimages.o
+
+OBJ = $(COBJS) $(COBJS_NODEP) $(ASMOBJS) $(PLATFORMOBJS) $(AMIGAOBJS)
+
+V.amigaos: rev.h $(OBJ)
+	slink from lib:c.o $(OBJ) to V.debug noicons addsym sc sd \
+	with lib:utillib.with lib lib:scmieee.lib,vat/vatlib.lib,lib:sc.lib,lib:small.lib,lib:debug.lib,libmath64/libmath64ieee.lib \
+	define _codeid=49 map v.map hsflxo swidth 32 noicons
+	slink v.debug to V.amigaos stripdebug
+
+# C source files - standard compilation
+plugins.o: plugins.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE plugins.c
+
+parse.o: parse.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE parse.c
+
+urlparser.o: urlparser.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE urlparser.c
+
+network.o: network.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE network.c
+
+init.o: init.c
+	sc DEF=AMIGAOS  CODE=FAR CODE=FAR IGN=72 CPU=68020 MATH=IEEE init.c
+
+amicon.o: amicon.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE amicon.c
+
+autoproxy.o: autoproxy.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE autoproxy.c
+
+gauge.o: gauge.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE gauge.c
+
+history.o: history.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE history.c
+
+urlstring.o: urlstring.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE urlstring.c
+
+frameborder.o: frameborder.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE frameborder.c
+
+jscript.o: jscript.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE jscript.c
+
+printrequest.o: printrequest.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE printrequest.c
+
+searchrequest.o: searchrequest.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE searchrequest.c
+
+fastlinkbutton.o: fastlinkbutton.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE fastlinkbutton.c
+
+fastlinkgroup.o: fastlinkgroup.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE fastlinkgroup.c
+
+ddstring.o: ddstring.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE ddstring.c
+
+sendmailwin.o: sendmailwin.c
+	sc DEF=AMIGAOS  CODE=FAR IGN=181 CPU=68020 MATH=IEEE sendmailwin.c
+
+frame.o: frame.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE frame.c
+
+prefs.o: prefs.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE prefs.c
+
+sourceview.o: sourceview.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE sourceview.c
+
+colortable.o: colortable.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE colortable.c
+
+netinfo.o: netinfo.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE netinfo.c
+
+authenticate.o: authenticate.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE authenticate.c
+
+cookies.o: cookies.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE cookies.c
+
+certificates.o: certificates.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE certificates.c
+
+http.o: http.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE http.c
+
+ledclass.o: ledclass.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE ledclass.c
+
+mime.o: mime.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE mime.c
+
+smartlabel.o: smartlabel.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE smartlabel.c
+
+docinfowin.o: docinfowin.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE docinfowin.c
+
+ftp.o: ftp.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE ftp.c
+
+cache.o: cache.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE cache.c
+
+dns.o: dns.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE dns.c
+
+imgstub.o: imgstub.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE imgstub.c
+
+fonttestclass.o: fonttestclass.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE fonttestclass.c
+
+fontcache.o: fontcache.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE fontcache.c
+
+main.o: main.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE main.c
+
+cookiebrowser.o: cookiebrowser.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE cookiebrowser.c
+
+authbrowser.o: authbrowser.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE authbrowser.c
+
+historylist.o: historylist.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE historylist.c
+
+js_object.o: js_object.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE js_object.c
+
+js_navigator.o: js_navigator.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE js_navigator.c
+
+js_real.o: js_real.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE js_real.c
+
+js_string.o: js_string.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE js_string.c
+
+js_bool.o: js_bool.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE js_bool.c
+
+js_location.o: js_location.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE js_location.c
+
+js_screen.o: js_screen.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE js_screen.c
+
+js_link.o: js_link.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE js_link.c
+
+js_event.o: js_event.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE js_event.c
+
+js_regexp.o: js_regexp.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE js_regexp.c
+
+js_objref.o: js_objref.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE js_objref.c
+
+js_array.o: js_array.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE js_array.c
+
+js_func.o: js_func.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE js_func.c
+
+js_date.o: js_date.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE js_date.c
+
+js_plugin.o: js_plugin.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE js_plugin.c
+
+js_mimetype.o: js_mimetype.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE js_mimetype.c
+
+js_gc.o: js_gc.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE js_gc.c
+
+js_math.o: js_math.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE js_math.c
+
+app.o: app.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE app.c
+
+button.o: button.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE button.c
+
+errorwin.o: errorwin.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE errorwin.c
+
+prunecache.o: prunecache.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE prunecache.c
+
+prefswin_main.o: prefswin_main.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE prefswin_main.c
+
+prefswin_cache.o: prefswin_cache.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE prefswin_cache.c
+
+prefswin_certs.o: prefswin_certs.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE prefswin_certs.c
+
+prefswin_colors.o: prefswin_colors.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE prefswin_colors.c
+
+prefswin_fastlinks.o: prefswin_fastlinks.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE prefswin_fastlinks.c
+
+prefswin_fonts.o: prefswin_fonts.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE prefswin_fonts.c
+
+prefswin_general.o: prefswin_general.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE prefswin_general.c
+
+prefswin_hyperlinks.o: prefswin_hyperlinks.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE prefswin_hyperlinks.c
+
+prefswin_images.o: prefswin_images.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE prefswin_images.c
+
+prefswin_javascript.o: prefswin_javascript.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE prefswin_javascript.c
+
+prefswin_languages.o: prefswin_languages.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE prefswin_languages.c
+
+prefswin_mailnews.o: prefswin_mailnews.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE prefswin_mailnews.c
+
+prefswin_network.o: prefswin_network.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE prefswin_network.c
+
+prefswin_security.o: prefswin_security.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE prefswin_security.c
+
+prefswin_spoof.o: prefswin_spoof.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE prefswin_spoof.c
+
+prefswin_toolbar.o: prefswin_toolbar.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE prefswin_toolbar.c
+
+prefswin_download.o: prefswin_download.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE prefswin_download.c
+
+prefswin_list.o: prefswin_list.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE prefswin_list.c
+
+debug.o: debug.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE debug.c
+
+pluginswin.o: pluginswin.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE pluginswin.c
+
+pluginswin_list.o: pluginswin_list.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE pluginswin_list.c
+
+lo_anchor.o: lo_anchor.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE lo_anchor.c
+
+lo_group.o: lo_group.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE lo_group.c
+
+lo_table.o: lo_table.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE lo_table.c
+
+htmlview.o: htmlview.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE htmlview.c
+
+lo_frameset.o: lo_frameset.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE lo_frameset.c
+
+htmlwin.o: htmlwin.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE htmlwin.c
+
+layout_main.o: layout_main.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE layout_main.c
+
+layout_parse.o: layout_parse.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE layout_parse.c
+
+lo_div.o: lo_div.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE lo_div.c
+
+lo_br.o: lo_br.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE lo_br.c
+
+lo_dummy.o: lo_dummy.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE lo_dummy.c
+
+lo_form.o: lo_form.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE lo_form.c
+
+lo_image.o: lo_image.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE lo_image.c
+
+lo_hr.o: lo_hr.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE lo_hr.c
+
+lo_button.o: lo_button.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE lo_button.c
+
+lo_formbutton.o: lo_formbutton.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE lo_formbutton.c
+
+lo_formtext.o: lo_formtext.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE lo_formtext.c
+
+toolbar.o: toolbar.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE toolbar.c
+
+lo_formhidden.o: lo_formhidden.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE lo_formhidden.c
+
+lo_formcycle.o: lo_formcycle.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE lo_formcycle.c
+
+formpost.o: formpost.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE formpost.c
+
+lo_radio.o: lo_radio.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE lo_radio.c
+
+lo_checkbox.o: lo_checkbox.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE lo_checkbox.c
+
+lo_formtextfield.o: lo_formtextfield.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE lo_formtextfield.c
+
+lo_formfile.o: lo_formfile.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE lo_formfile.c
+
+lo_map.o: lo_map.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE lo_map.c
+
+lo_area.o: lo_area.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE lo_area.c
+
+lo_li.o: lo_li.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE lo_li.c
+
+locale.o: locale.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE locale.c
+
+lo_margin.o: lo_margin.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE lo_margin.c
+
+lo_embed.o: lo_embed.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE lo_embed.c
+
+lo_form_option.o: lo_form_option.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE lo_form_option.c
+
+clock.o: clock.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE clock.c
+
+host_os.o: host_os.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE host_os.c
+
+methodstack.o: methodstack.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE methodstack.c
+
+mui_func.o: mui_func.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE mui_func.c
+
+time_func.o: time_func.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE time_func.c
+
+update.o: update.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE update.c
+
+file.o: file.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE file.c
+
+malloc.o: malloc.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE malloc.c
+
+win_func.o: win_func.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE win_func.c
+
+rexx.o: rexx.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE rexx.c
+
+cssengine.o: cssengine.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE cssengine.c
+
+clip.o: clip.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE clip.c
+
+regcomp.o: regcomp.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE regcomp.c
+
+regfree.o: regfree.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE regfree.c
+
+regexec.o: regexec.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE regexec.c
+
+regerror.o: regerror.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE regerror.c
+
+menus.o: menus.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE menus.c
+
+nlist.o: nlist.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE nlist.c
+
+template.o: template.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE template.c
+
+sizegroup.o: sizegroup.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE sizegroup.c
+
+sur_gauge.o: sur_gauge.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE sur_gauge.c
+
+lineread.o: lineread.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE lineread.c
+
+# Auto-generated objects
+voyager_cat.o: voyager_cat.h voyager.cd
+#	catmaker voyager.cd voyager_cat.h
+#	catmaker voyager.cd t:voyager_cat.h
+#	-delete t:voyager_cat.h
+#	asm -ovoyager_cat.o t:cattmp.a
+
+js_parser.o: js.l js.y
+#	flex -B -ojs_scanner.h js.l
+#	bison -ojs_parser.c js.y
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE js_parser.c
+
+css_parser.o: css.l css.y css.h
+#	flex -B -Pcss -ocss_scanner.h css.l
+#	bison -p css -ocss_parser.c css.y
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE css_parser.c
+
+# Assembly files
+# mynexto.o removed - using official NextObject from Intuition instead
+
+hash.o: hash.s
+	sc CPU=68020 hash.s
+
+sup.o: sup.s
+	sc CPU=68020 sup.s
+
+idea68k.o: idea68k.s
+	sc CPU=68020 idea68k.s
+
+textfit.o: textfit.s
+	sc CPU=68020 textfit.s
+
+# Amiga specific objects
+mybrush.o: mybrush.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE mybrush.c
+
+nagwin.o: nagwin.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE nagwin.c
+
+# keyparse.o and readkey.o removed - keyfile/copy protection no longer used
+
+executive.o: executive.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE executive.c
+
+tearoff.o: tearoff.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE tearoff.c
+
+bitmapclone.o: bitmapclone.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE bitmapclone.c
+
+textfit2.o: textfit2.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE textfit2.c
+
+splashwin.o: splashwin.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE splashwin.c
+
+commandclass.o: commandclass.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE commandclass.c
+
+cmanager.o: cmanager.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE cmanager.c
+
+prefswin_contextmenu.o: prefswin_contextmenu.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE prefswin_contextmenu.c
+
+download.o: download.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE download.c
+
+# snprintf.o removed - using SNPrintf from utility.library instead
+
+smartreq.o: smartreq.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE smartreq.c
+
+# Platform objects
+prefsimages.o: prefsimages.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE prefsimages.c
+
+clean:
+	-delete \#?.(o|map|lnk)
+	-delete V.amigaos
+	-delete V.debug
+

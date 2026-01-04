@@ -50,7 +50,7 @@ DECNEW
 
 	obj = DoSuperNew( cl, obj, 
 		MUIA_Window_ScreenTitle, copyright,
-		MUIA_Window_Title, "Voyager · Source view",
+		MUIA_Window_Title, "Voyager ï¿½ Source view",
 		MUIA_Window_ID, MAKE_ID('S','V','I','E'),
 		MUIA_Window_RootObject, VGroup,
 			Child, HGroup,

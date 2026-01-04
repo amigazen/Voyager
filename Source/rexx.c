@@ -1129,7 +1129,11 @@ void execute_command( int type, STRPTR str, ULONG mode, STRPTR obj_url, STRPTR o
 					sprintf( buf, "'%s'", str_parsed );
 					D( db_rexx, bug( "sending message %s\n", buf ) );
 
+#if USE_VAT
 					VAT_SendRXMsg( buf, VREXXPORT, VREXXEXT );
+#else
+					/* VAT not available - can't send Rexx message TO DO reimplement without VAT */
+#endif
 				}
 				else
 #endif
@@ -1173,7 +1177,11 @@ void execute_command( int type, STRPTR str, ULONG mode, STRPTR obj_url, STRPTR o
 
 			case BFUNC_AREXX:
 				D( db_rexx, bug( "executing ARexx script %s\n", str_parsed ) );
+#if USE_VAT
 				VAT_SendRXMsg( str_parsed, VREXXPORT, VREXXEXT );
+#else
+				/* VAT not available - can't send Rexx message */
+#endif
 				break;
 #endif /* !MBX */
 		}

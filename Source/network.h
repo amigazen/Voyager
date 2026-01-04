@@ -39,7 +39,7 @@
 
 #include <netdb.h>
 #include <netinet/in.h>
-#include <amitcp/socketbasetags.h>
+#include <bsdsocket/socketbasetags.h>
 #include <sys/ioctl.h>
 #include <sys/socket.h>
 
@@ -51,14 +51,18 @@
 
 #endif /* USE_NET */
 
+/* MiamiSSL deprecated - commented out
 #if USE_MIAMI
 #include <proto/miami.h>
-#endif /* USE_MIAMI */
+#endif
+*/
 
 #include "vssl.h"
+/* MiamiSSL deprecated - commented out
 #if USE_MIAMI
 #include <miami_ssl.h>
-#endif /* USE_MIAMI */
+#endif
+*/
 
 #include "urlparser.h"
 #include "dns.h"
@@ -255,7 +259,9 @@ extern int useproxyauth;
 
 extern struct SignalSemaphore netpoolsem;
 extern struct Library *VSSLBase;
+/* MiamiSSL deprecated - commented out
 extern struct Library *MiamiSSLBase;
+*/
 extern APTR ssl_ctx;
 extern struct List sslcertlist;
 

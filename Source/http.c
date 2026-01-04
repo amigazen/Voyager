@@ -1109,6 +1109,7 @@ static void un_doprotocol_http_ssl_setup( struct unode *un )
 	{
 		un->sslh = VSSL_Connect( ssl_ctx, un->sock );
 	}
+/* MiamiSSL deprecated - commented out
 #if USE_MIAMI
 	else
 	{
@@ -1121,6 +1122,7 @@ static void un_doprotocol_http_ssl_setup( struct unode *un )
 		}
 	}
 #endif
+*/
 
 	if( !un->sslh )
 	{
@@ -1184,6 +1186,7 @@ ssl_failed:
 		cipher = VSSL_GetCipher( un->sslh );    
 		sslver = VSSL_GetVersion( un->sslh );
 	}
+/* MiamiSSL deprecated - commented out
 #if USE_MIAMI
 	else
 	{
@@ -1191,6 +1194,7 @@ ssl_failed:
 		sslver = "Not implemented in Miami"; //TOFIX !! not available in that version at least..
 	}
 #endif
+*/
 
 	/* copy the cipher and version in the unode */
 	un->sslcipher = StrDupPooled( un->pool, cipher );

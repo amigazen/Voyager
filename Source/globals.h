@@ -21,7 +21,7 @@
 /*
  * Common includes and symbols
  * ---------------------------
- * © 2001 VaporWare Inc. Co. Ltd. Unlimited.
+ * ï¿½ 2001 VaporWare Inc. Co. Ltd. Unlimited.
  *
  * - general symbols
  * - common includes
@@ -115,6 +115,21 @@ extern struct Library *IFFParseBase;
 #define FtellAsync VAT_FtellAsync
 #define UnGetCAsync VAT_UnGetCAsync
 #define GetFilesizeAsync VAT_GetFilesizeAsync
+#else
+/* When USE_VAT=0, use regular DOS file operations (not async) */
+#define OpenAsync Open
+#define CloseAsync Close
+#define ReadAsync Read
+#define WriteAsync Write
+#define ReadCharAsync Read
+#define WriteCharAsync Write
+#define SeekAsync Seek
+#define FGetsAsync FGets
+#define FGetsAsyncNoLF FGets
+#define FPrintfAsync FPrintf
+#define FtellAsync Ftell
+#define UnGetCAsync UnGetC
+#define GetFilesizeAsync GetFileSize
 #endif /* USE_VAT */
 
 extern char version[];
@@ -155,11 +170,7 @@ int stripentity( char *bf, char *name, char *to, int tolen );
 void splitrfcname( char *adr, char *to_real, char *to_addr );
 void mergeurl( char *from, char *add, char *to );
 
-// Assembler stuff
-#ifdef __SASC
-extern APTR ASM myNextObject( __reg( a0, APTR ) );
-#define NextObject(o) myNextObject(o)
-#endif
+// Assembler stuff - removed custom myNextObject, using official NextObject from Intuition
 
 
 /* end of to move somewhere */
