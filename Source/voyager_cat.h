@@ -831,7 +831,7 @@
 /* GS/GSI macros for non-MBX builds */
 #ifndef MBX
 #ifdef __SASC
-extern struct Locale *CatalogBase;
+extern struct Catalog *CatalogBase;
 #define GS(x) GetCatalogStr(CatalogBase, MSG_##x, (STRPTR)"")
 #define GSI(x) GetCatalogStr(CatalogBase, x, (STRPTR)"")
 #else

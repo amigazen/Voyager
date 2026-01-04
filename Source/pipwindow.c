@@ -21,7 +21,7 @@
  * -----------------
  * - ..
  *
- * © 1999-2003 VaporWare CVS team <ibcvs@vapor.com>
+ * ï¿½ 1999-2003 VaporWare CVS team <ibcvs@vapor.com>
  * All rights reserved
  *
  * $Id: pipwindow.c,v 1.7 2003/07/06 16:51:34 olli Exp $
@@ -217,7 +217,7 @@ DECGET
 }
 
 BEGINMTABLE
-DEFCONST
+DECCONST
 DEFGET
 DEFSET
 DEFTMETHOD( Pipwindow_CalculatePosition )

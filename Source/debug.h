@@ -230,8 +230,24 @@ void dump_image(UBYTE *p, ULONG size, ULONG width);
 #define DEBUG_INFO 3
 #define DEBUG_CHATTY 4
 
+#else /* !VDEBUG and !__SASC */
+#define DB(x)
+#define DBL(lvl,x)
+#define DBD(x)
+#define D(class,x)
+#define DL(lvl,class,x)
+#define bug
+#define ALERT(m)
+#define ASSERT(x)
+#define DEBUG_ERROR 0
+#define DEBUG_WARNING 1
+#define DEBUG_IMPORTANT 2
+#define DEBUG_INFO 3
+#define DEBUG_CHATTY 4
+#endif /* VDEBUG / __SASC */
+
 /*
- * Flags
+ * Debug flags - always declared, even when VDEBUG is not defined
  */
 extern int db_auth;
 extern int db_cache;
@@ -253,25 +269,7 @@ extern int db_init;
 extern int db_forceborder;
 extern int db_rexx;
 extern int db_css;
-
 extern int db_misc;
-
 extern int db_level;
-
-#else /* !VDEBUG and !__SASC */
-#define DB(x)
-#define DBL(lvl,x)
-#define DBD(x)
-#define D(class,x)
-#define DL(lvl,class,x)
-#define bug
-#define ALERT(m)
-#define ASSERT(x)
-#define DEBUG_ERROR 0
-#define DEBUG_WARNING 1
-#define DEBUG_IMPORTANT 2
-#define DEBUG_INFO 3
-#define DEBUG_CHATTY 4
-#endif /* VDEBUG / __SASC */
 
 #endif /* VOYAGER_DEBUG_H */

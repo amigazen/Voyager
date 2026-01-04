@@ -40,6 +40,7 @@
 struct Locale *locale;
 struct Catalog *catalog;
 #ifndef MBX
+struct Catalog *CatalogBase;
 #if (INCLUDE_VERSION >= 44) && !defined(__MORPHOS__)
 struct LocaleBase *LocaleBase;
 #else
@@ -80,12 +81,18 @@ int init_locale( void )
 		TAG_DONE
 	);
 
+#ifndef MBX
+	CatalogBase = catalog;
+#endif /* MBX */
+
 	if( catalog )
 	{
+#ifdef MBX
 		int c;
 
 		for( c = 0; c < NUMCATSTRING; c++ )
 			((char**)__stringtable)[ c ] = GetCatalogStr( catalog, c, (char*)__stringtable[ c ] );
+#endif /* MBX */
 	}
 	return( TRUE );
 }

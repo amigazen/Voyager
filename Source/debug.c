@@ -26,37 +26,37 @@
 
 #include "voyager.h"
 
+/* public - always define these, even if VDEBUG is not set */
+int db_auth = 0;
+int db_cache = 0;
+int db_cookie = 0;
+int db_dns = 0;
+int db_docinfowin = 0;
+int db_dlwin = 0;
+int db_ftp = 0;
+int db_history = 0;
+int db_http = 0;
+int db_js = 0;
+int db_net = 0;
+int db_plugin = 0;
+int db_mail = 0;
+int db_cacheprune = 0;
+int db_html = 0;
+int db_gui = 0;
+int db_init = 0;
+int db_forceborder = 0;
+int db_rexx = 0;
+int db_css = 0;
+int db_misc = 0;
+
+int db_level = 1;
+
 #ifdef VDEBUG
 
-/* public */
 #if defined( AMIGAOS ) || defined( __MORPHOS__ )
 #include <devices/inputevent.h>
 #include <proto/exec.h>
 #endif
-
-int db_auth;
-int db_cache;
-int db_cookie;
-int db_dns;
-int db_docinfowin;
-int db_dlwin;
-int db_ftp;
-int db_history;
-int db_http;
-int db_js;
-int db_net;
-int db_plugin;
-int db_mail;
-int db_cacheprune;
-int db_html;
-int db_gui;
-int db_init;
-int db_forceborder;
-int db_rexx;
-int db_css;
-int db_misc;
-
-int db_level = 1;
 
 #ifndef MBX
 #include <proto/input.h>

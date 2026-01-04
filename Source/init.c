@@ -1066,7 +1066,7 @@ int load_diskobj( void )
 			{
 				ULONG id = 0;
 
-#define PREFSFILEID MAKE_ID('V','Y','�',0)
+#define PREFSFILEID MAKE_ID('V','Y','A',0)
 				Read( f, &id, sizeof( id ) );
 				Close( f );
 

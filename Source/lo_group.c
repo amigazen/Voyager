@@ -26,7 +26,7 @@
 
 /* public */
 #if defined( AMIGAOS ) || defined( __MORPHOS__ )
-#include <intuition/extensions.h>
+#include <intuition/pointerclass.h>
 #include <graphics/gfxmacros.h>
 #include <proto/exec.h>
 #include <proto/graphics.h>
@@ -2190,7 +2190,7 @@ DECMMETHOD( HandleEvent )
 
 						if( url )
 						{
-							DoMethod( data->ctx->dom_win, MM_HTMLWin_SetPointer, POINTERTYPE_SELECTLINK );
+							DoMethod( data->ctx->dom_win, MM_HTMLWin_SetPointer, POINTERTYPE_LINK );
 							stccpy( data->last_anchor_url, url, sizeof( data->last_anchor_url ) );
 							sprintf( tmp, "Goto \033b%.240s", url );
 							DoMethod( data->ctx->dom_win, MM_HTMLWin_SetTempStatus, ( ULONG )tmp );
@@ -2212,7 +2212,7 @@ DECMMETHOD( HandleEvent )
 				{
 					if( url && strcmp( data->last_anchor_url, url ) )
 					{
-						DoMethod( data->ctx->dom_win, MM_HTMLWin_SetPointer, POINTERTYPE_SELECTLINK );
+						DoMethod( data->ctx->dom_win, MM_HTMLWin_SetPointer, POINTERTYPE_LINK );
 						sprintf( tmp, "Goto \033b%.240s", url );
 						DoMethod( data->ctx->dom_win, MM_HTMLWin_SetTempStatus, ( ULONG )tmp );
 						stccpy( data->last_anchor_url, url, sizeof( data->last_anchor_url ) );
@@ -2239,7 +2239,7 @@ anchordone:
 				 */
 				if( data->last_anchor )
 				{
-					DoMethod( data->ctx->dom_win, MM_HTMLWin_SetPointer, POINTERTYPE_SELECTLINK );
+					DoMethod( data->ctx->dom_win, MM_HTMLWin_SetPointer, POINTERTYPE_LINK );
 					if( !DoMethod( data->last_anchor, MM_Layout_Anchor_HandleMouseEvent, 2, msg->imsg->MouseX, msg->imsg->MouseY ) )
 					{
 						DoMethod( data->ctx->dom_win, MM_HTMLWin_ResetStatus ); /* XXX: what's the point ?? [zapek] */
@@ -2825,7 +2825,7 @@ DECMMETHOD( Hide )
 }
 
 BEGINMTABLE
-DEFCONST
+DECCONST
 DEFDISPOSE
 DEFGET
 DEFSET

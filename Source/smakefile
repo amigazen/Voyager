@@ -36,7 +36,7 @@ COBJS = plugins.o parse.o urlparser.o network.o init.o \
 	file.o malloc.o win_func.o rexx.o \
 	cssengine.o clip.o \
 	regcomp.o regfree.o regexec.o regerror.o menus.o nlist.o template.o sizegroup.o \
-	sur_gauge.o lineread.o
+	sur_gauge.o lineread.o async.o
 
 COBJS_NODEP = voyager_cat.o js_parser.o css_parser.o
 
@@ -434,6 +434,9 @@ win_func.o: win_func.c
 
 rexx.o: rexx.c
 	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE rexx.c
+
+async.o: async.c
+	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE async.c
 
 cssengine.o: cssengine.c
 	sc DEF=AMIGAOS  CODE=FAR CPU=68020 MATH=IEEE cssengine.c

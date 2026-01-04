@@ -30,7 +30,7 @@
 /* public */
 #if defined( AMIGAOS ) || defined( __MORPHOS__ )
 #include <libraries/asl.h>
-#include <intuition/extensions.h>
+#include <intuition/pointerclass.h>
 #include <proto/exec.h>
 #include <proto/graphics.h>
 #include <proto/layers.h>

@@ -25,7 +25,6 @@
 #if USE_TEAROFF
 #include <mui/TearOffBay_mcc.h>
 #include <mui/tearoffpanel_mcc.h>
-#endif /* !__MORPHOS__ */
 
 /*
  * General
@@ -38,7 +37,6 @@ extern APTR tearoff_dataspace;
  */
 void savetearoff( STRPTR filename );
 void loadtearoff( STRPTR filename );
-
 #endif /* USE_TEAROFF */
 
 #endif /* VOYAGER_TEAROFF_H */

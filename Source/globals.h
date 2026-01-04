@@ -98,10 +98,6 @@ extern struct Library *IFFParseBase;
 /*
  * We still use ASyncIO stuff there...
  */
-#define MODE_READ   0  /* read an existing file                             */
-#define MODE_WRITE  1  /* create a new file, delete existing file if needed */
-#define MODE_APPEND 2  /* append to end of existing file, or create new     */
-#define MODE_SHAREDWRITE  3  /* create a new file, delete existing file if needed */
 #define OpenAsync VAT_OpenAsync
 #define CloseAsync VAT_CloseAsync
 #define ReadAsync VAT_ReadAsync
@@ -116,21 +112,11 @@ extern struct Library *IFFParseBase;
 #define UnGetCAsync VAT_UnGetCAsync
 #define GetFilesizeAsync VAT_GetFilesizeAsync
 #else
-/* When USE_VAT=0, use regular DOS file operations (not async) */
-#define OpenAsync Open
-#define CloseAsync Close
-#define ReadAsync Read
-#define WriteAsync Write
-#define ReadCharAsync Read
-#define WriteCharAsync Write
-#define SeekAsync Seek
-#define FGetsAsync FGets
-#define FGetsAsyncNoLF FGets
-#define FPrintfAsync FPrintf
-#define FtellAsync Ftell
-#define UnGetCAsync UnGetC
-#define GetFilesizeAsync GetFileSize
+/* When USE_VAT=0, use local async implementations */
 #endif /* USE_VAT */
+
+/* Include async.h for MODE_* constants and AsyncFile structure */
+#include "async.h"
 
 extern char version[];
 extern char lversion[];

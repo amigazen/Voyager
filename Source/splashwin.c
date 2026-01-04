@@ -22,7 +22,7 @@
  * - Displays a window with some pictures to make the user happy while
  *   he waits for V to load
  *
- * © 2000 VaporWare CVS team <ibcvs@vapor.com>
+ * ï¿½ 2000 VaporWare CVS team <ibcvs@vapor.com>
  * All rights reserved
  *
  * $Id: splashwin.c,v 1.19 2003/07/06 16:51:34 olli Exp $
@@ -121,7 +121,7 @@ DECCONST
 #endif /* GREX_RELEASE */
 
 				Child, TextObject,
-					MUIA_Text_Contents, "\33c© VaporWare 1995-2002",
+					MUIA_Text_Contents, "\33cï¿½ VaporWare 1995-2002",
 				End,
 
 				Child, VSpace( 0 ),

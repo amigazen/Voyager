@@ -28,7 +28,8 @@
 #if defined( AMIGAOS ) || defined( __MORPHOS__ )
 #include <proto/exec.h>
 #include <exec/memory.h>
-#include "vup/vupdate.h"
+/* vup/vupdate.h - update functionality, may not be available */
+/* #include "vup/vupdate.h" */
 #endif
 
 /* private */
