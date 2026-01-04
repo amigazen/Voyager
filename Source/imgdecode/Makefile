@@ -1,11 +1,11 @@
 # Makefile for the Imgdecoders
 #
-# © 2000 VaporWare CVS team <ibcvs@vapor.com>
+# ï¿½ 2000 VaporWare CVS team <ibcvs@vapor.com>
 # All rights reserved
 # $Id: Makefile,v 1.81 2003/06/22 21:48:58 zapek Exp $ 
 
-CVSUSERS := owagner zapek sircus stuntzi kingguppy neko entity
-CVSUSERNAME = $(strip $(foreach i, $(CVSUSERS), $(findstring $(i), $(shell grep .vapor.com:/home/cvs/cvsroot home:.cvspass))))
+#CVSUSERS := owagner zapek sircus stuntzi kingguppy neko entity
+#CVSUSERNAME = $(strip $(foreach i, $(CVSUSERS), $(findstring $(i), $(shell grep .vapor.com:/home/cvs/cvsroot home:.cvspass))))
 
 #########################################################################
 #
@@ -90,7 +90,7 @@ COBJS += adler32.o c2p_generic.o callbackfunctable.o crc32.o errorreq.o gif.o im
 	pngrutil.o pngset.o pngtrans.o zutil.o
 
 ASMOBJS := c2p.o saveds.o
-AMIGAOBJS := executive.o
+AMIGAOBJS :=
 
 
 #########################################################################
@@ -155,7 +155,7 @@ CCOPTS := DEF=AMIGAOS OBJECTNAME="" DEF=NO_GETENV CPU=$(CPU) MATH=$(MATH)
 LDOPTS = LIBFD $(SOURCE)fd/vimgdecode_lib.fd SC SD NOICONS ADDSYM LIBVERSION `cat env:libver` LIBREVISION `cat env:librev` LIBID "`cat env:libid`" WITH LIB:utillib.with
 
 # For the Amiga we find out if there's a need to run postbuild commands
-CVSUSERNAME = $(strip $(foreach i, $(CVSUSERS), $(findstring $(i), $(shell grep @water.vapor.com:/home/cvs/cvsroot home:.cvspass))))
+# CVSUSERNAME = $(strip $(foreach i, $(CVSUSERS), $(findstring $(i), $(shell grep @water.vapor.com:/home/cvs/cvsroot home:.cvspass))))
 
 endif
 
@@ -203,16 +203,15 @@ build:
 	@echo ""
 	@echo "Imgdecoder build in progress... MOTD: plop"
 	@echo ""
-	@-for i in $(CPU-TYPES); \
-		do (echo ""; \
-			echo -n "Making "; \
-			echo -n $$i; \
-			echo " version ..."; \
-			echo ""; \
-			mkdir -p $(BUILDDIR)/$$i; \
-			cd $(BUILDDIR)/$$i; \
-			cp ../../SCOPTIONS SCOPTIONS; \
-			$(MAKE) -f ../../Makefile all CPU=$$i ) ; done
+	@echo ""
+	@echo -n "Making "
+	@echo -n 68020
+	@echo " version ..."
+	@echo ""
+	@mkdir -p $(BUILDDIR)/68020
+	@cd $(BUILDDIR)/68020; \
+		cp //SCOPTIONS SCOPTIONS; \
+		$(MAKE) -f //Makefile all CPU=68020
 
 ifeq ($(BUILD),AMIGAOS)
 vimgdec_$(LIBPOSTFIX).vlib: $(OBJS)
@@ -404,8 +403,6 @@ endif
 #
 # Amiga specific C files
 #
-executive.o: ../executive.c
-	$(CROSSCC) $(CCOPTS) INCDIR=//// $(DEBUG) $(SOURCE)/executive.c
 
 
 #########################################################################

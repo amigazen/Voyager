@@ -1,0 +1,81 @@
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE adler32.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE c2p_generic.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE callbackfunctable.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE crc32.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE errorreq.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE gif.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE imgdecode.c
+imgdecode.c 4814 Warning 315: Static variable is unreachable "image_shinepen"
+imgdecode.c 4814 Warning 315: Static variable is unreachable "image_shadowpen"
+imgdecode.c 896 Note 306: local function inlined: "findmap"
+imgdecode.c 3509 Note 306: local function inlined: "processnode"
+imgdecode.c 3509 Note 306: local function inlined: "setupnodebytype" from line 3441
+imgdecode.c 3509 Note 306: local function inlined: "init_as_gif" from line 3227
+imgdecode.c 3509 Note 306: local function inlined: "init_as_png" from line 3235
+imgdecode.c 3509 Note 306: local function inlined: "isjfif" from line 3239
+imgdecode.c 3509 Note 306: local function inlined: "init_as_jpeg" from line 3242
+imgdecode.c 3509 Note 306: local function inlined: "procread_jpeg" from line 3467
+imgdecode.c 3509 Note 306: local function inlined: "procread_gif" from line 3472
+imgdecode.c 3509 Note 306: local function inlined: "procread_png" from line 3477
+imgdecode.c 3509 Note 306: local function inlined: "procread_xbm" from line 3482
+imgdecode.c 3991 Note 306: local function inlined: "setupspecials"
+imgdecode.c 4550 Note 306: local function inlined: "init_fs_error_limit"
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE infblock.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE infcodes.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE inffast.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE inflate.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE inftrees.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE infutil.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE jcomapi.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE jdapimin.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE jdapistd.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE jdcoefct.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE jdcolor.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE jddctmgr.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE jdhuff.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE jdinput.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE jdmainct.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE jdmarker.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE jdmaster.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE jdmerge.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE jdphuff.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE jdpostct.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE jdsample.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE jidctflt.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE jidctfst.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE jidctint.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE jidctred.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE jmemmgr.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE jmemnobs.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE jquant1.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE jquant2.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE jutils.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE lib.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE libfunctable.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE libfunctions.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE mimebrushes.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE png.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE pngerror.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE pngmem.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE pngpread.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE pngread.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE pngrio.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE pngrtran.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE pngrutil.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE pngset.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE pngtrans.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE zutil.c
+	sc CPU=68020 c2p.s
+	sc CPU=68020 saveds.s
+	slink LIB lib:scmieee.lib,lib:sc.lib,lib:debug.lib,lib:small.lib FROM lib:libent.o,lib:libinit.o adler32.o c2p_generic.o callbackfunctable.o crc32.o errorreq.o gif.o imgdecode.o infblock.o  	infcodes.o inffast.o inflate.o inftrees.o infutil.o jcomapi.o jdapimin.o jdapistd.o jdcoefct.o jdcolor.o  	jddctmgr.o jdhuff.o jdinput.o jdmainct.o jdmarker.o jdmaster.o jdmerge.o jdphuff.o jdpostct.o jdsample.o  	jidctflt.o jidctfst.o jidctint.o jidctred.o jmemmgr.o jmemnobs.o jquant1.o jquant2.o jutils.o lib.o  	libfunctable.o libfunctions.o mimebrushes.o png.o pngerror.o pngmem.o pngpread.o pngread.o pngrio.o pngrtran.o  	pngrutil.o pngset.o pngtrans.o zutil.o c2p.o saveds.o   	LIBFD fd/vimgdecode_lib.fd SC SD NOICONS ADDSYM LIBVERSION 4 LIBREVISION 5  	LIBID "about_vlib" WITH LIB:utillib.with TO vimgdec_68020.vlib
+Slink - Version 6.58
+Copyright (c) 1988-1995 SAS Institute, Inc.  All Rights Reserved.
+
+[4mUndefined symbols       [0m [4mFirst Referenced[0m
+_CyberGfxBase            File 'imgdecode.o'
+Enter a DEFINE value for _CyberGfxBase (default ___stub): __XCEXIT                 Library 'lib:sc.lib' Module Name '_exit.c'
+Enter a DEFINE value for __XCEXIT (default ___stub): _VATBase                 File 'imgdecode.o'
+Enter a DEFINE value for _VATBase (default ___stub): Error 510: _VATBase symbol - Near Reference to data item not in near data section
+
+  First Reference in Unit imgdecode.c at offset 00000014 in file 'imgdecode.o'
+  To Unit _stub.c at offset 000089a0 in file 'lib:sc.lib'

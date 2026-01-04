@@ -1,0 +1,196 @@
+# SMakefile for Imgdecoders
+#
+# $Id: smakefile,v 1.82 2003/06/22 21:48:58 zapek Exp $
+#
+
+# Objects
+COBJS = adler32.o c2p_generic.o callbackfunctable.o crc32.o errorreq.o gif.o imgdecode.o infblock.o \
+	infcodes.o inffast.o inflate.o inftrees.o infutil.o jcomapi.o jdapimin.o jdapistd.o jdcoefct.o jdcolor.o \
+	jddctmgr.o jdhuff.o jdinput.o jdmainct.o jdmarker.o jdmaster.o jdmerge.o jdphuff.o jdpostct.o jdsample.o \
+	jidctflt.o jidctfst.o jidctint.o jidctred.o jmemmgr.o jmemnobs.o jquant1.o jquant2.o jutils.o lib.o \
+	libfunctable.o libfunctions.o mimebrushes.o png.o pngerror.o pngmem.o pngpread.o pngread.o pngrio.o pngrtran.o \
+	pngrutil.o pngset.o pngtrans.o zutil.o
+
+ASMOBJS = c2p.o saveds.o
+AMIGAOBJS = 
+#AMIGAOBJS = executive.o
+
+OBJ = $(COBJS) $(ASMOBJS) $(AMIGAOBJS)
+
+vimgdec_68020.vlib: $(OBJ)
+	slink LIB lib:scmieee.lib,lib:sc.lib,lib:debug.lib,lib:small.lib FROM lib:libent.o,lib:libinit.o $(OBJ) \
+	LIBFD fd/vimgdecode_lib.fd SC SD NOICONS ADDSYM LIBVERSION 4 LIBREVISION 5 \
+	LIBID "about_vlib" WITH LIB:utillib.with TO vimgdec_68020.vlib
+	-delete vimgdec_68020.vlib.db
+	rename vimgdec_68020.vlib vimgdec_68020.vlib.db
+	slink vimgdec_68020.vlib.db to vimgdec_68020.vlib STRIPDEBUG NOICONS
+
+# C source files
+adler32.o: adler32.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE adler32.c
+
+c2p_generic.o: c2p_generic.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE c2p_generic.c
+
+callbackfunctable.o: callbackfunctable.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE callbackfunctable.c
+
+crc32.o: crc32.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE crc32.c
+
+errorreq.o: errorreq.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE errorreq.c
+
+gif.o: gif.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE gif.c
+
+imgdecode.o: imgdecode.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE imgdecode.c
+
+infblock.o: infblock.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE infblock.c
+
+infcodes.o: infcodes.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE infcodes.c
+
+inffast.o: inffast.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE inffast.c
+
+inflate.o: inflate.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE inflate.c
+
+inftrees.o: inftrees.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE inftrees.c
+
+infutil.o: infutil.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE infutil.c
+
+jcomapi.o: jcomapi.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE jcomapi.c
+
+jdapimin.o: jdapimin.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE jdapimin.c
+
+jdapistd.o: jdapistd.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE jdapistd.c
+
+jdcoefct.o: jdcoefct.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE jdcoefct.c
+
+jdcolor.o: jdcolor.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE jdcolor.c
+
+jddctmgr.o: jddctmgr.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE jddctmgr.c
+
+jdhuff.o: jdhuff.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE jdhuff.c
+
+jdinput.o: jdinput.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE jdinput.c
+
+jdmainct.o: jdmainct.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE jdmainct.c
+
+jdmarker.o: jdmarker.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE jdmarker.c
+
+jdmaster.o: jdmaster.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE jdmaster.c
+
+jdmerge.o: jdmerge.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE jdmerge.c
+
+jdphuff.o: jdphuff.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE jdphuff.c
+
+jdpostct.o: jdpostct.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE jdpostct.c
+
+jdsample.o: jdsample.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE jdsample.c
+
+jidctflt.o: jidctflt.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE jidctflt.c
+
+jidctfst.o: jidctfst.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE jidctfst.c
+
+jidctint.o: jidctint.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE jidctint.c
+
+jidctred.o: jidctred.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE jidctred.c
+
+jmemmgr.o: jmemmgr.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE jmemmgr.c
+
+jmemnobs.o: jmemnobs.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE jmemnobs.c
+
+jquant1.o: jquant1.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE jquant1.c
+
+jquant2.o: jquant2.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE jquant2.c
+
+jutils.o: jutils.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE jutils.c
+
+lib.o: lib.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE lib.c
+
+libfunctable.o: libfunctable.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE libfunctable.c
+
+libfunctions.o: libfunctions.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE libfunctions.c
+
+mimebrushes.o: mimebrushes.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE mimebrushes.c
+
+png.o: png.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE png.c
+
+pngerror.o: pngerror.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE pngerror.c
+
+pngmem.o: pngmem.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE pngmem.c
+
+pngpread.o: pngpread.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE pngpread.c
+
+pngread.o: pngread.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE pngread.c
+
+pngrio.o: pngrio.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE pngrio.c
+
+pngrtran.o: pngrtran.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE pngrtran.c
+
+pngrutil.o: pngrutil.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE pngrutil.c
+
+pngset.o: pngset.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE pngset.c
+
+pngtrans.o: pngtrans.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE pngtrans.c
+
+zutil.o: zutil.c
+	sc DEF=AMIGAOS  DEF=NO_GETENV CPU=68020 MATH=IEEE zutil.c
+
+# Assembly files
+c2p.o: c2p.s
+	sc CPU=68020 c2p.s
+
+saveds.o: saveds.s
+	sc CPU=68020 saveds.s
+
+clean:
+	-delete \#?.(o|map|lnk)
+	-delete vimgdec_68020.vlib
+	-delete vimgdec_68020.vlib.db
+

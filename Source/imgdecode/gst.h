@@ -48,7 +48,7 @@
 
 #include <proto/vat.h>
 
-void __stdargs sprintf( char *to, const char *fmt, ... );
+/* sprintf declaration removed - defined in imgdecode.c to avoid conflict with stdio.h */
 
 #define MAKE_ID(a,b,c,d)	\
 	((ULONG) (a)<<24 | (ULONG) (b)<<16 | (ULONG) (c)<<8 | (ULONG) (d))

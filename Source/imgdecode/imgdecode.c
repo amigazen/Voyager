@@ -43,10 +43,6 @@
 //#include <dos.h>
 #include <errorreq.h>
 
-#if USE_EXECUTIVE
-#include "/executive_protos.h"
-#endif /* USE_EXECUTIVE */
-
 #include "imgcallback.h"
 #include "network_callback.h"
 #include "debug.h"
@@ -60,16 +56,18 @@ extern ASM mystoreds( void );
 extern ASM mygetds( void );
 #endif /* AMIGAOS */
 
-#ifdef __MORPHOS__
 #include <proto/exec.h>
 #include <proto/graphics.h>
 #include <proto/cybergraphics.h>
 #include <proto/dos.h>
 #include <proto/intuition.h>
 #include <strings.h>
-#include <stdio.h>
+#ifdef AMIGAOS
+/* Declare our sprintf replacement before stdio.h to avoid conflict */
+void __stdargs sprintf( char *to, const char *fmt, ... );
+#endif /* AMIGAOS */
 #include <ctype.h>
-#endif
+
 
 
 struct imgcallback *cbt;
@@ -132,6 +130,7 @@ struct imgcallback mcbt;
 
 // make jpeglib happy
 #ifdef AMIGAOS
+/* Define FILE before jpeglib includes stdio.h */
 typedef APTR FILE;
 #endif /* AMIGAOS */
 #undef GLOBAL
@@ -162,7 +161,7 @@ struct UtilityBase *UtilityBase;
 struct Library *UtilityBase;
 #endif
 #if USE_VAT
-struct Library *VATBase;
+extern struct Library *VATBase;
 #endif /* USE_VAT */
 struct GfxBase *GfxBase;
 #endif /* !MBX */
@@ -429,7 +428,6 @@ static void copylines( struct BitMap *bm, int fromline, int toline, int lines, i
 		0
 	); //TOFIX!! find out the minterm
 #else
-	else
 	{
 		int c;
 
@@ -1674,6 +1672,9 @@ redo:
 				for( c = 0; c < rc; c++ )
 				{
 					UBYTE linebuff[ MAXIMAGEWIDTH ];
+					UBYTE *planes[ 8 ];
+					int x;
+					int add;
 
 					//for( d = 0; d < imn->img_x; d++ )
 					//	linebuff[ d ] = imn->currentimf->pens[ jpeg_rowbuffer[ c ][ d ] ];
@@ -1690,12 +1691,10 @@ redo:
 							RECTFMT_LUT8
 						);
 					}
-#endif /* USE_CGX */
 					else
 					{
-						UBYTE *planes[ 8 ];
-						int x;
-						int add = imn->bm->BytesPerRow * ( oldy + c );
+#endif /* USE_CGX */
+						add = imn->bm->BytesPerRow * ( oldy + c );
 
 						for( x = 0; x < 8; x++ )
 							planes[ x ] = imn->bm->Planes[ x ] + add;
@@ -1704,7 +1703,9 @@ redo:
 						if( destscreen )
 							writechunky( linebuff, planes, imn->img_x, destscreen->BitMap.Depth );
 						ReleaseSemaphore( &destscreensem );
+#if USE_CGX
 					}
+#endif /* USE_CGX */
 				}
 			}
 			else
@@ -2148,6 +2149,10 @@ giffailed:
 
 			if( !( features & FTF_TRUECOLOR ) )
 			{
+				UBYTE *planes[ 8 ];
+				int x;
+				int add;
+
 				//for( d = 0; d < imn->local_xs; d++ )
 				//	linebuff[ d ] = imn->currentimf->pens[ jpeg_rowbuffer[ 0 ][ d ] ];
 				if( imn->raw_data )
@@ -2168,11 +2173,9 @@ giffailed:
 					);
 				}
 				else
-#endif /* USE_CGX */
 				{
-					UBYTE *planes[ 8 ];
-					int x;
-					int add = imn->currentimf->bm->BytesPerRow * ( yline );
+#endif /* USE_CGX */
+					add = imn->currentimf->bm->BytesPerRow * ( yline );
 
 					for( x = 0; x < 8; x++ )
 						planes[ x ] = imn->currentimf->bm->Planes[ x ] + add;
@@ -2181,7 +2184,9 @@ giffailed:
 					if( destscreen )
 						writechunky( linebuff, planes, imn->local_xs, destscreen->BitMap.Depth );
 					ReleaseSemaphore( &destscreensem );
+#if USE_CGX
 				}
+#endif /* USE_CGX */
 			}
 			else
 #endif /* !MBX */
@@ -3072,31 +3077,37 @@ static void procread_xbm( struct imgnode *imn )
 #endif /* !MBX */
 //TOFIX!! add CaOS function
 
-#if USE_CGX
-				if( features & FTF_CYBERMAP )
-				{
-					WritePixelArray(
-						jpeg_rowbuffer[ 0 ], 0, 0, width,
-						&rp, 0, y,
-						width, 1,
-						RECTFMT_LUT8
-					);
-				}
-#endif /* USE_CGX */
 #ifndef MBX
-				else
 				{
 					UBYTE *planes[ 8 ];
 					int x;
-					int add = imn->currentimf->bm->BytesPerRow * ( y );
+					int add;
 
-					for( x = 0; x < 8; x++ )
-						planes[ x ] = imn->currentimf->bm->Planes[ x ] + add;
+#if USE_CGX
+					if( features & FTF_CYBERMAP )
+					{
+						WritePixelArray(
+							jpeg_rowbuffer[ 0 ], 0, 0, width,
+							&rp, 0, y,
+							width, 1,
+							RECTFMT_LUT8
+						);
+					}
+					else
+					{
+#endif /* USE_CGX */
+						add = imn->currentimf->bm->BytesPerRow * ( y );
 
-					ObtainSemaphore( &destscreensem );
-					if( destscreen )
-						writechunky( jpeg_rowbuffer[ 0 ], planes, width, destscreen->BitMap.Depth );
-					ReleaseSemaphore( &destscreensem );
+						for( x = 0; x < 8; x++ )
+							planes[ x ] = imn->currentimf->bm->Planes[ x ] + add;
+
+						ObtainSemaphore( &destscreensem );
+						if( destscreen )
+							writechunky( jpeg_rowbuffer[ 0 ], planes, width, destscreen->BitMap.Depth );
+						ReleaseSemaphore( &destscreensem );
+#if USE_CGX
+					}
+#endif /* USE_CGX */
 				}
 #endif /* !MBX */
 			}
@@ -3563,24 +3574,12 @@ static void imghandlerfunc( void )
 {
 	int Done = FALSE;
 	struct imgnode *imn;
-#if USE_EXECUTIVE
-	APTR executivemsg;
-#endif /* USE_EXECUTIVE */
 
 #ifdef AMIGAOS
 	mygetds();
 #endif /* AMIGAOS */
 
 	DBL( DEBUG_INFO, ( "imgdecoder process ready\r\n" ) );
-
-#if USE_EXECUTIVE
-	executivemsg = InitExecutive();
-	if( executivemsg )
-	{
-		SetNice( executivemsg, 15 ); /* TOFIX! should be configurable one day */
-		ExitExecutive( executivemsg );
-	}
-#endif /* USE_EXECUTIVE */
 
 	while( !Done )
 	{
@@ -3634,12 +3633,14 @@ static int ASM memhandlerfunc( __reg( a0,  struct MemHandlerData *mhd ) )
 {
 	int rc = MEM_DID_NOTHING;
 
-#ifdef AMIGAOS
+#ifdef __MORPHOS__
 	putreg( REG_A4, rc );
 	putreg( REG_A6, rc );
+#endif /* __MORPHOS__ */
 
+#ifdef __SASC
 	mygetds();
-#endif /* AMIGAOS */
+#endif /* __SASC */
 
 #ifdef __MORPHOS__
 	struct ExecBase *SysBase = myintdata.SysBase;
@@ -3937,7 +3938,7 @@ int ASM SAVEDS imgdec_setdestscreen(
 	}
 
 #if USE_CGX
-	return( features & FTF_CYBERMAP );
+	return( (int)( features & FTF_CYBERMAP ) );
 #else
 	return( FALSE );
 #endif /* USE_CGX */
@@ -4551,7 +4552,9 @@ int ASM SAVEDS imgdec_libinit(
 		imgproc = CreateNewProcTags(
 			NP_Entry, ( ULONG )imghandlerfunc,
 			NP_Name, ( ULONG )"V's Image Decoder Process",
+#ifdef __MORPHOS__
 			NP_CodeType, CODETYPE_PPC,
+#endif /* __MORPHOS__ */
 			NP_StackSize, 64 * 1024 * 2, /* XXX: fix for 68k */
 			NP_Priority, -1,
 			NP_Input, NULL,
@@ -4723,7 +4726,7 @@ int	lib_init( struct ExecBase *SBase )
 	UtilityBase = VAT_OpenLibraryCode( VATOC_UTIL );
 	GfxBase = (APTR)VAT_OpenLibraryCode( VATOC_GFX );
 #else
-	UtilityBase = ( struct UtilityBase * )OpenLibrary( "utility.library", 0 );
+	UtilityBase = OpenLibrary( "utility.library", 0 );
 	GfxBase = ( struct GfxBase * )OpenLibrary( "graphics.library", 0 );
 #endif
 
