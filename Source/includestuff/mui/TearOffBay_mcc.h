@@ -1,14 +1,20 @@
+#ifdef __GNUC__
 #pragma pack(2)
 #pragma pack(2)
+#endif /* __GNUC__ */
 #ifndef TEAROFFBAY_MCC_H
 #define TEAROFFBAY_MCC_H
 
 #ifndef LIBRARIES_MUI_H
+#ifdef __GNUC__
 #pragma pack()
 #pragma pack()
+#endif /* __GNUC__ */
 #include "libraries/mui.h"
+#ifdef __GNUC__
 #pragma pack(2)
 #pragma pack(2)
+#endif /* __GNUC__ */
 #endif
 
 #define MUIC_TearOffBay "TearOffBay.mcc"
@@ -22,5 +28,7 @@
 
 #endif
 
+#ifdef __GNUC__
 #pragma pack()
 #pragma pack()
+#endif /* __GNUC__ */

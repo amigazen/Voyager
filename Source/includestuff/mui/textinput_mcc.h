@@ -1,12 +1,10 @@
-#pragma pack(2)
-#pragma pack(2)
 /*
 ** Textinput.mcc
 ** -------------
 **
 ** General textual input MUI class
 **
-** (C) 1997-2000 Oliver Wagner <owagner@vapor.com>
+** (C) 1997-2001 Oliver Wagner <owagner@vapor.com>
 ** All Rights Reserved
 **
 */
@@ -15,11 +13,7 @@
 #define TEXTINPUT_MCC_H
 
 #ifndef LIBRARIES_MUI_H
-#pragma pack()
-#pragma pack()
 #include <libraries/mui.h>
-#pragma pack(2)
-#pragma pack(2)
 #endif
 
 /*
@@ -36,8 +30,8 @@
 #define MCC_TI_TAGBASE ((TAG_USER)|((1307<<16)+0x712))
 #define MCC_TI_ID(x) (MCC_TI_TAGBASE+(x))
 
-#define MCC_Textinput_Version 28
-#define MCC_Textinput_Revision 2
+#define MCC_Textinput_Version 29
+#define MCC_Textinput_Revision 1
 
 
 /*
@@ -242,6 +236,8 @@ struct MUIP_Textinput_DoGotoBookmark3 { ULONG MethodID; };
 #define MUIA_Textinput_ProhibitParse MCC_TI_ID(154)         /* V24 isg ULONG */
 #define MUIA_Textinput_NoCopy MCC_TI_ID(155)                /* V26 isg ULONG */
 #define MUIA_Textinput_MinimumWidth MCC_TI_ID(156)          /* V26 i.g ULONG */
+#define MUIA_Textinput_ResetMarkOnCursor MCC_TI_ID(157)     /* V29 isg BOOL */
+#define MUIA_Textinput_NoExtraSpacing MCC_TI_ID(158)        /* V29 isg BOOL */
 
 /*
 ** Special values
@@ -273,6 +269,3 @@ struct MUIP_Textinput_DoGotoBookmark3 { ULONG MethodID; };
 #define MUIV_Textinput_Font_Fixed  1
 
 #endif
-
-#pragma pack()
-#pragma pack()

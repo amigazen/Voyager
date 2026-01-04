@@ -8,10 +8,7 @@
  * © 1999-2000 by VaporWare CVS team <ibcvs@vapor.com>
  * All rights reserved
  *
- *
- * $Id: vapor.h,v 1.5 2012/05/15 20:08:24 jacadcaps Exp $
- *
-*/
+ */
 
 #include <sys/types.h>
 
@@ -70,6 +67,7 @@
 	#elif defined(__SASC)
 		#define ASM __asm
 		#define SAVEDS __saveds
+		#define REG(a,b) register __ ## a b
 	#else
 		#error unsupported platform or compiler
 	#endif
@@ -132,18 +130,31 @@
 /*
  * Some common methods
  */
-#define DECNEW case OM_NEW:return(handleOM_NEW(cl, obj, (APTR)msg));
+#ifdef VAPOR_H_BROKEN
+#define DEFNEW case OM_NEW: return(handleOM_NEW(cl, obj, (APTR)msg));
+#define DEFCONST DEFNEW // obsolete
+#define DEFDISPOSE case OM_DISPOSE: return(handleOM_DISPOSE(cl, obj, (APTR)msg));
+#define DEFDISP DEFDISPOSE // obsolete
+#define DEFSET case OM_SET: return(handleOM_SET(cl, obj, (APTR)msg));
+#define DEFGET case OM_GET: return(handleOM_GET(cl, obj, (APTR)msg));
+#define DEFMMETHOD(methodid) case MUIM_##methodid: return(handleMUIM_##methodid(cl,obj,(APTR)msg));
+#define DEFMETHOD(methodid) case MM_##methodid: return(handleMM_##methodid(cl,obj,(APTR)msg));
+#define DEFSMETHOD(methodid) case MM_##methodid: return(handleMM_##methodid(cl,obj,(APTR)msg));
+#define DEFTMETHOD(methodid) case MM_##methodid: return(handleMM_##methodid(cl,obj,(APTR)msg));
+#else
+#define DECNEW case OM_NEW: return(handleOM_NEW(cl, obj, (APTR)msg));
 #define DECCONST DECNEW // obsolete
-#define DECDISPOSE case OM_DISPOSE:return(handleOM_DISPOSE(cl, obj, (APTR)msg));
+#define DECDISPOSE case OM_DISPOSE: return(handleOM_DISPOSE(cl, obj, (APTR)msg));
 #define DECDISP DECDISPOSE // obsolete
-#define DECSET case OM_SET:return(handleOM_SET(cl, obj, (APTR)msg));
-#define DECGET case OM_GET:return(handleOM_GET(cl, obj, (APTR)msg));
-#define DECADDMEMBER case OM_ADDMEMBER:return(handleOM_ADDMEMBER(cl, obj, (APTR)msg));
-#define DECREMMEMBER case OM_REMMEMBER:return(handleOM_REMMEMBER(cl, obj, (APTR)msg));
-#define DECMMETHOD(methodid) case MUIM_##methodid:return(handleMUIM_##methodid(cl,obj,(APTR)msg));
-#define DECMETHOD(methodid) case MM_##methodid:return(handleMM_##methodid(cl,obj,(APTR)msg));
-#define DECSMETHOD(methodid) case MM_##methodid:return(handleMM_##methodid(cl,obj,(APTR)msg));
-#define DECTMETHOD(methodid) case MM_##methodid:return(handleMM_##methodid(cl,obj,(APTR)msg));
+#define DECSET case OM_SET: return(handleOM_SET(cl, obj, (APTR)msg));
+#define DECGET case OM_GET: return(handleOM_GET(cl, obj, (APTR)msg));
+#define DECADDMEMBER case OM_ADDMEMBER: return(handleOM_ADDMEMBER(cl, obj, (APTR)msg));
+#define DECREMMEMBER case OM_REMMEMBER: return(handleOM_REMMEMBER(cl, obj, (APTR)msg));
+#define DECMMETHOD(methodid) case MUIM_##methodid: return(handleMUIM_##methodid(cl,obj,(APTR)msg));
+#define DECMETHOD(methodid) case MM_##methodid: return(handleMM_##methodid(cl,obj,(APTR)msg));
+#define DECSMETHOD(methodid) case MM_##methodid: return(handleMM_##methodid(cl,obj,(APTR)msg));
+#define DECTMETHOD(methodid) case MM_##methodid: return(handleMM_##methodid(cl,obj,(APTR)msg));
+#endif /* !VAPOR_H_BROKEN */
 
 /*
  * Use ENDMTABLE to end the description of a dispatcher
@@ -156,54 +167,98 @@
 /*
  * MUI method (ie. MUIM_List_InsertSingle)
  */
+#ifdef VAPOR_H_BROKEN
+#define DECMMETHOD(methodid) static size_t handleMUIM_##methodid(struct IClass *cl,Object*obj,struct MUIP_##methodid *msg)
+#else
 #define DEFMMETHOD(methodid) static size_t handleMUIM_##methodid(struct IClass *cl,Object*obj,struct MUIP_##methodid *msg)
+#endif /* !VAPOR_H_BROKEN */
 
 /*
  * Custom method with ONE argument only (no msg[n] please)
  */
+#ifdef VAPOR_H_BROKEN
+#define DECMETHOD(methodid,type) static size_t handleMM_##methodid(struct IClass *cl, Object *obj, type *msg)
+#else
 #define DEFMETHOD(methodid,type) static size_t handleMM_##methodid(struct IClass *cl, Object *obj, type *msg)
+#endif /* !VAPOR_H_BROKEN */
 
 /*
  * Custom method with NO real arguments (Msg still passed for DSM etc.)
  */
+#ifdef VAPOR_H_BROKEN
+#define DECTMETHOD(methodid) static size_t handleMM_##methodid(struct IClass *cl, Object *obj, Msg msg)
+#else
 #define DEFTMETHOD(methodid) static size_t handleMM_##methodid(struct IClass *cl, Object *obj, Msg msg)
+#endif /* !VAPOR_H_BROKEN */
 
 /*
  * Custom structured method
  */
+#ifdef VAPOR_H_BROKEN
+#define DECSMETHOD(name) static size_t handleMM_##name(struct IClass *cl,Object*obj,struct MP_##name *msg)
+#else
 #define DEFSMETHOD(name) static size_t handleMM_##name(struct IClass *cl,Object*obj,struct MP_##name *msg)
+#endif /* !VAPOR_H_BROKEN */
 
 /*
  * OM_NEW method (construct)
  */
+#ifdef VAPOR_H_BROKEN
+#define DECNEW static size_t handleOM_NEW(struct IClass *cl,Object*obj,struct opSet *msg)
+#define DECCONST DECNEW
+#else
 #define DEFNEW static size_t handleOM_NEW(struct IClass *cl,Object*obj,struct opSet *msg)
 #define DEFCONST DEFNEW
+#endif /* !VAPOR_H_BROKEN */
 
 /*
  * OM_SET method
  */
+#ifdef VAPOR_H_BROKEN
+#define DECSET static size_t handleOM_SET(struct IClass *cl,Object*obj,struct opSet *msg)
+#else
 #define DEFSET static size_t handleOM_SET(struct IClass *cl,Object*obj,struct opSet *msg)
+#endif /* !VAPOR_H_BROKEN */
 
 /* 
  * OM_GET method
  */
+#ifdef VAPOR_H_BROKEN
+#define DECGET static size_t handleOM_GET(struct IClass *cl,Object*obj,struct opGet *msg)
+#else
 #define DEFGET static size_t handleOM_GET(struct IClass *cl,Object*obj,struct opGet *msg)
+#endif /* !VAPOR_H_BROKEN */
 
 /*
  * OM_ADDMEMBER method
  */
+#ifdef VAPOR_H_BROKEN
+#define DECADDMEMBER static size_t handleOM_ADDMEMBER(struct IClass *cl,Object*obj,struct opMember *msg)
+#else
 #define DEFADDMEMBER static size_t handleOM_ADDMEMBER(struct IClass *cl,Object*obj,struct opMember *msg)
+#endif /* !VAPOR_H_BROKEN */
 
 /*
  * OM_REMMEMBER method
  */
+#ifdef VAPOR_H_BROKEN
+#define DECREMMEMBER static size_t handleOM_REMMEMBER(struct IClass *cl,Object*obj,struct opMember *msg)
+#else
 #define DEFREMMEMBER static size_t handleOM_REMMEMBER(struct IClass *cl,Object*obj,struct opMember *msg)
+#endif /* !VAPOR_H_BROKEN */
 
 /*
  * OM_DISPOSE method (destruct)
  */
+#ifdef VAPOR_H_BROKEN
+#define DECDISPOSE static size_t handleOM_DISPOSE( struct IClass *cl,Object*obj,struct opSet *msg)
+#define DECDISP DECDISPOSE // obsolete
+#define DECDEST DECDISPOSE
+#else
 #define DEFDISPOSE static size_t handleOM_DISPOSE( struct IClass *cl,Object*obj,struct opSet *msg)
+#define DEFDISP DEFDISPOSE // obsolete
 #define DEFDEST DEFDISPOSE
+#endif /* !VAPOR_H_BROKEN */
 #define DEFDISP DEFDISPOSE
 
 
