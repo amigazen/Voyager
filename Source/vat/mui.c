@@ -11,7 +11,9 @@
 #include <devices/timer.h>
 #include <string.h>
 #include <dos/dostags.h>
+#ifndef NO_OPENURL_PROTOS
 #include <proto/openurl.h>
+#endif
 #include <ctype.h>
 #include <macros/vapor.h>
 

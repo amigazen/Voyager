@@ -1,4 +1,5 @@
 #include "gst.h"
+#include "vatstatic.h"
 
 struct mimeinfo {
 	char type[ 256 ];

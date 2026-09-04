@@ -1,9 +1,13 @@
 #include "mimeprefs.h"
 #include "rev.h"
+#define CATCOMP_ARRAY
 #include "mimeprefs_cat.h"
 
-char version[] = { "$VER: MIMEPrefs " VERTAG };
-char copyright[] = { "MIMEPrefs " VERTAG " © 1997-2000 Oliver Wagner, All Rights Reserved" };
+#define NUMCATSTRING (sizeof(CatCompArray) / sizeof(CatCompArray[0]))
+char *__stringtable[ sizeof(CatCompArray) / sizeof(CatCompArray[0]) ];
+
+char version[] = { "$VER: MIMEPrefs " VERTAG };
+char copyright[] = { "MIMEPrefs " VERTAG " (C) 1997-2000 Oliver Wagner, All Rights Reserved" };
 
 enum {
 	ID_dummy = 1,
@@ -32,11 +36,12 @@ enum {
 long __stack = 16000;
 long __oslibversion = 37;
 
-//	sprintf() replacement
-UWORD fmtfunc[] = { 0x16c0, 0x4e75 };
-void __stdargs sprintf( char *to, char *fmt, ... )
+//	sprintf() replacement (signature matches SAS/C stdlib.h)
+UWORD fmtfunc[] = { 0x16c0, 0x4e75 };
+int sprintf( char *to, const char *fmt, ... )
 {
 	RawDoFmt( fmt, &fmt + 1, (APTR)fmtfunc, to );
+	return( 0 );
 }
 
 char * __vat_appid = "MimePrefs " VERTAG;
@@ -77,11 +82,15 @@ DESTRUCTOR_P(closemuimaster,3500)
 //
 
 struct Catalog *catalog;
-struct Library *LocaleBase;
 
 CONSTRUCTOR_P(openlocale,10000)
 {
-	LocaleBase = OpenLibrary( "locale.library", 0 );
+	int c;
+
+	for( c = 0; c < NUMCATSTRING; c++ )
+		__stringtable[ c ] = CatCompArray[ c ].cca_Str;
+
+	LocaleBase = (struct LocaleBase *)OpenLibrary( "locale.library", 0 );
 	if( !LocaleBase )
 		return( NULL );
 
@@ -93,10 +102,8 @@ CONSTRUCTOR_P(openlocale,10000)
 
 	if( catalog )
 	{
-		int c;
-
 		for( c = 0; c < NUMCATSTRING; c++ )
-			((char**)__stringtable)[ c ] = GetCatalogStr( catalog, c, __stringtable[ c ] );
+			__stringtable[ c ] = GetCatalogStr( catalog, c, __stringtable[ c ] );
 	}
 	return( 0 );
 }
@@ -104,7 +111,7 @@ DESTRUCTOR_P(closelocale,10000)
 {
 	if( catalog )
 		CloseCatalog( catalog );
-	CloseLibrary( LocaleBase );
+	CloseLibrary( (struct Library *)LocaleBase );
 }
 
 #undef set
@@ -149,12 +156,12 @@ struct myargs {
 	char *appname;
 } myargs;
 char myfullpath[ 256 ];
-char startup_cfgfile[ 256 ] = { "ENV:MIME.Prefs" };
+char startup_cfgfile[ 256 ] = { "ENV:MIME.Prefs" };
 struct DiskObject *diskobj;
 
 CONSTRUCTOR_P(loaddiskobj,20000)
 {
-	char progname[ 128 ];
+	char progname[ 128 ];
 
 	if( !_WBenchMsg )
 	{
@@ -182,7 +189,7 @@ CONSTRUCTOR_P(loaddiskobj,20000)
 	{
 		// WBStartup
 		struct WBArg *wbarg;
-		char fullpath[ 256 ];
+		char fullpath[ 256 ];
 		int num = _WBenchMsg->sm_NumArgs > 1 ? 1 : 0;
 		char *tt = NULL;
 
@@ -304,7 +311,7 @@ static APTR but( char *str )
 // MIME handling settings
 //
 
-STRPTR mimetype_opts[] = { "application/", "text/", "image/", "audio/", "video/", "message/", "multipart/", NULL };
+STRPTR mimetype_opts[] = { "application/", "text/", "image/", "audio/", "video/", "message/", "multipart/", NULL };
 
 static int __callback mime_disp_func( _reg( a1 ) struct mimeinfo *mi, _reg( a2 ) STRPTR *array )
 {
@@ -319,10 +326,10 @@ static int __callback mime_disp_func( _reg( a1 ) struct mimeinfo *mi, _reg( a2 )
 	}
 	else
 	{
-		static char typebuff[ 256 ];
+		static char typebuff[ 256 ];
 		static char flagbuff[ 4 ];
 
-		strcpy( typebuff, mimetype_opts[ mi->basetype ] );
+		strcpy( typebuff, mimetype_opts[ mi->basetype ] );
 		strcat( typebuff, mi->type );
 
 		*array++ = typebuff;
@@ -331,14 +338,14 @@ static int __callback mime_disp_func( _reg( a1 ) struct mimeinfo *mi, _reg( a2 )
 
 		if( mi->use_classdir )
 			*array++ = GS( MIME_LV_CLASS );
-		else if( !mi->dir[ 0 ] )
+		else if( !mi->dir[ 0 ] )
 			*array++ = GS( MIME_LV_ASK );
 		else
 			*array++ = mi->dir;
 
-		flagbuff[ 0 ] = mi->use_internal ? 'I' : ' ';
-		flagbuff[ 1 ] = mi->use_stream ? 'S' : ' ';
-		flagbuff[ 2 ] = 0;
+		flagbuff[ 0 ] = mi->use_internal ? 'I' : ' ';
+		flagbuff[ 1 ] = mi->use_stream ? 'S' : ' ';
+		flagbuff[ 2 ] = 0;
 		*array++ = flagbuff;
 
 		*array = mi->app;
@@ -513,13 +520,13 @@ static void initnewmenus( void )
 static void __callback appmsg_func( register __a1 struct AppMessage **amp )
 {
 	struct AppMessage *am = *amp;
-	char filename[ 256 ];
+	char filename[ 256 ];
 
 	if( !am->am_NumArgs )
 		return;
 
-	NameFromLock( am->am_ArgList[ 0 ].wa_Lock, filename, sizeof( filename ) );
-	AddPart( filename, am->am_ArgList[ 0 ].wa_Name, sizeof( filename ) );
+	NameFromLock( am->am_ArgList[ 0 ].wa_Lock, filename, sizeof( filename ) );
+	AddPart( filename, am->am_ArgList[ 0 ].wa_Name, sizeof( filename ) );
 	
 	set( str_testfile, MUIA_String_Contents, filename );
 }
@@ -549,12 +556,12 @@ static void mch( APTR obj, ULONG attr )
 
 static int buildapp( void )
 {
-	static STRPTR classlist[] = { "Textinput.mcp", "NListviews.mcp", NULL };
-	static STRPTR mime_opts[ 5 ];
+	static STRPTR classlist[] = { "Textinput.mcp", "NListviews.mcp", NULL };
+	static STRPTR mime_opts[ 5 ];
 	int c;
 
 	for( c = 0; c < 4; c++ )
-		mime_opts[ c ] = GSI( MSG_MIME_ACTS_1 + c );
+		mime_opts[ c ] = GSI( MSG_MIME_ACTS_1 + c );
 
 	initnewmenus();
 
@@ -852,7 +859,7 @@ DESTRUCTOR_P(buildapp,21000)
 
 static void nofilereq( char *name )
 {
-	char fb[ 128 ];
+	char fb[ 128 ];
 
 	Fault( IoErr(), NULL, fb, sizeof( fb ) );
 
@@ -861,7 +868,7 @@ static void nofilereq( char *name )
 
 static int loadprefs( char *from )
 {
-	char buffer[ 512 ];
+	char buffer[ 512 ];
 	BPTR f;
 	char *p, *p2;
 	struct mimeinfo mi;
@@ -893,16 +900,16 @@ static int loadprefs( char *from )
 			continue;
 		*p++ = 0;
 
-		for( c = 0; mimetype_opts[ c ]; c++ )
+		for( c = 0; mimetype_opts[ c ]; c++ )
 		{
-			if( !strncmp( buffer, mimetype_opts[ c ], strlen( mimetype_opts[ c ] ) ) )
+			if( !strncmp( buffer, mimetype_opts[ c ], strlen( mimetype_opts[ c ] ) ) )
 				break;
 		}
-		if( !mimetype_opts[ c ] )
+		if( !mimetype_opts[ c ] )
 			continue;
 
 		mi.basetype = c;
-		p2 = strchr( buffer, '/' );
+		p2 = strchr( buffer, '/' );
 		if( !p2 )
 			continue;
 		strcpy( mi.type, p2 + 1 );
@@ -980,7 +987,7 @@ static int saveprefs( char *to, int noicons )
 			break;
 
 		FPrintf( f, "%s%s,%s,%s,%s,%ld,%ld,%ld,%ld\n",
-			mimetype_opts[ mi->basetype ], mi->type,
+			mimetype_opts[ mi->basetype ], mi->type,
 			mi->ext,
 			mi->dir,
 			mi->app,
@@ -1023,7 +1030,7 @@ static void loadprefsfh( void )
 		ASLFR_SleepWindow, TRUE
 	))
 	{
-		char path[ 256 ];
+		char path[ 256 ];
 
 		strcpy( path, prefsfr->fr_Drawer );
 		AddPart( path, prefsfr->fr_File, sizeof( path ) );
@@ -1044,7 +1051,7 @@ static void saveprefsfh( void )
 		ASLFR_SleepWindow, TRUE
 	))
 	{
-		char path[ 256 ];
+		char path[ 256 ];
 
 		strcpy( path, prefsfr->fr_Drawer );
 		AddPart( path, prefsfr->fr_File, sizeof( path ) );
@@ -1057,16 +1064,16 @@ static void importprefs( int mode )
 {
 	struct FileRequester *fr;
 	struct Window *w;
-	char *deffile[] = { "Voyager.prefs" };
-	ULONG deftext[] = { MSG_IMPORT_V };
+	char *deffile[] = { "Voyager.prefs" };
+	ULONG deftext[] = { MSG_IMPORT_V };
 
 	get( win, MUIA_Window_Window, &w );
 
 	fr = MUI_AllocAslRequestTags( ASL_FileRequest,
 		ASLFR_Window, w,
 		ASLFR_SleepWindow, TRUE,
-		ASLFR_InitialFile, deffile[ mode ],
-		ASLFR_TitleText, GSI( deftext[ mode ] ),
+		ASLFR_InitialFile, deffile[ mode ],
+		ASLFR_TitleText, GSI( deftext[ mode ] ),
 		TAG_DONE
 	);
 	if( fr )
@@ -1145,12 +1152,12 @@ static void makedefaults( void )
 	set( lv_mime, MUIA_List_Quiet, TRUE );
 	DoMethod( lv_mime, MUIM_List_Clear );
 
-	for( c = 0; mdefs[ c ].type; c++ )
+	for( c = 0; mdefs[ c ].type; c++ )
 	{
-		strcpy( mi.ext, mdefs[ c ].ext );
-		strcpy( mi.type, mdefs[ c ].type );
-		mi.basetype = mdefs[ c ].basetype;
-		mi.act = mdefs[ c ].act;
+		strcpy( mi.ext, mdefs[ c ].ext );
+		strcpy( mi.type, mdefs[ c ].type );
+		mi.basetype = mdefs[ c ].basetype;
+		mi.act = mdefs[ c ].act;
 		mi.use_classdir = strcmp( mi.type, "*" );
 		if( mi.act >= 2 )
 		{
@@ -1159,7 +1166,7 @@ static void makedefaults( void )
 		}
 		else
 		{
-			mi.app[ 0 ] = 0;
+			mi.app[ 0 ] = 0;
 			mi.use_internal = FALSE;
 		}
 		DoMethod( lv_mime, MUIM_List_InsertSingle, &mi, MUIV_List_Insert_Bottom );
@@ -1177,7 +1184,7 @@ static void runtest( struct mimeinfo *mi, char *filename, char *buffexec )
 
 	while( *p2 )
 	{
-		if( *p2 == '%' )
+		if( *p2 == '%' )
 		{
 			p2++;
 			if( *p2 == 'f' )
@@ -1186,7 +1193,7 @@ static void runtest( struct mimeinfo *mi, char *filename, char *buffexec )
 				p = strchr( p, 0 );
 				p2++;
 			}
-			else if( *p2 == 'p' )
+			else if( *p2 == 'p' )
 			{
 				sprintf( p, "\"%s\"", VAT_GetAppScreenName( app ) );
 				p = strchr( p, 0 );
@@ -1226,8 +1233,8 @@ static void runtest( struct mimeinfo *mi, char *filename, char *buffexec )
 static void dotest( void )
 {
 	char *filename, *p, *p2;
-	char buffer[ 1024 ];
-	char buffexec[ 512 ];
+	char buffer[ 1024 ];
+	char buffexec[ 512 ];
 	struct mimeinfo *mi;
 	int c;
 
@@ -1235,7 +1242,7 @@ static void dotest( void )
 
 	sprintf( buffer, GS( WINTEST_T_HEADER ), filename );
 
-	p = strrchr( filename, '.' );
+	p = strrchr( filename, '.' );
 	if( !p )
 	{
 		strcat( buffer, GS( WINTEST_T_UNKNOWN ) );
@@ -1268,7 +1275,7 @@ static void dotest( void )
 
 	// found
 	sprintf( strchr( buffer, 0 ), GS( WINTEST_T_INFO ),
-		mimetype_opts[ mi->basetype ], mi->type,
+		mimetype_opts[ mi->basetype ], mi->type,
 		GSI( MSG_MIME_ACTS_1 + mi->act )
 	);
 
@@ -1304,12 +1311,12 @@ static void checkclass( void )
 				return;
 	}
 
-	if( MUI_Request( app, win, 0, NULL, GS( MIME_NOCLASS_ASK ), GS( MIME_NOCLASS ), mimetype_opts[ mi->basetype ] ) )
+	if( MUI_Request( app, win, 0, NULL, GS( MIME_NOCLASS_ASK ), GS( MIME_NOCLASS ), mimetype_opts[ mi->basetype ] ) )
 	{
 		struct mimeinfo minew;
 
 		minew = *mi;
-		minew.ext[ 0 ] = 0;
+		minew.ext[ 0 ] = 0;
 		strcpy( minew.type, "*" );
 		minew.use_classdir = FALSE;
 
@@ -1323,7 +1330,7 @@ static void dotestview( void )
 {
 	struct FileRequester *fr;
 	struct mimeinfo *mi;
-	char buffexec[ 512 ];
+	char buffexec[ 512 ];
 	struct Window *w;
 
 	DoMethod( lv_mime, MUIM_List_GetEntry, MUIV_List_GetEntry_Active, &mi );
@@ -1344,7 +1351,7 @@ static void dotestview( void )
 	{
 		if( MUI_AslRequestTags( fr, TAG_DONE ) )
 		{
-			char name[ 256 ];
+			char name[ 256 ];
 
 			strcpy( name, fr->fr_Drawer );
 			AddPart( name, fr->fr_File, sizeof( name ) );
@@ -1402,7 +1409,7 @@ static void doloop( void )
 				break;
 
 			case MENU_ABOUT:
-				MUI_Request( app, win, 0, GS( MENU_ABOUT ) + 2, GS( OK ), "\033c\033bMimePrefs " VERTAG "\033n\n\n%s\n\n© 1997-2000 Oliver Wagner\n<owagner@vapor.com>\nAll Rights Reserved", GS( APP_DESC ) );
+				MUI_Request( app, win, 0, GS( MENU_ABOUT ) + 2, GS( OK ), "\033c\033bMimePrefs " VERTAG "\033n\n\n%s\n\n  1997-2000 Oliver Wagner\n<owagner@vapor.com>\nAll Rights Reserved", GS( APP_DESC ) );
 				break;
 
 			case MENU_MUI:
@@ -1450,7 +1457,7 @@ static void doloop( void )
 	}
 }
 
-void __stdargs __main( char *dummy )
+int main( int argc, char **argv )
 {
 	makedefaults();
 	loadprefs( startup_cfgfile );
@@ -1464,7 +1471,7 @@ void __stdargs __main( char *dummy )
 
 	doloop();
 
-	exit( 0 );
+	return( 0 );
 }
 
 // Update stuff

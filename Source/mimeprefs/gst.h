@@ -32,8 +32,6 @@
 #include <mui/nlist_mcc.h>
 #include <mui/nlistview_mcc.h>
 
-#include <libraries/vupdate.h>
-
 #include <cl/lists.h>
 
 #define USE_BUILTIN_MATH
@@ -43,8 +41,6 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <setjmp.h>
-
-#include <libraries/vat.h>
 
 #define MAKE_ID(a,b,c,d)	\
 	((ULONG) (a)<<24 | (ULONG) (b)<<16 | (ULONG) (c)<<8 | (ULONG) (d))
@@ -95,15 +91,12 @@ extern UWORD fmtfunc[];
 extern char version[];
 extern char copyright[];
 
-// standard functions
-extern void __stdargs sprintf( char *to, char *fmt, ... );
-
 //
 // String table
 //
 
 #define CATCOMP_NUMBERS
-extern const char * const __stringtable[];
+extern char *__stringtable[];
 #define GS(x) __stringtable[MSG_##x]
 #define GSI(x) __stringtable[x]
 

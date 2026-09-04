@@ -139,22 +139,22 @@ Specific \033btype\033n of media. This forms the\n\
 MIME media type together with the\n\
 \033bclass\033n.\n\n\
 You can specify a default behavior for a\n\
-whole class by specifying "*" here.
+whole class by specifying \"*\" here.
 MSG_SH_MIME_EXT (//)
 File extensions which identify a specific\n\
 MIME media type. For example, GIF pictures\n\
-generally have the extension ".GIF", thus\n\
-you would enter ".GIF" here for the MIME type\n\
-"image/gif".\n\n\
+generally have the extension \".GIF\", thus\n\
+you would enter \".GIF\" here for the MIME type\n\
+\"image/gif\".\n\n\
 You can specify multiple file extensions\n\
 delimited by spaces, in case there are\n\
 several standard extensions for certain type\n\
-of files (for example, ".html" and ".htm".)
+of files (for example, \".html\" and \".htm\".)
 MSG_SH_MIME_ACT (//)
 The action you want to take place\n\
 when an applications encounters\n\
 a media of the specific type.\n\n\
-"View" here only means that the media\n\
+\"View\" here only means that the media\n\
 file is processed with some application,\n\
 which can be an player or viewer of any\n\
 kind, a ARexx script or whatever you like.
@@ -179,12 +179,12 @@ Feed the media data to the viewing application\n\
 using streaming. This is only possible with some\n\
 viewers, and may require special options.
 MSG_SH_MIME_APP (//)
-The "Viewer" application for this media type.\n\
+The \"Viewer\" application for this media type.\n\
 In addition to the pathname, you can specify\n\
 placeholders:\n\
-· %f will be replaced with the filename of\n\
+? %f will be replaced with the filename of\n\
   media file to be viewed\n\
-· %p will be replaced with the public screen\n\
+??%p will be replaced with the public screen\n\
   name of the application which processes\n\
   the media file
 ;
@@ -200,7 +200,7 @@ MSG_FR_SAVE (//)
 Save MIME prefs preset...
 ;
 MSG_WINTEST_TITLE (//)
-MIMEPrefs · Testing window
+MIMEPrefs ??Testing window
 MSG_WINTEST_FILE (//)
 File to test:
 MSG_SH_WINTEST_FILE (//)
