@@ -3305,7 +3305,7 @@ DECMETHOD( HTMLWin_DoToolbutton, ULONG )
 			break;
 
 		case bfunc_home:
-			DoMethod( obj, MM_HTMLWin_SetURL, getprefsstr( DSI_HOMEPAGE, "about:empty" ), NULL, NULL, MF_HTMLWin_AddURL );
+			DoMethod( obj, MM_HTMLWin_SetURL, getprefsstr( DSI_HOMEPAGE, "about:" ), NULL, NULL, MF_HTMLWin_AddURL );
 			break;
 
 		case bfunc_loadimages:

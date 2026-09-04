@@ -3033,7 +3033,7 @@ static void SAVEDS nethandler( void )
 	APTR executivemsg;
 #endif
 
-#if VLOG
+#if VLOG_NET
 	net_log_file = Open( "V:voyager_net.log", MODE_NEWFILE );
 #endif
 	NetLog( "nethandler entry (network process started)\n" );

@@ -309,7 +309,7 @@ RXFS( GoHome )
 		return( 5 );
 	}
 
-	switch( DoMethod( app, MM_DoRexxWin, arg->win ? *arg->win : /*NULL*/0, MM_HTMLWin_SetURL, getprefsstr( DSI_HOMEPAGE, "about:empty" ), NULL, NULL, MF_HTMLWin_AddURL ) )
+	switch( DoMethod( app, MM_DoRexxWin, arg->win ? *arg->win : /*NULL*/0, MM_HTMLWin_SetURL, getprefsstr( DSI_HOMEPAGE, "about:" ), NULL, NULL, MF_HTMLWin_AddURL ) )
 	{
 		case 10:
 			return( 10 );

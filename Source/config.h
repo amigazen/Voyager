@@ -45,6 +45,10 @@
 #define VoyLog(args)
 #define VoyFlush()
 #endif
+/* HTTP request/response file log (V:voyager_net.log). Independent of VLOG. */
+#ifndef VLOG_NET
+#define VLOG_NET 0
+#endif
 
 
 /*

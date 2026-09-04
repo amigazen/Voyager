@@ -60,6 +60,16 @@
 "Accept: text/html;version=3.0\r\n"\
 "Accept: */*\r\n"
 
+/*
+ * Default HTTP User-Agent (gp_spoof == 0).
+ *
+ * Extra product tokens after Firefox/x.y are valid RFC 9110 but many
+ * servers (mod_security, nginx maps) answer 400. Keep AmigaVoyager
+ * inside the Mozilla comment so the line still ends Firefox/4.0.1.
+ */
+#define DEFAULT_USERAGENT_FMT \
+	"Mozilla/5.0 (Windows NT 6.1; rv:2.0.1; AmigaVoyager/" VERSIONSTRING "; %s; %s) Gecko/20100101 Firefox/4.0.1"
+
 char vuseragent[ 256 ];
 void SAVEDS setup_useragent( void )
 {
@@ -67,8 +77,7 @@ void SAVEDS setup_useragent( void )
 	SNPrintf( vuseragent, sizeof(vuseragent), "Mozilla/5.0 (compatible; Met@box1000-Browser/" VERSIONSTRING ") (KHTML, like Gecko)" );
 #else
 	if( !gp_spoof )
-		/* Default to a common Firefox UA so CDNs/sites that block "AmigaVoyager" (e.g. amigazen.com) work. Use Spoof menu to identify as AmigaVoyager. */
-		SNPrintf( vuseragent, sizeof(vuseragent), "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/115.0" );
+		SNPrintf( vuseragent, sizeof(vuseragent), DEFAULT_USERAGENT_FMT, hostos, cpuid );
 	else
 		SNPrintf( vuseragent, sizeof(vuseragent), "%s", getprefsstr( DSI_NET_SPOOF_AS_1 + gp_spoof - 1, "(none)" ) );
 #endif
@@ -250,10 +259,25 @@ static void un_doprotocol_http_req( struct unode *un )
 
 		if( gp_languages[ 0 ] )
 		{
-			strcpy( bp, "Accept-Language: " );
-			strcat( bp, gp_languages );
-			strcat( bp, "\r\n" );
-			bp = strchr( bp, 0 );
+			char *lp;
+			int lang_ok;
+
+			lang_ok = TRUE;
+			for( lp = gp_languages; *lp; lp++ )
+			{
+				if( (unsigned char)*lp < 32 || (unsigned char)*lp > 126 )
+				{
+					lang_ok = FALSE;
+					break;
+				}
+			}
+			if( lang_ok )
+			{
+				strcpy( bp, "Accept-Language: " );
+				strcat( bp, gp_languages );
+				strcat( bp, "\r\n" );
+				bp = strchr( bp, 0 );
+			}
 		}
 
 		if( un->postid )
@@ -289,23 +313,40 @@ static void un_doprotocol_http_req( struct unode *un )
 			extern struct Locale *locale;
 			extern int locale_timezone_offset;
 			time_t tdate;
-			char buffer[ 8 ];
+			struct tm *gmt;
+			struct tm gmtcopy;
+			int have_gmt;
 
+			tdate = un->cachedate;
 			if( locale )
-				tdate = un->cachedate - locale_timezone_offset; // We want GMT..
-
-			utunpk( tdate, buffer );
-
-			// Lame hack to come around sc.lib non-reentrancy..
+				tdate -= locale_timezone_offset;
 			Forbid();
-			sprintf( bp, "If-Modified-Since: %3.3s, %u %3.3s %04d %02d:%02d:%02d GMT\r\n",
-				asctime( gmtime( &tdate ) ),
-				buffer[ 2 ], &"JanFebMarAprMayJunJulAugSepOctNovDec"[ ( buffer[ 1 ] - 1 ) * 3 ], buffer[ 0 ] + 1970,
-				buffer[ 3 ], buffer[ 4 ], buffer[ 5 ]
-			);
+			gmt = gmtime( &tdate );
+			have_gmt = FALSE;
+			if( gmt )
+			{
+				gmtcopy = *gmt;
+				have_gmt = TRUE;
+			}
 			Permit();
-
-			bp = strchr( bp, 0 );
+			/*
+			 * Skip a garbage date: uninitialised tdate produced
+			 * If-Modified-Since values Apache and Google 400.
+			 */
+			if( have_gmt && gmtcopy.tm_wday >= 0 && gmtcopy.tm_wday <= 6
+				&& gmtcopy.tm_mon >= 0 && gmtcopy.tm_mon <= 11
+				&& gmtcopy.tm_mday >= 1 && gmtcopy.tm_mday <= 31
+				&& gmtcopy.tm_year >= 70 && gmtcopy.tm_year < 200 )
+			{
+				sprintf( bp, "If-Modified-Since: %3.3s, %u %3.3s %04d %02d:%02d:%02d GMT\r\n",
+					&"SunMonTueWedThuFriSat"[ gmtcopy.tm_wday * 3 ],
+					gmtcopy.tm_mday,
+					&"JanFebMarAprMayJunJulAugSepOctNovDec"[ gmtcopy.tm_mon * 3 ],
+					gmtcopy.tm_year + 1900,
+					gmtcopy.tm_hour, gmtcopy.tm_min, gmtcopy.tm_sec
+				);
+				bp = strchr( bp, 0 );
+			}
 		}
 		else 
 #endif

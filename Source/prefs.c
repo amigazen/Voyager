@@ -735,7 +735,7 @@ void initprefs( void )
 //	setprefsstr( DSI_HOMEPAGE, "http://212.96.33.222:8082" );
 //	setprefsstr( DSI_HOMEPAGE, "http://www.vorwerkbox.de" );	
 #else
-	setprefsstr( DSI_HOMEPAGE, "http://www.amigazen.com/" );
+	setprefsstr( DSI_HOMEPAGE, "about:" );
 #endif
 #if USE_NET
 	setflag( VFLG_HOMEPAGEURL_MODES, 0 );
@@ -1153,6 +1153,21 @@ void set_prefs_globals( void )
 	gp_cachesize = getprefslong( DSI_CACHE_SIZE, 8192 );
 #endif
 	strcpy( gp_languages, getprefsstr( DSI_MISC_LANGUAGES, "en, *" ) );
+	{
+		char *lp;
+		int lang_ok;
+
+		lang_ok = TRUE;
+		if( !gp_languages[ 0 ] )
+			lang_ok = FALSE;
+		for( lp = gp_languages; lang_ok && *lp; lp++ )
+		{
+			if( (unsigned char)*lp < 32 || (unsigned char)*lp > 126 )
+				lang_ok = FALSE;
+		}
+		if( !lang_ok )
+			strcpy( gp_languages, "en" );
+	}
 	gp_download_timeout = getprefslong( DSI_NET_DOWNLOAD_TIMEOUT, 900 );
 	gp_download_retries = getprefslong( DSI_NET_DOWNLOAD_RETRIES, 3 );
 	gp_image_stop_animgif = getprefslong( DSI_IMG_STOP_ANIMGIF, FALSE );
