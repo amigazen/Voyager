@@ -21,7 +21,7 @@
  * ---------
  * - ..
  *
- * ï¿½ 1999-2003 VaporWare CVS team <ibcvs@vapor.com>
+ * © 1999-2003 VaporWare CVS team <ibcvs@vapor.com>
  * All rights reserved
  *
  * $Id: app.c,v 1.103 2003/11/21 07:48:49 zapek Exp $

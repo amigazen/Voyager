@@ -29,6 +29,22 @@
 #define HISTORYLIST_DEBUG 0
 /* Network socket trashing debugging */
 #define NETWORK_DEBUG 0
+/*
+ * Console diagnostics (VoyLog / VoyFlush). Off in a normal build.
+ * Not named VPrintf: that is a dos.library function.
+ * Set VLOG to 1 to send the [INIT]/[VIEW]/[PARSE]/... traces to Output().
+ * Idle doloop NewInput/checkmethods traces were removed; they flooded DOS.
+ */
+#ifndef VLOG
+#define VLOG 0
+#endif
+#if VLOG
+#define VoyLog(args) Printf args
+#define VoyFlush() Flush( Output() )
+#else
+#define VoyLog(args)
+#define VoyFlush()
+#endif
 
 
 /*

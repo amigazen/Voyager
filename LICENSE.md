@@ -6,7 +6,7 @@ GPL release.
 
 ## Voyager
 
-Copyright (C) 1995–2003 Oliver Wagner (owagner@vapor.com).
+Copyright (C) 1995-2003 Oliver Wagner (owagner@vapor.com).
 
 Parts copyright David Gerber (zapek@vapor.com),
 Jon Bright (jon@siliconcircus.com),

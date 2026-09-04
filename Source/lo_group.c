@@ -1299,9 +1299,9 @@ DECSMETHOD( Layout_DoLayout )
 		 * Was a MUI_Request here, but this runs inside the window's layout pass:
 		 * a modal requester at that point blocks the app that has to service it.
 		 */
-		Printf( "[GROUP] DoLayout skip obj=%lx suggested_width=%ld < minwidth=%ld\n",
-			(ULONG)obj, (long)msg->suggested_width, (long)data->li.minwidth );
-		Flush( Output() );
+		VoyLog(( "[GROUP] DoLayout skip obj=%lx suggested_width=%ld < minwidth=%ld\n",
+			(ULONG)obj, (long)msg->suggested_width, (long)data->li.minwidth ));
+		VoyFlush();
 		return( (ULONG)&data->li );
 	}
 
@@ -1383,9 +1383,9 @@ DECSMETHOD( Layout_DoLayout )
 
 				if( tn->li->minwidth > restwidth )
 				{
-					Printf( "[GROUP] DoLayout overflow obj=%lx child=%lx minwidth=%ld restwidth=%ld (no floats left)\n",
-						(ULONG)obj, (ULONG)tn->o, (long)tn->li->minwidth, (long)restwidth );
-					Flush( Output() );
+					VoyLog(( "[GROUP] DoLayout overflow obj=%lx child=%lx minwidth=%ld restwidth=%ld (no floats left)\n",
+						(ULONG)obj, (ULONG)tn->o, (long)tn->li->minwidth, (long)restwidth ));
+					VoyFlush();
 				}
 			}
 
@@ -1533,9 +1533,9 @@ DECSMETHOD( Layout_DoLayout )
 				if( !forced_overflow )
 				{
 					forced_overflow = 1;
-					Printf( "[GROUP] DoLayout forced overflow obj=%lx restwidth=%ld remain=%ld\n",
-						(ULONG)obj, (long)restwidth, (long)remainlength );
-					Flush( Output() );
+					VoyLog(( "[GROUP] DoLayout forced overflow obj=%lx restwidth=%ld remain=%ld\n",
+						(ULONG)obj, (long)restwidth, (long)remainlength ));
+					VoyFlush();
 				}
 
 				thisfit = 1;

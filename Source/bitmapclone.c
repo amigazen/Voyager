@@ -62,47 +62,47 @@ extern struct Screen *destscreen;
 void init_fakebitmap( void )
 {
 	D( db_init, bug( "initializing..\n" ) );
-	Printf( "[INIT] init_fakebitmap() entry\n" );
-	Flush( Output() );
+	VoyLog(( "[INIT] init_fakebitmap() entry\n" ));
+	VoyFlush();
 	
 #if USE_CGX
-	Printf( "[INIT] Opening cybergraphics.library...\n" );
-	Flush( Output() );
+	VoyLog(( "[INIT] Opening cybergraphics.library...\n" ));
+	VoyFlush();
 	CyberGfxBase = OpenLibrary( "cybergraphics.library", 0 );
-	Printf( "[INIT] cybergraphics.library opened (or not needed)\n" );
-	Flush( Output() );
+	VoyLog(( "[INIT] cybergraphics.library opened (or not needed)\n" ));
+	VoyFlush();
 #endif
 
-	Printf( "[INIT] Calling InitBitMap()...\n" );
-	Flush( Output() );
+	VoyLog(( "[INIT] Calling InitBitMap()...\n" ));
+	VoyFlush();
 	InitBitMap( &fakebitmap, 1, 1024, 1024 );
-	Printf( "[INIT] InitBitMap() complete\n" );
-	Flush( Output() );
+	VoyLog(( "[INIT] InitBitMap() complete\n" ));
+	VoyFlush();
 
 	/* FBlit is optional - check for it but don't fail if not present */
 	fblitinstalled = FALSE;
-	Printf( "[INIT] Checking for FBlit message port...\n" );
-	Flush( Output() );
+	VoyLog(( "[INIT] Checking for FBlit message port...\n" ));
+	VoyFlush();
 	if( SysBase != NULL )
 	{
 		/* Don't use Forbid()/Permit() - can cause deadlocks during init */
 		if( FindPort( "FBlit" ) != NULL )
 		{
 			fblitinstalled = TRUE;
-			Printf( "[INIT] FBlit found, fblitinstalled=TRUE\n" );
+			VoyLog(( "[INIT] FBlit found, fblitinstalled=TRUE\n" ));
 		}
 		else
 		{
-			Printf( "[INIT] FBlit not found, fblitinstalled=FALSE\n" );
+			VoyLog(( "[INIT] FBlit not found, fblitinstalled=FALSE\n" ));
 		}
-		Flush( Output() );
+		VoyFlush();
 	}
 	else
 	{
-		Printf( "[INIT] SysBase is NULL, skipping FBlit check\n" );
-		Flush( Output() );
+		VoyLog(( "[INIT] SysBase is NULL, skipping FBlit check\n" ));
+		VoyFlush();
 	}
-	Printf( "[INIT] init_fakebitmap() complete\n" );
+	VoyLog(( "[INIT] init_fakebitmap() complete\n" ));
 
 }
 
@@ -361,8 +361,8 @@ struct BitMap *getclone( struct BitMap *src, int masked )
 	/* When destscreen not set yet (no lo_image Setup run), use NULL friend to avoid crash */
 	if( !destscreen && !masked )
 	{
-		Printf( "[CLONE] getclone destscreen=NULL using NULL friend\n" );
-		Flush( Output() );
+		VoyLog(( "[CLONE] getclone destscreen=NULL using NULL friend\n" ));
+		VoyFlush();
 	}
 	bm->real_bm = AllocBitMap( xs, ys, depth, 0, ( masked || !destscreen ) ? NULL : destscreen->RastPort.BitMap );
 	if( !bm->real_bm )

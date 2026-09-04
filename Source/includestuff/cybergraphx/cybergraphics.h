@@ -3,7 +3,7 @@
 **
 **	include file for cybergraphics.library
 **
-**	Copyright ï¿½ 1996-1998 by phase5 digital products
+**	Copyright · 1996-1998 by phase5 digital products
 **      All Rights reserved.
 **
 */

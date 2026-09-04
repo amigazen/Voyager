@@ -389,7 +389,7 @@ static void exprs_dump( struct expr_stack *es )
 
 	for( ex = FIRSTNODE( &es->l ); NEXTNODE( ex ); ex = NEXTNODE( ex ) )
 	{
-		Printf( "%ld: type %ld ", ( int )cnt++, ( int )ex->type );
+		VoyLog(( "%ld: type %ld ", ( int )cnt++, ( int )ex->type ));
 		switch( ex->type )
 		{
 			case expt_string:
@@ -405,7 +405,7 @@ static void exprs_dump( struct expr_stack *es )
 				break;
 
 			case expt_obj:
-				Printf( "%lx\n", ( LONG )ex->d.object );
+				VoyLog(( "%lx\n", ( LONG )ex->d.object ));
 				break;
 
 		}
@@ -2883,7 +2883,7 @@ static void js_bytecode(
 				{
 					exprs_pop_as_string( es, buffer, sizeof( buffer ) );
 #ifndef MBX
-					Printf( "JSDEBUG: %s\n", ( int )buffer );
+					VoyLog(( "JSDEBUG: %s\n", ( int )buffer ));
 #else
 					kprintf( "JSDEBUG: %s\n", ( int )buffer );
 #endif

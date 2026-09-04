@@ -148,29 +148,29 @@ int	start_image_decoders( void )
 {
 	D( db_init, bug( "initializing..\n" ) );
 	
-	Printf( "[IMGDEC] start_image_decoders() entry, icbt=0x%lx\n", &icbt );
-	Flush( Output() );
+	VoyLog(( "[IMGDEC] start_image_decoders() entry, icbt=0x%lx\n", &icbt ));
+	VoyFlush();
 	
-	Printf( "[IMGDEC] About to call imgdec_libinit_internal()...\n" );
-	Flush( Output() );
+	VoyLog(( "[IMGDEC] About to call imgdec_libinit_internal()...\n" ));
+	VoyFlush();
 	/* Call internal version directly to avoid SAVEDS issues when statically linked */
 	if( imgdec_libinit_internal( &icbt ) )
 	{
-		Printf( "[IMGDEC] imgdec_libinit() returned TRUE\n" );
-		Flush( Output() );
+		VoyLog(( "[IMGDEC] imgdec_libinit() returned TRUE\n" ));
+		VoyFlush();
 		
-		Printf( "[IMGDEC] About to call imgdec_storeprefs()...\n" );
-		Flush( Output() );
+		VoyLog(( "[IMGDEC] About to call imgdec_storeprefs()...\n" ));
+		VoyFlush();
 		imgdec_storeprefs();
-		Printf( "[IMGDEC] imgdec_storeprefs() complete\n" );
-		Flush( Output() );
+		VoyLog(( "[IMGDEC] imgdec_storeprefs() complete\n" ));
+		VoyFlush();
 		
-		Printf( "[IMGDEC] start_image_decoders() succeeded\n" );
-		Flush( Output() );
+		VoyLog(( "[IMGDEC] start_image_decoders() succeeded\n" ));
+		VoyFlush();
 		return( TRUE );
 	}
-	Printf( "[IMGDEC] imgdec_libinit() returned FALSE\n" );
-	Flush( Output() );
+	VoyLog(( "[IMGDEC] imgdec_libinit() returned FALSE\n" ));
+	VoyFlush();
 	return( FALSE );
 }
 

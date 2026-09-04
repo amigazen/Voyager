@@ -2,7 +2,7 @@
 ; $Id: voyager.cd,v 1.149 2003/12/02 16:23:55 zapek Exp $
 ;
 ; 
-; $VER: Voyager.cd 1.1 (20 Jun 99) for Voyagerï¿½ ï¿½ Oliver Wagner
+; $VER: Voyager.cd 1.1 (20 Jun 99) for Voyager³ © Oliver Wagner
 ; English strings by Oliver Wagner and Ben Preece <beej@vapor.com>
 ;
 ;
@@ -313,7 +313,7 @@ MSG_SH_WIN_BT_URL (//)
 Enter an internet address here
 ;
 MSG_WINBM_TITLE (//)
-Voyager ï¿½ï¿½Bookmarks
+Voyager · Bookmarks
 ;
 ; ******* Prefs bubble help/General **********
 ;
@@ -327,7 +327,7 @@ MSG_SH_PREFSWIN_CHK_SCROLLBARS (//)
 Selects whether you want Gadtools\nor MUI scrollbars in Voyager's window
 ;
 MSG_SH_PREFSWIN_CHK_EXIT (//)
-Selectsï¿½if Voyager should save the\ncurrent prefs when you exit the program
+Selects if Voyager should save the\ncurrent prefs when you exit the program
 ;
 MSG_SH_PREFSWIN_CHK_ERRORREQUESTER (//)
 Selects how Voyager should inform you\nof errors. If enabled, Voyager will open\na requester with a description of the\nerror, if not the error will be displayed\nin the HTML area
@@ -752,7 +752,7 @@ may not be valid.
 ; ************ Prefs: Bookmarks **********
 ;
 MSG_BOOK_TITLE (//)
-Voyager ï¿½ Bookmarks
+Voyager · Bookmarks
 ;
 MSG_BOOK_DEFAULTTITLE (//)
 *New Title*
@@ -811,7 +811,7 @@ Unable to open file \"%s\", error %u
 ; ********** Prefs **********
 ;
 MSG_PREFSWIN_TITLE (//)
-Voyager ï¿½ï¿½Settings
+Voyager · Settings
 ;
 MSG_PREFSWIN_BT_ADD (//)
 _Add new
@@ -1340,13 +1340,13 @@ FTP Connection established, now logging in...
 ; ********** Child windows **********
 ;
 MSG_NETINFO_TITLE (//)
-Voyager ï¿½ï¿½Network status
+Voyager · Network status
 ;
 MSG_NETINFO_PARKED (//)
 \033l(parked connection)
 ;
 MSG_AUTH_TITLE (//)
-Voyager ï¿½ Authentication required
+Voyager · Authentication required
 ;
 MSG_AUTH_L1 (//)
 Server:
@@ -1367,37 +1367,37 @@ MSG_AUTH_FAILED (//)
 \033cAuthentication \033bfailed!\033n
 ;
 MSG_COOKIEWIN_TITLE (//)
-Voyager ï¿½ Cookie request
+Voyager · Cookie request
 ;
 MSG_COOKIEWIN_L1 (//)
 Server \033b%s\033n wants to set a cookie.\n
 ;
 MSG_COOKIEWIN_L2A (//)
-ï¿½ Cookie is sent back to \033bthis server\033n only\n
+· Cookie is sent back to \033bthis server\033n only\n
 ;
 MSG_COOKIEWIN_L2B (//)
-ï¿½ Cookie is sent to all servers in domain \033b%s\033n\n
+· Cookie is sent to all servers in domain \033b%s\033n\n
 ;
 MSG_COOKIEWIN_L3A (//)
-ï¿½ Cookie expires when Voyager is quit\n
+· Cookie expires when Voyager is quit\n
 ;
 MSG_COOKIEWIN_L3B (//)
-ï¿½ Cookie expires \033b%s\033n.\n
+· Cookie expires \033b%s\033n.\n
 ;
 MSG_COOKIEWIN_L4A (//)
-ï¿½ Cookie is sent using \033binsecure\033n links\n
+· Cookie is sent using \033binsecure\033n links\n
 ;
 MSG_COOKIEWIN_L4B (//)
-ï¿½ Cookie is sent using \033bsecure\033n links\n
+· Cookie is sent using \033bsecure\033n links\n
 ;
 MSG_COOKIEWIN_L5 (//)
-ï¿½ Cookie name: \033b%.30s\033n\n
+· Cookie name: \033b%.30s\033n\n
 ;
 MSG_COOKIEWIN_L6 (//)
-ï¿½ Cookie data: \033b%.30s\033n\n
+· Cookie data: \033b%.30s\033n\n
 ;
 MSG_COOKIEWIN_L7 (//)
-ï¿½ Comment: \033b%.30s\033n\n
+· Comment: \033b%.30s\033n\n
 ;
 MSG_COOKIEWIN_ALLOW (//)
 _Allow
@@ -1406,7 +1406,7 @@ MSG_COOKIEWIN_REJECT (//)
 _Reject
 ;
 MSG_POSTWARN_TITLE (//)
-Voyager ï¿½ Security warning
+Voyager · Security warning
 ;
 MSG_POSTWARN_BODY (//)
 \033cThe data you are about to submit will\n\
@@ -1470,7 +1470,7 @@ Cache Images
 ; ********** SSL **********
 ;
 MSG_CERTREQWIN_TITLE (//)
-Voyager ï¿½ï¿½SSL Authentication Error
+Voyager · SSL Authentication Error
 ;
 MSG_CERTREQWIN_ONCE (//)
 Accept this time
@@ -1519,7 +1519,7 @@ Save Bookmarks...
 ; ********** Download window **********
 ;
 MSG_DOWNLOAD_TITLE (//)
-Voyager ï¿½ Downloads
+Voyager · Downloads
 ;
 MSG_DOWNLOAD_TO (//)
 Download to:
@@ -1578,7 +1578,7 @@ MSG_NWM_ERROR_UNKNOWNMETHOD (//)
 Unknown URL transfer method \"%s\".
 ;
 MSG_NWM_ERROR_HTML (//)
-<HEAD><TITLE>Voyager ï¿½ï¿½Page retrieval failed</TITLE>\n\
+<HEAD><TITLE>Voyager · Page retrieval failed</TITLE>\n\
 <BODY><H1>Page retrieval failed!</H1>\n\
 <FONT SIZE=+1><B>%s</B></FONT>\n\
 <BR>%s<HR>
@@ -1815,7 +1815,7 @@ Directory listing failed
 ; ********** Page information window **********
 ;
 MSG_DOCINFOWIN_WINTITLE (//)
-Voyager ï¿½ Page Information
+Voyager · Page Information
 ;
 MSG_DOCINFOWIN_URL (//)
 URL:
@@ -1874,13 +1874,13 @@ Javascript Console...
 ; ********** Plugins **********
 ;
 MSG_PLUGIN_EMBED_INFO (//)
-ï¿½ Source: \033b%s\033n\nï¿½ MIME type: \033b%s\033n
+· Source: \033b%s\033n\n· MIME type: \033b%s\033n
 ;
 MSG_PLUGIN_EMBED_NOPLUGIN (//)
-ï¿½ No plugin installed for \033b%s\033n\nï¿½ Click here for the \033bVï¿½ Plugin Finder\033n
+· No plugin installed for \033b%s\033n\n· Click here for the \033bV³ Plugin Finder\033n
 ;
 MSG_PLUGIN_WIN_TITLE (//)
-Voyager ï¿½ Plugins
+Voyager · Plugins
 ;
 MSG_PLUGIN_REG1 (//)
 Information
@@ -2046,7 +2046,7 @@ MSG_MENU_COOKIEBROWSER (//)
 Cookie browser...
 ;
 MSG_COOKIEBROWSER_WINTITLE (//)
-Voyager ï¿½ Cookie Browser
+Voyager · Cookie Browser
 ;
 MSG_COOKIEBROWSER_BT_REMOVEALL (//)
 Remove all
@@ -2145,7 +2145,7 @@ MSG_PREFSWIN_HOMEPAGEURL (//)
 Home page URL
 ;
 MSG_PREFSWIN_HOMEPAGEURL_1 (//)
-V3ï¿½Portal
+V3·Portal
 ;
 MSG_PREFSWIN_HOMEPAGEURL_2 (//)
 About:
@@ -2162,7 +2162,7 @@ Select what home page you would like to see on startup
 ; ****** PASSWORD MANAGER ******
 ;
 MSG_AUTHBROWSER_WINTITLE (//)
-Voyager ï¿½ Password Manager
+Voyager · Password Manager
 ;
 MSG_MENU_AUTHBROWSER (//)
 Password Manager...
@@ -2287,35 +2287,35 @@ Body:
 ; ********** REG NAG-O-MATIC **********
 ;
 MSG_REG_HEADER (//)
-\033c\033uWelcome to \033uVï¿½!\033n\n\n\
+\033c\033uWelcome to \033uV³!\033n\n\n\
 This is a time limited demo version.\n\
 It is fully functional, except that it\n\
 will silently quit after 30 minutes.\n
 ;
 MSG_REG_OVER (//)
-\033c\033uThanks for trying \033uVï¿½\033n!\n\n\
+\033c\033uThanks for trying \033uV³\033n!\n\n\
 Your 30 minute testing period is over.
 ;
 MSG_REG_TXT1 (//)
-You can buy Vï¿½ online now using our\n\
+You can buy V³ online now using our\n\
 secure Credit Card order system and receive\n\
 your license key \033bwithin minutes!\033n\
 \n
 ;
 MSG_REG_TXT2 (//)
 You can also use the included Vapor\n\
-Regutil to buy Vï¿½ at any of the\n\
+Regutil to buy V³ at any of the\n\
 VaporWare registration sites worldwide!\
 \n
 ;
 MSG_REG_TXT3 (//)
-Registering Vï¿½ will get you a\n\
+Registering V³ will get you a\n\
 personal license key file which identifies\n\
-you as an legal owner of Vï¿½.
+you as an legal owner of V³.
 ;
 MSG_REG_CNT (//)
 \033cThis is day %u of your testing period.\n\
-So far, you have run Vï¿½ %u times,\n\
+So far, you have run V³ %u times,\n\
 and used it for %u hours and %u minutes.
 ;
 MSG_REGISTER_DO (//)
@@ -2356,7 +2356,7 @@ Signature:
 ; ********** ERROR WINDOW **********
 ;
 MSG_ERRORWIN_WINTITLE (//)
-Voyager ï¿½ Error window
+Voyager · Error window
 ;
 MSG_ERRORWIN_ERRORLEVEL (//)
 Info
@@ -2415,7 +2415,7 @@ bogus cache entry (link or directory) detected
 ; ********** CACHE PRUNER **********
 ;
 MSG_PRUNECACHEWIN_WINTITLE (//)
-Voyager ï¿½ Cache pruner
+Voyager · Cache pruner
 ;
 MSG_PRUNECACHEWIN_START (//)
 Start

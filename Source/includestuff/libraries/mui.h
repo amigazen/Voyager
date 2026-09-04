@@ -231,7 +231,7 @@ struct MUI_PenSpec
 #define PSD_INITIAL_TITLE  "MUI Public Screen"
 #define PSD_ID_MPUB        MAKE_ID('M','P','U','B')
 
-#define PSD_NAME_FRONTMOST "ï¿½Frontmostï¿½"
+#define PSD_NAME_FRONTMOST "«Frontmost»"
 
 #define PSD_FILENAME_SAVE "envarc:mui/PublicScreens.iff"
 #define PSD_FILENAME_USE  "env:mui/PublicScreens.iff"
@@ -3937,7 +3937,7 @@ struct MUI_AreaData
 /* Mask for pens from MUI_ObtainPen() */
 
 #ifdef MBX /* private */
-#define MUIPEN_MASK 0xffffffffï¿½/* private */
+#define MUIPEN_MASK 0xffffffff /* private */
 #define MUIPEN(pen) (pen) /* private */
 #else /* private */
 #define MUIPEN_MASK 0x0000ffff

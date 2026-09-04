@@ -5,7 +5,7 @@
  * VaporWare Macros
  * ----------------
  *
- * Â© 1999-2000 by VaporWare CVS team <ibcvs@vapor.com>
+ * © 1999-2000 by VaporWare CVS team <ibcvs@vapor.com>
  * All rights reserved
  *
  */

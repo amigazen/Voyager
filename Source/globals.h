@@ -21,7 +21,7 @@
 /*
  * Common includes and symbols
  * ---------------------------
- * ï¿½ 2001 VaporWare Inc. Co. Ltd. Unlimited.
+ * © 2001 VaporWare Inc. Co. Ltd. Unlimited.
  *
  * - general symbols
  * - common includes

@@ -58,8 +58,8 @@ struct layout_ctx *layout_new( void )
 	APTR pool;
 	struct layout_ctx *n;
 
-	Printf( "[LAYOUT] layout_new entry\n" );
-	Flush( Output() );
+	VoyLog(( "[LAYOUT] layout_new entry\n" ));
+	VoyFlush();
 
 	pool = CreatePool( MEMF_ANY, 8192, 4096 );
 	if( pool )
@@ -91,15 +91,15 @@ struct layout_ctx *layout_new( void )
 			n->iso_charset = UCCS_LATIN1;
 #endif
 
-			Printf( "[LAYOUT] layout_new exit ctx=%lx\n", (ULONG)n );
-			Flush( Output() );
+			VoyLog(( "[LAYOUT] layout_new exit ctx=%lx\n", (ULONG)n ));
+			VoyFlush();
 			return( n );
 		}
 
 		DeletePool( pool );
 	}
-	Printf( "[LAYOUT] layout_new exit NULL\n" );
-	Flush( Output() );
+	VoyLog(( "[LAYOUT] layout_new exit NULL\n" ));
+	VoyFlush();
 	return( NULL );
 }
 
@@ -152,8 +152,8 @@ void layout_delete( struct layout_ctx *ctx )
 		APTR o;
 		struct layout_fetchnode *fn;
 
-		Printf( "[LAYOUT] layout_delete entry ctx=%lx\n", (ULONG)ctx );
-		Flush( Output() );
+		VoyLog(( "[LAYOUT] layout_delete entry ctx=%lx\n", (ULONG)ctx ));
+		VoyFlush();
 		layout_detach( ctx );
 		layout_freepens( ctx );
 
@@ -193,8 +193,8 @@ void layout_attach( struct layout_ctx *ctx, APTR obj )
 {
 	APTR o;
 
-	Printf( "[LAYOUT] layout_attach entry ctx=%lx obj=%lx\n", (ULONG)ctx, (ULONG)obj );
-	Flush( Output() );
+	VoyLog(( "[LAYOUT] layout_attach entry ctx=%lx obj=%lx\n", (ULONG)ctx, (ULONG)obj ));
+	VoyFlush();
 
 	DoMethod( obj, MUIM_Group_InitChange );
 
@@ -217,8 +217,8 @@ void layout_attach( struct layout_ctx *ctx, APTR obj )
 
 	DoMethod( obj, MUIM_Group_ExitChange );
 
-	Printf( "[LAYOUT] layout_attach exit\n" );
-	Flush( Output() );
+	VoyLog(( "[LAYOUT] layout_attach exit\n" ));
+	VoyFlush();
 }
 
 //
@@ -256,8 +256,8 @@ void layout_remobj( struct layout_ctx *ctx, APTR o )
 //
 void layout_setdom( struct layout_ctx *ctx, APTR dom_win, APTR dom_document )
 {
-	Printf( "[LAYOUT] layout_setdom entry ctx=%lx win=%lx doc=%lx\n", (ULONG)ctx, (ULONG)dom_win, (ULONG)dom_document );
-	Flush( Output() );
+	VoyLog(( "[LAYOUT] layout_setdom entry ctx=%lx win=%lx doc=%lx\n", (ULONG)ctx, (ULONG)dom_win, (ULONG)dom_document ));
+	VoyFlush();
 	ctx->dom_win = dom_win;
 	ctx->dom_document = dom_document;
 }
@@ -268,8 +268,8 @@ void layout_setdom( struct layout_ctx *ctx, APTR dom_win, APTR dom_document )
 //
 void layout_setmargins( struct layout_ctx *ctx, int l, int r, int t, int b )
 {
-	Printf( "[LAYOUT] layout_setmargins entry l=%ld r=%ld t=%ld b=%ld\n", (long)l, (long)r, (long)t, (long)b );
-	Flush( Output() );
+	VoyLog(( "[LAYOUT] layout_setmargins entry l=%ld r=%ld t=%ld b=%ld\n", (long)l, (long)r, (long)t, (long)b ));
+	VoyFlush();
 	ctx->margin_left = l;
 	ctx->margin_right = r;
 	ctx->margin_top = t;

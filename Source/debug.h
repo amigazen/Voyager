@@ -24,7 +24,7 @@
  * - Select debugging output. Authors are encouraged to put debug output as much as possible
  *   in their sources. It's easy and the betatesters can give very usefull outputs.
  *
- * ï¿½ 2000 by VaporWare CVS team <ibcvs@vapor.com>
+ * © 2000 by VaporWare CVS team <ibcvs@vapor.com>
  * All rights reserved
  *
  * How to use:

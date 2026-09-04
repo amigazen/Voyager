@@ -20,7 +20,7 @@
  * DOS support functions
  * ---------------------
  *
- * Â© 2000 by Vapor CVS team <ibcvs@vapor.com>
+ * © 2000 by Vapor CVS team <ibcvs@vapor.com>
  * All rights reserved
  *
  * $Id: file.c,v 1.12 2003/07/06 16:51:33 olli Exp $

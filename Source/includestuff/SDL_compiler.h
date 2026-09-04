@@ -44,10 +44,10 @@
 **
 ** To keep confusion level low: When changing this file, please note it in
 ** above history list and indicate that the change was not made by myself
-** (e.g.ï¿½add your name or nick name).
+** (e.g. add your name or nick name).
 **
 ** Jens Langner <Jens.Langner@light-speed.de> and
-** Dirk Stï¿½cker <stoecker@epost.de>
+** Dirk Stöcker <stoecker@epost.de>
 */
 
 #undef ASM

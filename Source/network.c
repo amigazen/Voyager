@@ -845,7 +845,7 @@ static void addstream( struct nstream *ns )
 		{
 			if( p[ 1 ] == '{' )
 			{
-				if( strstr( p, "}ÔøΩ" ) )
+				if( strstr( p, "}ù" ) )
 					*p = 0;
 			}
 		}
@@ -864,7 +864,7 @@ static void addstream( struct nstream *ns )
 			p = db;
 			while( isdigit( *p ) )
 				p++;
-			if( !strcmp( p, "}ÔøΩ" ) )
+			if( !strcmp( p, "}ù" ) )
 			{
 				un->postid = atoi( db );
 				db[ -2 ] = 0;
@@ -2084,10 +2084,10 @@ static void un_setup( struct unode *un )
 #endif
 				}
 				else
-					strcpy( bf2, "ÔøΩ Unregistered Demo Copy ÔøΩ" );
+					strcpy( bf2, "ù Unregistered Demo Copy ù" );
 				#else
 				#ifdef __MORPHOS__
-				strcpy( bf2, "ÔøΩ MorphOS licensed version ÔøΩ" );
+				strcpy( bf2, "ù MorphOS licensed version ù" );
 				#endif
 				#endif /* disabled keyfile code */
 				#ifdef __MORPHOS__
@@ -2096,7 +2096,7 @@ static void un_setup( struct unode *un )
 				strcpy( bf2, "Voyager" );
 				#endif
 #else /* USE_NET */
-				strcpy( bf2, "ÔøΩ Freely distributable NoNet version ÔøΩ" );
+				strcpy( bf2, "ù Freely distributable NoNet version ù" );
 #endif /* USE_NET */
 
 				/*
@@ -3033,7 +3033,9 @@ static void SAVEDS nethandler( void )
 	APTR executivemsg;
 #endif
 
+#if VLOG
 	net_log_file = Open( "V:voyager_net.log", MODE_NEWFILE );
+#endif
 	NetLog( "nethandler entry (network process started)\n" );
 
 	/* timed() returns 0 if timer not initialized (subprocess never calls init_timer) */
@@ -3430,22 +3432,22 @@ int init_netprocess( void )
 	char name[ 32 ];
 
 	D( db_init, bug( "initializing..\n" ) );
-	Printf( "[NET] init_netprocess() starting...\n" );
+	VoyLog(( "[NET] init_netprocess() starting...\n" ));
 
-	Printf( "[NET] Initializing netpoolsem...\n" );
+	VoyLog(( "[NET] Initializing netpoolsem...\n" ));
 	InitSemaphore( &netpoolsem );
-	Printf( "[NET] Creating netpool...\n" );
+	VoyLog(( "[NET] Creating netpool...\n" ));
 	if( netpool = CreatePool( 0, 4096, 2048 ) )
 	{
-		Printf( "[NET] netpool created successfully\n" );
+		VoyLog(( "[NET] netpool created successfully\n" ));
 #if USE_NET
-		Printf( "[NET] About to create DNS processes\n" );
-		Printf( "[NET] DNSTASKS = %ld\n", (long)DNSTASKS );
-		Printf( "[NET] Entering DNS process creation loop\n" );
-		Printf( "[NET] Loop starting, c will go from 0 to %ld\n", (long)(DNSTASKS - 1) );
+		VoyLog(( "[NET] About to create DNS processes\n" ));
+		VoyLog(( "[NET] DNSTASKS = %ld\n", (long)DNSTASKS ));
+		VoyLog(( "[NET] Entering DNS process creation loop\n" ));
+		VoyLog(( "[NET] Loop starting, c will go from 0 to %ld\n", (long)(DNSTASKS - 1) ));
 		for( c = 0; c < DNSTASKS; c++ )
 		{
-			Printf( "[NET] DNS loop iteration %ld (c=%ld)\n", (long)(c + 1), (long)c );
+			VoyLog(( "[NET] DNS loop iteration %ld (c=%ld)\n", (long)(c + 1), (long)c ));
 			
 			/* Initialize name buffer to ensure it's clean */
 			{
@@ -3455,10 +3457,7 @@ int init_netprocess( void )
 			}
 			
 #ifdef __SASC
-			{
-				int result = SNPrintf( name, sizeof(name), "V's DNS Server %d", c + 1 );
-				Printf( "[NET] SNPrintf returned: %ld\n", (long)result );
-			}
+			SNPrintf( name, sizeof(name), "V's DNS Server %d", c + 1 );
 #else
 			sprintf( name, "V's DNS Server %d", c + 1 );
 #endif
@@ -3466,8 +3465,8 @@ int init_netprocess( void )
 			/* Ensure null termination */
 			name[ sizeof(name) - 1 ] = '\0';
 			
-			Printf( "[NET] Creating DNS process\n" );
-			Flush( Output() );
+			VoyLog(( "[NET] Creating DNS process\n" ));
+			VoyFlush();
 			
 			dnsproc[ c ] = CreateNewProcTags(
 				NP_Entry, dnshandler,
@@ -3484,17 +3483,17 @@ int init_netprocess( void )
 				TAG_DONE
 			);
 
-			Printf( "[NET] CreateNewProcTags returned\n" );
-			Flush( Output() );
+			VoyLog(( "[NET] CreateNewProcTags returned\n" ));
+			VoyFlush();
 
 			if( !dnsproc[ c ] )
 			{
-				Printf( "[NET] ERROR: DNS process creation failed!\n" );
+				VoyLog(( "[NET] ERROR: DNS process creation failed!\n" ));
 				return( FALSE );
 			}
 
-			Printf( "[NET] Waiting for DNS port...\n" );
-			Flush( Output() );
+			VoyLog(( "[NET] Waiting for DNS port...\n" ));
+			VoyFlush();
 
 			#ifndef __MORPHOS__
 			/* Wait for port creation with timeout (max 50 ticks = ~1 second) */
@@ -3506,24 +3505,24 @@ int init_netprocess( void )
 					waitcount++;
 					if( (waitcount % 10) == 0 )
 					{
-						Printf( "[NET] Still waiting... (%ld)\n", (long)waitcount );
-						Flush( Output() );
+						VoyLog(( "[NET] Still waiting... (%ld)\n", (long)waitcount ));
+						VoyFlush();
 					}
 				}
 				if( !dnsport[ c ] )
 				{
-					Printf( "[NET] ERROR: DNS port not created after timeout!\n" );
+					VoyLog(( "[NET] ERROR: DNS port not created after timeout!\n" ));
 					return( FALSE );
 				}
 			}
 			#endif
 
-			Printf( "[NET] DNS process created successfully\n" );
-			Flush( Output() );
+			VoyLog(( "[NET] DNS process created successfully\n" ));
+			VoyFlush();
 		}
 
 #if USE_CONNECT_PROC
-		Printf( "[NET] Creating connect processes (MAXNETPROC=%ld)...\n", (long)MAXNETPROC );
+		VoyLog(( "[NET] Creating connect processes (MAXNETPROC=%ld)...\n", (long)MAXNETPROC ));
 		for( c = 0; c < MAXNETPROC; c++ )
 		{
 #ifdef __SASC
@@ -3531,7 +3530,7 @@ int init_netprocess( void )
 #else
 			sprintf( name, "V's connect() Handler %02d", c + 1 );
 #endif
-			Printf( "[NET] Creating connect process %ld: %s\n", (long)(c + 1), name );
+			VoyLog(( "[NET] Creating connect process %ld: %s\n", (long)(c + 1), name ));
 			connectproc[ c ] = CreateNewProcTags(
 				NP_Entry, connecthandler,
 				NP_Name, name,
@@ -3542,22 +3541,22 @@ int init_netprocess( void )
 			);
 			if( connectproc[ c ] )
 			{
-				Printf( "[NET] Waiting for connect port %ld to be created...\n", (long)(c + 1) );
+				VoyLog(( "[NET] Waiting for connect port %ld to be created...\n", (long)(c + 1) ));
 				while( connectproc[ c ] && !connectport[ c ] )
 					Delay( 1 );
 				if( connectport[ c ] )
-					Printf( "[NET] Connect port %ld created successfully\n", (long)(c + 1) );
+					VoyLog(( "[NET] Connect port %ld created successfully\n", (long)(c + 1) ));
 				else
-					Printf( "[NET] WARNING: Connect port %ld not created!\n", (long)(c + 1) );
+					VoyLog(( "[NET] WARNING: Connect port %ld not created!\n", (long)(c + 1) ));
 			}
 			if( !connectproc[ c ] )
 			{
-				Printf( "[NET] ERROR: Connect process %ld creation failed!\n", (long)(c + 1) );
+				VoyLog(( "[NET] ERROR: Connect process %ld creation failed!\n", (long)(c + 1) ));
 				return( FALSE );
 			}
-			Printf( "[NET] Connect process %ld created successfully\n", (long)(c + 1) );
+			VoyLog(( "[NET] Connect process %ld created successfully\n", (long)(c + 1) ));
 		}
-		Printf( "[NET] All connect processes created\n" );
+		VoyLog(( "[NET] All connect processes created\n" ));
 #endif
 
 		// allocate buffers for hostnames and FTP passwords
@@ -3569,7 +3568,7 @@ int init_netprocess( void )
 
 #endif /* USE_NET */
 
-		Printf( "[NET] Creating main network process...\n" );
+		VoyLog(( "[NET] Creating main network process...\n" ));
 		netproc = CreateNewProcTags(
 			NP_Entry, nethandler,
 			NP_Name, "V's Network & File Server",
@@ -3586,31 +3585,31 @@ int init_netprocess( void )
 
 		if( netproc )
 		{
-			Printf( "[NET] Main network process created, waiting for netport...\n" );
+			VoyLog(( "[NET] Main network process created, waiting for netport...\n" ));
 			while( netproc && !netport )
 			{
 				Delay( 1 );
 			}
 			if( netport )
-				Printf( "[NET] netport created successfully\n" );
+				VoyLog(( "[NET] netport created successfully\n" ));
 			else
-				Printf( "[NET] WARNING: netport not created (process may have exited)!\n" );
+				VoyLog(( "[NET] WARNING: netport not created (process may have exited)!\n" ));
 		}
 		else
 		{
-			Printf( "[NET] ERROR: Main network process creation failed!\n" );
+			VoyLog(( "[NET] ERROR: Main network process creation failed!\n" ));
 		}
 
 		if( !netproc )
 			return( FALSE );
 
 #if USE_NET
-		Printf( "[NET] Calling proxy_init()...\n" );
+		VoyLog(( "[NET] Calling proxy_init()...\n" ));
 		proxy_init();
-		Printf( "[NET] proxy_init() complete\n" );
+		VoyLog(( "[NET] proxy_init() complete\n" ));
 #endif /* USE_NET */
 
-		Printf( "[NET] init_netprocess() complete, returning TRUE\n" );
+		VoyLog(( "[NET] init_netprocess() complete, returning TRUE\n" ));
 		return( TRUE );
 	}
 	else

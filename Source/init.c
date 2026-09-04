@@ -87,7 +87,7 @@ UnicodeData_p UnicodeBase;
 #define VSPEC ""
 #endif
 
-char copyright[] = { "Voyager " LVERTAG " " VSPEC "ï¿½ 1995-2003 Oliver Wagner & David Gerber, All Rights Reserved" };
+char copyright[] = { "Voyager " LVERTAG " " VSPEC "© 1995-2003 Oliver Wagner & David Gerber, All Rights Reserved" };
 
 int app_started;
 static int app_doublestart;
@@ -198,60 +198,60 @@ int initstuff( void )
 	if( !open_mathlibs() ) return( FALSE );
 	if( !open_muimaster() ) return( FALSE );
 	if( !open_vaportoolkit() ) return( FALSE );
-	Printf( "[INIT] After open_vaportoolkit, about to check USE_KEYFILES\n" );
-	Flush( Output() );
+	VoyLog(( "[INIT] After open_vaportoolkit, about to check USE_KEYFILES\n" ));
+	VoyFlush();
 #endif /* !MBX */
 
 #if USE_KEYFILES
-	Printf( "[INIT] Calling old_loadkey()...\n" );
-	Flush( Output() );
+	VoyLog(( "[INIT] Calling old_loadkey()...\n" ));
+	VoyFlush();
 	old_loadkey();
-	Printf( "[INIT] old_loadkey() complete\n" );
-	Flush( Output() );
+	VoyLog(( "[INIT] old_loadkey() complete\n" ));
+	VoyFlush();
 #endif /* USE_KEYFILES */
 #ifndef MBX
-	Printf( "[INIT] About to call init_fakebitmap()...\n" );
-	Flush( Output() );
+	VoyLog(( "[INIT] About to call init_fakebitmap()...\n" ));
+	VoyFlush();
 	init_fakebitmap();
-	Printf( "[INIT] After init_fakebitmap()\n" );
-	Flush( Output() );
+	VoyLog(( "[INIT] After init_fakebitmap()\n" ));
+	VoyFlush();
 #endif /* !MBX */
 
 #if USE_NET
-	Printf( "[INIT] Calling init_verify()...\n" );
-	if( !init_verify() ) { Printf( "[INIT] init_verify() failed!\n" ); return( FALSE ); }
-	Printf( "[INIT] init_verify() succeeded\n" );
+	VoyLog(( "[INIT] Calling init_verify()...\n" ));
+	if( !init_verify() ) { VoyLog(( "[INIT] init_verify() failed!\n" )); return( FALSE ); }
+	VoyLog(( "[INIT] init_verify() succeeded\n" ));
 #endif /* USE_NET */
 #if USE_NET
-	Printf( "[INIT] Calling init_auth()...\n" );
-	if( !init_auth() ) { Printf( "[INIT] init_auth() failed!\n" ); return( FALSE ); }
-	Printf( "[INIT] init_auth() succeeded\n" );
+	VoyLog(( "[INIT] Calling init_auth()...\n" ));
+	if( !init_auth() ) { VoyLog(( "[INIT] init_auth() failed!\n" )); return( FALSE ); }
+	VoyLog(( "[INIT] init_auth() succeeded\n" ));
 #endif /* USE_NET */
 
-	Printf( "[INIT] Calling init_progdir()...\n" );
+	VoyLog(( "[INIT] Calling init_progdir()...\n" ));
 	init_progdir();
-	Printf( "[INIT] Calling create_ledclass()...\n" );
-	if( !create_ledclass() ) { Printf( "[INIT] create_ledclass() failed!\n" ); return( FALSE ); }
-	Printf( "[INIT] create_ledclass() succeeded\n" );
+	VoyLog(( "[INIT] Calling create_ledclass()...\n" ));
+	if( !create_ledclass() ) { VoyLog(( "[INIT] create_ledclass() failed!\n" )); return( FALSE ); }
+	VoyLog(( "[INIT] create_ledclass() succeeded\n" ));
 
 #if USE_STB_NAV
 	if( !create_crossclass() ) return( FALSE );
 #endif
 
-	Printf( "[INIT] Calling init_netprocess()...\n" );
-	if( !init_netprocess() ) { Printf( "[INIT] init_netprocess() failed!\n" ); return( FALSE ); }
-	Printf( "[INIT] init_netprocess() succeeded\n" );
+	VoyLog(( "[INIT] Calling init_netprocess()...\n" ));
+	if( !init_netprocess() ) { VoyLog(( "[INIT] init_netprocess() failed!\n" )); return( FALSE ); }
+	VoyLog(( "[INIT] init_netprocess() succeeded\n" ));
 
-	Printf( "[INIT] Calling init_locale()...\n" );
-	if( !init_locale() ) { Printf( "[INIT] init_locale() failed!\n" ); return( FALSE ); }
-	Printf( "[INIT] init_locale() succeeded\n" );
-	Printf( "[INIT] Calling init_internalipc()...\n" );
+	VoyLog(( "[INIT] Calling init_locale()...\n" ));
+	if( !init_locale() ) { VoyLog(( "[INIT] init_locale() failed!\n" )); return( FALSE ); }
+	VoyLog(( "[INIT] init_locale() succeeded\n" ));
+	VoyLog(( "[INIT] Calling init_internalipc()...\n" ));
 	init_internalipc();
-	Printf( "[INIT] init_internalipc() complete\n" );
+	VoyLog(( "[INIT] init_internalipc() complete\n" ));
 
-	Printf( "[INIT] Calling mcccheck()...\n" );
-	if( !mcccheck() ) { Printf( "[INIT] mcccheck() failed!\n" ); return( FALSE ); }
-	Printf( "[INIT] mcccheck() succeeded\n" );
+	VoyLog(( "[INIT] Calling mcccheck()...\n" ));
+	if( !mcccheck() ) { VoyLog(( "[INIT] mcccheck() failed!\n" )); return( FALSE ); }
+	VoyLog(( "[INIT] mcccheck() succeeded\n" ));
 #if USE_NLIST
 	check_for_nlist();
 #endif /* USE_NLIST	*/
@@ -358,34 +358,34 @@ int initstuff( void )
 	if( !load_diskobj() ) return( FALSE );
 #endif /* USE_DOS */
 	if( !create_amiconclass() ) return( FALSE );
-	Printf( "[INIT] Calling create_appclass()...\n" );
-	if( !create_appclass() ) { Printf( "[INIT] create_appclass() failed!\n" ); return( FALSE ); }
-	Printf( "[INIT] create_appclass() succeeded\n" );
+	VoyLog(( "[INIT] Calling create_appclass()...\n" ));
+	if( !create_appclass() ) { VoyLog(( "[INIT] create_appclass() failed!\n" )); return( FALSE ); }
+	VoyLog(( "[INIT] create_appclass() succeeded\n" ));
 #if USE_NET
-	Printf( "[INIT] Calling create_authbrowserwinclass()...\n" );
-	if( !create_authbrowserwinclass() ) { Printf( "[INIT] create_authbrowserwinclass() failed!\n" ); return( FALSE ); }
-	Printf( "[INIT] create_authbrowserwinclass() succeeded\n" );
+	VoyLog(( "[INIT] Calling create_authbrowserwinclass()...\n" ));
+	if( !create_authbrowserwinclass() ) { VoyLog(( "[INIT] create_authbrowserwinclass() failed!\n" )); return( FALSE ); }
+	VoyLog(( "[INIT] create_authbrowserwinclass() succeeded\n" ));
 #if USE_NET
-	Printf( "[INIT] Calling create_cookiebrowserwinclass()...\n" );
-	if( !create_cookiebrowserwinclass() ) { Printf( "[INIT] create_cookiebrowserwinclass() failed!\n" ); return( FALSE ); }
-	Printf( "[INIT] create_cookiebrowserwinclass() succeeded\n" );
+	VoyLog(( "[INIT] Calling create_cookiebrowserwinclass()...\n" ));
+	if( !create_cookiebrowserwinclass() ) { VoyLog(( "[INIT] create_cookiebrowserwinclass() failed!\n" )); return( FALSE ); }
+	VoyLog(( "[INIT] create_cookiebrowserwinclass() succeeded\n" ));
 #endif /* USE_NET */
-	Printf( "[INIT] Calling create_docinfowinclass()...\n" );
-	if( !create_docinfowinclass() ) { Printf( "[INIT] create_docinfowinclass() failed!\n" ); return( FALSE ); }
-	Printf( "[INIT] create_docinfowinclass() succeeded\n" );
+	VoyLog(( "[INIT] Calling create_docinfowinclass()...\n" ));
+	if( !create_docinfowinclass() ) { VoyLog(( "[INIT] create_docinfowinclass() failed!\n" )); return( FALSE ); }
+	VoyLog(( "[INIT] create_docinfowinclass() succeeded\n" ));
 #ifndef MBX
 #if USE_NET
-	Printf( "[INIT] Calling create_downloadwinclass()...\n" );
-	if( !create_downloadwinclass() ) { Printf( "[INIT] create_downloadwinclass() failed!\n" ); return( FALSE ); }
-	Printf( "[INIT] create_downloadwinclass() succeeded\n" );
+	VoyLog(( "[INIT] Calling create_downloadwinclass()...\n" ));
+	if( !create_downloadwinclass() ) { VoyLog(( "[INIT] create_downloadwinclass() failed!\n" )); return( FALSE ); }
+	VoyLog(( "[INIT] create_downloadwinclass() succeeded\n" ));
 #endif /* USE_NET */
 #endif
-	Printf( "[INIT] Calling create_errorwinclass()...\n" );
-	if( !create_errorwinclass() ) { Printf( "[INIT] create_errorwinclass() failed!\n" ); return( FALSE ); }
-	Printf( "[INIT] create_errorwinclass() succeeded\n" );
-	Printf( "[INIT] Calling create_historylistclass()...\n" );
-	if( !create_historylistclass() ) { Printf( "[INIT] create_historylistclass() failed!\n" ); return( FALSE ); }
-	Printf( "[INIT] create_historylistclass() succeeded\n" );
+	VoyLog(( "[INIT] Calling create_errorwinclass()...\n" ));
+	if( !create_errorwinclass() ) { VoyLog(( "[INIT] create_errorwinclass() failed!\n" )); return( FALSE ); }
+	VoyLog(( "[INIT] create_errorwinclass() succeeded\n" ));
+	VoyLog(( "[INIT] Calling create_historylistclass()...\n" ));
+	if( !create_historylistclass() ) { VoyLog(( "[INIT] create_historylistclass() failed!\n" )); return( FALSE ); }
+	VoyLog(( "[INIT] create_historylistclass() succeeded\n" ));
 #if USE_PLUGINS
 	if( !create_pluginwinclass() ) return( FALSE );
 #endif /* USE_PLUGINS */
@@ -424,143 +424,143 @@ int initstuff( void )
 
 //	  if( !create_scrollgroupclass(  ) ) return( FALSE );
 
-	Printf( "[INIT] Calling create_logroupclass()...\n" );
-	if( !create_logroupclass() ) { Printf( "[INIT] create_logroupclass() failed!\n" ); return( FALSE ); }
-	Printf( "[INIT] create_logroupclass() succeeded\n" );
-	Printf( "[INIT] Calling create_lobuttonclass()...\n" );
-	if( !create_lobuttonclass() ) { Printf( "[INIT] create_lobuttonclass() failed!\n" ); return( FALSE ); }
-	Printf( "[INIT] create_lobuttonclass() succeeded\n" );
-	Printf( "[INIT] Calling create_loradioclass()...\n" );
-	if( !create_loradioclass() ) { Printf( "[INIT] create_loradioclass() failed!\n" ); return( FALSE ); }
-	Printf( "[INIT] create_loradioclass() succeeded\n" );
-	Printf( "[INIT] Calling create_locheckboxclass()...\n" );
-	if( !create_locheckboxclass() ) { Printf( "[INIT] create_locheckboxclass() failed!\n" ); return( FALSE ); }
-	Printf( "[INIT] create_locheckboxclass() succeeded\n" );
-	Printf( "[INIT] Calling create_loformbuttonclass()...\n" );
-	if( !create_loformbuttonclass() ) { Printf( "[INIT] create_loformbuttonclass() failed!\n" ); return( FALSE ); }
-	Printf( "[INIT] create_loformbuttonclass() succeeded\n" );
-	Printf( "[INIT] Calling create_loformtextclass()...\n" );
-	if( !create_loformtextclass() ) { Printf( "[INIT] create_loformtextclass() failed!\n" ); return( FALSE ); }
-	Printf( "[INIT] create_loformtextclass() succeeded\n" );
-	Printf( "[INIT] Calling create_loformfileclass()...\n" );
-	if( !create_loformfileclass() ) { Printf( "[INIT] create_loformfileclass() failed!\n" ); return( FALSE ); }
-	Printf( "[INIT] create_loformfileclass() succeeded\n" );
-	Printf( "[INIT] Calling create_loformtextfieldclass()...\n" );
-	if( !create_loformtextfieldclass() ) { Printf( "[INIT] create_loformtextfieldclass() failed!\n" ); return( FALSE ); }
-	Printf( "[INIT] create_loformtextfieldclass() succeeded\n" );
-	Printf( "[INIT] Calling create_loformcycleclass()...\n" );
-	if( !create_loformcycleclass() ) { Printf( "[INIT] create_loformcycleclass() failed!\n" ); return( FALSE ); }
-	Printf( "[INIT] create_loformcycleclass() succeeded\n" );
-	Printf( "[INIT] Calling create_loformhiddenclass()...\n" );
-	if( !create_loformhiddenclass() ) { Printf( "[INIT] create_loformhiddenclass() failed!\n" ); return( FALSE ); }
-	Printf( "[INIT] create_loformhiddenclass() succeeded\n" );
-	Printf( "[INIT] Calling create_loform_optionclass()...\n" );
-	if( !create_loform_optionclass() ) { Printf( "[INIT] create_loform_optionclass() failed!\n" ); return( FALSE ); }
-	Printf( "[INIT] create_loform_optionclass() succeeded\n" );
-	Printf( "[INIT] Calling create_lodummyclass()...\n" );
-	if( !create_lodummyclass() ) { Printf( "[INIT] create_lodummyclass() failed!\n" ); return( FALSE ); }
-	Printf( "[INIT] create_lodummyclass() succeeded\n" );
-	Printf( "[INIT] Calling create_lotableclass()...\n" );
-	if( !create_lotableclass() ) { Printf( "[INIT] create_lotableclass() failed!\n" ); return( FALSE ); }
-	Printf( "[INIT] create_lotableclass() succeeded\n" );
-	Printf( "[INIT] Calling create_loframesetclass()...\n" );
-	if( !create_loframesetclass() ) { Printf( "[INIT] create_loframesetclass() failed!\n" ); return( FALSE ); }
-	Printf( "[INIT] create_loframesetclass() succeeded\n" );
+	VoyLog(( "[INIT] Calling create_logroupclass()...\n" ));
+	if( !create_logroupclass() ) { VoyLog(( "[INIT] create_logroupclass() failed!\n" )); return( FALSE ); }
+	VoyLog(( "[INIT] create_logroupclass() succeeded\n" ));
+	VoyLog(( "[INIT] Calling create_lobuttonclass()...\n" ));
+	if( !create_lobuttonclass() ) { VoyLog(( "[INIT] create_lobuttonclass() failed!\n" )); return( FALSE ); }
+	VoyLog(( "[INIT] create_lobuttonclass() succeeded\n" ));
+	VoyLog(( "[INIT] Calling create_loradioclass()...\n" ));
+	if( !create_loradioclass() ) { VoyLog(( "[INIT] create_loradioclass() failed!\n" )); return( FALSE ); }
+	VoyLog(( "[INIT] create_loradioclass() succeeded\n" ));
+	VoyLog(( "[INIT] Calling create_locheckboxclass()...\n" ));
+	if( !create_locheckboxclass() ) { VoyLog(( "[INIT] create_locheckboxclass() failed!\n" )); return( FALSE ); }
+	VoyLog(( "[INIT] create_locheckboxclass() succeeded\n" ));
+	VoyLog(( "[INIT] Calling create_loformbuttonclass()...\n" ));
+	if( !create_loformbuttonclass() ) { VoyLog(( "[INIT] create_loformbuttonclass() failed!\n" )); return( FALSE ); }
+	VoyLog(( "[INIT] create_loformbuttonclass() succeeded\n" ));
+	VoyLog(( "[INIT] Calling create_loformtextclass()...\n" ));
+	if( !create_loformtextclass() ) { VoyLog(( "[INIT] create_loformtextclass() failed!\n" )); return( FALSE ); }
+	VoyLog(( "[INIT] create_loformtextclass() succeeded\n" ));
+	VoyLog(( "[INIT] Calling create_loformfileclass()...\n" ));
+	if( !create_loformfileclass() ) { VoyLog(( "[INIT] create_loformfileclass() failed!\n" )); return( FALSE ); }
+	VoyLog(( "[INIT] create_loformfileclass() succeeded\n" ));
+	VoyLog(( "[INIT] Calling create_loformtextfieldclass()...\n" ));
+	if( !create_loformtextfieldclass() ) { VoyLog(( "[INIT] create_loformtextfieldclass() failed!\n" )); return( FALSE ); }
+	VoyLog(( "[INIT] create_loformtextfieldclass() succeeded\n" ));
+	VoyLog(( "[INIT] Calling create_loformcycleclass()...\n" ));
+	if( !create_loformcycleclass() ) { VoyLog(( "[INIT] create_loformcycleclass() failed!\n" )); return( FALSE ); }
+	VoyLog(( "[INIT] create_loformcycleclass() succeeded\n" ));
+	VoyLog(( "[INIT] Calling create_loformhiddenclass()...\n" ));
+	if( !create_loformhiddenclass() ) { VoyLog(( "[INIT] create_loformhiddenclass() failed!\n" )); return( FALSE ); }
+	VoyLog(( "[INIT] create_loformhiddenclass() succeeded\n" ));
+	VoyLog(( "[INIT] Calling create_loform_optionclass()...\n" ));
+	if( !create_loform_optionclass() ) { VoyLog(( "[INIT] create_loform_optionclass() failed!\n" )); return( FALSE ); }
+	VoyLog(( "[INIT] create_loform_optionclass() succeeded\n" ));
+	VoyLog(( "[INIT] Calling create_lodummyclass()...\n" ));
+	if( !create_lodummyclass() ) { VoyLog(( "[INIT] create_lodummyclass() failed!\n" )); return( FALSE ); }
+	VoyLog(( "[INIT] create_lodummyclass() succeeded\n" ));
+	VoyLog(( "[INIT] Calling create_lotableclass()...\n" ));
+	if( !create_lotableclass() ) { VoyLog(( "[INIT] create_lotableclass() failed!\n" )); return( FALSE ); }
+	VoyLog(( "[INIT] create_lotableclass() succeeded\n" ));
+	VoyLog(( "[INIT] Calling create_loframesetclass()...\n" ));
+	if( !create_loframesetclass() ) { VoyLog(( "[INIT] create_loframesetclass() failed!\n" )); return( FALSE ); }
+	VoyLog(( "[INIT] create_loframesetclass() succeeded\n" ));
 #ifdef MBX
-	Printf( "[INIT] Calling create_pipwindowclass()...\n" );
-	if (!create_pipwindowclass()) { Printf( "[INIT] create_pipwindowclass() failed!\n" ); return ( FALSE ); }
-	Printf( "[INIT] create_pipwindowclass() succeeded\n" );
+	VoyLog(( "[INIT] Calling create_pipwindowclass()...\n" ));
+	if (!create_pipwindowclass()) { VoyLog(( "[INIT] create_pipwindowclass() failed!\n" )); return ( FALSE ); }
+	VoyLog(( "[INIT] create_pipwindowclass() succeeded\n" ));
 #endif	
-	Printf( "[INIT] Calling make_app()...\n" );
-	if( !make_app() ) { Printf( "[INIT] make_app() failed!\n" ); return( FALSE ); }
-	Printf( "[INIT] make_app() succeeded\n" );
+	VoyLog(( "[INIT] Calling make_app()...\n" ));
+	if( !make_app() ) { VoyLog(( "[INIT] make_app() failed!\n" )); return( FALSE ); }
+	VoyLog(( "[INIT] make_app() succeeded\n" ));
 
 /* check_md5() removed - copy protection no longer used */
 
 #if USE_NET
-	Printf( "[INIT] Calling load_cookies()...\n" );
+	VoyLog(( "[INIT] Calling load_cookies()...\n" ));
 	load_cookies();
-	Printf( "[INIT] load_cookies() complete\n" );
+	VoyLog(( "[INIT] load_cookies() complete\n" ));
 #endif /* USE_NET */
 #if USE_NET
-	Printf( "[INIT] Calling load_auths()...\n" );
+	VoyLog(( "[INIT] Calling load_auths()...\n" ));
 	load_auths();
-	Printf( "[INIT] load_auths() complete\n" );
+	VoyLog(( "[INIT] load_auths() complete\n" ));
 #endif /* USE_NET */
-	Printf( "[INIT] Calling init_tokenbuff()...\n" );
+	VoyLog(( "[INIT] Calling init_tokenbuff()...\n" ));
 	init_tokenbuff();
-	Printf( "[INIT] init_tokenbuff() complete\n" );
+	VoyLog(( "[INIT] init_tokenbuff() complete\n" ));
 
-	Printf( "[INIT] Calling find_host_os()...\n" );
+	VoyLog(( "[INIT] Calling find_host_os()...\n" ));
 	find_host_os();
-	Printf( "[INIT] find_host_os() complete\n" );
+	VoyLog(( "[INIT] find_host_os() complete\n" ));
 
-	Printf( "[INIT] Calling init_imgdec()...\n" );
-	if( !init_imgdec() ) { Printf( "[INIT] init_imgdec() failed!\n" ); return( FALSE ); }
-	Printf( "[INIT] init_imgdec() succeeded\n" );
+	VoyLog(( "[INIT] Calling init_imgdec()...\n" ));
+	if( !init_imgdec() ) { VoyLog(( "[INIT] init_imgdec() failed!\n" )); return( FALSE ); }
+	VoyLog(( "[INIT] init_imgdec() succeeded\n" ));
 
-	Printf( "[INIT] Calling create_frameborderclass()...\n" );
-	if( !create_frameborderclass() ) { Printf( "[INIT] create_frameborderclass() failed!\n" ); return( FALSE ); }
-	Printf( "[INIT] create_frameborderclass() succeeded\n" );
+	VoyLog(( "[INIT] Calling create_frameborderclass()...\n" ));
+	if( !create_frameborderclass() ) { VoyLog(( "[INIT] create_frameborderclass() failed!\n" )); return( FALSE ); }
+	VoyLog(( "[INIT] create_frameborderclass() succeeded\n" ));
 	
-	Printf( "[INIT] Calling init_keyname2()...\n" );
-	if( init_keyname2() ) { Printf( "[INIT] init_keyname2() failed!\n" ); return( FALSE ); }
-	Printf( "[INIT] init_keyname2() succeeded\n" );
+	VoyLog(( "[INIT] Calling init_keyname2()...\n" ));
+	if( init_keyname2() ) { VoyLog(( "[INIT] init_keyname2() failed!\n" )); return( FALSE ); }
+	VoyLog(( "[INIT] init_keyname2() succeeded\n" ));
 	
-	Printf( "[INIT] Calling create_fonttestclass()...\n" );
-	if( !create_fonttestclass() ) { Printf( "[INIT] create_fonttestclass() failed!\n" ); return( FALSE ); }
-	Printf( "[INIT] create_fonttestclass() succeeded\n" );
-	Printf( "[INIT] Calling create_frameclass()...\n" );
-	if( !create_frameclass() ) { Printf( "[INIT] create_frameclass() failed!\n" ); return( FALSE ); }
-	Printf( "[INIT] create_frameclass() succeeded\n" );
+	VoyLog(( "[INIT] Calling create_fonttestclass()...\n" ));
+	if( !create_fonttestclass() ) { VoyLog(( "[INIT] create_fonttestclass() failed!\n" )); return( FALSE ); }
+	VoyLog(( "[INIT] create_fonttestclass() succeeded\n" ));
+	VoyLog(( "[INIT] Calling create_frameclass()...\n" ));
+	if( !create_frameclass() ) { VoyLog(( "[INIT] create_frameclass() failed!\n" )); return( FALSE ); }
+	VoyLog(( "[INIT] create_frameclass() succeeded\n" ));
 
-	Printf( "[INIT] Calling probe_mimeprefs()...\n" );
+	VoyLog(( "[INIT] Calling probe_mimeprefs()...\n" ));
 	probe_mimeprefs();
-	Printf( "[INIT] probe_mimeprefs() complete\n" );
-	Printf( "[INIT] Calling create_lohrclass()...\n" );
-	if( !create_lohrclass() ) { Printf( "[INIT] create_lohrclass() failed!\n" ); return( FALSE ); }
-	Printf( "[INIT] create_lohrclass() succeeded\n" );
-	Printf( "[INIT] Calling create_loliclass()...\n" );
-	if( !create_loliclass() ) { Printf( "[INIT] create_loliclass() failed!\n" ); return( FALSE ); }
-	Printf( "[INIT] create_loliclass() succeeded\n" );
-	Printf( "[INIT] Calling create_loanchorclass()...\n" );
-	if( !create_loanchorclass() ) { Printf( "[INIT] create_loanchorclass() failed!\n" ); return( FALSE ); }
-	Printf( "[INIT] create_loanchorclass() succeeded\n" );
-	Printf( "[INIT] Calling create_lomarginclass()...\n" );
-	if( !create_lomarginclass() ) { Printf( "[INIT] create_lomarginclass() failed!\n" ); return( FALSE ); }
-	Printf( "[INIT] create_lomarginclass() succeeded\n" );
-	Printf( "[INIT] Calling create_lomapclass()...\n" );
-	if( !create_lomapclass() ) { Printf( "[INIT] create_lomapclass() failed!\n" ); return( FALSE ); }
-	Printf( "[INIT] create_lomapclass() succeeded\n" );
-	Printf( "[INIT] Calling create_loareaclass()...\n" );
-	if( !create_loareaclass() ) { Printf( "[INIT] create_loareaclass() failed!\n" ); return( FALSE ); }
-	Printf( "[INIT] create_loareaclass() succeeded\n" );
-	Printf( "[INIT] Calling create_loimageclass()...\n" );
-	if( !create_loimageclass() ) { Printf( "[INIT] create_loimageclass() failed!\n" ); return( FALSE ); }
-	Printf( "[INIT] create_loimageclass() succeeded\n" );
+	VoyLog(( "[INIT] probe_mimeprefs() complete\n" ));
+	VoyLog(( "[INIT] Calling create_lohrclass()...\n" ));
+	if( !create_lohrclass() ) { VoyLog(( "[INIT] create_lohrclass() failed!\n" )); return( FALSE ); }
+	VoyLog(( "[INIT] create_lohrclass() succeeded\n" ));
+	VoyLog(( "[INIT] Calling create_loliclass()...\n" ));
+	if( !create_loliclass() ) { VoyLog(( "[INIT] create_loliclass() failed!\n" )); return( FALSE ); }
+	VoyLog(( "[INIT] create_loliclass() succeeded\n" ));
+	VoyLog(( "[INIT] Calling create_loanchorclass()...\n" ));
+	if( !create_loanchorclass() ) { VoyLog(( "[INIT] create_loanchorclass() failed!\n" )); return( FALSE ); }
+	VoyLog(( "[INIT] create_loanchorclass() succeeded\n" ));
+	VoyLog(( "[INIT] Calling create_lomarginclass()...\n" ));
+	if( !create_lomarginclass() ) { VoyLog(( "[INIT] create_lomarginclass() failed!\n" )); return( FALSE ); }
+	VoyLog(( "[INIT] create_lomarginclass() succeeded\n" ));
+	VoyLog(( "[INIT] Calling create_lomapclass()...\n" ));
+	if( !create_lomapclass() ) { VoyLog(( "[INIT] create_lomapclass() failed!\n" )); return( FALSE ); }
+	VoyLog(( "[INIT] create_lomapclass() succeeded\n" ));
+	VoyLog(( "[INIT] Calling create_loareaclass()...\n" ));
+	if( !create_loareaclass() ) { VoyLog(( "[INIT] create_loareaclass() failed!\n" )); return( FALSE ); }
+	VoyLog(( "[INIT] create_loareaclass() succeeded\n" ));
+	VoyLog(( "[INIT] Calling create_loimageclass()...\n" ));
+	if( !create_loimageclass() ) { VoyLog(( "[INIT] create_loimageclass() failed!\n" )); return( FALSE ); }
+	VoyLog(( "[INIT] create_loimageclass() succeeded\n" ));
 #if USE_LO_PIP
-	Printf( "[INIT] Calling create_lopipclass()...\n" );
-	if( !create_lopipclass() ) { Printf( "[INIT] create_lopipclass() failed!\n" ); return( FALSE ); }
-	Printf( "[INIT] create_lopipclass() succeeded\n" );
+	VoyLog(( "[INIT] Calling create_lopipclass()...\n" ));
+	if( !create_lopipclass() ) { VoyLog(( "[INIT] create_lopipclass() failed!\n" )); return( FALSE ); }
+	VoyLog(( "[INIT] create_lopipclass() succeeded\n" ));
 #endif
-	Printf( "[INIT] Calling create_lodivclass()...\n" );
-	if( !create_lodivclass() ) { Printf( "[INIT] create_lodivclass() failed!\n" ); return( FALSE ); }
-	Printf( "[INIT] create_lodivclass() succeeded\n" );
-	Printf( "[INIT] Calling create_lobrclass()...\n" );
-	if( !create_lobrclass() ) { Printf( "[INIT] create_lobrclass() failed!\n" ); return( FALSE ); }
-	Printf( "[INIT] create_lobrclass() succeeded\n" );
+	VoyLog(( "[INIT] Calling create_lodivclass()...\n" ));
+	if( !create_lodivclass() ) { VoyLog(( "[INIT] create_lodivclass() failed!\n" )); return( FALSE ); }
+	VoyLog(( "[INIT] create_lodivclass() succeeded\n" ));
+	VoyLog(( "[INIT] Calling create_lobrclass()...\n" ));
+	if( !create_lobrclass() ) { VoyLog(( "[INIT] create_lobrclass() failed!\n" )); return( FALSE ); }
+	VoyLog(( "[INIT] create_lobrclass() succeeded\n" ));
 
-	Printf( "[INIT] Calling init_history()...\n" );
+	VoyLog(( "[INIT] Calling init_history()...\n" ));
 	init_history();
-	Printf( "[INIT] init_history() complete\n" );
+	VoyLog(( "[INIT] init_history() complete\n" ));
 
-	Printf( "[INIT] Calling start_image_decoders()...\n" );
-	if( !start_image_decoders() ) { Printf( "[INIT] start_image_decoders() failed!\n" ); return( FALSE ); }
-	Printf( "[INIT] start_image_decoders() succeeded\n" );
+	VoyLog(( "[INIT] Calling start_image_decoders()...\n" ));
+	if( !start_image_decoders() ) { VoyLog(( "[INIT] start_image_decoders() failed!\n" )); return( FALSE ); }
+	VoyLog(( "[INIT] start_image_decoders() succeeded\n" ));
 
-	Printf( "[INIT] Calling init_memhandler()...\n" );
+	VoyLog(( "[INIT] Calling init_memhandler()...\n" ));
 	init_memhandler();
-	Printf( "[INIT] init_memhandler() complete\n" );
+	VoyLog(( "[INIT] init_memhandler() complete\n" ));
 #if USE_KEYFILES
 	start_demotimeout();
 #endif /* USE_KEYFILES */
@@ -581,7 +581,7 @@ int initstuff( void )
 #endif /* USE_PLUGINS */
 
 	D( db_init, bug( "all right, initstuff() succeeded\n" ) );
-	Printf( "[INIT] initstuff() complete, returning TRUE\n" );
+	VoyLog(( "[INIT] initstuff() complete, returning TRUE\n" ));
 
 	return( TRUE );
 }
@@ -917,8 +917,8 @@ int open_mathlibs( void )
 		MathBase = OpenLibrary( "mathffp.library", 0 );
 	if( !MathBase )
 	{
-		Printf( "[INIT] ERROR: cannot open mathffp.library\n" );
-		Flush( Output() );
+		VoyLog(( "[INIT] ERROR: cannot open mathffp.library\n" ));
+		VoyFlush();
 		return( FALSE );
 	}
 #endif
@@ -928,8 +928,8 @@ int open_mathlibs( void )
 		MathIeeeDoubBasBase = OpenLibrary( "mathieeedoubbas.library", 0 );
 	if( !MathIeeeDoubBasBase )
 	{
-		Printf( "[INIT] ERROR: cannot open mathieeedoubbas.library\n" );
-		Flush( Output() );
+		VoyLog(( "[INIT] ERROR: cannot open mathieeedoubbas.library\n" ));
+		VoyFlush();
 		return( FALSE );
 	}
 #endif
@@ -1014,14 +1014,14 @@ int open_vaportoolkit( void )
 	if( !VaporToolkitBase )
 	{
 		D( db_init, bug( "failed to open vapor_toolkit.library\n" ) );
-		Printf( "[INIT] WARNING: Could not open %s\n", libpath );
-		Flush( Output() );
+		VoyLog(( "[INIT] WARNING: Could not open %s\n", libpath ));
+		VoyFlush();
 		return( FALSE );
 	}
 	
 	D( db_init, bug( "vapor_toolkit.library opened successfully\n" ) );
-	Printf( "[INIT] vapor_toolkit.library opened successfully\n" );
-	Flush( Output() );
+	VoyLog(( "[INIT] vapor_toolkit.library opened successfully\n" ));
+	VoyFlush();
 	return( TRUE );
 }
 
@@ -1083,15 +1083,15 @@ int mcccheck( void )
 	ULONG len;
 	
 	D( db_init, bug( "initializing..\n" ) );
-	Printf( "[MCC] mcccheck() starting...\n" );
-	Flush( Output() );
+	VoyLog(( "[MCC] mcccheck() starting...\n" ));
+	VoyFlush();
 
 	strcpy( message, voyager_catalog_str( MSG_MCCCHECK_TITLE, MSG_MCCCHECK_TITLE_STR ) );
 
 	for( c = 0; mccs[ c ].name; c++ )
 	{
-		Printf( "[MCC] Checking class: %s (required: v%ld.%ld)\n", mccs[ c ].name, (long)mccs[ c ].minver, (long)mccs[ c ].minrev );
-		Flush( Output() );
+		VoyLog(( "[MCC] Checking class: %s (required: v%ld.%ld)\n", mccs[ c ].name, (long)mccs[ c ].minver, (long)mccs[ c ].minrev ));
+		VoyFlush();
 		
 		classname = mccs[ c ].name;
 		o = MUI_NewObject( classname, TAG_DONE );
@@ -1105,8 +1105,8 @@ int mcccheck( void )
 				strncpy( altnamebuf, classname, len - 4 );
 				altnamebuf[ len - 4 ] = '\0';
 				altname = altnamebuf;
-				Printf( "[MCC] Trying alternative name: %s\n", altname );
-				Flush( Output() );
+				VoyLog(( "[MCC] Trying alternative name: %s\n", altname ));
+				VoyFlush();
 				o = MUI_NewObject( altname, TAG_DONE );
 			}
 		}
@@ -1121,21 +1121,21 @@ int mcccheck( void )
 			sprintf( verinfo, "%d.%d", ver, rev );
 #endif
 
-			Printf( "[MCC] Class %s found: v%s\n", mccs[ c ].name, verinfo );
-			Flush( Output() );
+			VoyLog(( "[MCC] Class %s found: v%s\n", mccs[ c ].name, verinfo ));
+			VoyFlush();
 			D( db_init, bug( "creation of of %s (%s) successfull\n", mccs[ c ].name, verinfo ) );
 
 			if( ver < mccs[ c ].minver || ( ver == mccs[ c ].minver && rev < mccs[ c ].minrev ) )
 			{
-				Printf( "[MCC] ERROR: Class %s version %s is too old (required: v%ld.%ld)\n", mccs[ c ].name, verinfo, (long)mccs[ c ].minver, (long)mccs[ c ].minrev );
-				Flush( Output() );
+				VoyLog(( "[MCC] ERROR: Class %s version %s is too old (required: v%ld.%ld)\n", mccs[ c ].name, verinfo, (long)mccs[ c ].minver, (long)mccs[ c ].minrev ));
+				VoyFlush();
 				error++;
 				status = MCCCHK_FAILED;
 			}
 			else
 			{
-				Printf( "[MCC] Class %s version OK\n", mccs[ c ].name );
-				Flush( Output() );
+				VoyLog(( "[MCC] Class %s version OK\n", mccs[ c ].name ));
+				VoyFlush();
 				status = MCCCHK_OK;
 			}
 			
@@ -1143,8 +1143,8 @@ int mcccheck( void )
 		}
 		else
 		{
-			Printf( "[MCC] ERROR: Class %s not found!\n", mccs[ c ].name );
-			Flush( Output() );
+			VoyLog(( "[MCC] ERROR: Class %s not found!\n", mccs[ c ].name ));
+			VoyFlush();
 			D( db_init, bug( "creation of %s failed\n", mccs[ c ].name ) );
 			strcpy( verinfo, "-" );
 			error++;
@@ -1197,9 +1197,9 @@ int mcccheck( void )
 
 	if( error )
 	{
-		Printf( "[MCC] ERROR: %ld class(es) failed check\n", (long)error );
-		Printf( "[MCC] Error message: %s\n", message );
-		Flush( Output() );
+		VoyLog(( "[MCC] ERROR: %ld class(es) failed check\n", (long)error ));
+		VoyLog(( "[MCC] Error message: %s\n", message ));
+		VoyFlush();
 		MUI_Request( NULL, NULL, 0,
 			(char*)voyager_catalog_str( MSG_ERROR, MSG_ERROR_STR ),
 			(char*)voyager_catalog_str( MSG_CANCEL, MSG_CANCEL_STR ),
@@ -1207,8 +1207,8 @@ int mcccheck( void )
 		return( FALSE );
 	}
 
-	Printf( "[MCC] All classes OK!\n" );
-	Flush( Output() );
+	VoyLog(( "[MCC] All classes OK!\n" ));
+	VoyFlush();
 	return( TRUE );
 }
 
@@ -1698,7 +1698,7 @@ static int buildapp( void )
 	app = NewObject( getappclass(), NULL,
 		MUIA_Application_Title, "" APPNAME "",
 		MUIA_Application_Version, lversion,
-		MUIA_Application_Copyright, "ï¿½ 1995-2002 Oliver Wagner & David Gerber, All Rights Reserved",
+		MUIA_Application_Copyright, "© 1995-2002 Oliver Wagner & David Gerber, All Rights Reserved",
 		MUIA_Application_Author, "Oliver Wagner",
 		MUIA_Application_UsedClasses, classlist,
 		MUIA_Application_Description, GS( APP_DESC ),
@@ -1722,8 +1722,8 @@ static int buildapp( void )
 	End;
 
 #if USE_MENUS
-	Printf( "[INIT] menustrip=%lx app=%lx\n", (ULONG)menu, (ULONG)app );
-	Flush( Output() );
+	VoyLog(( "[INIT] menustrip=%lx app=%lx\n", (ULONG)menu, (ULONG)app ));
+	VoyFlush();
 #endif /* USE_MENUS */
 
 	if( !app )

@@ -176,9 +176,9 @@ DECSMETHOD( Layout_DoLayout )
 		// Table still empty, possibly during incremental layout.
 		// data->pool is NULL when CalcMinMax hit an allocation failure and
 		// threw the pool away; AllocPooled( NULL, ... ) below would crash.
-		Printf( "[TABLE] DoLayout skip obj=%lx pool=%lx maxcol=%ld\n",
-			(ULONG)obj, (ULONG)data->pool, (long)data->maxcol );
-		Flush( Output() );
+		VoyLog(( "[TABLE] DoLayout skip obj=%lx pool=%lx maxcol=%ld\n",
+			(ULONG)obj, (ULONG)data->pool, (long)data->maxcol ));
+		VoyFlush();
 		return( (ULONG)li );
 	}
 
@@ -758,9 +758,9 @@ DECSMETHOD( Layout_CalcMinMax )
 	char *widthspec;
 	struct cellinfo *ci;
 
-	Printf( "[TABLE] CalcMinMax enter obj=%lx sw=%ld sh=%ld\n",
-		(ULONG)obj, (long)msg->suggested_width, (long)msg->suggested_height );
-	Flush( Output() );
+	VoyLog(( "[TABLE] CalcMinMax enter obj=%lx sw=%ld sh=%ld\n",
+		(ULONG)obj, (long)msg->suggested_width, (long)msg->suggested_height ));
+	VoyFlush();
 
 	if( data->pool )
 		DeletePool( data->pool );
@@ -834,9 +834,9 @@ DECSMETHOD( Layout_CalcMinMax )
 			 */
 			if( col > MAX_TABLE_COLS )
 			{
-				Printf( "[TABLE] CalcMinMax runaway column scan obj=%lx row=%ld col=%ld\n",
-					(ULONG)obj, (long)row, (long)col );
-				Flush( Output() );
+				VoyLog(( "[TABLE] CalcMinMax runaway column scan obj=%lx row=%ld col=%ld\n",
+					(ULONG)obj, (long)row, (long)col ));
+				VoyFlush();
 				DeletePool( data->pool );
 				data->pool = NULL;
 				return( (ULONG)li );
@@ -935,9 +935,9 @@ DECSMETHOD( Layout_CalcMinMax )
 
 	D( db_html, bug( "cell matrix size %ld x %ld, %ld objs\n", data->maxcol, data->maxrow, objcount ));
 
-	Printf( "[TABLE] CalcMinMax cells=%ld matrix=%ldx%ld\n",
-		(long)objcount, (long)data->maxcol, (long)data->maxrow );
-	Flush( Output() );
+	VoyLog(( "[TABLE] CalcMinMax cells=%ld matrix=%ldx%ld\n",
+		(long)objcount, (long)data->maxcol, (long)data->maxrow ));
+	VoyFlush();
 
 	if( !data->maxcol )
 	{
@@ -947,22 +947,22 @@ DECSMETHOD( Layout_CalcMinMax )
 
 	squashtable( data );
 
-	Printf( "[TABLE] squashed matrix=%ldx%ld maxcolspan=%ld maxrowspan=%ld\n",
-		(long)data->maxcol, (long)data->maxrow, (long)data->maxcolspan, (long)data->maxrowspan );
-	Flush( Output() );
+	VoyLog(( "[TABLE] squashed matrix=%ldx%ld maxcolspan=%ld maxrowspan=%ld\n",
+		(long)data->maxcol, (long)data->maxrow, (long)data->maxcolspan, (long)data->maxrowspan ));
+	VoyFlush();
 
-	Printf( "[TABLE] alloc pool=%lx maxcol=%ld\n", (ULONG)data->pool, (long)data->maxcol );
-	Flush( Output() );
+	VoyLog(( "[TABLE] alloc pool=%lx maxcol=%ld\n", (ULONG)data->pool, (long)data->maxcol ));
+	VoyFlush();
 
 	data->colpct = AllocPooled( data->pool, data->maxcol * sizeof( double ) );
-	Printf( "[TABLE] alloc colpct=%lx\n", (ULONG)data->colpct );
-	Flush( Output() );
+	VoyLog(( "[TABLE] alloc colpct=%lx\n", (ULONG)data->colpct ));
+	VoyFlush();
 	data->colmin = AllocPooled( data->pool, data->maxcol * sizeof( int ) );
-	Printf( "[TABLE] alloc colmin=%lx\n", (ULONG)data->colmin );
-	Flush( Output() );
+	VoyLog(( "[TABLE] alloc colmin=%lx\n", (ULONG)data->colmin ));
+	VoyFlush();
 	data->coldef = AllocPooled( data->pool, data->maxcol * sizeof( int ) );
-	Printf( "[TABLE] alloc coldef=%lx\n", (ULONG)data->coldef );
-	Flush( Output() );
+	VoyLog(( "[TABLE] alloc coldef=%lx\n", (ULONG)data->coldef ));
+	VoyFlush();
 
 	if( data->colpct == NULL || data->colmin == NULL || data->coldef == NULL )
 	{
@@ -1011,8 +1011,8 @@ DECSMETHOD( Layout_CalcMinMax )
 		}
 	}
 */
-	Printf( "[TABLE] colscan done\n" );
-	Flush( Output() );
+	VoyLog(( "[TABLE] colscan done\n" ));
+	VoyFlush();
 
 	for( y = 0; y < data->maxrow; y++ )
 		for( x = 0; x < data->maxcol; x++ )
@@ -1030,9 +1030,9 @@ DECSMETHOD( Layout_CalcMinMax )
 				 */
 				if( x + ci->colspan > data->maxcol )
 				{
-					Printf( "[TABLE] colspan clamp x=%ld colspan=%ld maxcol=%ld\n",
-						(long)x, (long)ci->colspan, (long)data->maxcol );
-					Flush( Output() );
+					VoyLog(( "[TABLE] colspan clamp x=%ld colspan=%ld maxcol=%ld\n",
+						(long)x, (long)ci->colspan, (long)data->maxcol ));
+					VoyFlush();
 					ci->colspan = data->maxcol - x;
 					if( ci->colspan <= 1 )
 						continue;
@@ -1103,8 +1103,8 @@ retry:
 			}
 		}
 	
-	Printf( "[TABLE] colspan done\n" );
-	Flush( Output() );
+	VoyLog(( "[TABLE] colspan done\n" ));
+	VoyFlush();
 
 	for( x = 0; x < data->maxcol; x++ )
 	{
@@ -1156,13 +1156,13 @@ retry:
 
 	D( db_html, int x; for( x = 0; x != data->maxcol; x++ ) { bug( "P1b Col %ld min %ld def %ld pct %ld\r\n", x, data->colmin[ x ], data->coldef[ x ], (int)( data->colpct[ x ] * 10000.0 ) ); });
 	
-	Printf( "[TABLE] pct done coltotpct=%ld\n", (long)data->coltotpct );
-	Flush( Output() );
+	VoyLog(( "[TABLE] pct done coltotpct=%ld\n", (long)data->coltotpct ));
+	VoyFlush();
 
 	calcdefwidth( data->maxcol, data->colpct, data->coldef, data->colmin, &( li->defwidth ), &( li->minwidth ), msg->suggested_width );
 
-	Printf( "[TABLE] calcdefwidth done minw=%ld defw=%ld\n", (long)li->minwidth, (long)li->defwidth );
-	Flush( Output() );
+	VoyLog(( "[TABLE] calcdefwidth done minw=%ld defw=%ld\n", (long)li->minwidth, (long)li->defwidth ));
+	VoyFlush();
 
 	D( db_html, int x; for( x = 0; x != data->maxcol; x++ ) { bug( "P2 Col %ld min %ld def %ld pct %ld\r\n", x, data->colmin[ x ], data->coldef[ x ], (int)( data->colpct[ x ] * 10000.0 ) ); });
 
@@ -1205,9 +1205,9 @@ retry:
 
 	D( db_html, bug( "finished TABLE_calcminmax(%lx) -> %ld,%ld %ld,%ld \n", obj, li->minwidth, li->minheight, li->defwidth, li->defheight ));
 
-	Printf( "[TABLE] CalcMinMax exit obj=%lx minw=%ld defw=%ld\n",
-		(ULONG)obj, (long)li->minwidth, (long)li->defwidth );
-	Flush( Output() );
+	VoyLog(( "[TABLE] CalcMinMax exit obj=%lx minw=%ld defw=%ld\n",
+		(ULONG)obj, (long)li->minwidth, (long)li->defwidth ));
+	VoyFlush();
 
 	return( (ULONG)li );
 }

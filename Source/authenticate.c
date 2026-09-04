@@ -21,7 +21,7 @@
 ** --------------------
 ** - Handles authentication requests
 **
-** ï¿½ 1999 VaporWare CVS team <ibcvs@vapor.com>
+** © 1999 VaporWare CVS team <ibcvs@vapor.com>
 ** All rights reserved
 **
 ** $Id: authenticate.c,v 1.41 2003/07/06 16:51:32 olli Exp $

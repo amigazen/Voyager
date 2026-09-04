@@ -399,13 +399,13 @@ DECSMETHOD( Layout_Form_Submit )
 					{
 						memcpy( temp, data->databuffer, data->databuffersize );
 						strcpy( &temp[ data->databuffersize ], ENDTAG );
-						sprintf( tempurl, "%s?{%u}ï¿½", url, formp_storedata( temp, data->databuffersize + strlen( ENDTAG ), data->enctype ) );
+						sprintf( tempurl, "%s?{%u}¿", url, formp_storedata( temp, data->databuffersize + strlen( ENDTAG ), data->enctype ) );
 						free( temp );
 					}
 				}
 				else
 				{
-					sprintf( tempurl, "%s?{%u}ï¿½", url, formp_storedata( data->databuffer, data->databuffersize, data->enctype ) );
+					sprintf( tempurl, "%s?{%u}¿", url, formp_storedata( data->databuffer, data->databuffersize, data->enctype ) );
 				}
 			}
 		}

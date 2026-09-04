@@ -247,19 +247,19 @@ MUI_HOOK( layoutwinfunc, APTR grp, struct MUI_LayoutMsg *lm )
 				yp = 0;
 				ys = lm->lm_Layout.Height;
 
-				Printf( "[WINLAYOUT] enter w=%ld h=%ld\n", (long)lm->lm_Layout.Width, (long)lm->lm_Layout.Height );
-				Flush( Output() );
+				VoyLog(( "[WINLAYOUT] enter w=%ld h=%ld\n", (long)lm->lm_Layout.Width, (long)lm->lm_Layout.Height ));
+				VoyFlush();
 
 				while( ( child = NextObject( &cstate ) ) )
 				{
 					D( db_html, bug( "sending layout to child 0x%lx\n", child ) );
-					Printf( "[WINLAYOUT] child=%lx\n", (ULONG)child );
-					Flush( Output() );
+					VoyLog(( "[WINLAYOUT] child=%lx\n", (ULONG)child ));
+					VoyFlush();
 					MUI_Layout( child, 0, yp, lm->lm_Layout.Width, ys, 0 );
 				}
 
-				Printf( "[WINLAYOUT] exit\n" );
-				Flush( Output() );
+				VoyLog(( "[WINLAYOUT] exit\n" ));
+				VoyFlush();
 			}
 			return( TRUE );
 	}
@@ -1368,24 +1368,24 @@ DECMETHOD( HTMLWin_SetupToolbar, ULONG )
 	struct Data *data = INST_DATA( cl, obj );
 	struct MyBrush *brushes[ 128 ];
 
-	Printf( "[WIN] SetupToolbar entry panel_toolbar=%lx grp_toolbar=%lx\n", (ULONG)data->panel_toolbar, (ULONG)data->grp_toolbar );
-	Flush( Output() );
+	VoyLog(( "[WIN] SetupToolbar entry panel_toolbar=%lx grp_toolbar=%lx\n", (ULONG)data->panel_toolbar, (ULONG)data->grp_toolbar ));
+	VoyFlush();
 
 	if( !data->panel_toolbar )
 	{
-		Printf( "[WIN] SetupToolbar exit no panel_toolbar\n" );
-		Flush( Output() );
+		VoyLog(( "[WIN] SetupToolbar exit no panel_toolbar\n" ));
+		VoyFlush();
 		return( 0 );
 	}
 	if( !data->grp_toolbar )
 	{
-		Printf( "[WIN] SetupToolbar exit no grp_toolbar\n" );
-		Flush( Output() );
+		VoyLog(( "[WIN] SetupToolbar exit no grp_toolbar\n" ));
+		VoyFlush();
 		return( 0 );
 	}
 
-	Printf( "[WIN] SetupToolbar InitChange rem bar_tool=%lx spc_tool=%lx\n", (ULONG)data->bar_tool, (ULONG)data->spc_tool );
-	Flush( Output() );
+	VoyLog(( "[WIN] SetupToolbar InitChange rem bar_tool=%lx spc_tool=%lx\n", (ULONG)data->bar_tool, (ULONG)data->spc_tool ));
+	VoyFlush();
 	DoMethod( data->grp_toolbar, MUIM_Group_InitChange );
 	if( data->spc_tool )
 		DoMethod( data->grp_toolbar, OM_REMMEMBER, data->spc_tool );
@@ -1472,8 +1472,8 @@ DECMETHOD( HTMLWin_SetupToolbar, ULONG )
 		MUIA_Group_Horiz, data->toolbar_is_horiz,
 	End;
 
-	Printf( "[WIN] SetupToolbar bar_tool=%lx num=%ld\n", (ULONG)data->bar_tool, (long)num );
-	Flush( Output() );
+	VoyLog(( "[WIN] SetupToolbar bar_tool=%lx num=%ld\n", (ULONG)data->bar_tool, (long)num ));
+	VoyFlush();
 
 	if( data->bar_tool )
 	{
@@ -1531,15 +1531,15 @@ DECMETHOD( HTMLWin_SetupToolbar, ULONG )
 		if( data->spc_tool )
 		{
 			DoMethod( data->grp_toolbar, OM_ADDMEMBER, data->spc_tool );
-			Printf( "[WIN] SetupToolbar bar_tool failed, re-added spc_tool\n" );
-			Flush( Output() );
+			VoyLog(( "[WIN] SetupToolbar bar_tool failed, re-added spc_tool\n" ));
+			VoyFlush();
 		}
 	}
-	Printf( "[WIN] SetupToolbar ExitChange\n" );
-	Flush( Output() );
+	VoyLog(( "[WIN] SetupToolbar ExitChange\n" ));
+	VoyFlush();
 	DoMethod( data->grp_toolbar, MUIM_Group_ExitChange );
-	Printf( "[WIN] SetupToolbar exit\n" );
-	Flush( Output() );
+	VoyLog(( "[WIN] SetupToolbar exit\n" ));
+	VoyFlush();
 
 	free( bspecs );
 
@@ -1817,8 +1817,8 @@ DECMETHOD( HTMLWin_ToStandalone, APTR )
 
 			if( data->bay_top )
 			{
-				Printf( "[WIN] ToStandalone bay_top=%lx\n", (ULONG)data->bay_top );
-				Flush( Output() );
+				VoyLog(( "[WIN] ToStandalone bay_top=%lx\n", (ULONG)data->bay_top ));
+				VoyFlush();
 				data->bay_left = TearOffBayObject, MUIA_VertWeight, 0,
 					MUIA_ObjectID, MAKE_ID( f_flags, 'B','2', winnum ),
 					MUIA_TearOffBay_Horiz, 0,
@@ -1841,8 +1841,8 @@ DECMETHOD( HTMLWin_ToStandalone, APTR )
 					);
 				}
 				DoMethod( grp_contents, OM_ADDMEMBER, data->bay_top );
-				Printf( "[WIN] ToStandalone bay_top added to grp_contents\n" );
-				Flush( Output() );
+				VoyLog(( "[WIN] ToStandalone bay_top added to grp_contents\n" ));
+				VoyFlush();
 			}
 		}
 	}
@@ -1877,11 +1877,11 @@ DECMETHOD( HTMLWin_ToStandalone, APTR )
 
 			if( data->panel_toolbar )
 			{
-				Printf( "[WIN] ToStandalone panel_toolbar=%lx grp_toolbar=%lx\n", (ULONG)data->panel_toolbar, (ULONG)data->grp_toolbar );
-				Flush( Output() );
+				VoyLog(( "[WIN] ToStandalone panel_toolbar=%lx grp_toolbar=%lx\n", (ULONG)data->panel_toolbar, (ULONG)data->grp_toolbar ));
+				VoyFlush();
 	            DoMethod( data->bay_top, OM_ADDMEMBER, data->panel_toolbar );
-				Printf( "[WIN] ToStandalone panel_toolbar added to bay_top\n" );
-				Flush( Output() );
+				VoyLog(( "[WIN] ToStandalone panel_toolbar added to bay_top\n" ));
+				VoyFlush();
 
 				/* Defer all toolbar-horiz updates so nothing runs during layout (avoids hang in MUI_Layout child 0) */
 				DoMethod( data->panel_toolbar, MUIM_Notify, MUIA_TearOffPanel_Horiz, MUIV_EveryTime,
@@ -2238,10 +2238,10 @@ DECMETHOD( HTMLWin_ToStandalone, APTR )
 	DoMethod( obj, MM_HTMLWin_SetupFastlinks );
 
 	set( data->winobj, MUIA_Window_Open, TRUE );
-	Printf( "[WIN] open winobj=%lx app_menu=%lx win_menu=%lx\n",
+	VoyLog(( "[WIN] open winobj=%lx app_menu=%lx win_menu=%lx\n",
 		(ULONG)data->winobj, (ULONG)menu,
-		(ULONG)getv( data->winobj, MUIA_Window_Menustrip ) );
-	Flush( Output() );
+		(ULONG)getv( data->winobj, MUIA_Window_Menustrip ) ));
+	VoyFlush();
 
 	/*
 	 * I don't know why the above notification doesn't work.
@@ -2948,8 +2948,8 @@ DECMETHOD( NStream_GotInfo, APTR )
 {
 	GETDATA;
 
-	Printf( "[WIN] NStream_GotInfo entry doc_loading=%lx\n", (ULONG)data->doc_loading );
-	Flush( Output() );
+	VoyLog(( "[WIN] NStream_GotInfo entry doc_loading=%lx\n", (ULONG)data->doc_loading ));
+	VoyFlush();
 
 	if( data->doc_loading )
 	{
@@ -3050,16 +3050,16 @@ DECMETHOD( NStream_GotInfo, APTR )
 			}
 #endif /* USE_NET */
 		}
-		Printf( "[WIN] NStream_GotInfo: nets_settomem\n" );
-		Flush( Output() );
+		VoyLog(( "[WIN] NStream_GotInfo: nets_settomem\n" ));
+		VoyFlush();
 		nets_settomem( data->doc_loading );
 
 		DoMethod( obj, MUIM_Group_InitChange );
 
 		if( data->doc_main )
 		{
-			Printf( "[WIN] NStream_GotInfo: ShowNStream(NULL) (clear old doc)\n" );
-			Flush( Output() );
+			VoyLog(( "[WIN] NStream_GotInfo: ShowNStream(NULL) (clear old doc)\n" ));
+			VoyFlush();
 			DoMethod( data->v, MM_HTMLView_ShowNStream, NULL );
 			nets_close( data->doc_main );
 		}
@@ -3093,11 +3093,11 @@ DECMETHOD( NStream_GotInfo, APTR )
 		DoMethod( obj, MM_HTMLWin_SetPointer, POINTERTYPE_NORMAL );
 
 		// Attach nstream to view object now
-		Printf( "[WIN] NStream_GotInfo: ShowNStream(doc_main)\n" );
-		Flush( Output() );
+		VoyLog(( "[WIN] NStream_GotInfo: ShowNStream(doc_main)\n" ));
+		VoyFlush();
 		DoMethod( data->v, MM_HTMLView_ShowNStream, data->doc_main );
-		Printf( "[WIN] NStream_GotInfo: ShowNStream returned\n" );
-		Flush( Output() );
+		VoyLog(( "[WIN] NStream_GotInfo: ShowNStream returned\n" ));
+		VoyFlush();
 
 		if( !gp_cacheimg )
 			imgdec_flushimages();
@@ -3280,10 +3280,10 @@ DECMETHOD( HTMLWin_DoToolbutton, ULONG )
 
 	v = 0;
 	DoMethod( data->bar_tool, MUIM_SpeedBar_DoOnButton, num, OM_GET, MUIA_Disabled, &v );
-	Printf( "[TOOLBTN] num=%ld disabled=%ld action=%ld args='%s'\n",
+	VoyLog(( "[TOOLBTN] num=%ld disabled=%ld action=%ld args='%s'\n",
 		(long)num, (long)v, (long)data->but_acts[ num ],
-		getprefsstr( DSI_BUTTONS_ARGS + msg[ 1 ], "" ) );
-	Flush( Output() );
+		getprefsstr( DSI_BUTTONS_ARGS + msg[ 1 ], "" ) ));
+	VoyFlush();
 	if( v )
 		return( 0 );
 

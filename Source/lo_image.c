@@ -1211,7 +1211,7 @@ DECMMETHOD( Draw )
 				SetAPen( rp, layout_getpen( data->ctx, pen ) );
 
 				Move( rp, data->mleft + 2, typ = data->mtop + 2 + _font( obj )->tf_Baseline );
-				Text( rp, data->broken_image ? "ï¿½" : "ï¿½", 1 );
+				Text( rp, data->broken_image ? "×" : "·", 1 );
 
 				rem = _mwidth( obj ) - 4 - ( rp->cp_x - data->mleft );
 

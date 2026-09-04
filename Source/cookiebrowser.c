@@ -21,7 +21,7 @@
  * --------------------------
  * - Displays cookies with their infos in a list
  *
- * ï¿½ 1999 by David Gerber <zapek@vapor.com>
+ * © 1999 by David Gerber <zapek@vapor.com>
  * All rights reserved
  *
  * $Id: cookiebrowser.c,v 1.27 2003/07/06 16:51:33 olli Exp $

@@ -1,6 +1,6 @@
 # Makefile for Voyager
 #
-# ï¿½ 1999-2001 VaporWare CVS team <ibcvs@vapor.com>
+# © 1999-2001 VaporWare CVS team <ibcvs@vapor.com>
 # All rights reserved
 #
 # $Id: makefile,v 1.150 2004/11/16 16:01:15 zapek Exp $

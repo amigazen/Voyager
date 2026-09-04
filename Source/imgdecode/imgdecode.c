@@ -3367,9 +3367,9 @@ static void cleanupnode( struct imgnode *imn )
 
 static void processnode( struct imgnode *imn )
 {
-	Printf( "[DEC] node state=%ld type=%ld aborted=%ld url=%s\n",
-		(long)imn->state, (long)imn->imagetype, (long)imn->aborted, imn->url );
-	Flush( Output() );
+	VoyLog(( "[DEC] node state=%ld type=%ld aborted=%ld url=%s\n",
+		(long)imn->state, (long)imn->imagetype, (long)imn->aborted, imn->url ));
+	VoyFlush();
 
 	DBL( DEBUG_CHATTY, ( "processnode '%s' state %ld\r\n", imn->url, imn->state ) );
 	if( imn->aborted == 1 )
@@ -3660,23 +3660,23 @@ static void imghandlerfunc( void )
 	}
 #endif /* USE_EXECUTIVE */
 
-	Printf( "[DEC] decoder process running\n" );
-	Flush( Output() );
+	VoyLog(( "[DEC] decoder process running\n" ));
+	VoyFlush();
 
 	while( !Done )
 	{
 		sigs = Wait( SIGBREAKF_CTRL_C | SIGBREAKF_CTRL_E | SIGBREAKF_CTRL_F );
 
-		Printf( "[DEC] wake sigs=%lx\n", (ULONG)sigs );
-		Flush( Output() );
+		VoyLog(( "[DEC] wake sigs=%lx\n", (ULONG)sigs ));
+		VoyFlush();
 
 		if( sigs & SIGBREAKF_CTRL_C )
 			Done = TRUE;
 
 		processall();
 
-		Printf( "[DEC] processall done\n" );
-		Flush( Output() );
+		VoyLog(( "[DEC] processall done\n" ));
+		VoyFlush();
 
 		if( (sigs & SIGBREAKF_CTRL_E ) || AvailMem( 0 ) < ( 256 * 1024 ) )
 		{
@@ -3914,20 +3914,20 @@ int ASM SAVEDS imgdec_setdestscreen(
 	__reg( d3, int shinepen )
 )
 {
-	Printf( "[IMGDEC] setdestscreen entry scr=0x%lx destscreen=0x%lx\n", (ULONG)scr, (ULONG)destscreen );
-	Flush( Output() );
+	VoyLog(( "[IMGDEC] setdestscreen entry scr=0x%lx destscreen=0x%lx\n", (ULONG)scr, (ULONG)destscreen ));
+	VoyFlush();
 	image_bgpen = bgpen;
 	image_framepen = framepen;
 
 	if( !imgproc )
 	{
-		Printf( "[IMGDEC] setdestscreen: no imgproc, return 0\n" );
-		Flush( Output() );
+		VoyLog(( "[IMGDEC] setdestscreen: no imgproc, return 0\n" ));
+		VoyFlush();
 		return( 0 );
 	}
 
-	Printf( "[IMGDEC] setdestscreen step 1: imgproc ok\n" );
-	Flush( Output() );
+	VoyLog(( "[IMGDEC] setdestscreen step 1: imgproc ok\n" ));
+	VoyFlush();
 	DBL( DEBUG_CHATTY, ( "scr = %lx, destscreen = %lx\n", scr, destscreen ) );
 
 	if( scr != destscreen )
@@ -4009,8 +4009,8 @@ int ASM SAVEDS imgdec_setdestscreen(
 		destscreenname = NULL;
 #endif /* !MBX */
 
-		Printf( "[IMGDEC] setdestscreen step 2: setting destscreen=scr\n" );
-		Flush( Output() );
+		VoyLog(( "[IMGDEC] setdestscreen step 2: setting destscreen=scr\n" ));
+		VoyFlush();
 		destscreen = scr;
 #ifndef MBX
 		features &= ~FTF_TRUECOLOR;
@@ -4051,8 +4051,8 @@ int ASM SAVEDS imgdec_setdestscreen(
 		// locked!
 	}
 
-	Printf( "[IMGDEC] setdestscreen exit\n" );
-	Flush( Output() );
+	VoyLog(( "[IMGDEC] setdestscreen exit\n" ));
+	VoyFlush();
 #if USE_CGX
 	return( features & FTF_CYBERMAP );
 #else
@@ -4569,27 +4569,27 @@ int imgdec_libinit_internal( struct imgcallback *cbtptr )
 	/* Check for NULL pointer before assignment */
 	if( !cbtptr )
 	{
-		Printf( "[IMGDEC] ERROR: cbtptr is NULL!\n" );
-		Flush( Output() );
+		VoyLog(( "[IMGDEC] ERROR: cbtptr is NULL!\n" ));
+		VoyFlush();
 		return( FALSE );
 	}
 	
 	cbt = cbtptr;
 	
-	Printf( "[IMGDEC] imgdec_libinit_internal() entry, cbt=0x%lx\n", cbt );
-	Flush( Output() );
+	VoyLog(( "[IMGDEC] imgdec_libinit_internal() entry, cbt=0x%lx\n", cbt ));
+	VoyFlush();
 	
 	/* Skip DBL call - might access uninitialized data */
 	/* DBL( DEBUG_INFO, ( "initializing image decoder.. callback table 0x%lx passed\n", cbt ) ); */
 
-	Printf( "[IMGDEC] Initializing lists and semaphores...\n" );
-	Flush( Output() );
+	VoyLog(( "[IMGDEC] Initializing lists and semaphores...\n" ));
+	VoyFlush();
 	
 	/* Check that SysBase is available before using semaphores */
 	if( !SysBase )
 	{
-		Printf( "[IMGDEC] ERROR: SysBase is NULL!\n" );
-		Flush( Output() );
+		VoyLog(( "[IMGDEC] ERROR: SysBase is NULL!\n" ));
+		VoyFlush();
 		return( FALSE );
 	}
 
@@ -4599,8 +4599,8 @@ int imgdec_libinit_internal( struct imgcallback *cbtptr )
 	InitSemaphore( &destscreensem );
 	imgdec_inited = 1;
 	ObtainSemaphore( &destscreensem );
-	Printf( "[IMGDEC] Lists and semaphores initialized\n" );
-	Flush( Output() );
+	VoyLog(( "[IMGDEC] Lists and semaphores initialized\n" ));
+	VoyFlush();
 	
 	/*
 	 * Check for correct V version.
@@ -4615,8 +4615,8 @@ int imgdec_libinit_internal( struct imgcallback *cbtptr )
 	/* Validate callback table before accessing fields */
 	if( !cbt || (ULONG)cbt < 0x1000 )
 	{
-		Printf( "[IMGDEC] ERROR: Invalid callback table pointer: 0x%lx\n", cbt );
-		Flush( Output() );
+		VoyLog(( "[IMGDEC] ERROR: Invalid callback table pointer: 0x%lx\n", cbt ));
+		VoyFlush();
 		return( FALSE );
 	}
 	
@@ -4639,12 +4639,12 @@ int imgdec_libinit_internal( struct imgcallback *cbtptr )
 
 	/* new checks go here */
 
-	Printf( "[IMGDEC] Creating imgpool...\n" );
-	Flush( Output() );
+	VoyLog(( "[IMGDEC] Creating imgpool...\n" ));
+	VoyFlush();
 	if( ( imgpool = CreatePool( MEMF_CLEAR, 4096, 2048 ) ) )
 	{
-		Printf( "[IMGDEC] imgpool created successfully\n" );
-		Flush( Output() );
+		VoyLog(( "[IMGDEC] imgpool created successfully\n" ));
+		VoyFlush();
 #ifdef __MORPHOS__
 		/*
 		 * Set PPC mode
@@ -4727,14 +4727,14 @@ int imgdec_libinit_internal( struct imgcallback *cbtptr )
 			}
 		}
 
-		Printf( "[IMGDEC] Calling init_fs_error_limit()...\n" );
-		Flush( Output() );
+		VoyLog(( "[IMGDEC] Calling init_fs_error_limit()...\n" ));
+		VoyFlush();
 		init_fs_error_limit();
-		Printf( "[IMGDEC] init_fs_error_limit() complete\n" );
-		Flush( Output() );
+		VoyLog(( "[IMGDEC] init_fs_error_limit() complete\n" ));
+		VoyFlush();
 
-		Printf( "[IMGDEC] Creating image decoder process...\n" );
-		Flush( Output() );
+		VoyLog(( "[IMGDEC] Creating image decoder process...\n" ));
+		VoyFlush();
 #ifdef AMIGAOS
 		mystoreds();
 #endif /* AMIGAOS */
@@ -4753,7 +4753,9 @@ int imgdec_libinit_internal( struct imgcallback *cbtptr )
 		 * Give the decoder its own output handle so it can be traced. It runs
 		 * in a different process from the browser, so it cannot share ours.
 		 */
+#if VLOG
 		imgdeclog = Open( "PROGDIR:imgdec.log", MODE_NEWFILE );
+#endif
 
 		imgproc = CreateNewProcTags(
 			NP_Entry, ( ULONG )imghandlerfunc,
@@ -4773,20 +4775,20 @@ int imgdec_libinit_internal( struct imgcallback *cbtptr )
 
 		if( !imgproc )
 		{
-			Printf( "[IMGDEC] ERROR: CreateNewProcTags failed!\n" );
-			Flush( Output() );
+			VoyLog(( "[IMGDEC] ERROR: CreateNewProcTags failed!\n" ));
+			VoyFlush();
 			goto libinit_fail;
 		}
 
-		Printf( "[IMGDEC] Image decoder process created successfully at 0x%lx\n", imgproc );
-		Flush( Output() );
+		VoyLog(( "[IMGDEC] Image decoder process created successfully at 0x%lx\n", imgproc ));
+		VoyFlush();
 		/* Skip DBL call */
 		/* DBL( DEBUG_INFO, ( "CreateNewProc() done, image decoder process started at 0x%lx\r\n", imgproc ) ); */
 		
 		/* Give the process a moment to initialize before continuing */
 		Delay( 1 );
-		Printf( "[IMGDEC] After process creation delay\n" );
-		Flush( Output() );
+		VoyLog(( "[IMGDEC] After process creation delay\n" ));
+		VoyFlush();
 
 		/*
 		 * Now let's add the memhandler
@@ -4811,8 +4813,8 @@ int imgdec_libinit_internal( struct imgcallback *cbtptr )
 		 * Leave disabled: memhandlerfunc uses the MemHandler interrupt ABI; wiring it through struct Interrupt
 		 * without matching Trap/emulation caused instability on static SAS/C builds. Decoder flush still runs on SIGBREAK_E from setdestscreen / signals.
 		 */
-		Printf( "[IMGDEC] AddMemHandler disabled for AmigaOS static decoder build\n" );
-		Flush( Output() );
+		VoyLog(( "[IMGDEC] AddMemHandler disabled for AmigaOS static decoder build\n" ));
+		VoyFlush();
 		memhandleractive = FALSE;
 #endif /* AMIGAOS */
 
@@ -4821,19 +4823,19 @@ int imgdec_libinit_internal( struct imgcallback *cbtptr )
 			AddMemHandler( (STRPTR)IMGDECODE_MEMHANDLER_NAME, (DWORD)IMGDECODE_MEMHANDLER_PRI, (VPTR)memhandlerfunc, 0xdeadbeef );
 #endif /* MBX */
 	
-		Printf( "[IMGDEC] imgdec_libinit() succeeded\n" );
-		Flush( Output() );
+		VoyLog(( "[IMGDEC] imgdec_libinit() succeeded\n" ));
+		VoyFlush();
 		return( TRUE );
 
 	}
 	else
 	{
-		Printf( "[IMGDEC] ERROR: Failed to create imgpool!\n" );
-		Flush( Output() );
+		VoyLog(( "[IMGDEC] ERROR: Failed to create imgpool!\n" ));
+		VoyFlush();
 	}
 libinit_fail: /* TOFIX: a bit sucky.. */
-	Printf( "[IMGDEC] imgdec_libinit_internal() failed\n" );
-	Flush( Output() );
+	VoyLog(( "[IMGDEC] imgdec_libinit_internal() failed\n" ));
+	VoyFlush();
 	return( FALSE );
 }
 

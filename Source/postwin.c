@@ -80,7 +80,7 @@ static struct window *findwinbynum( ULONG num )
 
 static void setwintitle( struct window *w )
 {
-	sprintf( w->win_title, "[%ld] " APPNAME " ï¿½ Post news article", w->num );
+	sprintf( w->win_title, "[%ld] " APPNAME " · Post news article", w->num );
 	set( w->win, MUIA_Window_Title, w->win_title );
 
 	sprintf( w->menutitle, "[%ld] Post news", w->num );

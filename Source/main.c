@@ -272,25 +272,22 @@ static void doloop( void )
 	struct plugin *plugin;
 #endif
 
-	Printf( "[DOLOOP] doloop() entry\n" );
-	Flush( Output() );
-
-	Printf( "[DOLOOP] Entering main event loop...\n" );
-	Flush( Output() );
+	VoyLog(( "[DOLOOP] doloop() entry\n" ));
+	VoyFlush();
+	VoyLog(( "[DOLOOP] Entering main event loop...\n" ));
+	VoyFlush();
 
 	while( !Done )
 	{
-		Printf( "[DOLOOP] Calling MUIM_Application_NewInput...\n" );
-		Flush( Output() );
 		id = DoMethod( app, MUIM_Application_NewInput, &sig );
-		Printf( "[DOLOOP] MUIM_Application_NewInput returned: %ld\n", id );
-		Flush( Output() );
-
-		Printf( "[DOLOOP] Calling checkmethods()...\n" );
-		Flush( Output() );
+#if VLOG
+		if( id != 0 )
+		{
+			VoyLog(( "[DOLOOP] NewInput id=%ld sig=0x%lx\n", id, sig ));
+			VoyFlush();
+		}
+#endif
 		checkmethods();
-		Printf( "[DOLOOP] checkmethods() returned\n" );
-		Flush( Output() );
 
 		switch( id )
 		{
@@ -563,7 +560,11 @@ static void doloop( void )
 		}
 
 		if( Done )
+		{
+			VoyLog(( "[DOLOOP] quit id=%ld\n", id ));
+			VoyFlush();
 			break;
+		}
 
 		if( sig )
 		{
@@ -611,6 +612,8 @@ kprintf("free %ld/%ld\n",AvailMem(0),AvailMem(MEMF_LARGEST));
 #endif
 
 	}
+	VoyLog(( "[DOLOOP] doloop() exit\n" ));
+	VoyFlush();
 }
 
 extern char **openurls;
@@ -669,23 +672,23 @@ int vmain( void )
 	__ctype[ 11 + 1 ] |= _S;
 #endif
 	
-	Printf( "[MAIN] Calling initstuff()...\n" );
+	VoyLog(( "[MAIN] Calling initstuff()...\n" ));
 	if( !initstuff() )
 	{
-		Printf( "[MAIN] *** COULDN'T INITIALIZE! SHUTTING DOWN..\n" );
+		VoyLog(( "[MAIN] *** COULDN'T INITIALIZE! SHUTTING DOWN..\n" ));
 		D( db_init, bug( "*** COULDN'T INITIALIZE! SHUTTING DOWN..\n" ) );
 		closestuff();
 		goto ex;
 	}
-	Printf( "[MAIN] initstuff() succeeded, app_started=TRUE\n" );
-	Flush( Output() );
+	VoyLog(( "[MAIN] initstuff() succeeded, app_started=TRUE\n" ));
+	VoyFlush();
 	app_started = TRUE;
-	Printf( "[MAIN] app_started set to TRUE\n" );
-	Flush( Output() );
+	VoyLog(( "[MAIN] app_started set to TRUE\n" ));
+	VoyFlush();
 
 #if USE_KEYFILES
-	Printf( "[MAIN] Checking USE_KEYFILES...\n" );
-	Flush( Output() );
+	VoyLog(( "[MAIN] Checking USE_KEYFILES...\n" ));
+	VoyFlush();
 	if( !serialnumber )
 	{
 #if NEED_KEYFILE
@@ -700,135 +703,135 @@ int vmain( void )
 	}
 #endif /* !USE_KEYFILE */
 
-	Printf( "[MAIN] After USE_KEYFILES check\n" );
-	Flush( Output() );
+	VoyLog(( "[MAIN] After USE_KEYFILES check\n" ));
+	VoyFlush();
 
 #if USE_SPLASHWIN
-	Printf( "[MAIN] Checking USE_SPLASHWIN...\n" );
-	Flush( Output() );
+	VoyLog(( "[MAIN] Checking USE_SPLASHWIN...\n" ));
+	VoyFlush();
 	if( use_splashwin )
 	{
-		Printf( "[MAIN] Updating splash window...\n" );
-		Flush( Output() );
+		VoyLog(( "[MAIN] Updating splash window...\n" ));
+		VoyFlush();
 		DoMethod( splashwin, MM_SplashWin_Update, GS( SPLASHWIN_DONE ) );
-		Printf( "[MAIN] Splash window updated\n" );
-		Flush( Output() );
+		VoyLog(( "[MAIN] Splash window updated\n" ));
+		VoyFlush();
 	}
 #endif
-	Printf( "[MAIN] After USE_SPLASHWIN check\n" );
-	Flush( Output() );
+	VoyLog(( "[MAIN] After USE_SPLASHWIN check\n" ));
+	VoyFlush();
 
-	Printf( "[MAIN] Checking USE_KEYFILES and openurls...\n" );
-	Flush( Output() );
+	VoyLog(( "[MAIN] Checking USE_KEYFILES and openurls...\n" ));
+	VoyFlush();
 
 #if USE_KEYFILES
-	Printf( "[MAIN] USE_KEYFILES is enabled, checking piratekey...\n" );
-	Flush( Output() );
+	VoyLog(( "[MAIN] USE_KEYFILES is enabled, checking piratekey...\n" ));
+	VoyFlush();
 	if( piratekey )
 	{
-		Printf( "[MAIN] piratekey is set, creating PieRat window...\n" );
-		Flush( Output() );
+		VoyLog(( "[MAIN] piratekey is set, creating PieRat window...\n" ));
+		VoyFlush();
 		win_create( "PieRat", pirateurl, NULL, NULL, FALSE, TRUE, FALSE );
-		Printf( "[MAIN] PieRat window created\n" );
-		Flush( Output() );
+		VoyLog(( "[MAIN] PieRat window created\n" ));
+		VoyFlush();
 	}
 	else
 	{
-		Printf( "[MAIN] piratekey is not set\n" );
-		Flush( Output() );
+		VoyLog(( "[MAIN] piratekey is not set\n" ));
+		VoyFlush();
 	}
 #endif /* USE_KEYFILES */
 	
-	Printf( "[MAIN] Checking openurls...\n" );
-	Flush( Output() );
+	VoyLog(( "[MAIN] Checking openurls...\n" ));
+	VoyFlush();
 	
 	/* Check if openurls pointer is valid before accessing it */
 	if( openurls && (ULONG)openurls >= 0x1000 )
 	{
-		Printf( "[MAIN] openurls is valid, checking contents...\n" );
-		Flush( Output() );
+		VoyLog(( "[MAIN] openurls is valid, checking contents...\n" ));
+		VoyFlush();
 	}
 	else
 	{
-		Printf( "[MAIN] openurls is NULL or invalid (0x%lx), skipping\n", openurls );
-		Flush( Output() );
+		VoyLog(( "[MAIN] openurls is NULL or invalid (0x%lx), skipping\n", openurls ));
+		VoyFlush();
 		openurls = NULL; /* Ensure it's NULL to skip the block */
 	}
 	
 	if( openurls )
 	{
-		Printf( "[MAIN] Creating browser windows from command line URLs...\n" );
+		VoyLog(( "[MAIN] Creating browser windows from command line URLs...\n" ));
 		while( *openurls )
 		{
-			Printf( "[MAIN] Creating window for URL: %s\n", *openurls );
+			VoyLog(( "[MAIN] Creating window for URL: %s\n", *openurls ));
 			win_create( "", *openurls, NULL, NULL, FALSE, FALSE, FALSE/*getflag( VFLG_FULLSCREEN )*/ );
 			openurls++;
 		}
-		Printf( "[MAIN] All command line windows created\n" );
+		VoyLog(( "[MAIN] All command line windows created\n" ));
 	}
 	else
 	{
 		int autoload;
 		char *homepage;
 		
-		Printf( "[MAIN] Creating first browser window (homepage)...\n" );
-		Flush( Output() );
+		VoyLog(( "[MAIN] Creating first browser window (homepage)...\n" ));
+		VoyFlush();
 		
-		Printf( "[MAIN] About to call getflag(VFLG_HOMEPAGE_AUTOLOAD)...\n" );
-		Flush( Output() );
+		VoyLog(( "[MAIN] About to call getflag(VFLG_HOMEPAGE_AUTOLOAD)...\n" ));
+		VoyFlush();
 		autoload = getflag( VFLG_HOMEPAGE_AUTOLOAD );
-		Printf( "[MAIN] getflag(VFLG_HOMEPAGE_AUTOLOAD) = %ld\n", (long)autoload );
-		Flush( Output() );
+		VoyLog(( "[MAIN] getflag(VFLG_HOMEPAGE_AUTOLOAD) = %ld\n", (long)autoload ));
+		VoyFlush();
 		
 		homepage = autoload ? getprefs( DSI_HOMEPAGE ) : "";
-		Printf( "[MAIN] Homepage URL: %s\n", homepage ? homepage : "(null)" );
-		Flush( Output() );
+		VoyLog(( "[MAIN] Homepage URL: %s\n", homepage ? homepage : "(null)" ));
+		VoyFlush();
 		
-		Printf( "[MAIN] About to call win_create()...\n" );
-		Flush( Output() );
+		VoyLog(( "[MAIN] About to call win_create()...\n" ));
+		VoyFlush();
 		win_create( "", homepage, NULL, NULL, FALSE, FALSE, FALSE /*getflag( VFLG_FULLSCREEN )*/ );
-		Printf( "[MAIN] win_create() returned\n" );
-		Flush( Output() );
+		VoyLog(( "[MAIN] win_create() returned\n" ));
+		VoyFlush();
 		
-		Printf( "[MAIN] First browser window created\n" );
-		Flush( Output() );
+		VoyLog(( "[MAIN] First browser window created\n" ));
+		VoyFlush();
 	}
 
-	Printf( "[MAIN] After window creation, checking splashwin...\n" );
-	Flush( Output() );
+	VoyLog(( "[MAIN] After window creation, checking splashwin...\n" ));
+	VoyFlush();
 
 #if USE_SPLASHWIN
-	Printf( "[MAIN] USE_SPLASHWIN is enabled\n" );
-	Flush( Output() );
+	VoyLog(( "[MAIN] USE_SPLASHWIN is enabled\n" ));
+	VoyFlush();
 	if( splashwin )
 	{
-		Printf( "[MAIN] splashwin exists, closing it...\n" );
-		Flush( Output() );
+		VoyLog(( "[MAIN] splashwin exists, closing it...\n" ));
+		VoyFlush();
 		set( splashwin, MUIA_Window_Open, FALSE );
-		Printf( "[MAIN] splashwin closed\n" );
-		Flush( Output() );
+		VoyLog(( "[MAIN] splashwin closed\n" ));
+		VoyFlush();
 		DoMethod( app, OM_REMMEMBER, splashwin );
-		Printf( "[MAIN] splashwin removed from app\n" );
-		Flush( Output() );
+		VoyLog(( "[MAIN] splashwin removed from app\n" ));
+		VoyFlush();
 		MUI_DisposeObject( splashwin );
-		Printf( "[MAIN] splashwin disposed\n" );
-		Flush( Output() );
+		VoyLog(( "[MAIN] splashwin disposed\n" ));
+		VoyFlush();
 	}
 	else
 	{
-		Printf( "[MAIN] splashwin is NULL\n" );
-		Flush( Output() );
+		VoyLog(( "[MAIN] splashwin is NULL\n" ));
+		VoyFlush();
 	}
 #else
-	Printf( "[MAIN] USE_SPLASHWIN is disabled\n" );
-	Flush( Output() );
+	VoyLog(( "[MAIN] USE_SPLASHWIN is disabled\n" ));
+	VoyFlush();
 #endif
 
-	Printf( "[MAIN] About to call doloop()...\n" );
-	Flush( Output() );
+	VoyLog(( "[MAIN] About to call doloop()...\n" ));
+	VoyFlush();
 	doloop();
-	Printf( "[MAIN] doloop() returned\n" );
-	Flush( Output() );
+	VoyLog(( "[MAIN] doloop() returned\n" ));
+	VoyFlush();
 
 	closestuff();
 

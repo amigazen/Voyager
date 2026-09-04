@@ -22,7 +22,7 @@
  * - Please don't add useless stuff here. Use direct MUI macros/functions
  * whenever possible because they're the same for all apps.
  *
- * Â© 2000 by Vapor CVS team <ibcvs@vapor.com>
+ * © 2000 by Vapor CVS team <ibcvs@vapor.com>
  * All rights reserved
  *
  * $Id: mui_func.c,v 1.13 2003/07/06 16:51:34 olli Exp $

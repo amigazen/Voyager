@@ -714,20 +714,20 @@ int layout_do(
 
 	D( db_html, bug( "layout_do offset %ld, totalsize %ld, is_complete %ld\n", offset, datasize, is_complete, ts = clock() ));
 
-	Printf( "[LAYOUT] layout_do entry offset=%ld size=%ld complete=%ld\n", (long)offset, (long)datasize, (long)is_complete );
-	Flush( Output() );
+	VoyLog(( "[LAYOUT] layout_do entry offset=%ld size=%ld complete=%ld\n", (long)offset, (long)datasize, (long)is_complete ));
+	VoyFlush();
 
 	if( ctx->done )
 	{
-		Printf( "[LAYOUT] layout_do early exit (ctx->done)\n" );
-		Flush( Output() );
+		VoyLog(( "[LAYOUT] layout_do early exit (ctx->done)\n" ));
+		VoyFlush();
 		return( offset );
 	}
 
 	if( layout_checkfetchnodes( ctx ) )
 	{
-		Printf( "[LAYOUT] layout_do early exit (fetchnodes)\n" );
-		Flush( Output() );
+		VoyLog(( "[LAYOUT] layout_do early exit (fetchnodes)\n" ));
+		VoyFlush();
 		return( offset );
 	}
 
@@ -960,8 +960,8 @@ dotext:
 
 		this_name = gettokenname();
 
-		Printf( "[PARSE] tag=%ld off=%ld\n", (long)ch, (long)( (char*)data - (char*)begindata ) );
-		Flush( Output() );
+		VoyLog(( "[PARSE] tag=%ld off=%ld\n", (long)ch, (long)( (char*)data - (char*)begindata ) ));
+		VoyFlush();
 
 		switch( ch )
 		{
@@ -1731,11 +1731,11 @@ dotext:
 					char *chname = NULL;
 #endif
 
-					Printf( "[IMG] args src='%s' alt='%s' w='%s' h='%s' anchor=%lx\n",
+					VoyLog(( "[IMG] args src='%s' alt='%s' w='%s' h='%s' anchor=%lx\n",
 						src ? src : "(null)", alt ? alt : "(null)",
 						width ? width : "(null)", height ? height : "(null)",
-						(ULONG)ctx->current_anchor );
-					Flush( Output() );
+						(ULONG)ctx->current_anchor ));
+					VoyFlush();
 
 					if( src )
 						uri_mergeurl( ctx->baseref, src, urlbuffer );
@@ -1745,8 +1745,8 @@ dotext:
 					if( lowsrc )
 						uri_mergeurl( ctx->baseref, lowsrc, urlbuffer2 );
 
-					Printf( "[IMG] merged url='%s'\n", urlbuffer );
-					Flush( Output() );
+					VoyLog(( "[IMG] merged url='%s'\n", urlbuffer ));
+					VoyFlush();
 
 					if( align )
 					{
@@ -1797,13 +1797,13 @@ dotext:
 
 					isformimage = FALSE;
 
-					Printf( "[IMG] JSNewObject returned o=%lx\n", (ULONG)o );
-					Flush( Output() );
+					VoyLog(( "[IMG] JSNewObject returned o=%lx\n", (ULONG)o ));
+					VoyFlush();
 
 					DoMethod( ctx->current_container, MM_Layout_Group_AddObject, o );
 
-					Printf( "[IMG] AddObject done\n" );
-					Flush( Output() );
+					VoyLog(( "[IMG] AddObject done\n" ));
+					VoyFlush();
 
 					ctx->lastwasblank=FALSE;
 				}
@@ -3052,8 +3052,8 @@ layout_do_done:
 	if( rc > datasize )
 		rc = datasize;
 
-	Printf( "[LAYOUT] layout_do exit ret=%ld\n", (long)rc );
-	Flush( Output() );
+	VoyLog(( "[LAYOUT] layout_do exit ret=%ld\n", (long)rc ));
+	VoyFlush();
 	return( rc );
 }
 
@@ -3073,8 +3073,8 @@ int layout_do_text(
 	APTR o;
 	int rc;
 
-	Printf( "[LAYOUT] layout_do_text entry offset=%ld size=%ld complete=%ld\n", (long)offset, (long)datasize, (long)is_complete );
-	Flush( Output() );
+	VoyLog(( "[LAYOUT] layout_do_text entry offset=%ld size=%ld complete=%ld\n", (long)offset, (long)datasize, (long)is_complete ));
+	VoyFlush();
 
 	data += offset;
 
@@ -3292,8 +3292,8 @@ dotext:
 	if( rc > datasize )
 		rc = datasize;
 
-	Printf( "[LAYOUT] layout_do_text exit ret=%ld\n", (long)rc );
-	Flush( Output() );
+	VoyLog(( "[LAYOUT] layout_do_text exit ret=%ld\n", (long)rc ));
+	VoyFlush();
 
 	return( rc );
 }

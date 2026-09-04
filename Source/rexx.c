@@ -1000,8 +1000,8 @@ void send_internal_command(STRPTR buf)
 		}
 	}
 
-	Printf( "[CMD] send_internal_command buf='%s' cmdlen=%ld\n", buf, (long)cmdlen );
-	Flush( Output() );
+	VoyLog(( "[CMD] send_internal_command buf='%s' cmdlen=%ld\n", buf, (long)cmdlen ));
+	VoyFlush();
 
 	if (cmdlen > 0)
 	{
@@ -1010,10 +1010,10 @@ void send_internal_command(STRPTR buf)
 
 		for (com = rexxcmds; com && com->mc_Name && strnicmp(buf, com->mc_Name, cmdlen); com++);
 
-		Printf( "[CMD] match=%s hook=%lx\n",
+		VoyLog(( "[CMD] match=%s hook=%lx\n",
 			( com && com->mc_Name ) ? com->mc_Name : "(none)",
-			( com && com->mc_Name ) ? (ULONG)com->mc_Hook : 0 );
-		Flush( Output() );
+			( com && com->mc_Name ) ? (ULONG)com->mc_Hook : 0 ));
+		VoyFlush();
 
 		if (com && com->mc_Name)
 		{
@@ -1092,8 +1092,8 @@ void execute_command( int type, STRPTR str, ULONG mode, STRPTR obj_url, STRPTR o
 
 	D( db_rexx, bug( "obj_url == %s, obj_link == %s, obj_window == %s\n", ( STRPTR )obj_url ? ( STRPTR )obj_url : ( STRPTR )"none", ( STRPTR ) obj_link ? ( STRPTR )obj_link : ( STRPTR )"none", ( STRPTR )obj_window ? ( STRPTR )obj_window : ( STRPTR )"none" ) );
 
-	Printf( "[CMD] execute_command type=%ld str='%s'\n", (long)type, str ? str : "(null)" );
-	Flush( Output() );
+	VoyLog(( "[CMD] execute_command type=%ld str='%s'\n", (long)type, str ? str : "(null)" ));
+	VoyFlush();
 
 	if( str[ 0 ] )
 	{

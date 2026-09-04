@@ -8,7 +8,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Dat
 
 Layout polish remaining after the 2026-09-04 runtime work.
 
-- Diagnostic `Printf` / `Flush(Output())` is still on many paths, including htmlview Draw / ShowNStream and htmlwin SetURL / GotInfo. Wrap or drop it on hot paths once debugging is done so redraw cannot stall on DOS.
+- Diagnostic `Printf` / `Flush(Output())` is still hardcoded on many paths, including htmlview Draw / ShowNStream and htmlwin SetURL / GotInfo. 
 - `NStream_GotInfo` deferral while `in_seturl` was added against a deadlock; if that lockup stays gone without it, the original immediate GotInfo flow can come back.
 
 ## [0.3.0] - 2026-09-04
@@ -44,7 +44,7 @@ First build that loads real sites (amiga-news.de, Aminet, amigazen.com), shows i
 - dos.library logs used `%ld` / `%lx` for 32-bit values (`%d` is 16-bit and corrupted traces).
 - DNS child creates its MsgPort before other work; `DNSTASKS` is 1; cache lookup skipped until the pool exists.
 - HTTP `Host` / User-Agent tolerate a NULL host; about-text no longer dereferences dummy `VIDBase`.
-- HTML view cache bitmap uses `_width` × `_height` (not `left+width` / `top+height` as a size), blits from source `(0,0)` to the saved `left`/`top`, and rejects blit coordinates outside `[-32768,32767]`. Reading `_left`/`_top` after `MUI_Redraw()` was producing Guru 80000002 and orange stripes.
+- HTML view cache bitmap uses `_width` x `_height` (not `left+width` / `top+height` as a size), blits from source `(0,0)` to the saved `left`/`top`, and rejects blit coordinates outside `[-32768,32767]`. Reading `_left`/`_top` after `MUI_Redraw()` was producing Guru 80000002 and orange stripes.
 - `get_cachebitmap` refuses non-positive or >8192 dimensions so `AllocBitMap` is not called with garbage sizes.
 - `ShowNStream` with no document is an explicit path (clear imagemode/textmode/usedamageclip, `ExitChange`) instead of falling through.
 - Ignore stale `NStream_GotInfo` when `doc_loading != msg->ns`.
@@ -52,7 +52,7 @@ First build that loads real sites (amiga-news.de, Aminet, amigazen.com), shows i
 
 ### Removed
 
-- Opening/closing `vimgdecode.library` and CPU-specific decoder variants (`68020` / `68040fpu` / …). `VIDBase` is only a non-NULL availability sentinel.
+- Opening/closing `vimgdecode.library` and CPU-specific decoder variants (`68020` / `68040fpu` / ...). `VIDBase` is only a non-NULL availability sentinel.
 - `vimgdecode` libcall pragmas and inlines.
 - Tear-off panels (`USE_TEAROFF 0`) until TearOffPanel.mcc is Enforcer-clean.
 - MorphOS-only SpeedBar include path.

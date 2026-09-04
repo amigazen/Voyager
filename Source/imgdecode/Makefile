@@ -1,6 +1,6 @@
 # Makefile for the Imgdecoders
 #
-# ï¿½ 2000 VaporWare CVS team <ibcvs@vapor.com>
+# © 2000 VaporWare CVS team <ibcvs@vapor.com>
 # All rights reserved
 # $Id: Makefile,v 1.81 2003/06/22 21:48:58 zapek Exp $ 
 

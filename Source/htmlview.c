@@ -428,19 +428,19 @@ MUI_HOOK( layoutfunc, APTR grp, struct MUI_LayoutMsg *lm )
 				if( data->virtual_width > 0 && !data->is_frameset )
 					lm->lm_Layout.Width = data->virtual_width;
 
-				Printf( "[VIEWLAYOUT] enter w=%ld h=%ld virtwidth=%ld\n",
-					(long)lm->lm_Layout.Width, (long)lm->lm_Layout.Height, (long)data->virtual_width );
-				Flush( Output() );
+				VoyLog(( "[VIEWLAYOUT] enter w=%ld h=%ld virtwidth=%ld\n",
+					(long)lm->lm_Layout.Width, (long)lm->lm_Layout.Height, (long)data->virtual_width ));
+				VoyFlush();
 
 				while ( ( child = NextObject( &cstate ) ) )
 				{
 					D( db_html, bug( "sending MM_Layout_CalcMinMax to child 0x%lx\n", child ) );
-					Printf( "[VIEWLAYOUT] CalcMinMax child=%lx\n", (ULONG)child );
-					Flush( Output() );
+					VoyLog(( "[VIEWLAYOUT] CalcMinMax child=%lx\n", (ULONG)child ));
+					VoyFlush();
 					DoMethod( child, MM_Layout_CalcMinMax, lm->lm_Layout.Width, lm->lm_Layout.Height, lm->lm_Layout.Width );
 				}
-				Printf( "[VIEWLAYOUT] CalcMinMax pass done\n" );
-				Flush( Output() );
+				VoyLog(( "[VIEWLAYOUT] CalcMinMax pass done\n" ));
+				VoyFlush();
 
 				cstate = (Object *)lm->lm_Children->mlh_Head;
 				child = NextObject( &cstate );
@@ -457,9 +457,9 @@ MUI_HOOK( layoutfunc, APTR grp, struct MUI_LayoutMsg *lm )
 					if ( !li )
 						continue;
 
-					Printf( "[VIEWLAYOUT] DoLayout child=%lx minw=%ld minh=%ld\n",
-						(ULONG)child, (long)li->minwidth, (long)li->minheight );
-					Flush( Output() );
+					VoyLog(( "[VIEWLAYOUT] DoLayout child=%lx minw=%ld minh=%ld\n",
+						(ULONG)child, (long)li->minwidth, (long)li->minheight ));
+					VoyFlush();
 					DoMethod( child, MM_Layout_DoLayout, max( lm->lm_Layout.Width, li->minwidth ), max( lm->lm_Layout.Height, li->minheight ), lm->lm_Layout.Width );
 
 					li->ys = max( lm->lm_Layout.Height, li->ys );
@@ -475,8 +475,8 @@ MUI_HOOK( layoutfunc, APTR grp, struct MUI_LayoutMsg *lm )
 				data->layout_width = lm->lm_Layout.Width = max( lm->lm_Layout.Width, maxx );
 
 				D( db_html, bug( "MUIM_Layout(%lx), final size %ld/%ld\n", grp, lm->lm_Layout.Width, lm->lm_Layout.Height ));
-				Printf( "[VIEWLAYOUT] exit w=%ld h=%ld\n", (long)lm->lm_Layout.Width, (long)lm->lm_Layout.Height );
-				Flush( Output() );
+				VoyLog(( "[VIEWLAYOUT] exit w=%ld h=%ld\n", (long)lm->lm_Layout.Width, (long)lm->lm_Layout.Height ));
+				VoyFlush();
 				data->in_mui_layout = 0;
 			}
 			return( TRUE );
@@ -613,8 +613,8 @@ DECSMETHOD( HTMLView_ShowNStream )
 	GETDATA;
 	APTR ns = msg->ns;
 
-	Printf( "[VIEW] ShowNStream entry ns=%lx\n", (ULONG)ns );
-	Flush( Output() );
+	VoyLog(( "[VIEW] ShowNStream entry ns=%lx\n", (ULONG)ns ));
+	VoyFlush();
 
 	/*
 	 * Cleanup possible images which were displayed in
@@ -692,24 +692,24 @@ DECSMETHOD( HTMLView_ShowNStream )
 	data->finished = FALSE;
 	data->gottitle = FALSE;
 
-	Printf( "[VIEW] ShowNStream doc set doc=%lx\n", (ULONG)data->doc );
-	Flush( Output() );
+	VoyLog(( "[VIEW] ShowNStream doc set doc=%lx\n", (ULONG)data->doc ));
+	VoyFlush();
 
 	data->lctx = layout_new();
-	Printf( "[VIEW] ShowNStream layout_new returned lctx=%lx\n", (ULONG)data->lctx );
-	Flush( Output() );
+	VoyLog(( "[VIEW] ShowNStream layout_new returned lctx=%lx\n", (ULONG)data->lctx ));
+	VoyFlush();
 
 	if( data->lastcmap )
 		layout_setuppens( data->lctx, data->lastcmap );
 
-	Printf( "[VIEW] ShowNStream layout_attach\n" );
-	Flush( Output() );
+	VoyLog(( "[VIEW] ShowNStream layout_attach\n" ));
+	VoyFlush();
 	layout_attach( data->lctx, obj );
-	Printf( "[VIEW] ShowNStream layout_setdom\n" );
-	Flush( Output() );
+	VoyLog(( "[VIEW] ShowNStream layout_setdom\n" ));
+	VoyFlush();
 	layout_setdom( data->lctx, data->htmlwin, obj );
-	Printf( "[VIEW] ShowNStream layout_setmargins\n" );
-	Flush( Output() );
+	VoyLog(( "[VIEW] ShowNStream layout_setmargins\n" ));
+	VoyFlush();
 	layout_setmargins( data->lctx,
 		getv( data->htmlwin, MA_Layout_MarginLeft ),
 		getv( data->htmlwin, MA_Layout_MarginRight ),
@@ -724,8 +724,8 @@ DECSMETHOD( HTMLView_ShowNStream )
 	DoMethod( data->htmlwin, MM_HTMLWin_ResetPIPNum );
 #endif
 
-	Printf( "[VIEW] ShowNStream doc path start (mime etc)\n" );
-	Flush( Output() );
+	VoyLog(( "[VIEW] ShowNStream doc path start (mime etc)\n" ));
+	VoyFlush();
 
 	if( data->doc )
 	{
@@ -780,8 +780,8 @@ DECSMETHOD( HTMLView_ShowNStream )
 		{
 			data->imagemode = 0;
 			data->textmode = 1;
-			Printf( "[VIEW] ShowNStream text/plain: NStream_GotData\n" );
-			Flush( Output() );
+			VoyLog(( "[VIEW] ShowNStream text/plain: NStream_GotData\n" ));
+			VoyFlush();
 			DoMethod( obj, MM_NStream_GotData );
 		}
 		else
@@ -813,8 +813,8 @@ DECSMETHOD( HTMLView_ShowNStream )
 			/* .. and then carry on.. */
 			data->imagemode = 0;
 			data->textmode = 0;
-			Printf( "[VIEW] ShowNStream HTML: NStream_GotData\n" );
-			Flush( Output() );
+			VoyLog(( "[VIEW] ShowNStream HTML: NStream_GotData\n" ));
+			VoyFlush();
 			DoMethod( obj, MM_NStream_GotData );
 		}
 	}
@@ -886,8 +886,8 @@ DECTMETHOD( NStream_GotData )
 
 	newoffset = nets_getdocptr( data->doc );
 	finished = nets_state( data->doc );
-	Printf( "[VIEW] NStream_GotData entry newoffset=%ld finished=%ld lastoffset=%ld\n", (long)newoffset, (long)finished, (long)data->lastoffset );
-	Flush( Output() );
+	VoyLog(( "[VIEW] NStream_GotData entry newoffset=%ld finished=%ld lastoffset=%ld\n", (long)newoffset, (long)finished, (long)data->lastoffset ));
+	VoyFlush();
 
 	if( newoffset > data->lastoffset )
 	{
@@ -915,15 +915,15 @@ DECTMETHOD( NStream_GotData )
 					data->textmode = 0;
 			}
 
-			Printf( "[VIEW] NStream_GotData: layout_do start (textmode=%ld) newoff=%ld\n", (long)data->textmode, (long)newoffset );
-			Flush( Output() );
+			VoyLog(( "[VIEW] NStream_GotData: layout_do start (textmode=%ld) newoff=%ld\n", (long)data->textmode, (long)newoffset ));
+			VoyFlush();
 			DoMethod( data->htmlwin, MUIM_Group_InitChange );
 			if( data->textmode )
 				data->lastoffset = layout_do_text( data->lctx, docmem, newoffset, data->lastoffset, finished );
 			else
 				data->lastoffset = layout_do( data->lctx, docmem, newoffset, data->lastoffset, finished );
-			Printf( "[VIEW] NStream_GotData: layout_do done lastoffset=%ld\n", (long)data->lastoffset );
-			Flush( Output() );
+			VoyLog(( "[VIEW] NStream_GotData: layout_do done lastoffset=%ld\n", (long)data->lastoffset ));
+			VoyFlush();
 		}
 		nets_unlockdocmem();
 
@@ -931,20 +931,20 @@ DECTMETHOD( NStream_GotData )
 		if( !data->gottitle && data->lctx->title[ 0 ] )
 		{
 			data->gottitle = TRUE;
-			Printf( "[VIEW] NStream_GotData: setting window title\n" );
-			Flush( Output() );
+			VoyLog(( "[VIEW] NStream_GotData: setting window title\n" ));
+			VoyFlush();
 			DoMethod( data->htmlwin, MM_HTMLWin_SetTitle, ( ULONG )data->lctx->title );
-			Printf( "[VIEW] NStream_GotData: SetTitle returned\n" );
-			Flush( Output() );
+			VoyLog(( "[VIEW] NStream_GotData: SetTitle returned\n" ));
+			VoyFlush();
 		}
 
 		data->usedamageclip = TRUE;
 
-		Printf( "[VIEW] NStream_GotData: htmlwin ExitChange\n" );
-		Flush( Output() );
+		VoyLog(( "[VIEW] NStream_GotData: htmlwin ExitChange\n" ));
+		VoyFlush();
 		DoMethod( data->htmlwin, MUIM_Group_ExitChange );
-		Printf( "[VIEW] NStream_GotData: htmlwin ExitChange returned\n" );
-		Flush( Output() );
+		VoyLog(( "[VIEW] NStream_GotData: htmlwin ExitChange returned\n" ));
+		VoyFlush();
 
 		/*
 		 * Record that the first layout is done
@@ -1075,40 +1075,40 @@ DECMMETHOD( Setup )
 	APTR win = NULL;
 	struct Data *data;
 
-	Printf( "[VIEW] Setup entry obj=%lx cl=%lx\n", (ULONG)obj, (ULONG)cl );
-	Flush( Output() );
-	Printf( "[VIEW] Setup step1: GETDATA\n" );
-	Flush( Output() );
+	VoyLog(( "[VIEW] Setup entry obj=%lx cl=%lx\n", (ULONG)obj, (ULONG)cl ));
+	VoyFlush();
+	VoyLog(( "[VIEW] Setup step1: GETDATA\n" ));
+	VoyFlush();
 	data = INST_DATA( cl, obj );
-	Printf( "[VIEW] Setup step2: data=%lx\n", (ULONG)data );
-	Flush( Output() );
+	VoyLog(( "[VIEW] Setup step2: data=%lx\n", (ULONG)data ));
+	VoyFlush();
 
-	Printf( "[VIEW] Setup step3: muiRenderInfo\n" );
-	Flush( Output() );
+	VoyLog(( "[VIEW] Setup step3: muiRenderInfo\n" ));
+	VoyFlush();
 	mri = muiRenderInfo( obj );
-	Printf( "[VIEW] Setup step4: mri=%lx\n", (ULONG)mri );
-	Flush( Output() );
+	VoyLog(( "[VIEW] Setup step4: mri=%lx\n", (ULONG)mri ));
+	VoyFlush();
 
 	/* When Window_Open is set to TRUE, MUI sends Setup before the Intuition window exists.
 	 * Area_Setup (DOSUPER) can crash if render info/screen/font are not yet set.
 	 * Skip superclass Setup when we have no render context. */
 	if( mri )
 	{
-		Printf( "[VIEW] Setup step5: calling DOSUPER\n" );
-		Flush( Output() );
+		VoyLog(( "[VIEW] Setup step5: calling DOSUPER\n" ));
+		VoyFlush();
 		rc = DOSUPER;
-		Printf( "[VIEW] Setup step6: DOSUPER done rc=%lu\n", rc );
-		Flush( Output() );
+		VoyLog(( "[VIEW] Setup step6: DOSUPER done rc=%lu\n", rc ));
+		VoyFlush();
 	}
 	else
 	{
-		Printf( "[VIEW] Setup step5: no mri, skip DOSUPER\n" );
-		Flush( Output() );
+		VoyLog(( "[VIEW] Setup step5: no mri, skip DOSUPER\n" ));
+		VoyFlush();
 		rc = 0;
 	}
 
-	Printf( "[VIEW] Setup step7: _screen\n" );
-	Flush( Output() );
+	VoyLog(( "[VIEW] Setup step7: _screen\n" ));
+	VoyFlush();
 #ifndef MBX
 	scr = (APTR)_screen( obj );
 	if( scr )
@@ -1116,12 +1116,12 @@ DECMMETHOD( Setup )
 		data->lastcmap = _screen( obj )->sc_ViewPort.vp_ColorMap;
 		destscreen = (struct Screen *)scr;  /* set global so getclone/lo_group have screen before any lo_image */
 	}
-	Printf( "[VIEW] Setup step8: scr=%lx lastcmap=%lx\n", (ULONG)scr, (ULONG)data->lastcmap );
-	Flush( Output() );
+	VoyLog(( "[VIEW] Setup step8: scr=%lx lastcmap=%lx\n", (ULONG)scr, (ULONG)data->lastcmap ));
+	VoyFlush();
 #endif
 
-	Printf( "[VIEW] Setup step9: layout_setuppens\n" );
-	Flush( Output() );
+	VoyLog(( "[VIEW] Setup step9: layout_setuppens\n" ));
+	VoyFlush();
 	if( data->lctx )
 		layout_setuppens( data->lctx, data->lastcmap  );
 
@@ -1132,8 +1132,8 @@ DECMMETHOD( Setup )
 	 * The crash was the libcall pragma sending it through VIDBase; with that
 	 * fixed it can be called from Setup again, as the original did.
 	 */
-	Printf( "[VIEW] Setup step10: imgdec_setdestscreen scr=%lx\n", (ULONG)muiRenderInfo( obj )->mri_Screen );
-	Flush( Output() );
+	VoyLog(( "[VIEW] Setup step10: imgdec_setdestscreen scr=%lx\n", (ULONG)muiRenderInfo( obj )->mri_Screen ));
+	VoyFlush();
 	if( muiRenderInfo( obj )->mri_Screen )
 	{
 #if USE_CGX
@@ -1144,11 +1144,11 @@ DECMMETHOD( Setup )
 #endif
 		data->imgdec_destscreen_set = 1;
 	}
-	Printf( "[VIEW] Setup step10 done\n" );
-	Flush( Output() );
+	VoyLog(( "[VIEW] Setup step10 done\n" ));
+	VoyFlush();
 
-	Printf( "[VIEW] Setup step11: ehn\n" );
-	Flush( Output() );
+	VoyLog(( "[VIEW] Setup step11: ehn\n" ));
+	VoyFlush();
 	data->ehn.ehn_Class  = cl;
 	data->ehn.ehn_Object = obj;
 	data->ehn.ehn_Events = IDCMP_RAWKEY;
@@ -1158,14 +1158,14 @@ DECMMETHOD( Setup )
 	#else
 	data->ehn.ehn_Priority = -4;
 	#endif
-	Printf( "[VIEW] Setup step12: _win AddEventHandler\n" );
-	Flush( Output() );
+	VoyLog(( "[VIEW] Setup step12: _win AddEventHandler\n" ));
+	VoyFlush();
 	win = (APTR)_win( obj );
 	if( win )
 		DoMethod( win, MUIM_Window_AddEventHandler, (ULONG) &data->ehn );
 
-	Printf( "[VIEW] Setup exit scr=%lx mri=%lx win=%lx\n", (ULONG)scr, (ULONG)mri, (ULONG)win );
-	Flush( Output() );
+	VoyLog(( "[VIEW] Setup exit scr=%lx mri=%lx win=%lx\n", (ULONG)scr, (ULONG)mri, (ULONG)win ));
+	VoyFlush();
 	return( rc );
 }
 
@@ -1173,8 +1173,8 @@ DECMMETHOD( Cleanup )
 {
 	GETDATA;
 
-	Printf( "[VIEW] HTML view Cleanup entry\n" );
-	Flush( Output() );
+	VoyLog(( "[VIEW] HTML view Cleanup entry\n" ));
+	VoyFlush();
 	if( _win( obj ) )
 		DoMethod( _win( obj ), MUIM_Window_RemEventHandler, (ULONG) &data->ehn );
 
@@ -1182,8 +1182,8 @@ DECMMETHOD( Cleanup )
 	{
 		layout_freepens( data->lctx );
 	}
-	Printf( "[VIEW] HTML view Cleanup exit\n" );
-	Flush( Output() );
+	VoyLog(( "[VIEW] HTML view Cleanup exit\n" ));
+	VoyFlush();
 	return( DOSUPER );
 }
 
@@ -1192,42 +1192,50 @@ DECMMETHOD( Draw )
 	GETDATA;
 	int redraw_done = FALSE;
 	ULONG V_GroupDraw( APTR obj, struct IClass *cl, struct MUIP_Draw *msg );
-	LONG w, h;
+	LONG w, h, vw, vh;
 	LONG left = _left(obj);
 	LONG top = _top(obj);
 	ULONG rc;
+	int cache_ok;
 
-	Printf( "[VIEW] Draw entry doc=%lx usedamageclip=%ld w=%ld h=%ld\n", (ULONG)data->doc, (long)data->usedamageclip, (long)_width( obj ), (long)_height( obj ) );
-	Flush( Output() );
+	VoyLog(( "[VIEW] Draw entry doc=%lx usedamageclip=%ld w=%ld h=%ld\n", (ULONG)data->doc, (long)data->usedamageclip, (long)_width( obj ), (long)_height( obj ) ));
+	VoyFlush();
 
 	if( data->in_draw )
 		return( V_GroupDraw( obj, cl->cl_Super->cl_Super, msg ) );
 	data->in_draw = 1;
 
-	/* Use object dimensions for cache; _left/_top can be wrong during nested redraw (e.g. _window==NULL). */
-	w = _width( obj );
-	h = _height( obj );
+	/*
+	 * MUI_Redraw paints at _left/_top. The offscreen bitmap must cover that
+	 * origin; blit from (left,top) so the toolbar offset is not a grey band.
+	 * vw/vh are the visible size; w/h are cache bitmap size.
+	 */
+	vw = _width( obj );
+	vh = _height( obj );
+	w = left + vw;
+	h = top + vh;
+	cache_ok = ( left >= 0 && top >= 0 && vw > 0 && vh > 0 && w <= 8192 && h <= 8192 );
 
 	/* Only use cache path when we have a document and layout to draw; otherwise
 	 * MUI_Redraw/RefreshAfterIncrementalDump can crash and we'd blit garbage (orange). */
 	#if USE_DBUF_RESIZE
-	if( data->doc && ( ( data->last_xs != w ) || ( data->last_ys != h ) || data->usedamageclip ) )
+	if( data->doc && cache_ok && ( ( data->last_xs != w ) || ( data->last_ys != h ) || data->usedamageclip ) )
 	#else
-	if( data->doc && data->usedamageclip )
+	if( data->doc && cache_ok && data->usedamageclip )
 	#endif
 	{
 		struct BitMap *bm;
 		struct RastPort *rp, *oldrp;
 		struct Window *oldwin;
 
-		Printf( "[VIEW] Draw cache path branch\n" );
-		Flush( Output() );
+		VoyLog(( "[VIEW] Draw cache path branch\n" ));
+		VoyFlush();
 		if( !_rp( obj ) || !_rp( obj )->BitMap )
 			; /* skip cache path, fall through to V_GroupDraw */
 		else 		if ( ( bm = get_cachebitmap( _rp( obj )->BitMap, w, h, &rp ) ) )
 		{
-			Printf( "[VIEW] Draw cache: MUI_Redraw\n" );
-			Flush( Output() );
+			VoyLog(( "[VIEW] Draw cache: MUI_Redraw\n" ));
+			VoyFlush();
 			oldrp = _rp( obj );
 			oldwin = _window( obj );
 			SetDrMd( rp, JAM1 );
@@ -1236,20 +1244,20 @@ DECMMETHOD( Draw )
 			/* Keep _window set during MUI_Redraw so layout/V_GroupDraw code that
 			 * dereferences _window(obj) does not crash (Guru 80000002). */
 			MUI_Redraw( obj, MADF_DRAWALL );
-			Printf( "[VIEW] Draw cache: MUI_Redraw done, BltBitMap\n" );
-			Flush( Output() );
+			VoyLog(( "[VIEW] Draw cache: MUI_Redraw done, BltBitMap\n" ));
+			VoyFlush();
 			_rp( obj ) = oldrp;
 			_window( obj ) = oldwin;
-			/* Use saved left/top; _left/_top can be invalid after MUI_Redraw. */
-			if( oldrp && left >= -32768 && left <= 32767 && top >= -32768 && top <= 32767 && w > 0 && h > 0 )
-				BltBitMapRastPort( bm, 0, 0, oldrp, left, top, w, h, 0xc0 );
+			/* Blit the painted rectangle; do not re-read _left/_top after MUI_Redraw. */
+			if( oldrp && vw > 0 && vh > 0 )
+				BltBitMapRastPort( bm, left, top, oldrp, left, top, vw, vh, 0xc0 );
 			if( data->lctx )
 			{
-				Printf( "[VIEW] Draw cache: RefreshAfterIncrementalDump\n" );
-				Flush( Output() );
+				VoyLog(( "[VIEW] Draw cache: RefreshAfterIncrementalDump\n" ));
+				VoyFlush();
 				DoMethod( obj, MM_Layout_RefreshAfterIncrementalDump );
-				Printf( "[VIEW] Draw cache: RefreshAfterIncrementalDump returned\n" );
-				Flush( Output() );
+				VoyLog(( "[VIEW] Draw cache: RefreshAfterIncrementalDump returned\n" ));
+				VoyFlush();
 			}
 			redraw_done = TRUE;
 
@@ -1270,8 +1278,8 @@ DECMMETHOD( Draw )
 
 	if( !redraw_done )
 	{
-		Printf( "[VIEW] Draw V_GroupDraw path\n" );
-		Flush( Output() );
+		VoyLog(( "[VIEW] Draw V_GroupDraw path\n" ));
+		VoyFlush();
 		#ifndef __MORPHOS__
 		if( MUIMasterBase->lib_Version > 19 )
 		#endif
@@ -1338,8 +1346,8 @@ DECMMETHOD( Draw )
 			}
 		}
 		#endif
-		Printf( "[VIEW] Draw calling V_GroupDraw\n" );
-		Flush( Output() );
+		VoyLog(( "[VIEW] Draw calling V_GroupDraw\n" ));
+		VoyFlush();
 		rc = V_GroupDraw( obj, cl->cl_Super->cl_Super, msg );
 		data->in_draw = 0;
 		return( rc );
