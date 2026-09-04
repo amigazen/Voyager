@@ -1,0 +1,522 @@
+
+
+[1mRegistering Vapor Software[0m
+**************************
+
+Vielen Dank für Ihre Unterstützung der Amiga-Software-Entwicklung!
+Dadurch, daß Sie die Software, die Sie benutzen, auch registrieren,
+sichern Sie die weitere Entwicklung hochqualitativer Amiga-Software.
+
+Die Preise und sonstigen Informationen in diesem Dokument sind auf dem
+Stand vom [3m29 Januar 2000[0m. Aktuelle Informationen finden Sie auf der
+Support.
+
+Benutzung
+*********
+
+Das Registrierungsprogramm bietet Ihnen ein einfach zu bedienendes
+GUI-Utility, mit dem Sie alle für eine Registrierung notwendigen Daten
+eingeben und für Sie notwendige Informationen abfragen können.
+
+Desweiteren können Sie damit das fertige Registrierformular
+ausdrucken, in eine Datei sichern oder direkt über Internet-Mail
+verschicken, wenn Sie eine aktive Internet-Verbindung haben.
+
+Wenn Sie das Programm starten, wird das Hauptfenster angezeigt.
+Abhängig von Ihrer eingestellten Bildschirmgröße ist der Inhalt des
+Fensters größer  als die Größe des Fensters selber. Sie können
+dann den Inhalt mit dem Rollbalken im Fensterrahmen verschieben, wie Sie
+es  von Workbench-Fenstern gewohnt sind.
+
+Geben Sie dann ihre persönlichen Daten wie Adresse,  EMail und
+Telefonnummer ein und wählen Sie Registrierstelle, Zahlungsart und
+gewünschte Produkte aus.
+
+In der Bestellliste wird automatisch der Gesamtpreis in der jeweils
+gewählten Währung angezeigt, wenn Sie eine Eingabe machen.
+
+Sie können das Registrierprogramm jederzeit beenden.  Alle
+Informationen, die Sie eingegeben haben, werden in der Datei
+[1mS:Vapor.Reginfo[0m gespeichert und beim nächsten Start automatisch
+wieder geladen.
+
+Wenn Sie mit der Eingabe fertig sind, haben Sie vier Möglichkeiten,
+wie mit dem Formular zu verfahren ist:
+
+   - Mit [1mFormular abspeichern[0m wird das Formular in eine normale
+     AmigaDOS-Datei gespeichert.  Sie können Sich diese dann mit einem
+     Textanzeiger anschauen oder es in Ihre EMail-Software zum Versand
+     importieren.
+
+   - Der Button [1mDrucken[0m druckt das Formular auf Ihrem Drucker.
+
+   - Mit [1mPer Mail verschicken[0m wird das Formular direkt an die
+     ausgewählte Registrierstelle verschickt. Sie müßen dafür einen
+     TCP/IP-Stack installiert haben und Ihre Netzverbindung muß aktiv
+     sein. Das Programm informiert Sie, ob der Versand erfolgreich war.
+
+   - Die Option [1mFormular anzeigen[0m öffnet ein Textfenster, mit dem
+     Sie das Formular vor dem Ausdrucken oder Verschicken anschauen
+     können.
+
+Registrierstellen
+*****************
+
+Momentan gibt es 7 Registrierstellen weltweit:
+
+      Deutschland     reg-de@vapor.com  [1mCash, CH, BT, BB, PM[0m
+      UK              reg-uk@vapor.com  [1mCash, CH, PM, CR[0m
+      Frankreich      reg-fr@vapor.com  [1mCash, CH, BT, PM[0m
+      USA             reg-us@vapor.com  [1mCash, CH, PM, FV[0m
+      Kanada          reg-ca@vapor.com  [1mCash, CH, PM[0m
+      Australien      reg-au@vapor.com  [1mCash, CH, PM[0m
+      Polen           reg-pl@vapor.com  [1mCash, CH, PM[0m
+
+In der zweiten Spalte ist die EMail-Adresse der Registrierungsstelle
+angegeben. Wenn Sie irgendwelche Fragen haben, können Sie direkt dahin
+schreiben.
+
+Die dritte Spalte bezeichnet die Zahlungsarten, die an der
+entsprechenden Registrierungsstelle angenommen werden
+
+[1mCash[0m
+     Bar.
+
+[1mCH[0m
+         [3mEurocheck[0m.  Eurochecks sind von der ausgebenden Bank
+     garantiert, d.h. die Bearbeitung der Registrierung verzögert sich
+     nicht, während die Scheckeinreichung geprüft wird. Andere
+     Scheckarten sind ebenfalls möglich.
+
+[1mBT[0m
+         [3mBanküberweisung[0m.  In der Regel nur im selben Land wie die
+     Registrierungsstelle möglich.  Bitte geben Sie unbedingt Ihren
+     Namen und Ihre EMail-Adresse und "Registrierung" auf dem
+     Überweisungsformular an.
+
+[1mBB[0m
+         [3mLastschrift[0m.  In der Regel nur im selben Land wie die
+     Registrierungsstelle möglich. Der Gesamtbetrag wird dem angebenen
+     Konto belastet. Dies ist nur möglich, wenn das Registrierformular
+     in schriftlicher Form und vom Kontoinhaber unterschrieben vorliegt.
+
+[1mPM[0m
+         [3mPostalische Zahlungsanweisung[0m. Wird auch als [3mInternational
+     Money Order[0m bezeichnet. Bitte geben Sie unbedingt Ihren Namen und
+     Ihre EMail-Adresse und "Registrierung" auf dem Zahlschein an.
+
+[1mCR[0m
+         [3mKreditkarte[0m. Der Betrag wird direkt Ihrer Kreditkarte
+     belastet.
+
+Deutschland
+===========
+
+Claudia Wagner
+Landsberge 5b
+D-45549 Sprockhövel
+Deutschland
+Fax: ++49 2339 138025
+email: [1mReg-DE@vapor.com[0m
+
+Bank account:
+Kontonummer: 394053850
+Bank.......: 1822direkt Frankfurt
+BLZ........: 50050201
+Owner......: Oliver Wagner
+
+Zahlungsart: Bar, Scheck, Banküberweisung, Lastschrift, Postalische
+Zahlungsanweisung.
+Lieferung: E-Mail (free), Disk (+ DM 5.00), CD-R (+ DM 15.00).
+Prices:
+    [1mAmIRC 3                   DM  45.00[0m
+    [1mUPGRADE AmIRC 3           DM  20.00[0m
+    [1mAmigaNCP                  DM  50.00[0m
+    [1mAmTALK II                 DM  20.00[0m
+    [1mMicroDot II               DM  40.00[0m
+    [1mVoyager 3                 DM  50.00[0m
+    [1mUPGRADE Voyager 3         DM  30.00[0m
+    [1mMetalWeb 4                DM  40.00[0m
+    [1mUPGRADE MetalWEB 4        DM  30.00[0m
+    [1mGenesis                   DM  69.00[0m
+    [1mmFTP                      DM  45.00[0m
+    [1mUPGRADE AmFTP -> mFTP     DM  30.00[0m
+    [1mAmTelnet II               DM  35.00[0m
+    [1mNetInfo II                DM  20.00[0m
+    [1mContact Manager           DM  15.00[0m
+    [1mX-Arc                     DM  30.00[0m
+
+UK
+==
+
+Active Technologies
+Oval House
+113 Victoria Road
+Darlington
+DL1 5JH
+Phone: +44 (0)1325 460116
+Fax..: +44 (0)1325 460117
+email: [1mReg-UK@vapor.com[0m
+
+Zahlungsart: Bar, Scheck, Postalische Zahlungsanweisung, Kreditkarte.
+Lieferung: E-Mail (free).
+Prices:
+    [1mAmIRC 3                   UK£  20.00[0m
+    [1mUPGRADE AmIRC 3           UK£  10.00[0m
+    [1mAmigaNCP                  UK£  25.00[0m
+    [1mAmTALK II                 UK£  12.00[0m
+    [1mMicroDot II               UK£  20.00[0m
+    [1mVoyager 3                 UK£  25.00[0m
+    [1mUPGRADE Voyager 3         UK£  15.00[0m
+    [1mMetalWeb 4                UK£  20.00[0m
+    [1mUPGRADE MetalWEB 4        UK£  15.00[0m
+    [1mGenesis                   UK£  25.00[0m
+    [1mmFTP                      UK£  20.00[0m
+    [1mUPGRADE AmFTP -> mFTP     UK£  15.00[0m
+    [1mAmTelnet II               UK£  18.00[0m
+    [1mNetInfo II                UK£  12.00[0m
+    [1mContact Manager           UK£  10.00[0m
+    [1mX-Arc                     UK£  15.00[0m
+
+Frankreich
+==========
+
+BUGSS POINT ORG
+c/o Pascal Rullier
+8, rue de l'épine
+67000 Strasbourg
+email: [1mReg-FR@vapor.com[0m
+
+Bank account:
+Account: 06380056140 - RIB Key: 53
+Bank...: Crédit Mutuel du Sud Ouest bank: 15589 - Desk: 33557
+Owner..: BUGSS POINT ORG
+
+Zahlungsart: Bar, Scheck, Banküberweisung, Postalische
+Zahlungsanweisung.
+Lieferung: E-Mail (free), Disk (+ FF 25.00), CD-R (+ FF 45.00).
+Prices:
+    [1mAmIRC 3                   FF 150.00[0m
+    [1mUPGRADE AmIRC 3           FF  65.00[0m
+    [1mAmigaNCP                  FF 175.00[0m
+    [1mAmTALK II                 FF  60.00[0m
+    [1mMicroDot II               FF 150.00[0m
+    [1mVoyager 3                 FF 175.00[0m
+    [1mUPGRADE Voyager 3         FF 100.00[0m
+    [1mMetalWeb 4                FF 150.00[0m
+    [1mUPGRADE MetalWEB 4        FF 100.00[0m
+    [1mmFTP                      FF 150.00[0m
+    [1mUPGRADE AmFTP -> mFTP     FF 100.00[0m
+    [1mAmTelnet II               FF 110.00[0m
+    [1mNetInfo II                FF  60.00[0m
+    [1mContact Manager           FF  50.00[0m
+    [1mX-Arc                     FF 100.00[0m
+
+USA
+===
+
+Michael J. Brenegan
+392 Elm St. F-3
+West Haven, CT 06516
+USA
+email: [1mReg-US@vapor.com[0m
+
+Zahlungsart: Bar, Scheck, Postalische Zahlungsanweisung.
+Lieferung: E-Mail (free), Disk (+ US$ 5.00).
+Prices:
+    [1mAmIRC 3                   US$  30.00[0m
+    [1mUPGRADE AmIRC 3           US$  15.00[0m
+    [1mAmigaNCP                  US$  30.00[0m
+    [1mAmTALK II                 US$  15.00[0m
+    [1mMicroDot II               US$  30.00[0m
+    [1mVoyager 3                 US$  35.00[0m
+    [1mUPGRADE Voyager 3         US$  20.00[0m
+    [1mMetalWeb 4                US$  30.00[0m
+    [1mUPGRADE MetalWEB 4        US$  20.00[0m
+    [1mGenesis                   US$  39.00[0m
+    [1mmFTP                      US$  30.00[0m
+    [1mUPGRADE AmFTP -> mFTP     US$  20.00[0m
+    [1mAmTelnet II               US$  25.00[0m
+    [1mNetInfo II                US$  15.00[0m
+    [1mContact Manager           US$  10.00[0m
+    [1mX-Arc                     US$  25.00[0m
+
+Kanada
+======
+
+Adam Hough
+5808 Londonderry Crescent S.W.,
+Calgary, Alberta
+T3E 5X6
+Canada
+email: [1mReg-CA@vapor.com[0m
+
+Zahlungsart: Bar, Scheck, Postalische Zahlungsanweisung.
+Lieferung: E-Mail (free), Disk (+ CDN$ 5.00), CD-R (+ CDN$ 15.00).
+Prices:
+    [1mAmIRC 3                   CDN$  35.00[0m
+    [1mUPGRADE AmIRC 3           CDN$  15.00[0m
+    [1mAmigaNCP                  CDN$  35.00[0m
+    [1mAmTALK II                 CDN$  15.00[0m
+    [1mMicroDot II               CDN$  35.00[0m
+    [1mVoyager 3                 CDN$  40.00[0m
+    [1mUPGRADE Voyager 3         CDN$  25.00[0m
+    [1mMetalWeb 4                CDN$  35.00[0m
+    [1mUPGRADE MetalWEB 4        CDN$  25.00[0m
+    [1mmFTP                      CDN$  35.00[0m
+    [1mUPGRADE AmFTP -> mFTP     CDN$  25.00[0m
+    [1mAmTelnet II               CDN$  30.00[0m
+    [1mNetInfo II                CDN$  20.00[0m
+    [1mContact Manager           CDN$  15.00[0m
+    [1mX-Arc                     CDN$  25.00[0m
+
+Australien
+==========
+
+Jason Murray
+312 High Street
+Lower Templestowe
+Victoria, 3107
+Australia
+email: [1mReg-AU@vapor.com[0m
+
+Zahlungsart: Bar, Scheck, Postalische Zahlungsanweisung.
+Lieferung: E-Mail (free), Disk (+ AUS$ 5.00).
+Prices:
+    [1mAmIRC 3                   AUS$  40.00[0m
+    [1mUPGRADE AmIRC 3           AUS$  15.00[0m
+    [1mAmigaNCP                  AUS$  45.00[0m
+    [1mAmTALK II                 AUS$  15.00[0m
+    [1mMicroDot II               AUS$  40.00[0m
+    [1mVoyager 3                 AUS$  45.00[0m
+    [1mUPGRADE Voyager 3         AUS$  25.00[0m
+    [1mMetalWeb 4                AUS$  40.00[0m
+    [1mUPGRADE MetalWEB 4        AUS$  25.00[0m
+    [1mGenesis                   AUS$  69.00[0m
+    [1mmFTP                      AUS$  40.00[0m
+    [1mUPGRADE AmFTP -> mFTP     AUS$  25.00[0m
+    [1mAmTelnet II               AUS$  30.00[0m
+    [1mNetInfo II                AUS$  20.00[0m
+    [1mContact Manager           AUS$  15.00[0m
+    [1mX-Arc                     AUS$  30.00[0m
+
+Polen
+=====
+
+W.F.M.H.
+c/o Marcin Orlowski
+ul. P.O. Box 91
+71-507 Szczecin 5
+Poland
+email: [1mReg-PL@vapor.com[0m
+
+Zahlungsart: Bar, Scheck, Postalische Zahlungsanweisung.
+Lieferung: E-Mail (free).
+Prices:
+    [1mAmIRC 3                   ZL  50.00[0m
+    [1mUPGRADE AmIRC 3           ZL  25.00[0m
+    [1mAmigaNCP                  ZL  50.00[0m
+    [1mAmTALK II                 ZL  25.00[0m
+    [1mMicroDot II               ZL  45.00[0m
+    [1mVoyager 3                 ZL  55.00[0m
+    [1mUPGRADE Voyager 3         ZL  35.00[0m
+    [1mMetalWeb 4                ZL  45.00[0m
+    [1mUPGRADE MetalWEB 4        ZL  35.00[0m
+    [1mmFTP                      ZL  50.00[0m
+    [1mUPGRADE AmFTP -> mFTP     ZL  35.00[0m
+    [1mAmTelnet II               ZL  40.00[0m
+    [1mNetInfo II                ZL  25.00[0m
+    [1mContact Manager           ZL  20.00[0m
+    [1mX-Arc                     ZL  30.00[0m
+
+Registrieren ohne Registrierungsprogramm
+****************************************
+
+Wenn Sie aus bestimmten Gründen das Registrierungsprogramm nicht
+benutzen können oder wollen, können Sie sich natürlich auch "per
+Hand" registrieren lassen. Informationen über Preise und Zahlungsarten
+finden Sie im Abschnitt Registrierstellen.
+
+Bitte fügen Sie dem Schreiben alle notwendigen Informationen bei,
+insbesondere Ihre Adresse und was Sie registrieren wollen!
+
+Alle Registrierstellen gewähren einen [3mRabatt[0m bei Bestellung mehrer
+Programme.  Der Rabatt beträgt 5% bei zwei bis vier und 10% bei fünf
+oder mehr Stück. Ziehen Sie den Rabatt ab, bevor Sie den Gesamtwert
+Ihrer Bestellung berechnen!
+
+Probleme
+********
+
+Probleme mit dem Registrierungsprogramm
+=======================================
+
+Wenn Sie irgendwelche Probleme beim Start oder bei  der Benutzung des
+Registrierungsprogramms haben, schreiben Sie bitte einen Bug-Report an
+[1mbugs@vapor.com[0m.  Bitte beschreiben Sie ausführlich das Problem und
+geben Sie Ihre Systemkonfiguration an
+
+    [3mBug-Reports, die einen bisher unbekannten Fehler im
+Registrierungsprogramm zu beseitigen helfen, werden mit einem Rabatt
+von 50% auf die Registrierung eines Programmes Ihrer Wahl belohnt![0m
+
+Sie können Sich im Falle des Versagens des Registrierungsprogramms
+auch Per Hand registrieren lassen!
+
+Probleme bei der Registrierung an sich
+======================================
+
+Nun, Sie haben die Registrierung ausgefüllt und bezahlt, aber Ihr
+Keyfile oder Ihre Diskette kommt nicht?
+
+Wir hoffen natürlich, daß dies nie passiert.  Die Erfahrung lehrt
+allerdings, das EMail gelegentlich wenig zuverlässig ist und immer
+'mal wieder Mails im Nirvana verschwenden.
+
+Seien Sie versichert, daß keine der Registrierstellen Ihr Geld  einfach
+einkassiert, ohne Ihnen dafür Ihren Key zu schicken - niemand würde
+davon profitieren.
+
+Als Faustregel sollten Sie ungefähr 4 Wochen abwarten, bevor Sie
+anfangen, sich Sorgen zu machen. Damit sind Verzögerungen auf dem
+Postweg, Wartezeiten für Scheckeinreichung usw. abgedeckt.
+
+Schreiben Sie dann an die  Registrierstelle und fragen Sie nach, was
+passiert ist. Wenn Sie darauf keine Antwort erhalten, ist
+wahrscheinlich etwas mit der E-Mail-Verbindung im argen.
+
+Schreiben  Sie dann eine Testnachricht an die Adresse
+[1mbounceme@vapor.com[0m. Sie sollten von dort eine automatisch
+generierte Info-Nachricht erhalten, daß Ihre Nachricht bei vapor.com
+angekommen ist.
+
+Wenn dies funktioniert, schreiben Sie bitte an
+[1mreg-trouble@vapor.com[0m und beschreiben Sie, was schiefgegangen ist.
+
+Wenn Sie von [1mbounceme@vapor.com[0m allerdings [3mkeine[0m Antwort erhalten,
+liegt höchstwahrscheinlich irgendein Problem mit Ihrer Mail-Adresse
+vor. In einem solchen Fall ist Ihre Registrierungsnachricht
+wahrscheinlich nie eingetroffen, oder die an Sie verschickten Keyfiles
+sind unterwegs verloren gegangen.  Falls Sie einen anderen Mail-Account
+haben, versuchen Sie bitte diesen, ansonsten Schreiben Sie auf dem
+guten alten Briefpostweg.
+
+Support
+*******
+
+Es gibt mehrere Möglichkeiten, Support und Updates für Vapor-Produkte
+zu erhalten.
+
+Internet
+========
+
+   * WWW (World Wide Web)
+
+     Die URL für die WWW-Support-Seiten ist [1mhttp://www.vapor.com/[0m.
+
+   * FTP (File Transfer Protocol)
+
+     Direkter Zugriff auf die Dateien gibt es auf dem Server
+     [1mftp.vapor.com[0m im Verzeichnis [1m/pub[0m.
+
+Diese beiden Internet-Sites werden teilweise auf anderen Servern
+gespiegelt. Aktuelle Informationen über Mirrors finden Sie jeweils
+direkt auf den Hauptseiten.
+
+E-Mail
+======
+
+Es gibt eine Anzahl [3mMailing-Listen[0m, über die Support für die
+verschiedenen Produkte angeboten wird.  Informationen über den Zugriff
+auf diese Listen können Sie erhalten, in dem Sie eine Nachricht an die
+Adresse [1mlistar@vapor.com[0m schreiben, mit folgendem Inhalt:
+
+        HELP
+        LIST
+
+Sie erhalten dann zwei Nachrichten,  eine Anleitung zur Benutzung des
+Listservers und eine Liste aller derzeit verfügbarer Mailinglisten.
+
+Sie können auf den Listserver mit Internet-Mail und über jeden
+Online-Service mit einem Gateway zum Internet zugreifen, zum Beispiel
+Compuserve oder AOL.
+
+Für den Zugriff auf Dateien gibt es den [3mFile Server[0m, dessen Adresse
+lautet [1mfileserv@vapor.com[0m. Mit einer Nachricht mit dem Inhalt
+
+     	HELP
+     	LIST
+
+erhalten Sie eine Bedienungsanleitung und eine Liste der derzeit da
+verfügbaren Dateien.
+
+Modem
+=====
+
+Viele Mailboxen mit Amiga-Support bieten Zugriff auf Dateien aus dem
+[3mAmiNet[0m. Alle größeren Updates und Releases von Vapor-Produkten
+werden auch dort veröffentlicht, so daß Sie auf diesem Weg Zugriff
+auf die Dateien haben.
+
+Lizenz
+******
+
+    [3mRegistered Software License Agreement[0m
+
+This agreement governs the license for the software packages AmIRC,
+AmigaNCP, AmFTP, AmTALK, AmTerm, AmTelnet, Voyager, MicroDot I and
+MicroDot II, Contact Manager, NetInfo, X-Arc, and Genesis thereafter
+refered to as "the product".
+
+AmIRC, AmigaNCP, AmTALK, Voyager, NetInfo, MicroDot and MicroDot II are
+Copyright © 1996-99 by Oliver Wagner, All Rights Reserved.
+
+Contact Manager is © 1999 by Simone Tellini, All Rights Reserved.
+
+X-Arc is © 1999 by Federico Pomi, All Rights Reserved.
+
+Genesis is © 1999 by Active Technologies, All Rights Reserved.
+
+The producer of this software will grant the Licensee a limited,
+non-exclusive right to use the product and it's associated files on a
+single machine. The producer will hand out a special identification
+file called the "key file" to the Licensee. This key file will enable
+the Licensee to fully use the product package according to the terms of
+this license.
+
+The key file is strictly for personal use by the Licensee only.  Any
+disclosure of the key file will invalidate the license and the key file
+itself. The Licensee will be held liable of any damage arising out of
+the disclosure of the key file.  The product is provided "as is"
+without warranty of any kind, either express or implied, statutory or
+otherwise, including without limitation any implied warranties of
+non-infringement, merchantability and fitness for a particular purpose.
+
+The entire risk as to use, results and performance of the product is
+assumed by the Licensee and should the product prove to be defective,
+the Licensee assume the entire cost of all necessary servicing, repair
+or other remediation.
+
+In no event shall the producer of this product or it's resellers be
+liable for any property damage, personal injury, loss of use or other
+indirect, incidental or consequential damages, including without
+limitation, any damages for lost profits, business interruption  or
+data which may be lost or rendered inaccurate, even if the producer has
+been advised of the possibility of such damages.
+
+This agreement shall exclusively be governed by the laws of the Federal
+Republic of Germany.
+
+Index
+*****
+
+
+
+ Benutzung                              Benutzung
+ Inhaltsverzeichnis                     Top
+ Lizenz                                 Lizenz
+ Probleme                               Probleme
+ Registrieren ohne RegistrierungsprogrammPer Hand
+ Registrierstellen                      Registrierstellen
+ Support                                Support
+

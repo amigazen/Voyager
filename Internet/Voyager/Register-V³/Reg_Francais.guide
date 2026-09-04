@@ -1,0 +1,649 @@
+@database Reg_Francais.guide
+
+@Master RegUtil_Francais.texi
+
+@Width 72
+
+
+This is the AmigaGuide® file Reg_Francais.guide, produced by Makeinfo-1.55 from 
+the input file RegUtil_Francais.texi.
+
+
+@Node Main "Reg_Francais.guide"
+
+
+
+@{b}S'enregistrer aux logiciels Vapor@{ub}
+*********************************
+
+Merci de supporter le développement de logiciels Amiga! Par
+l'enregistrement au logiciel que vous utilisez, vous garantissez le
+développement des applications Amiga de haute qualité!
+
+
+ @{" Usage " Link "Usage"}                   Comment utiliser l'utilitaire d'enregistrement
+ @{" Sites d'enregistrement " Link "Sites d'enregistrement"}  Information sur les sites d'enregistrement
+ @{" Manuellement " Link "Manuellement"}            S'enregistrer sans l'utilitaire d'enregistrement
+ @{" Problèmes " Link "Problèmes"}               Si vous avez des problèmes...
+ @{" Support " Link "Support"}                 Comment obtenir le support et les mises à jour
+
+- Autres Menus: -
+
+ @{" License " Link "License"}                 License du Logiciel
+ @{" Index " Link "Index"}                   Index de ce Document
+
+L'information présentée dans ce document est valide au @{i}29.1.2000@{ui}.
+Veuillez vérifier le @{"Site de Support" Link "Support"} pour la dernière information.
+
+
+@EndNode
+
+@Node "Usage" "Reg_Francais.guide/Usage"
+@Next "Sites d'enregistrement"
+@Prev "Main"
+@Toc "Main"
+
+Usage
+*****
+
+L'utilitaire d'enregistrement fournit une façon facile, par une
+interface graphique, de collecter tous les renseignements nécessaires
+à l'enregistrement.  Il calcule aussi les tarifs et réductions, et
+montre toutes les options disponibles. Vous pouvez imprimer le
+formulaire d'enregistrement ou directement l'envoyer par courrier
+électronique si vous avez une connexion Internet.
+
+Après avoir lancé le programme, la fenêtre principale apparaitra.
+Dépendamment de la taille de votre écran, le contenu de la fenêtre
+sera peut-être plus large que la taille visible de votre écran.
+Utilisez les barres de défilement de la fenêtre pour déplacer le
+contenu, exactement comme vous le faites avec les fenêtres Workbench.
+
+Remplissez nécessairement vos coordonnées personnelles et
+sélectionnez le site d'enregistrement, le mode de paiement et les
+produits auxquels vous voulez vous enregistrer.
+
+Le bon de commande calculera immédiatement le tarif basé sur votre
+sélection de produits et les coûts selon le site d'enregistrement.
+
+Vous pouvez quitter le programme d'enregistrement à tout moment. Toutes
+les informations que vous avez remplies seront sauvées dans le fichier
+@{b}S:Vapor.Reginfo@{ub} et sera automatiquement rechargé la prochaine fois que
+vous lancez le programme d'enregistrement.
+
+Quand vous avez fini de remplir tous les champs, vous avez quatre
+options sur quoi faire avec le formulaire d'enregistrement généré.
+
+   - Le bouton @{b}Sauver dans un fichier@{ub} vous permet de sauver le
+     formulaire d'enregistrement généré dans un fichier sur disque.
+     Vous pouvez inspecter le fichier avec un afficheur de texte comme
+     @{b}More@{ub} ou l'inclure dans votre logiciel de courrier électronique
+     pour envoyer le formulaire.
+
+   - Le bouton @{b}Imprimer@{ub} imprime le formulaire généré sur votre
+     imprimante.
+
+   - L'appui sur @{b}Envoyer par courrier électronique@{ub} tente d'envoyer
+     automatiquement le formulaire généré par Internet. Pour que
+     cela fonctionne, vous devez avoir une connexion Internet valide et
+     une pile TCP/IP active.  Vous serez informé du succés ou de
+     l'échec de cette opération.
+
+   - En pressant @{b}Afficher@{ub}, une fenêtre texte s'ouvre, affichant le
+     formulaire d'enregistrement généré. Vous êtes encouragé à le
+     vérifier avant de l'imprimer ou de l'envoyer par courrier.
+
+
+@EndNode
+
+@Node "Sites d'enregistrement" "Reg_Francais.guide/Sites d'enregistrement"
+@Next "Manuellement"
+@Prev "Usage"
+@Toc "Main"
+
+Sites d'enregistrement
+**********************
+
+Au moment de l'écriture de ce document, il y a 7 sites d'enregistrement
+disponibles.
+
+      @{"Allemagne" Link "Allemagne"}       reg-de@vapor.com  @{b}Espèces, EC, TB, MP@{ub}
+      @{"Royaume-Uni" Link "Royaume-Uni"}     reg-uk@vapor.com  @{b}Espèces, EC, MP, CR@{ub}
+      @{"France" Link "France"}          reg-fr@vapor.com  @{b}Espèces, EC, TB, MP@{ub}
+      @{"Etats-Unis" Link "Etats-Unis"}      reg-us@vapor.com  @{b}Espèces, CP, MP@{ub}
+      @{"Canada" Link "Canada"}          reg-ca@vapor.com  @{b}Espèces, CP, MP@{ub}
+      @{"Australie" Link "Australie"}       reg-au@vapor.com  @{b}Espèces, CP, MP@{ub}
+      @{"Poland" Link "Poland"}          reg-pl@vapor.com  @{b}Espèces, CP, MP@{ub}
+
+La deuxième colonne désigne l'adresse email du site d'enregistrement.
+Si vous avez la moindre question concernant l'enregistrement, n'hésitez
+pas à d'écrire à cette adresse.
+
+La troisième colonne spécifie quels modes de paiement sont acceptés
+par le site d'enregistrement.
+
+@{b}Espèces@{ub}
+     Les bonnes vieilles @{i}espèces@{ui} (argent liquide) incluses avec la
+     lettre d'enregistrement. Ceci n'est pas encouragé puisque ces
+     lettres ont tendance à "être perdues" dans certains pays surtout
+     si de la monnaie est inclue.
+
+@{b}EC@{ub}
+     @{i}Eurochèque@{ui}. Les eurochèques sont garantis par la banque qui les
+     as émis et sont de ce fait "bons par définition", n'imposant
+     aucun délai d'acceptation sur la procédure d'enregistrement.
+
+@{b}TB@{ub}
+     @{i}Transaction Bancaire@{ui}. N'est généralement disponible que dans le
+     même pays que le site d'enregistrement. Veuillez mettre une
+     référence précise à votre message d'enregistrement sur la
+     feuille de transaction, de façon à ce que le paiement et
+     l'enregistrement puissent être reliés.
+
+@{b}MP@{ub}
+     @{i}Mandat-poste@{ui}. Veuillez mettre une référence précise à votre
+     courrier d'enregistrement sur la feuille de transaction, de façon
+     à ce que le paiement et l'enregistrement puissent être reliés.
+
+@{b}CR@{ub}
+     @{i}Carte de crédit@{ui}.  Facturé directement sur votre carte de crédit.
+
+
+@EndNode
+
+@Node "Allemagne" "Reg_Francais.guide/Allemagne"
+@Toc "Sites d'enregistrement"
+
+Allemagne
+=========
+
+Claudia Wagner
+Landsberge 5b
+D-45549 Sprockhövel
+Deutschland
+Fax: ++49 2339 138025
+email: @{b}Reg-DE@vapor.com@{ub}
+
+Bank account:
+Kontonummer: 394053850
+Bank.......: 1822direkt Frankfurt
+BLZ........: 50050201
+Owner......: Oliver Wagner
+
+Mode de paiement: Argent liquide inclus, Chèque inclus, Transaction
+bancaire, Balance bancaire, Mandat-poste.
+Livraison: E-Mail (free), Disk (+ DM 5.00), CD-R (+ DM 15.00).
+Prices:
+@{b}AmIRC 3                   DM  45.00@{ub}
+@{b}UPGRADE AmIRC 3           DM  20.00@{ub}
+@{b}AmigaNCP                  DM  50.00@{ub}
+@{b}AmTALK II                 DM  20.00@{ub}
+@{b}MicroDot II               DM  40.00@{ub}
+@{b}Voyager 3                 DM  50.00@{ub}
+@{b}UPGRADE Voyager 3         DM  30.00@{ub}
+@{b}MetalWeb 4                DM  40.00@{ub}
+@{b}UPGRADE MetalWEB 4        DM  30.00@{ub}
+@{b}Genesis                   DM  69.00@{ub}
+@{b}mFTP                      DM  45.00@{ub}
+@{b}UPGRADE AmFTP -> mFTP     DM  30.00@{ub}
+@{b}AmTelnet II               DM  35.00@{ub}
+@{b}NetInfo II                DM  20.00@{ub}
+@{b}Contact Manager           DM  15.00@{ub}
+@{b}X-Arc                     DM  30.00@{ub}
+
+
+@EndNode
+
+@Node "Royaume-Uni" "Reg_Francais.guide/Royaume-Uni"
+@Toc "Sites d'enregistrement"
+
+Royaume-Uni
+===========
+
+Active Technologies
+Oval House
+113 Victoria Road
+Darlington
+DL1 5JH
+Phone: +44 (0)1325 460116
+Fax..: +44 (0)1325 460117
+email: @{b}Reg-UK@vapor.com@{ub}
+
+Mode de paiement: Argent liquide inclus, Chèque inclus, Mandat-poste,
+Carte de crédit.
+Livraison: E-Mail (free).
+Prices:
+@{b}AmIRC 3                   UK£  20.00@{ub}
+@{b}UPGRADE AmIRC 3           UK£  10.00@{ub}
+@{b}AmigaNCP                  UK£  25.00@{ub}
+@{b}AmTALK II                 UK£  12.00@{ub}
+@{b}MicroDot II               UK£  20.00@{ub}
+@{b}Voyager 3                 UK£  25.00@{ub}
+@{b}UPGRADE Voyager 3         UK£  15.00@{ub}
+@{b}MetalWeb 4                UK£  20.00@{ub}
+@{b}UPGRADE MetalWEB 4        UK£  15.00@{ub}
+@{b}Genesis                   UK£  25.00@{ub}
+@{b}mFTP                      UK£  20.00@{ub}
+@{b}UPGRADE AmFTP -> mFTP     UK£  15.00@{ub}
+@{b}AmTelnet II               UK£  18.00@{ub}
+@{b}NetInfo II                UK£  12.00@{ub}
+@{b}Contact Manager           UK£  10.00@{ub}
+@{b}X-Arc                     UK£  15.00@{ub}
+
+
+@EndNode
+
+@Node "France" "Reg_Francais.guide/France"
+@Toc "Sites d'enregistrement"
+
+France
+======
+
+BUGSS POINT ORG
+c/o Pascal Rullier
+8, rue de l'épine
+67000 Strasbourg
+email: @{b}Reg-FR@vapor.com@{ub}
+
+Bank account:
+Account: 06380056140 - RIB Key: 53
+Bank...: Crédit Mutuel du Sud Ouest bank: 15589 - Desk: 33557
+Owner..: BUGSS POINT ORG
+
+Mode de paiement: Argent liquide inclus, Chèque inclus, Transaction
+bancaire, Mandat-poste.
+Livraison: E-Mail (free), Disk (+ FF 25.00), CD-R (+ FF 45.00).
+Prices:
+@{b}AmIRC 3                   FF 150.00@{ub}
+@{b}UPGRADE AmIRC 3           FF  65.00@{ub}
+@{b}AmigaNCP                  FF 175.00@{ub}
+@{b}AmTALK II                 FF  60.00@{ub}
+@{b}MicroDot II               FF 150.00@{ub}
+@{b}Voyager 3                 FF 175.00@{ub}
+@{b}UPGRADE Voyager 3         FF 100.00@{ub}
+@{b}MetalWeb 4                FF 150.00@{ub}
+@{b}UPGRADE MetalWEB 4        FF 100.00@{ub}
+@{b}mFTP                      FF 150.00@{ub}
+@{b}UPGRADE AmFTP -> mFTP     FF 100.00@{ub}
+@{b}AmTelnet II               FF 110.00@{ub}
+@{b}NetInfo II                FF  60.00@{ub}
+@{b}Contact Manager           FF  50.00@{ub}
+@{b}X-Arc                     FF 100.00@{ub}
+
+
+@EndNode
+
+@Node "Etats-Unis" "Reg_Francais.guide/Etats-Unis"
+@Toc "Sites d'enregistrement"
+
+Etats-Unis
+==========
+
+Michael J. Brenegan
+392 Elm St. F-3
+West Haven, CT 06516
+USA
+email: @{b}Reg-US@vapor.com@{ub}
+
+Mode de paiement: Argent liquide inclus, Chèque inclus, Mandat-poste.
+Livraison: E-Mail (free), Disk (+ US$ 5.00).
+Prices:
+@{b}AmIRC 3                   US$  30.00@{ub}
+@{b}UPGRADE AmIRC 3           US$  15.00@{ub}
+@{b}AmigaNCP                  US$  30.00@{ub}
+@{b}AmTALK II                 US$  15.00@{ub}
+@{b}MicroDot II               US$  30.00@{ub}
+@{b}Voyager 3                 US$  35.00@{ub}
+@{b}UPGRADE Voyager 3         US$  20.00@{ub}
+@{b}MetalWeb 4                US$  30.00@{ub}
+@{b}UPGRADE MetalWEB 4        US$  20.00@{ub}
+@{b}Genesis                   US$  39.00@{ub}
+@{b}mFTP                      US$  30.00@{ub}
+@{b}UPGRADE AmFTP -> mFTP     US$  20.00@{ub}
+@{b}AmTelnet II               US$  25.00@{ub}
+@{b}NetInfo II                US$  15.00@{ub}
+@{b}Contact Manager           US$  10.00@{ub}
+@{b}X-Arc                     US$  25.00@{ub}
+
+
+@EndNode
+
+@Node "Canada" "Reg_Francais.guide/Canada"
+@Toc "Sites d'enregistrement"
+
+Canada
+======
+
+Adam Hough
+5808 Londonderry Crescent S.W.,
+Calgary, Alberta
+T3E 5X6
+Canada
+email: @{b}Reg-CA@vapor.com@{ub}
+
+Mode de paiement: Argent liquide inclus, Chèque inclus, Mandat-poste.
+Livraison: E-Mail (free), Disk (+ CDN$ 5.00), CD-R (+ CDN$ 15.00).
+Prices:
+@{b}AmIRC 3                   CDN$  35.00@{ub}
+@{b}UPGRADE AmIRC 3           CDN$  15.00@{ub}
+@{b}AmigaNCP                  CDN$  35.00@{ub}
+@{b}AmTALK II                 CDN$  15.00@{ub}
+@{b}MicroDot II               CDN$  35.00@{ub}
+@{b}Voyager 3                 CDN$  40.00@{ub}
+@{b}UPGRADE Voyager 3         CDN$  25.00@{ub}
+@{b}MetalWeb 4                CDN$  35.00@{ub}
+@{b}UPGRADE MetalWEB 4        CDN$  25.00@{ub}
+@{b}mFTP                      CDN$  35.00@{ub}
+@{b}UPGRADE AmFTP -> mFTP     CDN$  25.00@{ub}
+@{b}AmTelnet II               CDN$  30.00@{ub}
+@{b}NetInfo II                CDN$  20.00@{ub}
+@{b}Contact Manager           CDN$  15.00@{ub}
+@{b}X-Arc                     CDN$  25.00@{ub}
+
+
+@EndNode
+
+@Node "Australie" "Reg_Francais.guide/Australie"
+@Toc "Sites d'enregistrement"
+
+Australie
+=========
+
+Jason Murray
+312 High Street
+Lower Templestowe
+Victoria, 3107
+Australia
+email: @{b}Reg-AU@vapor.com@{ub}
+
+Mode de paiement: Argent liquide inclus, Chèque inclus, Mandat-poste.
+Livraison: E-Mail (free), Disk (+ AUS$ 5.00).
+Prices:
+@{b}AmIRC 3                   AUS$  40.00@{ub}
+@{b}UPGRADE AmIRC 3           AUS$  15.00@{ub}
+@{b}AmigaNCP                  AUS$  45.00@{ub}
+@{b}AmTALK II                 AUS$  15.00@{ub}
+@{b}MicroDot II               AUS$  40.00@{ub}
+@{b}Voyager 3                 AUS$  45.00@{ub}
+@{b}UPGRADE Voyager 3         AUS$  25.00@{ub}
+@{b}MetalWeb 4                AUS$  40.00@{ub}
+@{b}UPGRADE MetalWEB 4        AUS$  25.00@{ub}
+@{b}Genesis                   AUS$  69.00@{ub}
+@{b}mFTP                      AUS$  40.00@{ub}
+@{b}UPGRADE AmFTP -> mFTP     AUS$  25.00@{ub}
+@{b}AmTelnet II               AUS$  30.00@{ub}
+@{b}NetInfo II                AUS$  20.00@{ub}
+@{b}Contact Manager           AUS$  15.00@{ub}
+@{b}X-Arc                     AUS$  30.00@{ub}
+
+
+@EndNode
+
+@Node "Poland" "Reg_Francais.guide/Poland"
+@Toc "Sites d'enregistrement"
+
+Poland
+======
+
+W.F.M.H.
+c/o Marcin Orlowski
+ul. P.O. Box 91
+71-507 Szczecin 5
+Poland
+email: @{b}Reg-PL@vapor.com@{ub}
+
+Mode de paiement: Argent liquide inclus, Chèque inclus, Mandat-poste.
+Livraison: E-Mail (free).
+Prices:
+@{b}AmIRC 3                   ZL  50.00@{ub}
+@{b}UPGRADE AmIRC 3           ZL  25.00@{ub}
+@{b}AmigaNCP                  ZL  50.00@{ub}
+@{b}AmTALK II                 ZL  25.00@{ub}
+@{b}MicroDot II               ZL  45.00@{ub}
+@{b}Voyager 3                 ZL  55.00@{ub}
+@{b}UPGRADE Voyager 3         ZL  35.00@{ub}
+@{b}MetalWeb 4                ZL  45.00@{ub}
+@{b}UPGRADE MetalWEB 4        ZL  35.00@{ub}
+@{b}mFTP                      ZL  50.00@{ub}
+@{b}UPGRADE AmFTP -> mFTP     ZL  35.00@{ub}
+@{b}AmTelnet II               ZL  40.00@{ub}
+@{b}NetInfo II                ZL  25.00@{ub}
+@{b}Contact Manager           ZL  20.00@{ub}
+@{b}X-Arc                     ZL  30.00@{ub}
+
+
+@EndNode
+
+@Node "Manuellement" "Reg_Francais.guide/Manuellement"
+@Next "Problèmes"
+@Prev "Sites d'enregistrement"
+@Toc "Main"
+
+S'enregistrer manuellement
+**************************
+
+Si, pour une raison quelconque, vous ne voulez pas utiliser le programme
+d'enregistrement, vous pouvez, bien sur, vous enregistrer manuellement.
+Les renseignements sur les sites d'enregistrement, les prix, et les
+modes de paiement peuvent être trouvés dans le chapitre
+@{"Sites d'enregistrement" Link "Sites d'enregistrement"}.
+
+Veuillez être certain de joindre tous les renseignements nécessaires
+dans la lettre ou le message électronique que vous enverrez,
+spécialement votre adresse et ce que vous voulez enregistrer!
+
+Tous les sites accordent une @{i}réduction@{ui} pour des enregistrements
+groupés. Cette réduction est de 5% pour 2 à 4 unités et de 10% pour
+5 unités ou plus. Assurez-vous d'enlever cette réduction avant de
+calculer votre prix d'enregistrement final!
+
+
+@EndNode
+
+@Node "Problèmes" "Reg_Francais.guide/Problèmes"
+@Next "Support"
+@Prev "Manuellement"
+@Toc "Main"
+
+Problèmes
+*********
+
+Problèmes avec l'utilitaire d'enregistrement.
+=============================================
+
+Si vous avez des difficultés à lancer ou utiliser l'utilitaire
+d'enregistrement, veuillez écrire un rapport de bug à @{b}bugs@vapor.com@{ub}.
+Veuillez inclure une description détaillée du problème et un aperçu
+des configurations de votre système.
+
+@{i}Les rapports de bug qui aideront à déceler un bug formellement inconnu
+dans l'utilitaire d'enregistrement donneront droit à une réduction de
+50% sur un enregistrement singulier de votre choix!@{ui}
+
+Vous pouvez aussi vous enregistrer manuellement dans un pareil cas;
+voir le chapitre @{"Manuellement" Link "Manuellement"} sur la façon de procéder.
+
+Problèmes avec le processus d'enregistrement
+============================================
+
+Qu'est-ce qui se passe si vous avez envoyé l'argent et le formulaire
+d'enregistrement mais que vous ne recevez pas vos fichiers clé ou
+disquettes?
+
+Bien sur, nous espèrons que cela n'arrive jamais. Malgré cela, notre
+expérience nous dit qu'il arrive que des problèmes avec le courrier
+électronique surviennent, et les instructions qui suivent sont @{i}juste au
+cas où@{ui}. Veuillez comprendre que aucun des sites d'enregistrement
+n'encaissera votre argent sans rien envoyer en retour, seulement pour
+être malhonnête, puisque personne ne bénéficierait vraiment de cela.
+
+D'abord, allouez un délai d'environ 4 semaines pour le traitement avant
+de commencer à vous inquiéter au sujet de votre enregistrement, de
+façon à couvrir les délais postaux, l'acceptation des chèques et
+les autres choses qui y sont reliées.
+
+Ecrivez un email au site d'enregistrement concerné pour déterminer ce
+qui se passe. Si vous n'obtenez aucune réponse à une telle requête,
+il y a probablement quelque chose qui ne va pas.
+
+Dans un tel cas, il est très probable que quelque chose soit
+défectueux au niveau de votre email. Ecrivez un message test à
+@{b}bounceme@vapor.com@{ub}, qui devrait déclencher un message automatique
+d'informations disant que votre message est arrivé sur le système de
+messagerie de vapor.com. Si cela marche, veuillez écrire à
+@{b}reg-trouble@vapor.com@{ub} en spécifiant ce qui ne va pas.
+
+Si par contre vous n'obtenez pas de réponse de @{b}bounceme@vapor.com@{ub}, il
+y a définitivement quelque chose qui ne va pas avec votre compte de
+courrier électronique. Dans ce cas, votre email d'enregistrement n'est
+probablement jamais arrivé, ou la clé qui vous a été envoyé s'est
+perdue en chemin. Essayez un compte email différent, si vous en avez
+un, ou alors ayez recours à la poste traditionnelle.
+
+
+@EndNode
+
+@Node "Support" "Reg_Francais.guide/Support"
+@Next "License"
+@Prev "Problèmes"
+@Toc "Main"
+
+Support
+*******
+
+Il y a différents moyens d'avoir le support et les mises à jour des
+produits Vapor.
+
+Internet
+========
+
+   @{b}*@{ub} WWW (World Wide Web)
+
+     L'URL pour les pages support WWW est @{b}http://www.vapor.com/@{ub}.
+
+   @{b}*@{ub} FTP (File Transfer Protocol)
+
+     L'Accés aux fichiers est disponible depuis le serveur
+     @{b}ftp.vapor.com@{ub} dans le répertoire @{b}/pub/@{ub}.
+
+Ces deux sites peuvent être partiellement miroités sur d'autres sites.
+La disponibilité des sites miroirs sera annoncé sur les sites
+principaux.
+
+E-Mail
+======
+
+Vapor a un nombre de "@{i}mailing lists@{ui}" qui fournissent un support pour
+les différents produits. Pour apprendre à accéder à ces listes,
+écrivez un mail à @{b}listserv@vapor.com@{ub} et mettez les deux lignes
+suivantes dans le corps du message:
+
+         HELP
+         LIST
+
+Vous recevrez en retour un message vous donnant les instructions sur
+"Comment utiliser le serveur des listes", et un index des "mailing
+lists" disponibles.
+
+Vous pouvez accéder au serveur des listes avec le courrier internet ou
+tout service en-ligne qui fournit une passerelle au courrier internet,
+par exemple Compuserve ou AOL.
+
+Pour accéder aux fichiers par courrier électronique, vous pouvez
+utiliser le @{i}serveur de fichier@{ui}. Ecrivez un message à @{b}fileserv@vapor.com@{ub}
+contenant les lignes
+
+         HELP
+         LIST
+
+pour recevoir les instructions et la liste des fichiers disponibles.
+
+Modem
+=====
+
+Beaucoup de BBS supportant l'Amiga fourniront un accés vers les
+fichiers d'@{i}AmiNet@{ui}, et puisque les produits Vapor et leurs mises à jour
+majeures seront toujours envoyés sur Aminet, vous serez capable de
+récupérer ces fichiers de là.
+
+
+@EndNode
+
+@Node "License" "Reg_Francais.guide/License"
+@Next "Index"
+@Prev "Support"
+@Toc "Main"
+
+License
+*******
+
+@{i}Registered Software License Agreement@{ui}
+
+This agreement governs the license for the software packages AmIRC,
+AmigaNCP, AmFTP, AmTALK, AmTerm, AmTelnet, Voyager, MicroDot I and
+MicroDot II, Contact Manager, NetInfo, X-Arc and Genesis thereafter
+refered to as "the product".
+
+AmIRC, AmigaNCP, AmTALK, Voyager, NetInfo, MicroDot and MicroDot II are
+Copyright © 1996-99 by Oliver Wagner, All Rights Reserved.
+
+Contact Manager is © 1999 by Simone Tellini, All Rights Reserved.
+
+X-Arc is © 1999 by Federico Pomi, All Rights Reserved.
+
+Genesis is © 1999 by Active Technologies, All Rights Reserved.
+
+The producer of this software will grant the Licensee a limited,
+non-exclusive right to use the product and it's associated files on a
+single machine. The producer will hand out a special identification
+file called the "key file" to the Licensee. This key file will enable
+the Licensee to fully use the product package according to the terms of
+this license.
+
+The key file is strictly for personal use by the Licensee only.  Any
+disclosure of the key file will invalidate the license and the key file
+itself. The Licensee will be held liable of any damage arising out of
+the disclosure of the key file.  The product is provided "as is"
+without warranty of any kind, either express or implied, statutory or
+otherwise, including without limitation any implied warranties of
+non-infringement, merchantability and fitness for a particular purpose.
+
+The entire risk as to use, results and performance of the product is
+assumed by the Licensee and should the product prove to be defective,
+the Licensee assume the entire cost of all necessary servicing, repair
+or other remediation.
+
+In no event shall the producer of this product or it's resellers be
+liable for any property damage, personal injury, loss of use or other
+indirect, incidental or consequential damages, including without
+limitation, any damages for lost profits, business interruption  or
+data which may be lost or rendered inaccurate, even if the producer has
+been advised of the possibility of such damages.
+
+This agreement shall exclusively be governed by the laws of the Federal
+Republic of Germany.
+
+
+@EndNode
+
+@Node "Index" "Reg_Francais.guide/Index"
+@Prev "License"
+@Toc "Main"
+
+Index
+*****
+
+@Index "Index"
+
+
+
+ @{" License " Link "License"}                              License
+ @{" Problèmes " Link "Problèmes"}                          Problèmes
+ @{" S'enregistrer manuellement " Link "Manuellement"}           Manuellement
+ @{" Sites d'enregistrement " Link "Sites d'enregistrement"}               Sites d'enregistrement
+ @{" Sommaire " Link "Top"}                             Top
+ @{" Support " Link "Support"}                              Support
+ @{" Usage " Link "Usage"}                                Usage
+
+@EndNode
+
