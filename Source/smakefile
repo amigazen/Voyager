@@ -54,7 +54,24 @@ MATH64OBJS = libmath64/qtod.o libmath64/q_add.o libmath64/q_div.o libmath64/q_di
 	libmath64/q_mod.o libmath64/q_mod020.o libmath64/q_modu.o libmath64/q_mul020.o \
 	libmath64/q_sub.o libmath64/uqtoud.o libmath64/q_mulu.o
 
-OBJ = $(COBJS) $(COBJS_NODEP) $(ASMOBJS) $(PLATFORMOBJS) $(AMIGAOBJS) $(MATH64OBJS)
+# imgdecode objects
+IMGDECOBJS = imgdecode/adler32.o imgdecode/c2p_generic.o imgdecode/callbackfunctable.o imgdecode/crc32.o \
+	imgdecode/errorreq.o imgdecode/gif.o imgdecode/imgdecode.o imgdecode/infblock.o \
+	imgdecode/infcodes.o imgdecode/inffast.o imgdecode/inflate.o imgdecode/inftrees.o \
+	imgdecode/infutil.o imgdecode/jcomapi.o imgdecode/jdapimin.o imgdecode/jdapistd.o \
+	imgdecode/jdcoefct.o imgdecode/jdcolor.o imgdecode/jddctmgr.o imgdecode/jdhuff.o \
+	imgdecode/jdinput.o imgdecode/jdmainct.o imgdecode/jdmarker.o imgdecode/jdmaster.o \
+	imgdecode/jdmerge.o imgdecode/jdphuff.o imgdecode/jdpostct.o imgdecode/jdsample.o \
+	imgdecode/jidctflt.o imgdecode/jidctfst.o imgdecode/jidctint.o imgdecode/jidctred.o \
+	imgdecode/jmemmgr.o imgdecode/jmemnobs.o imgdecode/jquant1.o imgdecode/jquant2.o \
+	imgdecode/jutils.o imgdecode/lib.o imgdecode/libfunctable.o imgdecode/libfunctions.o \
+	imgdecode/mimebrushes.o imgdecode/png.o imgdecode/pngerror.o imgdecode/pngmem.o \
+	imgdecode/pngpread.o imgdecode/pngread.o imgdecode/pngrio.o imgdecode/pngrtran.o \
+	imgdecode/pngrutil.o imgdecode/pngset.o imgdecode/pngtrans.o imgdecode/zutil.o
+
+IMGDECASMOBJS = imgdecode/c2p.o imgdecode/saveds.o
+
+OBJ = $(COBJS) $(COBJS_NODEP) $(ASMOBJS) $(PLATFORMOBJS) $(AMIGAOBJS) $(MATH64OBJS) $(IMGDECOBJS) $(IMGDECASMOBJS)
 
 V.amigaos: rev.h $(OBJ)
 	slink from lib:c.o $(OBJ) to V.debug noicons addsym sc sd \
@@ -566,79 +583,213 @@ prefsimages.o: prefsimages.c
 
 # libmath64 build rules
 libmath64/qtod.o: libmath64/qtod.c libmath64/math64.h libmath64/types64.h
-	cd libmath64
-	sc DEF=AMIGAOS CODE=FAR CPU=68020 MATH=IEEE qtod.c
-	cd ..
+	sc DEF=AMIGAOS CODE=FAR CPU=68020 MATH=IEEE OBJNAME=libmath64/qtod.o libmath64/qtod.c
 
 libmath64/q_div.o: libmath64/q_div.c libmath64/math64.h libmath64/types64.h
-	cd libmath64
-	sc DEF=AMIGAOS CODE=FAR CPU=68020 MATH=IEEE q_div.c
-	cd ..
+	sc DEF=AMIGAOS CODE=FAR CPU=68020 MATH=IEEE OBJNAME=libmath64/q_div.o libmath64/q_div.c
 
 libmath64/q_divu.o: libmath64/q_divu.c libmath64/math64.h libmath64/types64.h
-	cd libmath64
-	sc DEF=AMIGAOS CODE=FAR CPU=68020 MATH=IEEE q_divu.c
-	cd ..
+	sc DEF=AMIGAOS CODE=FAR CPU=68020 MATH=IEEE OBJNAME=libmath64/q_divu.o libmath64/q_divu.c
 
 libmath64/q_mod.o: libmath64/q_mod.c libmath64/math64.h libmath64/types64.h
-	cd libmath64
-	sc DEF=AMIGAOS CODE=FAR CPU=68020 MATH=IEEE q_mod.c
-	cd ..
+	sc DEF=AMIGAOS CODE=FAR CPU=68020 MATH=IEEE OBJNAME=libmath64/q_mod.o libmath64/q_mod.c
 
 libmath64/q_modu.o: libmath64/q_modu.c libmath64/math64.h libmath64/types64.h
-	cd libmath64
-	sc DEF=AMIGAOS CODE=FAR CPU=68020 MATH=IEEE q_modu.c
-	cd ..
+	sc DEF=AMIGAOS CODE=FAR CPU=68020 MATH=IEEE OBJNAME=libmath64/q_modu.o libmath64/q_modu.c
 
 libmath64/q_div64.o: libmath64/q_div64.c libmath64/math64.h libmath64/types64.h
-	cd libmath64
-	sc DEF=AMIGAOS CODE=FAR CPU=68020 MATH=IEEE q_div64.c
-	cd ..
+	sc DEF=AMIGAOS CODE=FAR CPU=68020 MATH=IEEE OBJNAME=libmath64/q_div64.o libmath64/q_div64.c
 
 libmath64/q_divu64.o: libmath64/q_divu64.c libmath64/math64.h libmath64/types64.h
-	cd libmath64
-	sc DEF=AMIGAOS CODE=FAR CPU=68020 MATH=IEEE q_divu64.c
-	cd ..
+	sc DEF=AMIGAOS CODE=FAR CPU=68020 MATH=IEEE OBJNAME=libmath64/q_divu64.o libmath64/q_divu64.c
 
 libmath64/uqtoud.o: libmath64/uqtoud.c libmath64/math64.h libmath64/types64.h
-	cd libmath64
-	sc DEF=AMIGAOS CODE=FAR CPU=68020 MATH=IEEE uqtoud.c
-	cd ..
+	sc DEF=AMIGAOS CODE=FAR CPU=68020 MATH=IEEE OBJNAME=libmath64/uqtoud.o libmath64/uqtoud.c
 
 libmath64/q_add.o: libmath64/q_add.s
-	cd libmath64
-	sc CPU=68020 q_add.s
-	cd ..
+	sc CPU=68020 OBJNAME=libmath64/q_add.o libmath64/q_add.s
 
 libmath64/q_sub.o: libmath64/q_sub.s
-	cd libmath64
-	sc CPU=68020 q_sub.s
-	cd ..
+	sc CPU=68020 OBJNAME=libmath64/q_sub.o libmath64/q_sub.s
 
 libmath64/q_mulu.o: libmath64/q_mulu.s
-	cd libmath64
-	sc CPU=68020 q_mulu.s
-	cd ..
+	sc CPU=68020 OBJNAME=libmath64/q_mulu.o libmath64/q_mulu.s
 
 libmath64/q_div020.o: libmath64/q_div020.s
-	cd libmath64
-	sc CPU=68020 q_div020.s
-	cd ..
+	sc CPU=68020 OBJNAME=libmath64/q_div020.o libmath64/q_div020.s
 
 libmath64/q_divu020.o: libmath64/q_divu020.s
-	cd libmath64
-	sc CPU=68020 q_divu020.s
-	cd ..
+	sc CPU=68020 OBJNAME=libmath64/q_divu020.o libmath64/q_divu020.s
 
 libmath64/q_mod020.o: libmath64/q_mod020.s
-	cd libmath64
-	sc CPU=68020 q_mod020.s
-	cd ..
+	sc CPU=68020 OBJNAME=libmath64/q_mod020.o libmath64/q_mod020.s
 
 libmath64/q_mul020.o: libmath64/q_mul020.s
-	cd libmath64
-	sc CPU=68020 q_mul020.s
-	cd ..
+	sc CPU=68020 OBJNAME=libmath64/q_mul020.o libmath64/q_mul020.s
+
+# imgdecode C files
+imgdecode/adler32.o: imgdecode/adler32.c
+	sc DEF=AMIGAOS DEF=NO_GETENV CPU=68020 MATH=IEEE OBJNAME=imgdecode/adler32.o imgdecode/adler32.c
+
+imgdecode/c2p_generic.o: imgdecode/c2p_generic.c
+	sc DEF=AMIGAOS DEF=NO_GETENV CPU=68020 MATH=IEEE OBJNAME=imgdecode/c2p_generic.o imgdecode/c2p_generic.c
+
+imgdecode/callbackfunctable.o: imgdecode/callbackfunctable.c
+	sc DEF=AMIGAOS DEF=NO_GETENV CPU=68020 MATH=IEEE OBJNAME=imgdecode/callbackfunctable.o imgdecode/callbackfunctable.c
+
+imgdecode/crc32.o: imgdecode/crc32.c
+	sc DEF=AMIGAOS DEF=NO_GETENV CPU=68020 MATH=IEEE OBJNAME=imgdecode/crc32.o imgdecode/crc32.c
+
+imgdecode/errorreq.o: imgdecode/errorreq.c
+	sc DEF=AMIGAOS DEF=NO_GETENV CPU=68020 MATH=IEEE OBJNAME=imgdecode/errorreq.o imgdecode/errorreq.c
+
+imgdecode/gif.o: imgdecode/gif.c
+	sc DEF=AMIGAOS DEF=NO_GETENV CPU=68020 MATH=IEEE OBJNAME=imgdecode/gif.o imgdecode/gif.c
+
+imgdecode/imgdecode.o: imgdecode/imgdecode.c
+	sc DEF=AMIGAOS DEF=NO_GETENV CPU=68020 MATH=IEEE OBJNAME=imgdecode/imgdecode.o imgdecode/imgdecode.c
+
+imgdecode/infblock.o: imgdecode/infblock.c
+	sc DEF=AMIGAOS DEF=NO_GETENV CPU=68020 MATH=IEEE OBJNAME=imgdecode/infblock.o imgdecode/infblock.c
+
+imgdecode/infcodes.o: imgdecode/infcodes.c
+	sc DEF=AMIGAOS DEF=NO_GETENV CPU=68020 MATH=IEEE OBJNAME=imgdecode/infcodes.o imgdecode/infcodes.c
+
+imgdecode/inffast.o: imgdecode/inffast.c
+	sc DEF=AMIGAOS DEF=NO_GETENV CPU=68020 MATH=IEEE OBJNAME=imgdecode/inffast.o imgdecode/inffast.c
+
+imgdecode/inflate.o: imgdecode/inflate.c
+	sc DEF=AMIGAOS DEF=NO_GETENV CPU=68020 MATH=IEEE OBJNAME=imgdecode/inflate.o imgdecode/inflate.c
+
+imgdecode/inftrees.o: imgdecode/inftrees.c
+	sc DEF=AMIGAOS DEF=NO_GETENV CPU=68020 MATH=IEEE OBJNAME=imgdecode/inftrees.o imgdecode/inftrees.c
+
+imgdecode/infutil.o: imgdecode/infutil.c
+	sc DEF=AMIGAOS DEF=NO_GETENV CPU=68020 MATH=IEEE OBJNAME=imgdecode/infutil.o imgdecode/infutil.c
+
+imgdecode/jcomapi.o: imgdecode/jcomapi.c
+	sc DEF=AMIGAOS DEF=NO_GETENV CPU=68020 MATH=IEEE OBJNAME=imgdecode/jcomapi.o imgdecode/jcomapi.c
+
+imgdecode/jdapimin.o: imgdecode/jdapimin.c
+	sc DEF=AMIGAOS DEF=NO_GETENV CPU=68020 MATH=IEEE OBJNAME=imgdecode/jdapimin.o imgdecode/jdapimin.c
+
+imgdecode/jdapistd.o: imgdecode/jdapistd.c
+	sc DEF=AMIGAOS DEF=NO_GETENV CPU=68020 MATH=IEEE OBJNAME=imgdecode/jdapistd.o imgdecode/jdapistd.c
+
+imgdecode/jdcoefct.o: imgdecode/jdcoefct.c
+	sc DEF=AMIGAOS DEF=NO_GETENV CPU=68020 MATH=IEEE OBJNAME=imgdecode/jdcoefct.o imgdecode/jdcoefct.c
+
+imgdecode/jdcolor.o: imgdecode/jdcolor.c
+	sc DEF=AMIGAOS DEF=NO_GETENV CPU=68020 MATH=IEEE OBJNAME=imgdecode/jdcolor.o imgdecode/jdcolor.c
+
+imgdecode/jddctmgr.o: imgdecode/jddctmgr.c
+	sc DEF=AMIGAOS DEF=NO_GETENV CPU=68020 MATH=IEEE OBJNAME=imgdecode/jddctmgr.o imgdecode/jddctmgr.c
+
+imgdecode/jdhuff.o: imgdecode/jdhuff.c
+	sc DEF=AMIGAOS DEF=NO_GETENV CPU=68020 MATH=IEEE OBJNAME=imgdecode/jdhuff.o imgdecode/jdhuff.c
+
+imgdecode/jdinput.o: imgdecode/jdinput.c
+	sc DEF=AMIGAOS DEF=NO_GETENV CPU=68020 MATH=IEEE OBJNAME=imgdecode/jdinput.o imgdecode/jdinput.c
+
+imgdecode/jdmainct.o: imgdecode/jdmainct.c
+	sc DEF=AMIGAOS DEF=NO_GETENV CPU=68020 MATH=IEEE OBJNAME=imgdecode/jdmainct.o imgdecode/jdmainct.c
+
+imgdecode/jdmarker.o: imgdecode/jdmarker.c
+	sc DEF=AMIGAOS DEF=NO_GETENV CPU=68020 MATH=IEEE OBJNAME=imgdecode/jdmarker.o imgdecode/jdmarker.c
+
+imgdecode/jdmaster.o: imgdecode/jdmaster.c
+	sc DEF=AMIGAOS DEF=NO_GETENV CPU=68020 MATH=IEEE OBJNAME=imgdecode/jdmaster.o imgdecode/jdmaster.c
+
+imgdecode/jdmerge.o: imgdecode/jdmerge.c
+	sc DEF=AMIGAOS DEF=NO_GETENV CPU=68020 MATH=IEEE OBJNAME=imgdecode/jdmerge.o imgdecode/jdmerge.c
+
+imgdecode/jdphuff.o: imgdecode/jdphuff.c
+	sc DEF=AMIGAOS DEF=NO_GETENV CPU=68020 MATH=IEEE OBJNAME=imgdecode/jdphuff.o imgdecode/jdphuff.c
+
+imgdecode/jdpostct.o: imgdecode/jdpostct.c
+	sc DEF=AMIGAOS DEF=NO_GETENV CPU=68020 MATH=IEEE OBJNAME=imgdecode/jdpostct.o imgdecode/jdpostct.c
+
+imgdecode/jdsample.o: imgdecode/jdsample.c
+	sc DEF=AMIGAOS DEF=NO_GETENV CPU=68020 MATH=IEEE OBJNAME=imgdecode/jdsample.o imgdecode/jdsample.c
+
+imgdecode/jidctflt.o: imgdecode/jidctflt.c
+	sc DEF=AMIGAOS DEF=NO_GETENV CPU=68020 MATH=IEEE OBJNAME=imgdecode/jidctflt.o imgdecode/jidctflt.c
+
+imgdecode/jidctfst.o: imgdecode/jidctfst.c
+	sc DEF=AMIGAOS DEF=NO_GETENV CPU=68020 MATH=IEEE OBJNAME=imgdecode/jidctfst.o imgdecode/jidctfst.c
+
+imgdecode/jidctint.o: imgdecode/jidctint.c
+	sc DEF=AMIGAOS DEF=NO_GETENV CPU=68020 MATH=IEEE OBJNAME=imgdecode/jidctint.o imgdecode/jidctint.c
+
+imgdecode/jidctred.o: imgdecode/jidctred.c
+	sc DEF=AMIGAOS DEF=NO_GETENV CPU=68020 MATH=IEEE OBJNAME=imgdecode/jidctred.o imgdecode/jidctred.c
+
+imgdecode/jmemmgr.o: imgdecode/jmemmgr.c
+	sc DEF=AMIGAOS DEF=NO_GETENV CPU=68020 MATH=IEEE OBJNAME=imgdecode/jmemmgr.o imgdecode/jmemmgr.c
+
+imgdecode/jmemnobs.o: imgdecode/jmemnobs.c
+	sc DEF=AMIGAOS DEF=NO_GETENV CPU=68020 MATH=IEEE OBJNAME=imgdecode/jmemnobs.o imgdecode/jmemnobs.c
+
+imgdecode/jquant1.o: imgdecode/jquant1.c
+	sc DEF=AMIGAOS DEF=NO_GETENV CPU=68020 MATH=IEEE OBJNAME=imgdecode/jquant1.o imgdecode/jquant1.c
+
+imgdecode/jquant2.o: imgdecode/jquant2.c
+	sc DEF=AMIGAOS DEF=NO_GETENV CPU=68020 MATH=IEEE OBJNAME=imgdecode/jquant2.o imgdecode/jquant2.c
+
+imgdecode/jutils.o: imgdecode/jutils.c
+	sc DEF=AMIGAOS DEF=NO_GETENV CPU=68020 MATH=IEEE OBJNAME=imgdecode/jutils.o imgdecode/jutils.c
+
+imgdecode/lib.o: imgdecode/lib.c
+	sc DEF=AMIGAOS DEF=NO_GETENV CPU=68020 MATH=IEEE OBJNAME=imgdecode/lib.o imgdecode/lib.c
+
+imgdecode/libfunctable.o: imgdecode/libfunctable.c
+	sc DEF=AMIGAOS DEF=NO_GETENV CPU=68020 MATH=IEEE OBJNAME=imgdecode/libfunctable.o imgdecode/libfunctable.c
+
+imgdecode/libfunctions.o: imgdecode/libfunctions.c
+	sc DEF=AMIGAOS DEF=NO_GETENV CPU=68020 MATH=IEEE OBJNAME=imgdecode/libfunctions.o imgdecode/libfunctions.c
+
+imgdecode/mimebrushes.o: imgdecode/mimebrushes.c
+	sc DEF=AMIGAOS DEF=NO_GETENV CPU=68020 MATH=IEEE OBJNAME=imgdecode/mimebrushes.o imgdecode/mimebrushes.c
+
+imgdecode/png.o: imgdecode/png.c
+	sc DEF=AMIGAOS DEF=NO_GETENV CPU=68020 MATH=IEEE OBJNAME=imgdecode/png.o imgdecode/png.c
+
+imgdecode/pngerror.o: imgdecode/pngerror.c
+	sc DEF=AMIGAOS DEF=NO_GETENV CPU=68020 MATH=IEEE OBJNAME=imgdecode/pngerror.o imgdecode/pngerror.c
+
+imgdecode/pngmem.o: imgdecode/pngmem.c
+	sc DEF=AMIGAOS DEF=NO_GETENV CPU=68020 MATH=IEEE OBJNAME=imgdecode/pngmem.o imgdecode/pngmem.c
+
+imgdecode/pngpread.o: imgdecode/pngpread.c
+	sc DEF=AMIGAOS DEF=NO_GETENV CPU=68020 MATH=IEEE OBJNAME=imgdecode/pngpread.o imgdecode/pngpread.c
+
+imgdecode/pngread.o: imgdecode/pngread.c
+	sc DEF=AMIGAOS DEF=NO_GETENV CPU=68020 MATH=IEEE OBJNAME=imgdecode/pngread.o imgdecode/pngread.c
+
+imgdecode/pngrio.o: imgdecode/pngrio.c
+	sc DEF=AMIGAOS DEF=NO_GETENV CPU=68020 MATH=IEEE OBJNAME=imgdecode/pngrio.o imgdecode/pngrio.c
+
+imgdecode/pngrtran.o: imgdecode/pngrtran.c
+	sc DEF=AMIGAOS DEF=NO_GETENV CPU=68020 MATH=IEEE OBJNAME=imgdecode/pngrtran.o imgdecode/pngrtran.c
+
+imgdecode/pngrutil.o: imgdecode/pngrutil.c
+	sc DEF=AMIGAOS DEF=NO_GETENV CPU=68020 MATH=IEEE OBJNAME=imgdecode/pngrutil.o imgdecode/pngrutil.c
+
+imgdecode/pngset.o: imgdecode/pngset.c
+	sc DEF=AMIGAOS DEF=NO_GETENV CPU=68020 MATH=IEEE OBJNAME=imgdecode/pngset.o imgdecode/pngset.c
+
+imgdecode/pngtrans.o: imgdecode/pngtrans.c
+	sc DEF=AMIGAOS DEF=NO_GETENV CPU=68020 MATH=IEEE OBJNAME=imgdecode/pngtrans.o imgdecode/pngtrans.c
+
+imgdecode/zutil.o: imgdecode/zutil.c
+	sc DEF=AMIGAOS DEF=NO_GETENV CPU=68020 MATH=IEEE OBJNAME=imgdecode/zutil.o imgdecode/zutil.c
+
+# imgdecode assembly files
+imgdecode/c2p.o: imgdecode/c2p.s
+	sc CPU=68020 OBJNAME=imgdecode/c2p.o imgdecode/c2p.s
+
+imgdecode/saveds.o: imgdecode/saveds.s
+	sc CPU=68020 OBJNAME=imgdecode/saveds.o imgdecode/saveds.s
 
 install:
 	-copy V.amigaos /Internet/Voyager/V
@@ -647,7 +798,6 @@ clean:
 	-delete \#?.(o|map|lnk)
 	-delete V.amigaos
 	-delete V.debug
-	cd libmath64
-	-delete \#?.(o|map|lnk) ALL QUIET
-	cd ..
+	-delete libmath64/\#?.(o|map|lnk)
+	-delete imgdecode/\#?.(o|map|lnk)
 

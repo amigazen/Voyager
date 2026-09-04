@@ -26,6 +26,14 @@
 #endif /* __SASC */
 
 #include "globals.h"
+#include "async.h"
+
+#ifdef AMIGAOS
+#ifdef __SASC
+/* sprintf() replacement - forward declaration to avoid conflict */
+void __stdargs sprintf( char *to, const char *fmt, ... );
+#endif /* __SASC */
+#endif /* AMIGAOS */
 
 #if USE_CGX
 #ifdef __MORPHOS__
@@ -58,6 +66,9 @@
 #ifdef AMIGAOS
 extern ASM mystoreds( void );
 extern ASM mygetds( void );
+#if !defined( __MORPHOS__ )
+#include <proto/exec.h>
+#endif /* !__MORPHOS__ */
 #endif /* AMIGAOS */
 
 #ifdef __MORPHOS__
@@ -149,22 +160,27 @@ typedef APTR FILE;
 #include "png.h"
 
 #if USE_CGX
-struct Library *CyberGfxBase;
+/*
+ * Owned by bitmapclone.c in the main program now that the decoder is linked
+ * in - it opens cybergraphics.library during init_fakebitmap(). Defining it
+ * here as well would be a duplicate symbol, and the copy the decoder used to
+ * open is never opened because lib_init() is dead code under static linking.
+ */
+extern struct Library *CyberGfxBase;
 #endif /* USE_CGX */
 
 #ifndef MBX
-struct IntuitionBase *IntuitionBase;
-struct DosLibrary *DOSBase;
-struct ExecBase *SysBase;
+/* Use extern declarations to avoid conflicts with main program's library bases */
+extern struct IntuitionBase *IntuitionBase;
+extern struct DosLibrary *DOSBase;
+extern struct ExecBase *SysBase;
 #ifdef __MORPHOS__
-struct UtilityBase *UtilityBase;
+extern struct UtilityBase *UtilityBase;
 #else
-struct Library *UtilityBase;
+extern struct Library *UtilityBase;
 #endif
-#if USE_VAT
-struct Library *VATBase;
-#endif /* USE_VAT */
-struct GfxBase *GfxBase;
+/* VATBase not needed - vapor_toolkit.library is statically linked */
+extern struct GfxBase *GfxBase;
 #endif /* !MBX */
 
 #ifdef __MORPHOS__
@@ -180,7 +196,11 @@ static int image_shinepen, image_shadowpen;
 #endif
 
 #ifndef MBX
-int db_level = 0;
+/* Library-owned copy so vimgdecode.vlib links without needing debug.o */
+static int db_level = 0;
+
+/* Output handle handed to the decoder process so it can be traced */
+static BPTR imgdeclog;
 #else
 static int db_level = 0;
 #endif
@@ -211,6 +231,7 @@ static struct MinList imglist, freelist;
 static volatile struct Process *imgproc;
 static APTR imgpool;
 static struct SignalSemaphore imgsem;
+static ULONG imgdec_inited;
 
 struct myjpeg_error_mgr {
 	struct jpeg_error_mgr je;
@@ -405,6 +426,12 @@ static struct BitMap *alloc_bitmap( int xs, int ys, int depth )
  */
 static void copylines( struct BitMap *bm, int fromline, int toline, int lines, int xs )
 {
+	int c;
+	int bpr;
+	int lc;
+	UBYTE *fromp;
+	UBYTE *top;
+
 	//kprintf( "copyline from %ld to %ld lines %ld size %ld\r\n", fromline, toline, lines, xs );
 #if USE_CGX
 	if( features & FTF_CYBERMAP )
@@ -417,8 +444,9 @@ static void copylines( struct BitMap *bm, int fromline, int toline, int lines, i
 			-1,
 			NULL
 		);
+		return;
 	}
-#endif
+#endif /* USE_CGX */
 #ifdef MBX
 	BltBitMap(
 		bm, 0, fromline,
@@ -429,23 +457,18 @@ static void copylines( struct BitMap *bm, int fromline, int toline, int lines, i
 		0
 	); //TOFIX!! find out the minterm
 #else
-	else
+	for( c = 0; c < bm->Depth; c++ )
 	{
-		int c;
+		bpr = bm->BytesPerRow;
+		lc = lines;
+		fromp = ((UBYTE*)bm->Planes[ c ]) + bpr * fromline;
+		top = ((UBYTE*)bm->Planes[ c ]) + bpr * toline;
 
-		for( c = 0; c < bm->Depth; c++ )
+		while( lc-- )
 		{
-			int bpr = bm->BytesPerRow;
-			int lc = lines;
-			UBYTE *fromp = ((UBYTE*)bm->Planes[ c ]) + bpr * fromline;
-			UBYTE *top = ((UBYTE*)bm->Planes[ c ]) + bpr * toline;
-
-			while( lc-- )
-			{
-				CopyMem( fromp, top, bpr );
-				fromp += bpr;
-				top += bpr;
-			}
+			CopyMem( fromp, top, bpr );
+			fromp += bpr;
+			top += bpr;
 		}
 	}
 #endif /* !MBX */
@@ -1690,8 +1713,8 @@ redo:
 							RECTFMT_LUT8
 						);
 					}
-#endif /* USE_CGX */
 					else
+#endif /* USE_CGX */
 					{
 						UBYTE *planes[ 8 ];
 						int x;
@@ -1721,18 +1744,25 @@ redo:
 #endif
 
 #ifndef MBX
+#if USE_CGX
 				int pixfmt = ( imn->cinfo->jpeg_color_space == JCS_GRAYSCALE ) ? RECTFMT_GREY8 : RECTFMT_RGB;
+#endif /* USE_CGX */
 #endif /* !MBX */
 
 				// Write ROW buffer
 				for( c = 0; c < rc; c++ )
 				{
 #ifndef MBX
+#if USE_CGX
 					WritePixelArray(
 						jpeg_rowbuffer[ c ], 0, 0, imn->img_x,
 						&rp, 0, oldy + c, imn->img_x, 1,
 						pixfmt
 					);
+#else
+					/* Without cybergraphics, truecolor images need different handling */
+					/* This path should not be reached when USE_CGX is 0 */
+#endif /* USE_CGX */
 #else
 					// FIXME! This is blatantly dead slow and ugly
 					if( imn->cinfo->jpeg_color_space == JCS_GRAYSCALE )
@@ -2211,6 +2241,7 @@ giffailed:
 					);
 				}
 #else
+#if USE_CGX
 				UBYTE linebuff[ MAXIMAGEWIDTH * 3 ];
 				penarray2rgb( jpeg_rowbuffer[ 0 ], linebuff, imn->colmap, imn->local_xs );
 				WritePixelArray(
@@ -2218,6 +2249,10 @@ giffailed:
 					&rp, 0, yline, imn->local_xs, 1,
 					RECTFMT_RGB
 				);
+#else
+				/* Without cybergraphics, this path should use bitplane writing instead */
+				/* This code path should not be reached when USE_CGX is 0 */
+#endif /* USE_CGX */
 #endif /* MBX */
 			}
 
@@ -2711,6 +2746,7 @@ static void png_row_callback(png_structp png_ptr, png_bytep new_row,
 				imn->local_non_trans = TRUE;
 			}
 #elif USE_ALPHA
+#if USE_CGX
 			if( features & FTF_ALPHA )
 			{
 				WritePixelArray(
@@ -2731,12 +2767,21 @@ static void png_row_callback(png_structp png_ptr, png_bytep new_row,
 				);
 			}
 #else
+			/* Without cybergraphics, this path should use bitplane writing instead */
+			/* This code path should not be reached when USE_CGX is 0 */
+#endif /* USE_CGX */
+#else
+#if USE_CGX
 			striprgba( imn->pngrows[ row_num ], linebuff, imn->img_x );
 			WritePixelArray(
 				linebuff, 0, 0, imn->img_x * 3,
 				&rp, 0, row_num, imn->img_x, 1,
 				RECTFMT_RGB
 			);
+#else
+			/* Without cybergraphics, this path should use bitplane writing instead */
+			/* This code path should not be reached when USE_CGX is 0 */
+#endif /* USE_CGX */
 #endif
 
 #if !USE_ALPHA
@@ -2765,11 +2810,16 @@ static void png_row_callback(png_structp png_ptr, png_bytep new_row,
 				PIXFMT_RGB888, 0
 			);
 #else
+#if USE_CGX
 			WritePixelArray(
 				imn->pngrows[ row_num ], 0, 0, imn->img_x * 3,
 				&rp, 0, row_num, imn->img_x, 1,
 				RECTFMT_RGB
 			);
+#else
+			/* Without cybergraphics, this path should use bitplane writing instead */
+			/* This code path should not be reached when USE_CGX is 0 */
+#endif /* USE_CGX */
 #endif
 		}
 	}
@@ -3129,6 +3179,7 @@ static void procread_xbm( struct imgnode *imn )
 static void reporttoclients( struct imgnode *imn )
 {
 	struct imgclient *client;
+	struct imgframenode *imf;
 	int deststate = 0;
 
 	DBL( DEBUG_CHATTY, ( "reportoclients '%s' state %ld\r\n", imn->url, imn->state ) );
@@ -3164,7 +3215,10 @@ static void reporttoclients( struct imgnode *imn )
 
 		if( ( deststate >= 1 ) && ( client->privstate < 1 ) )
 		{
-			struct imgframenode *imf = FIRSTNODE( &imn->imagelist );
+			imf = FIRSTNODE( &imn->imagelist );
+			if( !NEXTNODE( imf ) )
+				continue;
+
 			client->privstate = 1;
 			v_imgcallback_decode_hasinfo( client->object, imn->bm, imn->img_x, imn->img_y, imf->maskbm, &imn->imagelist );
 		}
@@ -3313,6 +3367,10 @@ static void cleanupnode( struct imgnode *imn )
 
 static void processnode( struct imgnode *imn )
 {
+	Printf( "[DEC] node state=%ld type=%ld aborted=%ld url=%s\n",
+		(long)imn->state, (long)imn->imagetype, (long)imn->aborted, imn->url );
+	Flush( Output() );
+
 	DBL( DEBUG_CHATTY, ( "processnode '%s' state %ld\r\n", imn->url, imn->state ) );
 	if( imn->aborted == 1 )
 	{
@@ -3559,19 +3617,39 @@ static void flushunusednodes( void )
 	DBL( DEBUG_CHATTY, ( "exiting flushunused\r\n" ) );
 }
 
+static void imgdec_child_init( void )
+{
+	NEWLIST( &imglist );
+	NEWLIST( &freelist );
+	InitSemaphore( &imgsem );
+	InitSemaphore( &destscreensem );
+	imgdec_inited = 1;
+}
+
 static void imghandlerfunc( void )
 {
 	int Done = FALSE;
 	struct imgnode *imn;
+	ULONG sigs;
 #if USE_EXECUTIVE
 	APTR executivemsg;
 #endif /* USE_EXECUTIVE */
 
 #ifdef AMIGAOS
+	/*
+	 * CreateTask/CreateNewProc do not load SAS/C's near-data pointer (A4).
+	 * mystoreds() in libinit saved A4/A6; without this, Wait() loads SysBase
+	 * from A4+disp and jumps through FFFFxxxx (Enforcer) or stalls Delay() in the parent.
+	 */
 	mygetds();
 #endif /* AMIGAOS */
 
-	DBL( DEBUG_INFO, ( "imgdecoder process ready\r\n" ) );
+	/*
+	 * CreateNewProc gives the decoder its own BSS.  Re-init lists and
+	 * semaphores here only in that child (parent sets imgdec_inited in libinit).
+	 */
+	if( !imgdec_inited )
+		imgdec_child_init();
 
 #if USE_EXECUTIVE
 	executivemsg = InitExecutive();
@@ -3582,20 +3660,23 @@ static void imghandlerfunc( void )
 	}
 #endif /* USE_EXECUTIVE */
 
+	Printf( "[DEC] decoder process running\n" );
+	Flush( Output() );
+
 	while( !Done )
 	{
-		ULONG sigs;
-
-		DBL( DEBUG_CHATTY, ( "now waiting...\r\n" ) );
-
 		sigs = Wait( SIGBREAKF_CTRL_C | SIGBREAKF_CTRL_E | SIGBREAKF_CTRL_F );
 
-		DBL( DEBUG_CHATTY, ( "WAKE UP!!\r\n" ) );
+		Printf( "[DEC] wake sigs=%lx\n", (ULONG)sigs );
+		Flush( Output() );
 
 		if( sigs & SIGBREAKF_CTRL_C )
 			Done = TRUE;
 
 		processall();
+
+		Printf( "[DEC] processall done\n" );
+		Flush( Output() );
 
 		if( (sigs & SIGBREAKF_CTRL_E ) || AvailMem( 0 ) < ( 256 * 1024 ) )
 		{
@@ -3609,7 +3690,11 @@ static void imghandlerfunc( void )
 		cleanupnode( imn );
 
 	imgproc = NULL;
-	// fallthrough to exit...
+
+	/*
+	 * Created with CreateNewProc, so simply returning is the correct exit -
+	 * dos.library unwinds the Process. RemTask( NULL ) would skip that.
+	 */
 }
 
 #ifdef __MORPHOS__
@@ -3635,10 +3720,12 @@ static int ASM memhandlerfunc( __reg( a0,  struct MemHandlerData *mhd ) )
 	int rc = MEM_DID_NOTHING;
 
 #ifdef AMIGAOS
-	putreg( REG_A4, rc );
-	putreg( REG_A6, rc );
-
-	mygetds();
+#ifndef __MORPHOS__
+	/* REG_A4 and REG_A6 are MorphOS-specific register names */
+	/* For SAS/C, we don't need these register operations */
+	/* mygetds() might cause issues when statically linked - skip it */
+	/* mygetds(); */
+#endif /* !__MORPHOS__ */
 #endif /* AMIGAOS */
 
 #ifdef __MORPHOS__
@@ -3684,9 +3771,11 @@ static int ASM memhandlerfunc( __reg( a0,  struct MemHandlerData *mhd ) )
 	//kprintf( "leaving memhandler, rc = %ld, free %ld/%ld\n", rc, AvailMem(0),AvailMem(MEMF_LARGEST) );
 
 #ifndef MBX
-	Signal( imgproc, SIGBREAKF_CTRL_E );
+	if( imgproc )
+		Signal( imgproc, SIGBREAKF_CTRL_E );
 #else
-	Signal( (Process_p)imgproc, SIGBREAKF_CTRL_E );
+	if( imgproc )
+		Signal( (Process_p)imgproc, SIGBREAKF_CTRL_E );
 #endif
 	return( rc );
 }
@@ -3825,12 +3914,20 @@ int ASM SAVEDS imgdec_setdestscreen(
 	__reg( d3, int shinepen )
 )
 {
+	Printf( "[IMGDEC] setdestscreen entry scr=0x%lx destscreen=0x%lx\n", (ULONG)scr, (ULONG)destscreen );
+	Flush( Output() );
 	image_bgpen = bgpen;
 	image_framepen = framepen;
 
 	if( !imgproc )
+	{
+		Printf( "[IMGDEC] setdestscreen: no imgproc, return 0\n" );
+		Flush( Output() );
 		return( 0 );
+	}
 
+	Printf( "[IMGDEC] setdestscreen step 1: imgproc ok\n" );
+	Flush( Output() );
 	DBL( DEBUG_CHATTY, ( "scr = %lx, destscreen = %lx\n", scr, destscreen ) );
 
 	if( scr != destscreen )
@@ -3840,7 +3937,8 @@ int ASM SAVEDS imgdec_setdestscreen(
 		struct PubScreenNode *psn;
 #endif
 
-		// get images flushed
+		/* When statically linked, avoid flush + LockPubScreenList on first set (destscreen==NULL)
+		 * which can crash or deadlock during window open. Only flush when changing from one screen to another. */
 		if( destscreen )
 		{
 			int c;
@@ -3885,21 +3983,34 @@ int ASM SAVEDS imgdec_setdestscreen(
 			}
 		}
 
-//TOFIX!! this is a fucking mess
 #ifndef MBX
-		DBL( DEBUG_CHATTY, ( "iterating pslist\n" ) );
-		pslist = ( struct List * )LockPubScreenList();
-		for( psn = FIRSTNODE( pslist ); NEXTNODE( psn ); psn = NEXTNODE( psn ) )
+		/* For now skip default pubscreen lookup - rely on MUI to open on the right screen.
+		 * LockPubScreenList can deadlock/crash when statically linked. */
+#if 0
+		if( destscreen && scr )
 		{
-			if( psn->psn_Screen == scr )
+			DBL( DEBUG_CHATTY, ( "iterating pslist\n" ) );
+			pslist = ( struct List * )LockPubScreenList();
+			for( psn = FIRSTNODE( pslist ); NEXTNODE( psn ); psn = NEXTNODE( psn ) )
 			{
-				destscreenname = psn->psn_Node.ln_Name;
-				break;
+				if( psn->psn_Screen == scr )
+				{
+					destscreenname = psn->psn_Node.ln_Name;
+					break;
+				}
 			}
+			UnlockPubScreenList();
 		}
-		UnlockPubScreenList();
+		else
+		{
+			destscreenname = NULL;
+		}
+#endif
+		destscreenname = NULL;
 #endif /* !MBX */
 
+		Printf( "[IMGDEC] setdestscreen step 2: setting destscreen=scr\n" );
+		Flush( Output() );
 		destscreen = scr;
 #ifndef MBX
 		features &= ~FTF_TRUECOLOR;
@@ -3927,8 +4038,12 @@ int ASM SAVEDS imgdec_setdestscreen(
 				}
 			}
 #endif /* USE_CGX */
-			DBL( DEBUG_CHATTY, ( "release\n" ) );
-			ReleaseSemaphore( &destscreensem );
+			/* Only release if we had obtained in the "if (destscreen)" block above. When destscreen was NULL we did not obtain - init already released. */
+			if( destscreen )
+			{
+				DBL( DEBUG_CHATTY, ( "release\n" ) );
+				ReleaseSemaphore( &destscreensem );
+			}
 		}
 
 		// Nota bene -- the semaphore is only freed if we set the screen
@@ -3936,6 +4051,8 @@ int ASM SAVEDS imgdec_setdestscreen(
 		// locked!
 	}
 
+	Printf( "[IMGDEC] setdestscreen exit\n" );
+	Flush( Output() );
 #if USE_CGX
 	return( features & FTF_CYBERMAP );
 #else
@@ -3965,6 +4082,19 @@ APTR ASM SAVEDS imgdec_open(
 	ObtainSemaphore( &imgsem );
 
 	client = AllocPooled( imgpool, sizeof( *client ) );
+	if( !client )
+	{
+		ReleaseSemaphore( &imgsem );
+		return( NULL );
+	}
+	/*
+	 * A MEMF_CLEAR pool only clears freshly allocated puddles; memory recycled
+	 * through FreePooled still holds the previous client. isspecial is only
+	 * assigned on the internal-image path below, so a stale non-zero value
+	 * sends imgdec_getinfo/isdone/getmaskbm/close down the "special" branch and
+	 * indexes specialfn[] out of bounds with a garbage bitmap pointer.
+	 */
+	memset( client, 0, sizeof( *client ) );
 	client->object = clientobject;
 
 	// check if they want an internal image
@@ -4030,8 +4160,18 @@ APTR ASM SAVEDS imgdec_open(
 		 * Reloading
 		 */
 		int reflen = referer ? strlen( referer ) + 1 : 0;
+		int imnsize = sizeof( *imn ) + strlen( url ) + reflen + 1;
 
-		imn = AllocPooled( imgpool, sizeof( *imn ) + strlen( url ) + reflen + 1 );
+		imn = AllocPooled( imgpool, imnsize );
+		if( !imn )
+		{
+			FreePooled( imgpool, client, sizeof( *client ) );
+			ReleaseSemaphore( &imgsem );
+			return( NULL );
+		}
+		/* Same recycled-memory problem: state, bm, img_x/y, aborted and
+		 * do_reload are all assumed to start at zero. */
+		memset( imn, 0, imnsize );
 		strcpy( imn->errormsg, "(unspecified error)" );
 		//kprintf( "creating new IMN %lx\r\n", imn );
 		strcpy( imn->url, url );
@@ -4057,11 +4197,14 @@ APTR ASM SAVEDS imgdec_open(
 	ReleaseSemaphore( &imgsem );
 
 	// notify server process
+	if( imgproc )
+	{
 #ifndef MBX
-	Signal( imgproc, ( AvailMem( MEMF_CHIP ) < ( 128 * 1024 ) ) ? ( SIGBREAKF_CTRL_E | SIGBREAKF_CTRL_F ) : SIGBREAKF_CTRL_F );
+		Signal( imgproc, ( AvailMem( MEMF_CHIP ) < ( 128 * 1024 ) ) ? ( SIGBREAKF_CTRL_E | SIGBREAKF_CTRL_F ) : SIGBREAKF_CTRL_F );
 #else
-	Signal( (Process_p) imgproc, ( AvailMem( MEMF_CHIP ) < ( 128 * 1024 ) ) ? ( SIGBREAKF_CTRL_E | SIGBREAKF_CTRL_F ) : SIGBREAKF_CTRL_F );
+		Signal( (Process_p) imgproc, ( AvailMem( MEMF_CHIP ) < ( 128 * 1024 ) ) ? ( SIGBREAKF_CTRL_E | SIGBREAKF_CTRL_F ) : SIGBREAKF_CTRL_F );
 #endif
+	}
 
 	return( client );
 }
@@ -4111,6 +4254,9 @@ int ASM SAVEDS imgdec_getinfo(
 {
 	int result = FALSE;
 	struct imgnode *imn;
+
+	if( !client )
+		return( FALSE );
 
 	if( client->isspecial )
 	{
@@ -4172,18 +4318,28 @@ void ASM SAVEDS imgdec_setclientobject(
 
 struct MinList * ASM SAVEDS imgdec_getimagelist( __reg( a0, struct imgclient *client ) )
 {
+	if( !client )
+		return( NULL );
 	if( client->isspecial )
 		return( &specialfnl[ client->isspecial - 1 ] );
-	else
+	else if( client->imgnode )
 		return( &client->imgnode->imagelist );
+	return( NULL );
 }
 
 struct BitMap * ASM SAVEDS imgdec_getmaskbm( __reg( a0, struct imgclient *client ) )
 {
-	if( client->isspecial )
+	struct imgframenode *imf;
+
+	if( !client || client->isspecial || !client->imgnode )
 		return( NULL );
-	else
-		return( ((struct imgframenode*)FIRSTNODE( &client->imgnode->imagelist ))->maskbm  );
+
+	/* FIRSTNODE on an empty list yields the list header, not a frame */
+	imf = FIRSTNODE( &client->imgnode->imagelist );
+	if( !imf || !NEXTNODE( imf ) )
+		return( NULL );
+
+	return( imf->maskbm );
 }
 
 void ASM SAVEDS imgdec_flushimages( void )
@@ -4202,10 +4358,13 @@ void ASM SAVEDS imgdec_flushimages( void )
 
 int ASM SAVEDS imgdec_isdone( __reg( a0, struct imgclient *client ) )
 {
+	if( !client )
+		return( FALSE );
 	if( client->isspecial )
 		return( TRUE );
-	else
-		return( client->imgnode->state == GS_DONE );
+	if( !client->imgnode )
+		return( FALSE );
+	return( client->imgnode->state == GS_DONE );
 }
 
 void ASM SAVEDS imgdec_abortload( __reg( a0, struct imgclient *client ) )
@@ -4272,6 +4431,10 @@ int ASM SAVEDS imgdec_maskused(
 UWORD fmtfunc[] = { 0x16c0, 0x4e75 };
 void __stdargs sprintf( char *to, const char *fmt, ... )
 {
+	if( !to )
+		return;
+	if( !fmt )
+		fmt = "";
 	RawDoFmt( fmt, &fmt + 1, (APTR)fmtfunc, to );
 }
 #endif /* AMIGAOS */
@@ -4331,26 +4494,7 @@ void ASM SAVEDS imgdec_getinfostring(
 //
 APTR pool = NULL;
 
-#ifdef AMIGAOS
-void *malloc( size_t size )
-{
-	return( ( void * )VAT_AllocVecPooled( pool, size ) );
-}
-
-void *calloc( size_t cnt, size_t size )
-{
-	APTR mem = ( APTR )VAT_AllocVecPooled( pool, size * cnt );
-	if( mem )
-		memset( mem, 0, cnt * size );
-	return( mem  );
-}
-
-void free( void *ptr )
-{
-	if( ptr )
-		VAT_FreeVecPooled( pool, ptr );
-}
-#endif /* AMIGAOS */
+/* malloc, calloc, and free are provided by malloc.o - removed duplicate definitions */
 #ifdef __MORPHOS__
 void *malloc(size_t size)
 {
@@ -4418,20 +4562,45 @@ void __stdargs _CXFERR( int code )
 
 void ASM SAVEDS removeclone( __reg( a0, struct BitMap *src ) );//TOFIX!! sux..
 
-int ASM SAVEDS imgdec_libinit(
-	__reg( a0, struct imgcallback *cbtptr )
-)
+/* Non-SAVEDS version for static linking - can be called directly */
+int imgdec_libinit_internal( struct imgcallback *cbtptr )
 {
 	int c;
+	/* Check for NULL pointer before assignment */
+	if( !cbtptr )
+	{
+		Printf( "[IMGDEC] ERROR: cbtptr is NULL!\n" );
+		Flush( Output() );
+		return( FALSE );
+	}
+	
 	cbt = cbtptr;
 	
-	DBL( DEBUG_INFO, ( "initializing image decoder.. callback table 0x%lx passed\n", cbt ) );
+	Printf( "[IMGDEC] imgdec_libinit_internal() entry, cbt=0x%lx\n", cbt );
+	Flush( Output() );
+	
+	/* Skip DBL call - might access uninitialized data */
+	/* DBL( DEBUG_INFO, ( "initializing image decoder.. callback table 0x%lx passed\n", cbt ) ); */
+
+	Printf( "[IMGDEC] Initializing lists and semaphores...\n" );
+	Flush( Output() );
+	
+	/* Check that SysBase is available before using semaphores */
+	if( !SysBase )
+	{
+		Printf( "[IMGDEC] ERROR: SysBase is NULL!\n" );
+		Flush( Output() );
+		return( FALSE );
+	}
 
 	NEWLIST( &imglist );
 	NEWLIST( &freelist );
 	InitSemaphore( &imgsem );
 	InitSemaphore( &destscreensem );
+	imgdec_inited = 1;
 	ObtainSemaphore( &destscreensem );
+	Printf( "[IMGDEC] Lists and semaphores initialized\n" );
+	Flush( Output() );
 	
 	/*
 	 * Check for correct V version.
@@ -4443,6 +4612,14 @@ int ASM SAVEDS imgdec_libinit(
 	 * The reason is explained in the errorreq() call.
 	*/
 #ifndef MBX
+	/* Validate callback table before accessing fields */
+	if( !cbt || (ULONG)cbt < 0x1000 )
+	{
+		Printf( "[IMGDEC] ERROR: Invalid callback table pointer: 0x%lx\n", cbt );
+		Flush( Output() );
+		return( FALSE );
+	}
+	
 	if( cbt->v_major < 4 )
 	{
 		if( cbt->v_minor < 4 )
@@ -4462,8 +4639,12 @@ int ASM SAVEDS imgdec_libinit(
 
 	/* new checks go here */
 
+	Printf( "[IMGDEC] Creating imgpool...\n" );
+	Flush( Output() );
 	if( ( imgpool = CreatePool( MEMF_CLEAR, 4096, 2048 ) ) )
 	{
+		Printf( "[IMGDEC] imgpool created successfully\n" );
+		Flush( Output() );
 #ifdef __MORPHOS__
 		/*
 		 * Set PPC mode
@@ -4546,28 +4727,66 @@ int ASM SAVEDS imgdec_libinit(
 			}
 		}
 
+		Printf( "[IMGDEC] Calling init_fs_error_limit()...\n" );
+		Flush( Output() );
 		init_fs_error_limit();
+		Printf( "[IMGDEC] init_fs_error_limit() complete\n" );
+		Flush( Output() );
+
+		Printf( "[IMGDEC] Creating image decoder process...\n" );
+		Flush( Output() );
+#ifdef AMIGAOS
+		mystoreds();
+#endif /* AMIGAOS */
+		/*
+		 * Must be a Process, not a plain Exec task: the decoder reaches
+		 * dos.library (cache files, errorreq, Delay) and those need pr_*
+		 * fields that CreateTask does not provide, so it died as soon as the
+		 * first image signalled it into processall().
+		 *
+		 * NP_Entry runs in this same program, so the child shares our data
+		 * segment - it never got a private copy of imglist/imgsem. What was
+		 * actually missing is SAS/C's near-data pointer, which mystoreds()
+		 * above and mygetds() in imghandlerfunc now take care of.
+		 */
+		/*
+		 * Give the decoder its own output handle so it can be traced. It runs
+		 * in a different process from the browser, so it cannot share ours.
+		 */
+		imgdeclog = Open( "PROGDIR:imgdec.log", MODE_NEWFILE );
 
 		imgproc = CreateNewProcTags(
 			NP_Entry, ( ULONG )imghandlerfunc,
 			NP_Name, ( ULONG )"V's Image Decoder Process",
+#ifdef __MORPHOS__
 			NP_CodeType, CODETYPE_PPC,
+#endif /* __MORPHOS__ */
 			NP_StackSize, 64 * 1024 * 2, /* XXX: fix for 68k */
 			NP_Priority, -1,
 			NP_Input, NULL,
 			NP_CloseInput, FALSE,
-			NP_Output, NULL,
-			NP_CloseOutput, FALSE,
+			NP_Output, ( ULONG )imgdeclog,
+			NP_CloseOutput, imgdeclog ? TRUE : FALSE,
 			NP_CopyVars, FALSE,
 			TAG_DONE
 		);
 
 		if( !imgproc )
 		{
+			Printf( "[IMGDEC] ERROR: CreateNewProcTags failed!\n" );
+			Flush( Output() );
 			goto libinit_fail;
 		}
 
-		DBL( DEBUG_INFO, ( "CreateNewProc() done, image decoder process started at 0x%lx\r\n", imgproc ) );
+		Printf( "[IMGDEC] Image decoder process created successfully at 0x%lx\n", imgproc );
+		Flush( Output() );
+		/* Skip DBL call */
+		/* DBL( DEBUG_INFO, ( "CreateNewProc() done, image decoder process started at 0x%lx\r\n", imgproc ) ); */
+		
+		/* Give the process a moment to initialize before continuing */
+		Delay( 1 );
+		Printf( "[IMGDEC] After process creation delay\n" );
+		Flush( Output() );
 
 		/*
 		 * Now let's add the memhandler
@@ -4588,8 +4807,13 @@ int ASM SAVEDS imgdec_libinit(
 #endif /* __MORPHOS__ */
 
 #ifdef AMIGAOS
-		AddMemHandler( &memhandlerint );
-		memhandleractive = TRUE;
+		/*
+		 * Leave disabled: memhandlerfunc uses the MemHandler interrupt ABI; wiring it through struct Interrupt
+		 * without matching Trap/emulation caused instability on static SAS/C builds. Decoder flush still runs on SIGBREAK_E from setdestscreen / signals.
+		 */
+		Printf( "[IMGDEC] AddMemHandler disabled for AmigaOS static decoder build\n" );
+		Flush( Output() );
+		memhandleractive = FALSE;
 #endif /* AMIGAOS */
 
 #ifdef MBX
@@ -4597,11 +4821,29 @@ int ASM SAVEDS imgdec_libinit(
 			AddMemHandler( (STRPTR)IMGDECODE_MEMHANDLER_NAME, (DWORD)IMGDECODE_MEMHANDLER_PRI, (VPTR)memhandlerfunc, 0xdeadbeef );
 #endif /* MBX */
 	
+		Printf( "[IMGDEC] imgdec_libinit() succeeded\n" );
+		Flush( Output() );
 		return( TRUE );
 
 	}
+	else
+	{
+		Printf( "[IMGDEC] ERROR: Failed to create imgpool!\n" );
+		Flush( Output() );
+	}
 libinit_fail: /* TOFIX: a bit sucky.. */
+	Printf( "[IMGDEC] imgdec_libinit_internal() failed\n" );
+	Flush( Output() );
 	return( FALSE );
+}
+
+/* SAVEDS wrapper for library calls, but when statically linked, call internal version directly */
+int ASM SAVEDS imgdec_libinit(
+	__reg( a0, struct imgcallback *cbtptr )
+)
+{
+	/* When statically linked, just call the internal version */
+	return imgdec_libinit_internal( cbtptr );
 }
 
 void ASM SAVEDS imgdec_libexit( void )
@@ -4662,6 +4904,27 @@ void ASM SAVEDS imgdec_libexit( void )
 #endif /* !MBX */
 }
 
+/* Non-SAVEDS version for static linking */
+void imgdec_setprefs_internal(
+	long img_jpeg_dct,
+	long img_jpeg_dither,
+	long img_jpeg_quant,
+	long img_lamedecode,
+	long img_progressive_jpeg,
+	long img_gif_dither,
+	long img_png_dither
+)
+{
+	dsi_img_jpeg_dct = img_jpeg_dct;
+	dsi_img_jpeg_dither = img_jpeg_dither;
+	dsi_img_gif_dither = img_gif_dither;
+	dsi_img_png_dither = img_png_dither;
+	dsi_img_jpeg_quant = img_jpeg_quant;
+	dsi_img_lamedecode = img_lamedecode;
+	dsi_jpeg_progressive = img_progressive_jpeg;
+}
+
+/* SAVEDS wrapper for library calls */
 void ASM SAVEDS imgdec_setprefs(
 	__reg( d0, long img_jpeg_dct ),
 	__reg( d1, long img_jpeg_dither ),
@@ -4672,13 +4935,8 @@ void ASM SAVEDS imgdec_setprefs(
 	__reg( d6, long img_png_dither )
 )
 {
-	dsi_img_jpeg_dct = img_jpeg_dct;
-	dsi_img_jpeg_dither = img_jpeg_dither;
-	dsi_img_gif_dither = img_gif_dither;
-	dsi_img_png_dither = img_png_dither;
-	dsi_img_jpeg_quant = img_jpeg_quant;
-	dsi_img_lamedecode = img_lamedecode;
-	dsi_jpeg_progressive = img_progressive_jpeg;
+	/* When statically linked, just call the internal version */
+	imgdec_setprefs_internal( img_jpeg_dct, img_jpeg_dither, img_jpeg_quant, img_lamedecode, img_progressive_jpeg, img_gif_dither, img_png_dither );
 }
 
 void ASM SAVEDS imgdec_setdebug( __reg( d0, int lvl ) )
@@ -4710,22 +4968,10 @@ int	lib_init( struct ExecBase *SBase )
 
 	IntuitionBase = ( struct IntuitionBase * )OpenLibrary( "intuition.library", 0 );
 
-#if USE_VAT
-	if( !( VATBase = OpenLibrary( "vapor_toolkit.library", VAT_VERSION ) ) )
-	{
-		errorreq( "V Image decoder", "Couldn't open vapor_toolkit.library.", "Ok" );
-		lib_cleanup();
-		return( FALSE );
-	}
-#endif /* USE_VAT */
+	/* vapor_toolkit.library is statically linked - no need to open it */
 
-#if USE_VAT
-	UtilityBase = VAT_OpenLibraryCode( VATOC_UTIL );
-	GfxBase = (APTR)VAT_OpenLibraryCode( VATOC_GFX );
-#else
-	UtilityBase = ( struct UtilityBase * )OpenLibrary( "utility.library", 0 );
-	GfxBase = ( struct GfxBase * )OpenLibrary( "graphics.library", 0 );
-#endif
+	UtilityBase = (APTR)OpenLibrary( "utility.library", 0 );
+	GfxBase = (APTR)OpenLibrary( "graphics.library", 0 );
 
 	if( !UtilityBase || !GfxBase )
 	{
@@ -4734,7 +4980,7 @@ int	lib_init( struct ExecBase *SBase )
 	}
 
 #ifdef _FFP
-	if( !( MathBase = VAT_OpenLibraryCode( VATOC_MATHFFP ) ) )
+	if( !( MathBase = (APTR)OpenLibrary( "mathffp.library", 0 ) ) )
 	{
 		lib_cleanup();
 		return( FALSE );
@@ -4743,7 +4989,7 @@ int	lib_init( struct ExecBase *SBase )
 
 #ifdef _IEEE
 #ifndef __MORPHOS__
-	if( !( MathIeeeDoubBasBase = VAT_OpenLibraryCode( VATOC_MATHIEEEDOUBBAS ) ) )
+	if( !( MathIeeeDoubBasBase = (APTR)OpenLibrary( "mathieeedoubbas.library", 0 ) ) )
 	{
 		lib_cleanup();
 		return( FALSE );
@@ -4751,27 +4997,18 @@ int	lib_init( struct ExecBase *SBase )
 #endif /* !__MORPHOS__ */
 #endif
 
-#if USE_CGX
-	CyberGfxBase = OpenLibrary( "cybergraphics.library", 0 );
-#endif /* USE_CGX */
+	/* cybergraphics.library is opened by the main program (bitmapclone.c) */
 
 	return( TRUE );
 }
 
 #if defined( AMIGAOS ) && defined( __SASC )
+/* __UserLibInit disabled - we're statically linking, so the main program handles library initialization */
+/* This function would try to open libraries before the main program is ready, causing crashes */
 long SAVEDS ASM __UserLibInit( __reg( a6, struct Library *libbase ) )
 {
-	if( lib_init(*((struct ExecBase**)4)) )
-	{
-		libbase->lib_Node.ln_Pri = -128;
-
-		if( pool = VAT_CreatePool( 0, 4096, 2048 ) )
-		{
-			mystoreds();
-			return( 0 ); /* success */
-		}
-	}
-	return( -1 );
+	/* No-op when statically linked - libraries are opened by main program */
+	return( 0 ); /* success, but don't do anything */
 }
 #endif /*AMIGAOS */
 
@@ -4793,11 +5030,9 @@ void lib_cleanup( void )
 #endif
 
 #if USE_CGX
-	CloseLibrary( CyberGfxBase );
+	/* cybergraphics.library belongs to the main program - do not close it */
 #endif /* USE_CGX */
-#if USE_VAT
-	CloseLibrary( VATBase );
-#endif /* USE_VAT */
+	/* vapor_toolkit.library is statically linked - no need to close it */
 	CloseLibrary( (APTR)DOSBase );
 	CloseLibrary( (APTR)GfxBase );
 	CloseLibrary( (APTR)IntuitionBase );
@@ -4805,10 +5040,60 @@ void lib_cleanup( void )
 }
 
 #if defined( AMIGAOS ) && defined( __SASC )
+/* __UserLibCleanup disabled - we're statically linking, so the main program handles library cleanup */
 void SAVEDS ASM __UserLibCleanup(void)
 {
-	lib_cleanup();
+	/* No-op when statically linked - libraries are closed by main program */
 }
 #endif /* AMIGAOS */
 
 #endif /* !MBX */
+
+#if !USE_CGX && !defined(CLIB_CYBERGRAPHICS_H)
+/* WritePixelArray implementation using WritePixelArray8 when cybergraphics is not available */
+/* Only define when cybergraphics proto was not included (e.g. by gst.h for SAS/C) to avoid conflict */
+/* WritePixelArray8 is declared in graphics_protos.h which is included elsewhere */
+LONG WritePixelArray(APTR src, LONG srcx, LONG srcy, LONG srcmod, struct RastPort *rp, LONG destx, LONG desty, LONG width, LONG height, ULONG format)
+{
+	UBYTE *array;
+	LONG result;
+	LONG xstop, ystop;
+	LONG row;
+	UBYTE *srcptr;
+	
+	/* WritePixelArray8 expects: WritePixelArray8(rp, xstart, ystart, xstop, ystop, array, temprp) */
+	/* Our parameters: src array at (srcx, srcy) with srcmod, write to rp at (destx, desty) with (width, height) */
+	/* Note: src array should contain color indices (pen numbers) for WritePixelArray8 */
+	
+	/* For WritePixelArray8, xstop and ystop are inclusive */
+	xstop = destx + width - 1;
+	
+	/* Write row by row */
+	srcptr = (UBYTE *)src;
+	for (row = 0; row < height; row++)
+	{
+		ystop = desty + row;
+		array = srcptr;
+		
+		/* V45+ allows NULL for temprp */
+		result = WritePixelArray8(rp, (UWORD)destx, (UWORD)(desty + row), (UWORD)xstop, (UWORD)ystop, array, NULL);
+		if (result <= 0)
+			return result;
+		
+		/* Advance to next row in source */
+		if (srcmod > 0)
+			srcptr += srcmod;
+		else
+			srcptr += width;
+	}
+	
+	return (width * height);
+}
+
+LONG WritePixelArrayBM(APTR src, LONG srcx, LONG srcy, LONG srcmod, struct BitMap *bm, LONG destx, LONG desty, LONG width, LONG height, ULONG format, ULONG tag1)
+{
+	/* WritePixelArrayBM is cybergraphics-specific - not available without CGX */
+	/* This should not be called when USE_CGX is 0 */
+	return 0;
+}
+#endif /* !USE_CGX && !defined(CLIB_CYBERGRAPHICS_H) */

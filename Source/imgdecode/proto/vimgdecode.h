@@ -7,7 +7,10 @@
 #endif /* !MBX */
 extern struct Library *VIDBase;
 #include <clib/vimgdecode_protos.h>
-#ifdef __SASC
-#include <pragmas/vimgdecode_pragmas.h>
-#endif /* __SASC */
+/*
+ * The libcall pragmas are deliberately not included: the decoder is linked
+ * into the executable, so VIDBase is not a real library base and every
+ * pragma-generated jsr through it would crash. See the comment in
+ * <clib/vimgdecode_protos.h>.
+ */
 #endif /* !PROTO_VIMGDECODE_H */

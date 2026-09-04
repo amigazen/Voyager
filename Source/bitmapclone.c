@@ -62,19 +62,30 @@ extern struct Screen *destscreen;
 void init_fakebitmap( void )
 {
 	D( db_init, bug( "initializing..\n" ) );
+	Printf( "[INIT] init_fakebitmap() entry\n" );
+	Flush( Output() );
 	
 #if USE_CGX
+	Printf( "[INIT] Opening cybergraphics.library...\n" );
+	Flush( Output() );
 	CyberGfxBase = OpenLibrary( "cybergraphics.library", 0 );
+	Printf( "[INIT] cybergraphics.library opened (or not needed)\n" );
+	Flush( Output() );
 #endif
 
+	Printf( "[INIT] Calling InitBitMap()...\n" );
+	Flush( Output() );
 	InitBitMap( &fakebitmap, 1, 1024, 1024 );
+	Printf( "[INIT] InitBitMap() complete\n" );
+	Flush( Output() );
 
 	/* FBlit is optional - check for it but don't fail if not present */
 	fblitinstalled = FALSE;
 	Printf( "[INIT] Checking for FBlit message port...\n" );
+	Flush( Output() );
 	if( SysBase != NULL )
 	{
-		Forbid();
+		/* Don't use Forbid()/Permit() - can cause deadlocks during init */
 		if( FindPort( "FBlit" ) != NULL )
 		{
 			fblitinstalled = TRUE;
@@ -84,11 +95,12 @@ void init_fakebitmap( void )
 		{
 			Printf( "[INIT] FBlit not found, fblitinstalled=FALSE\n" );
 		}
-		Permit();
+		Flush( Output() );
 	}
 	else
 	{
 		Printf( "[INIT] SysBase is NULL, skipping FBlit check\n" );
+		Flush( Output() );
 	}
 	Printf( "[INIT] init_fakebitmap() complete\n" );
 
@@ -346,7 +358,13 @@ struct BitMap *getclone( struct BitMap *src, int masked )
 
 	ReleaseSemaphore( &clonesem );
 
-	bm->real_bm = AllocBitMap( xs, ys, depth, 0, masked ? NULL : destscreen->RastPort.BitMap );
+	/* When destscreen not set yet (no lo_image Setup run), use NULL friend to avoid crash */
+	if( !destscreen && !masked )
+	{
+		Printf( "[CLONE] getclone destscreen=NULL using NULL friend\n" );
+		Flush( Output() );
+	}
+	bm->real_bm = AllocBitMap( xs, ys, depth, 0, ( masked || !destscreen ) ? NULL : destscreen->RastPort.BitMap );
 	if( !bm->real_bm )
 	{
 		bm->real_bm = &fakebitmap;

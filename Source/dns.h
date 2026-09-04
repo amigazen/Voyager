@@ -22,7 +22,7 @@
  * $Id: dns.h,v 1.6 2001/07/01 22:02:38 owagner Exp $
  */
 
-#define DNSTASKS 4 /* number of concurrent DNS processes */
+#define DNSTASKS 1 /* number of concurrent DNS processes */
 
 struct dnscachenode {
 	struct dnscachenode *next;

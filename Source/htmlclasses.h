@@ -323,7 +323,11 @@ enum {
 	MA_Layout_FormOption_Index,
 	MA_Layout_FormOption_SelectObject,
 	MA_Layout_FormOption_Selected,
-	MA_Layout_FormOption_DefaultSelected
+	MA_Layout_FormOption_DefaultSelected,
+
+	/* Deferred (at end so no other method IDs shift): */
+	MM_HTMLWin_ApplyToolbarHoriz,
+	MM_HTMLWin_ExitChangeAfterLoad	/* deprecated no-op; kept so method IDs do not shift */
 };
 
 struct MP_Layout_Embed_AddArg {

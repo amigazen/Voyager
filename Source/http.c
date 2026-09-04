@@ -60,16 +60,17 @@
 "Accept: text/html;version=3.0\r\n"\
 "Accept: */*\r\n"
 
-char vuseragent[ 128 ];
+char vuseragent[ 256 ];
 void SAVEDS setup_useragent( void )
 {
 #ifdef MBX
-	strcpy( vuseragent, "Met@box1000-Browser/" VERSIONSTRING );
+	SNPrintf( vuseragent, sizeof(vuseragent), "Mozilla/5.0 (compatible; Met@box1000-Browser/" VERSIONSTRING ") (KHTML, like Gecko)" );
 #else
 	if( !gp_spoof )
-		sprintf( vuseragent, "AmigaVoyager/" VERSIONSTRING " (%s/%s)", hostos, cpuid );
+		/* Default to a common Firefox UA so CDNs/sites that block "AmigaVoyager" (e.g. amigazen.com) work. Use Spoof menu to identify as AmigaVoyager. */
+		SNPrintf( vuseragent, sizeof(vuseragent), "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/115.0" );
 	else
-		strcpy( vuseragent, getprefsstr( DSI_NET_SPOOF_AS_1 + gp_spoof - 1, "(none)" ) );
+		SNPrintf( vuseragent, sizeof(vuseragent), "%s", getprefsstr( DSI_NET_SPOOF_AS_1 + gp_spoof - 1, "(none)" ) );
 #endif
 }
 
@@ -137,6 +138,8 @@ void un_setup_https( struct unode *un )
 
 	host = un->purl.host;
 	un->port = un->purl.port;
+	if( !host )
+		host = "undefined";
 
 	DL( DEBUG_INFO, db_http, bug( "setup_http(%s) host %s vp %ld\r\n", un->url, host, un->viaproxy ));
 
@@ -239,7 +242,10 @@ static void un_doprotocol_http_req( struct unode *un )
 			bp = strchr( bp, 0 );
 		}
 
-		sprintf( bp, "User-Agent: %s\r\nHost: %s\r\n", vuseragent, un->purl.host );
+		{
+			const char *host = un->purl.host ? un->purl.host : "localhost";
+			sprintf( bp, "User-Agent: %s\r\nHost: %s\r\n", vuseragent, host );
+		}
 		bp = strchr( bp, 0 );
 
 		if( gp_languages[ 0 ] )
@@ -338,6 +344,8 @@ static void un_doprotocol_http_req( struct unode *un )
 	len = strlen( buffer );
 	bp = buffer;
 
+	net_log_http_request( buffer, (int)len );
+
 	// set socket back to blocking mode
 	if( !un->ssl )
 		setblocking( un->sock, FALSE );
@@ -404,6 +412,7 @@ static void un_doprotocol_http_initialreply( struct unode *un )
 	if( strnicmp( un->linereadbuffer, "HTTP", 4 ) || !strchr( un->linereadbuffer, ' ' ) )
 	{
 		// We're hosed, it's a pre 1.0 server..
+		net_log_http_response_line( un->linereadbuffer );
 		un->protocolstate = HTTP_GOT_HEADER; // pretend END OF HEADER
 		un->state = UNS_CONNECTED;
 		exitlineread( un );
@@ -419,6 +428,7 @@ static void un_doprotocol_http_initialreply( struct unode *un )
 	}
 	else
 	{
+		net_log_http_response_line( un->linereadbuffer );
 		un->httpcode = atoi( strchr( un->linereadbuffer, ' ' ) + 1 );
 		if( un->httpcode >= 200 )
 			un->protocolstate = HTTP_READ_HEADER;
@@ -512,6 +522,7 @@ static void un_doprotocol_http_readheader( struct unode *un )
 
 	if( !un->linereadbuffer[ 0 ] )
 	{
+		net_log_http_response_line( "(end of headers)" );
 		// if we were establishing a SSL proxy link,
 		// let now the "real" protocol kick it
 
@@ -525,8 +536,12 @@ static void un_doprotocol_http_readheader( struct unode *un )
 			un->protocolstate = HTTP_GOT_HEADER; // end of header
 		}
 		exitlineread( un );
+		purgeline( un );
+		return;
 	}
-	else if( isspace( un->linereadbuffer[ 0 ] ) )
+
+	net_log_http_response_line( un->linereadbuffer );
+	if( isspace( un->linereadbuffer[ 0 ] ) )
 	{
 		struct header *h = LASTNODE( &un->headers );
 		char *bf = stpblk( un->linereadbuffer );
@@ -578,6 +593,10 @@ static void un_doprotocol_http_afterreadheader( struct unode *un )
 	char *range;
 	struct header *h;
 	char *date;
+	char *crhdr;
+	char *slash_at;
+	long range_total_len;
+	int doclen_is_cr_total;
 
 	/* Store the server string (ie. Apache, etc..) */
 	server = ungetheaderdata( un, "SERVER" );
@@ -628,16 +647,37 @@ static void un_doprotocol_http_afterreadheader( struct unode *un )
 	if( date )
 		un->cacheexpires = convertrfcdate( date );
 
-	if( un->range != -1 )
+	len = ungetheaderdata( un, "CONTENT-LENGTH" );
+	if( len )
+		un->doclen = atoi( len );
+	else if( un->range != -1 )
+		un->doclen = -1;
+
+	/*
+	 * Prefer the complete entity size after '/' in Content-Range when present (typical for 206).
+	 * Fragment Content-Length alone misreports totals; a missing parser branch also left stale doclen.
+	 */
+	doclen_is_cr_total = 0;
+	range_total_len = 0;
+	crhdr = ungetheaderdata( un, "CONTENT-RANGE" );
+	if( crhdr )
 	{
-	    len = ungetheaderdata( un, "CONTENT-LENGTH" );
-		if( len )
+		slash_at = strchr( crhdr, '/' );
+		if( slash_at && slash_at[ 1 ] && slash_at[ 1 ] != '*' )
 		{
-			un->doclen = atoi( len );
+			if( stcd_l( slash_at + 1, &range_total_len ) > 0 && range_total_len > 0 )
+			{
+				un->doclen = (int)range_total_len;
+				doclen_is_cr_total = 1;
+			}
 		}
-		else
-			un->doclen = -1; // unknown size (shit shit shit)
 	}
+
+	/*
+	 * Range reply path sets range==-1; clear stale doclen if this response carries no length information.
+	 */
+	if( un->range == -1 && !len && !doclen_is_cr_total )
+		un->doclen = -1;
 
 	DL( DEBUG_CHATTY, db_http, bug( "before: un->chunked == %lu\r\n", un->chunked ) );
 	coding = ungetheaderdata( un, "TRANSFER-ENCODING" );
@@ -717,8 +757,8 @@ static void un_doprotocol_http_afterreadheader( struct unode *un )
 				un->offset = 0;
 			else
 			{
-				if( un->doclen != -1 )
-					un->doclen += un->offset; // un->doclen needs to be the real file size
+				if( un->doclen != -1 && !doclen_is_cr_total )
+					un->doclen += un->offset; /* fragment Content-Length + resume offset when total absent */
 			}
 		}
 		else

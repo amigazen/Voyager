@@ -28,6 +28,7 @@
 */
 
 #include "voyager.h"
+#include "dos_func.h"
 
 /* public */
 #if defined( AMIGAOS ) || defined( __MORPHOS__ )
@@ -706,17 +707,29 @@ int layout_do(
 	char *olddata = data;
 	char urlbuffer[ MAXURLSIZE ];
 	int isformimage = FALSE; // for <input type=image> hack
+	int rc = 0;
 #ifdef VDEBUG
 	clock_t ts = 0;
 #endif
 
 	D( db_html, bug( "layout_do offset %ld, totalsize %ld, is_complete %ld\n", offset, datasize, is_complete, ts = clock() ));
 
+	Printf( "[LAYOUT] layout_do entry offset=%ld size=%ld complete=%ld\n", (long)offset, (long)datasize, (long)is_complete );
+	Flush( Output() );
+
 	if( ctx->done )
+	{
+		Printf( "[LAYOUT] layout_do early exit (ctx->done)\n" );
+		Flush( Output() );
 		return( offset );
+	}
 
 	if( layout_checkfetchnodes( ctx ) )
+	{
+		Printf( "[LAYOUT] layout_do early exit (fetchnodes)\n" );
+		Flush( Output() );
 		return( offset );
+	}
 
 	cjsol = (APTR)getv( ctx->dom_win, MA_HTMLWin_CJSOL );
 
@@ -774,7 +787,8 @@ redocharsetconverter:
 		{
 			reporterror( "can't create body object" );
 			ctx->done = TRUE;
-			return( offset );
+			rc = offset;
+			goto layout_do_done;
 		}
 
 		layout_addobj( ctx, ctx->body );
@@ -813,6 +827,26 @@ redocharsetconverter:
 		else
 		{
 			ch = gettoken( (char**)&data, &ctx->htmlsourceline );
+		}
+
+		/*
+		 * gettoken() scans for the end of a tag and will happily run past
+		 * endofdata when the chunk stops in the middle of one: the buffer is
+		 * allocated to the full document size but only filled up to the point
+		 * we have actually received, so everything beyond it is stale memory.
+		 * That is how layout_do came to report having consumed more bytes than
+		 * it was given (offset=0 size=1664 -> ret=1712) and how elements got
+		 * built out of whatever happened to be there.
+		 *
+		 * Roll the token back and wait for the rest of it to arrive. If the
+		 * document really is complete then there is no more coming and we have
+		 * to take the token as-is.
+		 */
+		if( (char*)data > (char*)endofdata && !is_complete )
+		{
+			data = olddata;
+			aborthere = TRUE;
+			break;
 		}
 
 		if( ch < 256 )
@@ -925,6 +959,9 @@ dotext:
 		}
 
 		this_name = gettokenname();
+
+		Printf( "[PARSE] tag=%ld off=%ld\n", (long)ch, (long)( (char*)data - (char*)begindata ) );
+		Flush( Output() );
 
 		switch( ch )
 		{
@@ -1694,6 +1731,12 @@ dotext:
 					char *chname = NULL;
 #endif
 
+					Printf( "[IMG] args src='%s' alt='%s' w='%s' h='%s' anchor=%lx\n",
+						src ? src : "(null)", alt ? alt : "(null)",
+						width ? width : "(null)", height ? height : "(null)",
+						(ULONG)ctx->current_anchor );
+					Flush( Output() );
+
 					if( src )
 						uri_mergeurl( ctx->baseref, src, urlbuffer );
 					else
@@ -1701,6 +1744,9 @@ dotext:
 
 					if( lowsrc )
 						uri_mergeurl( ctx->baseref, lowsrc, urlbuffer2 );
+
+					Printf( "[IMG] merged url='%s'\n", urlbuffer );
+					Flush( Output() );
 
 					if( align )
 					{
@@ -1751,7 +1797,13 @@ dotext:
 
 					isformimage = FALSE;
 
+					Printf( "[IMG] JSNewObject returned o=%lx\n", (ULONG)o );
+					Flush( Output() );
+
 					DoMethod( ctx->current_container, MM_Layout_Group_AddObject, o );
+
+					Printf( "[IMG] AddObject done\n" );
+					Flush( Output() );
 
 					ctx->lastwasblank=FALSE;
 				}
@@ -2010,7 +2062,8 @@ dotext:
 					{
 						reporterror( "can't create table cell object" );
 						ctx->done = TRUE;
-						return( offset );
+						rc = offset;
+						goto layout_do_done;
 					}
 
 					if( bgcolor )
@@ -2990,9 +3043,18 @@ dotext:
 	D( db_html, bug( "layout_do done, status=%ld, %ld ticks\n", aborthere, clock() - ts ));
 
 	if( aborthere )
-		return( olddata - begindata );
+		rc = olddata - begindata;
 	else
-		return( (char*)data - (char*)begindata );
+		rc = (char*)data - (char*)begindata;
+
+layout_do_done:
+	/* Never claim to have consumed more than we were handed */
+	if( rc > datasize )
+		rc = datasize;
+
+	Printf( "[LAYOUT] layout_do exit ret=%ld\n", (long)rc );
+	Flush( Output() );
+	return( rc );
 }
 
 int layout_do_text(
@@ -3009,8 +3071,10 @@ int layout_do_text(
 	char *begindata = data;
 	char *olddata = data;
 	APTR o;
+	int rc;
 
-//kprintf( "*** in layout_do_text\r\n" );
+	Printf( "[LAYOUT] layout_do_text entry offset=%ld size=%ld complete=%ld\n", (long)offset, (long)datasize, (long)is_complete );
+	Flush( Output() );
 
 	data += offset;
 
@@ -3220,7 +3284,16 @@ dotext:
 	}
 
 	if( aborthere )
-		return( olddata - begindata );
+		rc = olddata - begindata;
 	else
-		return( (char*)data - (char*)begindata );
+		rc = (char*)data - (char*)begindata;
+
+	/* Never claim to have consumed more than we were handed */
+	if( rc > datasize )
+		rc = datasize;
+
+	Printf( "[LAYOUT] layout_do_text exit ret=%ld\n", (long)rc );
+	Flush( Output() );
+
+	return( rc );
 }

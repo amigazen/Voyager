@@ -22,7 +22,15 @@
  * $Id: v_locale.h,v 1.1 2001/07/04 16:59:40 zapek Exp $
  */
 
+#ifndef EXEC_TYPES_H
+#include <exec/types.h>
+#endif
+
 extern struct Locale *locale;
 extern struct Catalog *catalog;
+
+#ifndef MBX
+STRPTR voyager_catalog_str( ULONG msgid, STRPTR builtin );
+#endif /* !MBX */
 
 #endif /* VOYAGER_LOCALE_H */

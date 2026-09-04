@@ -297,6 +297,7 @@ extern int gp_singlewindow;
 extern char startup_cfgfile[ 256 ];
 
 void set_prefs_globals( void );
+void ensure_default_toolbar_prefs( void );
 int loadprefsfrom( char *filename );
 int saveprefsas( char *filename );
 int prefsfreq( char *title, int save, char *to, char *pattern );

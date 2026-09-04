@@ -23,13 +23,12 @@
  */
 
 #if USE_SPEEDBAR
-#ifdef __MORPHOS__
+/*
+ * The SpeedBar/SpeedButton headers ship in includestuff/mui, which is on the
+ * include path. The old <speedbar/...> layout is not present in this tree.
+ */
 #include <mui/SpeedBar_mcc.h>
 #include <mui/SpeedButton_mcc.h>
-#else
-#include <speedbar/SpeedBar_mcc.h>
-#include <speedbar/SpeedButton/SpeedButton_mcc.h>
-#endif /* !__MORPHOS__ */
 #endif /* USE_SPEEDBAR */
 
 #endif /* VOYAGER_SPEEDBAR_H */

@@ -20,7 +20,7 @@
  * Date & time functions
  * ---------------------
  *
- * © 2000 by Vapor CVS team <ibcvs@vapor.com>
+ * ? 2000 by Vapor CVS team <ibcvs@vapor.com>
  * All rights reserved
  *
  * $Id: time_func.c,v 1.22 2004/01/06 20:23:08 zapek Exp $
@@ -44,7 +44,8 @@
 #define UnixTimeOffset (252482400-(6*3600))
 
 struct Library *TimerBase; /* CBM sucked */
-static struct timerequest treq;
+static struct MsgPort *timerport;
+static struct timerequest *treq;
 
 static struct tzone {
 	char *name;
@@ -69,24 +70,49 @@ static struct tzone {
  * Timer initialization
  */
 static struct EClockVal start_timed;
+static int timed_initialized = 0;
+/* Only the task that called init_timer() may use timed(); others get 0 */
+static struct Task *timed_owner_task = NULL;
 
 int init_timer( void )
 {
 	D( db_init, bug( "initializing..\n" ) );
-	
-	treq.tr_node.io_Message.mn_ReplyPort = CreateMsgPort();
-	if( OpenDevice( "timer.device", UNIT_VBLANK, ( struct IORequest * )&treq, 0 ) )
+
+	timed_owner_task = FindTask( NULL );
+
+	timerport = CreateMsgPort();
+	if( !timerport )
+	{
+		D( db_init, bug( "CreateMsgPort() failed for timer\n" ) );
+		return( FALSE );
+	}
+
+	treq = ( struct timerequest * )CreateIORequest( timerport, sizeof( struct timerequest ) );
+	if( !treq )
+	{
+		D( db_init, bug( "CreateIORequest() failed for timer\n" ) );
+		DeleteMsgPort( timerport );
+		timerport = NULL;
+		return( FALSE );
+	}
+
+	if( OpenDevice( "timer.device", UNIT_VBLANK, ( struct IORequest * )treq, 0 ) )
 	{
 		D( db_init, bug( "timer.device failed to open\n" ) );
+		DeleteIORequest( ( struct IORequest * )treq );
+		DeleteMsgPort( timerport );
+		treq = NULL;
+		timerport = NULL;
 		return( FALSE );
 	}
 	D( db_init, bug( "timer.device opened\n" ) );
-	TimerBase = ( struct Library * )treq.tr_node.io_Device;
+	TimerBase = ( struct Library * )treq->tr_node.io_Device;
 
 	/*
 	 * Set the start time for timed()
 	 */
 	ReadEClock( &start_timed );
+	timed_initialized = 1;
 
 	return( TRUE );
 }
@@ -97,13 +123,22 @@ int init_timer( void )
  */
 void cleanup_timer( void )
 {
-	if( TimerBase )
+	if( TimerBase && treq )
 	{
 		D( db_init, bug( "cleaning up..\n" ) );
 
-		CloseDevice( ( struct IORequest * )&treq );
-		DeleteMsgPort( treq.tr_node.io_Message.mn_ReplyPort );
+		CloseDevice( ( struct IORequest * )treq );
+		DeleteIORequest( ( struct IORequest * )treq );
+		treq = NULL;
+		TimerBase = NULL;
 	}
+	if( timerport )
+	{
+		DeleteMsgPort( timerport );
+		timerport = NULL;
+	}
+	timed_owner_task = NULL;
+	timed_initialized = 0;
 }
 
 
@@ -162,7 +197,15 @@ time_t timed( void )
 	QWORD b, e;
 #endif /* __GNUC__ */
 
+	/* Only use timer in the task that called init_timer() (main process) */
+	if( FindTask( NULL ) != timed_owner_task )
+		return( (time_t)0 );
+	if( !timed_initialized )
+		return( (time_t)0 );
+
 	r = ReadEClock( &ev );
+	if( !r )
+		return( (time_t)0 );
 
 #ifdef __SASC
 	q_sub( ( QWORD * )&ev, ( QWORD * )&start_timed, &ret );
@@ -194,7 +237,14 @@ ULONG timedm( void )
 	QWORD b, e;
 #endif /* __GNUC__ */
 
+	if( FindTask( NULL ) != timed_owner_task )
+		return( 0UL );
+	if( !timed_initialized )
+		return( 0UL );
+
 	r = ReadEClock( &ev );
+	if( !r )
+		return( 0UL );
 
 #ifdef __SASC
 	q_sub( ( QWORD * )&ev, ( QWORD * )&start_timed, &ret );

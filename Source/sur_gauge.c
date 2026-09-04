@@ -38,6 +38,11 @@ extern time_t now; /* TOFIX: sucks.. */
 void sur_gauge_report( struct unode *un )
 {
 	struct nstream *ns;
+	ULONG pct;
+	ULONG kb;
+	ULONG bps;
+	ULONG dp;
+	ULONG dl;
 
 	for( ns = FIRSTNODE( &un->clients ); NEXTNODE( ns ); ns = NEXTNODE( ns ) )
 	{
@@ -57,12 +62,24 @@ void sur_gauge_report( struct unode *un )
 
 				if( un->doclen > 0 )
 				{
-					sprintf( bf, GS( NETST_TRANSFER_GAUGE ), ( un->docptr * 100 ) / un->doclen, ( un->doclen + 1023 ) / 1024, un->docptr / elapsed );
+					/*
+					 * NETST_TRANSFER_GAUGE uses %lu for the kilobyte column so every vararg slot
+					 * matches sizeof(long): SAS/C sprintf + %ld with plain int operands has been seen
+					 * to pull garbage from the stack (bogus multi-megabyte totals and traps).
+					 */
+					dp = (ULONG)un->docptr;
+					dl = (ULONG)un->doclen;
+					pct = dp * 100ul / dl;
+					kb = ( dl + 1023ul ) / 1024ul;
+					bps = (ULONG)( un->docptr / (int)elapsed );
+					sprintf( bf, GS( NETST_TRANSFER_GAUGE ), pct, kb, bps );
 					pushmethod( ns->gaugeobj, 4, MM_Gauge_Set, un->doclen, un->docptr, bf );
 				}
 				else
 				{
-					sprintf( bf, GS( NETST_TRANSFER_GAUGE_SIZE ), ( un->docptr + 1023 ) / 1024, un->docptr / elapsed );
+					kb = ( (ULONG)un->docptr + 1023ul ) / 1024ul;
+					bps = (ULONG)( un->docptr / (int)elapsed );
+					sprintf( bf, GS( NETST_TRANSFER_GAUGE_SIZE ), kb, bps );
 					pushmethod( ns->gaugeobj, 4, MM_Gauge_Set, 0, 0, bf );
 				}
 			}
@@ -118,6 +135,9 @@ void STDARGS sur_text( struct unode *un, char *fmt, ... )
 {
 	char *to = 0;
 	struct nstream *ns;
+
+	if( !fmt )
+		fmt = "";
 
 	for( ns = FIRSTNODE( &un->clients ); NEXTNODE( ns ); ns = NEXTNODE( ns ) )
 	{

@@ -56,6 +56,7 @@ DECNEW
 		return( 0 );
 
 	data = INST_DATA( cl, obj );
+	data->contents = "";
 
 	tagp = msg->ops_AttrList;
 
@@ -63,7 +64,7 @@ DECNEW
 	{
 		if( tag->ti_Tag == MA_Smartlabel_Text )
 		{
-			data->contents = (STRPTR)tag->ti_Data;
+			data->contents = tag->ti_Data ? (STRPTR)tag->ti_Data : "";
 		}
 		else if( tag->ti_Tag == MA_Smartlabel_MoreText )
 		{
@@ -84,16 +85,22 @@ DECSET
 	{
 		GETDATA;
 
-		data->contents = (STRPTR)tag->ti_Data;
+		data->contents = tag->ti_Data ? (STRPTR)tag->ti_Data : "";
 
 #ifdef MBX
-		data->maintextlength = mbxtextlen(data->contents,strlen(data->contents),_font(obj));
+		if( data->contents[ 0 ] )
+			data->maintextlength = mbxtextlen(data->contents,strlen(data->contents),_font(obj));
+		else
+			data->maintextlength = 0;
 #else
 		{
 			struct RastPort rp;
 			InitRastPort( &rp );
 			SetFont( &rp, _font( obj ) );
-			data->maintextlength = TextLength( &rp, data->contents, strlen( data->contents ) );
+			if( data->contents[ 0 ] )
+				data->maintextlength = TextLength( &rp, data->contents, strlen( data->contents ) );
+			else
+				data->maintextlength = 0;
 		}
 #endif /* !MBX */
 
@@ -115,11 +122,17 @@ DECMMETHOD( AskMinMax )
 	mix = msg->MinMaxInfo;
 
 	#ifdef MBX
-	data->maintextlength = mbxtextlen(data->contents,strlen(data->contents),_font(obj));
+	if( data->contents && data->contents[ 0 ] )
+		data->maintextlength = mbxtextlen(data->contents,strlen(data->contents),_font(obj));
+	else
+		data->maintextlength = 0;
 	#else
 	InitRastPort( &rp );
 	SetFont( &rp, _font( obj ) );
-	data->maintextlength = TextLength( &rp, data->contents, strlen( data->contents ) );
+	if( data->contents && data->contents[ 0 ] )
+		data->maintextlength = TextLength( &rp, data->contents, strlen( data->contents ) );
+	else
+		data->maintextlength = 0;
 	#endif
 
 	ml = data->maintextlength;
@@ -162,7 +175,8 @@ DECMMETHOD( Draw )
 	SetFont( _rp( obj ), _font( obj ) );
 	SetAPen( _rp( obj ), _pens( obj )[ MPEN_TEXT ] );
 	Move( _rp( obj ), _mright( obj ) - data->maintextlength + 1, _mtop( obj ) + _font( obj )->tf_Baseline + ( _mheight( obj ) - _font( obj )->tf_YSize ) / 2 );
-	Text( _rp( obj ), data->contents, strlen( data->contents ) );
+	if( data->contents && data->contents[ 0 ] )
+		Text( _rp( obj ), data->contents, strlen( data->contents ) );
 
 	return( 0 );
 }

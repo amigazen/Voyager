@@ -28,6 +28,9 @@
 #if defined( AMIGAOS ) || defined( __MORPHOS__ )
 #include <proto/exec.h>
 #include <proto/dos.h>
+#ifdef __SASC
+#include <proto/utility.h>
+#endif
 #include <libraries/gadtools.h>
 #include <libraries/asl.h>
 #include <proto/icon.h>
@@ -192,15 +195,26 @@ int initstuff( void )
 #endif
 
 #ifndef MBX
+	if( !open_mathlibs() ) return( FALSE );
 	if( !open_muimaster() ) return( FALSE );
+	if( !open_vaportoolkit() ) return( FALSE );
+	Printf( "[INIT] After open_vaportoolkit, about to check USE_KEYFILES\n" );
+	Flush( Output() );
 #endif /* !MBX */
 
 #if USE_KEYFILES
+	Printf( "[INIT] Calling old_loadkey()...\n" );
+	Flush( Output() );
 	old_loadkey();
+	Printf( "[INIT] old_loadkey() complete\n" );
+	Flush( Output() );
 #endif /* USE_KEYFILES */
 #ifndef MBX
+	Printf( "[INIT] About to call init_fakebitmap()...\n" );
+	Flush( Output() );
 	init_fakebitmap();
 	Printf( "[INIT] After init_fakebitmap()\n" );
+	Flush( Output() );
 #endif /* !MBX */
 
 #if USE_NET
@@ -351,16 +365,27 @@ int initstuff( void )
 	Printf( "[INIT] Calling create_authbrowserwinclass()...\n" );
 	if( !create_authbrowserwinclass() ) { Printf( "[INIT] create_authbrowserwinclass() failed!\n" ); return( FALSE ); }
 	Printf( "[INIT] create_authbrowserwinclass() succeeded\n" );
-	if( !create_cookiebrowserwinclass() ) return( FALSE );
+#if USE_NET
+	Printf( "[INIT] Calling create_cookiebrowserwinclass()...\n" );
+	if( !create_cookiebrowserwinclass() ) { Printf( "[INIT] create_cookiebrowserwinclass() failed!\n" ); return( FALSE ); }
+	Printf( "[INIT] create_cookiebrowserwinclass() succeeded\n" );
 #endif /* USE_NET */
-	if( !create_docinfowinclass() ) return( FALSE );
+	Printf( "[INIT] Calling create_docinfowinclass()...\n" );
+	if( !create_docinfowinclass() ) { Printf( "[INIT] create_docinfowinclass() failed!\n" ); return( FALSE ); }
+	Printf( "[INIT] create_docinfowinclass() succeeded\n" );
 #ifndef MBX
 #if USE_NET
-	if( !create_downloadwinclass() ) return( FALSE );
+	Printf( "[INIT] Calling create_downloadwinclass()...\n" );
+	if( !create_downloadwinclass() ) { Printf( "[INIT] create_downloadwinclass() failed!\n" ); return( FALSE ); }
+	Printf( "[INIT] create_downloadwinclass() succeeded\n" );
 #endif /* USE_NET */
 #endif
-	if( !create_errorwinclass() ) return( FALSE );
-	if( !create_historylistclass() ) return( FALSE );
+	Printf( "[INIT] Calling create_errorwinclass()...\n" );
+	if( !create_errorwinclass() ) { Printf( "[INIT] create_errorwinclass() failed!\n" ); return( FALSE ); }
+	Printf( "[INIT] create_errorwinclass() succeeded\n" );
+	Printf( "[INIT] Calling create_historylistclass()...\n" );
+	if( !create_historylistclass() ) { Printf( "[INIT] create_historylistclass() failed!\n" ); return( FALSE ); }
+	Printf( "[INIT] create_historylistclass() succeeded\n" );
 #if USE_PLUGINS
 	if( !create_pluginwinclass() ) return( FALSE );
 #endif /* USE_PLUGINS */
@@ -399,65 +424,143 @@ int initstuff( void )
 
 //	  if( !create_scrollgroupclass(  ) ) return( FALSE );
 
-	if( !create_logroupclass() ) return( FALSE ); // NOTE: This must be created before lobuttonclass.
-	if( !create_lobuttonclass() ) return( FALSE );
-	if( !create_loradioclass() ) return( FALSE );
-	if( !create_locheckboxclass() ) return( FALSE );
-	if( !create_loformbuttonclass() ) return( FALSE ); // NOTE: This must be created after logroupclass.
-	if( !create_loformtextclass() ) return( FALSE );
-	if( !create_loformfileclass() ) return( FALSE );
-	if( !create_loformtextfieldclass() ) return( FALSE );
-	if( !create_loformcycleclass() ) return( FALSE );
-	if( !create_loformhiddenclass() ) return( FALSE );
-	if( !create_loform_optionclass() ) return( FALSE );
-	if( !create_lodummyclass() ) return( FALSE );
-	if( !create_lotableclass() ) return( FALSE );
-	if( !create_loframesetclass() ) return( FALSE );
+	Printf( "[INIT] Calling create_logroupclass()...\n" );
+	if( !create_logroupclass() ) { Printf( "[INIT] create_logroupclass() failed!\n" ); return( FALSE ); }
+	Printf( "[INIT] create_logroupclass() succeeded\n" );
+	Printf( "[INIT] Calling create_lobuttonclass()...\n" );
+	if( !create_lobuttonclass() ) { Printf( "[INIT] create_lobuttonclass() failed!\n" ); return( FALSE ); }
+	Printf( "[INIT] create_lobuttonclass() succeeded\n" );
+	Printf( "[INIT] Calling create_loradioclass()...\n" );
+	if( !create_loradioclass() ) { Printf( "[INIT] create_loradioclass() failed!\n" ); return( FALSE ); }
+	Printf( "[INIT] create_loradioclass() succeeded\n" );
+	Printf( "[INIT] Calling create_locheckboxclass()...\n" );
+	if( !create_locheckboxclass() ) { Printf( "[INIT] create_locheckboxclass() failed!\n" ); return( FALSE ); }
+	Printf( "[INIT] create_locheckboxclass() succeeded\n" );
+	Printf( "[INIT] Calling create_loformbuttonclass()...\n" );
+	if( !create_loformbuttonclass() ) { Printf( "[INIT] create_loformbuttonclass() failed!\n" ); return( FALSE ); }
+	Printf( "[INIT] create_loformbuttonclass() succeeded\n" );
+	Printf( "[INIT] Calling create_loformtextclass()...\n" );
+	if( !create_loformtextclass() ) { Printf( "[INIT] create_loformtextclass() failed!\n" ); return( FALSE ); }
+	Printf( "[INIT] create_loformtextclass() succeeded\n" );
+	Printf( "[INIT] Calling create_loformfileclass()...\n" );
+	if( !create_loformfileclass() ) { Printf( "[INIT] create_loformfileclass() failed!\n" ); return( FALSE ); }
+	Printf( "[INIT] create_loformfileclass() succeeded\n" );
+	Printf( "[INIT] Calling create_loformtextfieldclass()...\n" );
+	if( !create_loformtextfieldclass() ) { Printf( "[INIT] create_loformtextfieldclass() failed!\n" ); return( FALSE ); }
+	Printf( "[INIT] create_loformtextfieldclass() succeeded\n" );
+	Printf( "[INIT] Calling create_loformcycleclass()...\n" );
+	if( !create_loformcycleclass() ) { Printf( "[INIT] create_loformcycleclass() failed!\n" ); return( FALSE ); }
+	Printf( "[INIT] create_loformcycleclass() succeeded\n" );
+	Printf( "[INIT] Calling create_loformhiddenclass()...\n" );
+	if( !create_loformhiddenclass() ) { Printf( "[INIT] create_loformhiddenclass() failed!\n" ); return( FALSE ); }
+	Printf( "[INIT] create_loformhiddenclass() succeeded\n" );
+	Printf( "[INIT] Calling create_loform_optionclass()...\n" );
+	if( !create_loform_optionclass() ) { Printf( "[INIT] create_loform_optionclass() failed!\n" ); return( FALSE ); }
+	Printf( "[INIT] create_loform_optionclass() succeeded\n" );
+	Printf( "[INIT] Calling create_lodummyclass()...\n" );
+	if( !create_lodummyclass() ) { Printf( "[INIT] create_lodummyclass() failed!\n" ); return( FALSE ); }
+	Printf( "[INIT] create_lodummyclass() succeeded\n" );
+	Printf( "[INIT] Calling create_lotableclass()...\n" );
+	if( !create_lotableclass() ) { Printf( "[INIT] create_lotableclass() failed!\n" ); return( FALSE ); }
+	Printf( "[INIT] create_lotableclass() succeeded\n" );
+	Printf( "[INIT] Calling create_loframesetclass()...\n" );
+	if( !create_loframesetclass() ) { Printf( "[INIT] create_loframesetclass() failed!\n" ); return( FALSE ); }
+	Printf( "[INIT] create_loframesetclass() succeeded\n" );
 #ifdef MBX
-	if (!create_pipwindowclass()) return ( FALSE );
+	Printf( "[INIT] Calling create_pipwindowclass()...\n" );
+	if (!create_pipwindowclass()) { Printf( "[INIT] create_pipwindowclass() failed!\n" ); return ( FALSE ); }
+	Printf( "[INIT] create_pipwindowclass() succeeded\n" );
 #endif	
-	if( !make_app() ) return( FALSE );
+	Printf( "[INIT] Calling make_app()...\n" );
+	if( !make_app() ) { Printf( "[INIT] make_app() failed!\n" ); return( FALSE ); }
+	Printf( "[INIT] make_app() succeeded\n" );
 
 /* check_md5() removed - copy protection no longer used */
 
 #if USE_NET
+	Printf( "[INIT] Calling load_cookies()...\n" );
 	load_cookies();
+	Printf( "[INIT] load_cookies() complete\n" );
 #endif /* USE_NET */
 #if USE_NET
+	Printf( "[INIT] Calling load_auths()...\n" );
 	load_auths();
+	Printf( "[INIT] load_auths() complete\n" );
 #endif /* USE_NET */
+	Printf( "[INIT] Calling init_tokenbuff()...\n" );
 	init_tokenbuff();
+	Printf( "[INIT] init_tokenbuff() complete\n" );
 
+	Printf( "[INIT] Calling find_host_os()...\n" );
 	find_host_os();
+	Printf( "[INIT] find_host_os() complete\n" );
 
-	if( !init_imgdec() ) return( FALSE );
+	Printf( "[INIT] Calling init_imgdec()...\n" );
+	if( !init_imgdec() ) { Printf( "[INIT] init_imgdec() failed!\n" ); return( FALSE ); }
+	Printf( "[INIT] init_imgdec() succeeded\n" );
 
-	if( !create_frameborderclass() ) return( FALSE );
+	Printf( "[INIT] Calling create_frameborderclass()...\n" );
+	if( !create_frameborderclass() ) { Printf( "[INIT] create_frameborderclass() failed!\n" ); return( FALSE ); }
+	Printf( "[INIT] create_frameborderclass() succeeded\n" );
 	
-	if( init_keyname2() ) return( FALSE ); /* !0 */
+	Printf( "[INIT] Calling init_keyname2()...\n" );
+	if( init_keyname2() ) { Printf( "[INIT] init_keyname2() failed!\n" ); return( FALSE ); }
+	Printf( "[INIT] init_keyname2() succeeded\n" );
 	
-	if( !create_fonttestclass() ) return( FALSE );
-	if( !create_frameclass() ) return( FALSE );
+	Printf( "[INIT] Calling create_fonttestclass()...\n" );
+	if( !create_fonttestclass() ) { Printf( "[INIT] create_fonttestclass() failed!\n" ); return( FALSE ); }
+	Printf( "[INIT] create_fonttestclass() succeeded\n" );
+	Printf( "[INIT] Calling create_frameclass()...\n" );
+	if( !create_frameclass() ) { Printf( "[INIT] create_frameclass() failed!\n" ); return( FALSE ); }
+	Printf( "[INIT] create_frameclass() succeeded\n" );
 
+	Printf( "[INIT] Calling probe_mimeprefs()...\n" );
 	probe_mimeprefs();
-	if( !create_lohrclass() ) return( FALSE );
-	if( !create_loliclass() ) return( FALSE );
-	if( !create_loanchorclass() ) return( FALSE );
-	if( !create_lomarginclass() ) return( FALSE );
-	if( !create_lomapclass() ) return( FALSE );
-	if( !create_loareaclass() ) return( FALSE );
-	if( !create_loimageclass() ) return( FALSE );
+	Printf( "[INIT] probe_mimeprefs() complete\n" );
+	Printf( "[INIT] Calling create_lohrclass()...\n" );
+	if( !create_lohrclass() ) { Printf( "[INIT] create_lohrclass() failed!\n" ); return( FALSE ); }
+	Printf( "[INIT] create_lohrclass() succeeded\n" );
+	Printf( "[INIT] Calling create_loliclass()...\n" );
+	if( !create_loliclass() ) { Printf( "[INIT] create_loliclass() failed!\n" ); return( FALSE ); }
+	Printf( "[INIT] create_loliclass() succeeded\n" );
+	Printf( "[INIT] Calling create_loanchorclass()...\n" );
+	if( !create_loanchorclass() ) { Printf( "[INIT] create_loanchorclass() failed!\n" ); return( FALSE ); }
+	Printf( "[INIT] create_loanchorclass() succeeded\n" );
+	Printf( "[INIT] Calling create_lomarginclass()...\n" );
+	if( !create_lomarginclass() ) { Printf( "[INIT] create_lomarginclass() failed!\n" ); return( FALSE ); }
+	Printf( "[INIT] create_lomarginclass() succeeded\n" );
+	Printf( "[INIT] Calling create_lomapclass()...\n" );
+	if( !create_lomapclass() ) { Printf( "[INIT] create_lomapclass() failed!\n" ); return( FALSE ); }
+	Printf( "[INIT] create_lomapclass() succeeded\n" );
+	Printf( "[INIT] Calling create_loareaclass()...\n" );
+	if( !create_loareaclass() ) { Printf( "[INIT] create_loareaclass() failed!\n" ); return( FALSE ); }
+	Printf( "[INIT] create_loareaclass() succeeded\n" );
+	Printf( "[INIT] Calling create_loimageclass()...\n" );
+	if( !create_loimageclass() ) { Printf( "[INIT] create_loimageclass() failed!\n" ); return( FALSE ); }
+	Printf( "[INIT] create_loimageclass() succeeded\n" );
 #if USE_LO_PIP
-	if( !create_lopipclass() ) return( FALSE );
+	Printf( "[INIT] Calling create_lopipclass()...\n" );
+	if( !create_lopipclass() ) { Printf( "[INIT] create_lopipclass() failed!\n" ); return( FALSE ); }
+	Printf( "[INIT] create_lopipclass() succeeded\n" );
 #endif
-	if( !create_lodivclass() ) return( FALSE );
-	if( !create_lobrclass() ) return( FALSE );
+	Printf( "[INIT] Calling create_lodivclass()...\n" );
+	if( !create_lodivclass() ) { Printf( "[INIT] create_lodivclass() failed!\n" ); return( FALSE ); }
+	Printf( "[INIT] create_lodivclass() succeeded\n" );
+	Printf( "[INIT] Calling create_lobrclass()...\n" );
+	if( !create_lobrclass() ) { Printf( "[INIT] create_lobrclass() failed!\n" ); return( FALSE ); }
+	Printf( "[INIT] create_lobrclass() succeeded\n" );
 
+	Printf( "[INIT] Calling init_history()...\n" );
 	init_history();
+	Printf( "[INIT] init_history() complete\n" );
 
-	if( !start_image_decoders() ) return( FALSE );
+	Printf( "[INIT] Calling start_image_decoders()...\n" );
+	if( !start_image_decoders() ) { Printf( "[INIT] start_image_decoders() failed!\n" ); return( FALSE ); }
+	Printf( "[INIT] start_image_decoders() succeeded\n" );
 
+	Printf( "[INIT] Calling init_memhandler()...\n" );
 	init_memhandler();
+	Printf( "[INIT] init_memhandler() complete\n" );
 #if USE_KEYFILES
 	start_demotimeout();
 #endif /* USE_KEYFILES */
@@ -753,7 +856,9 @@ void closestuff( void )
 	close_cybergfx();
 #endif /* USE_CGX */
 #ifndef MBX
+	close_vaportoolkit();
 	close_muimaster();
+	close_mathlibs();
 #endif /* !MBX */
 
 #if USE_NET
@@ -787,6 +892,68 @@ void closestuff( void )
 #ifndef MBX
 struct Library *MUIMasterBase;
 struct Library *MUIGfxBase;
+struct Library *VaporToolkitBase;
+
+/*
+ * The image decoder used to be a shared library and still defines the SAS/C
+ * math library bases itself. Because those globals now live in this
+ * executable, SAS/C's own auto-open module is not linked in, and the decoder's
+ * __UserLibInit (which used to open them) is a no-op under static linking.
+ * Nothing opened them, so the first IEEE double operation - the table column
+ * width maths in lo_table.c - jumped through a NULL base and took the machine
+ * down. Open them here, before any layout can run.
+ */
+#ifdef _FFP
+extern struct Library *MathBase;
+#endif
+#if defined( _IEEE ) && !defined( __MORPHOS__ )
+extern struct Library *MathIeeeDoubBasBase;
+#endif
+
+int open_mathlibs( void )
+{
+#ifdef _FFP
+	if( !MathBase )
+		MathBase = OpenLibrary( "mathffp.library", 0 );
+	if( !MathBase )
+	{
+		Printf( "[INIT] ERROR: cannot open mathffp.library\n" );
+		Flush( Output() );
+		return( FALSE );
+	}
+#endif
+
+#if defined( _IEEE ) && !defined( __MORPHOS__ )
+	if( !MathIeeeDoubBasBase )
+		MathIeeeDoubBasBase = OpenLibrary( "mathieeedoubbas.library", 0 );
+	if( !MathIeeeDoubBasBase )
+	{
+		Printf( "[INIT] ERROR: cannot open mathieeedoubbas.library\n" );
+		Flush( Output() );
+		return( FALSE );
+	}
+#endif
+
+	return( TRUE );
+}
+
+void close_mathlibs( void )
+{
+#if defined( _IEEE ) && !defined( __MORPHOS__ )
+	if( MathIeeeDoubBasBase )
+	{
+		CloseLibrary( MathIeeeDoubBasBase );
+		MathIeeeDoubBasBase = NULL;
+	}
+#endif
+#ifdef _FFP
+	if( MathBase )
+	{
+		CloseLibrary( MathBase );
+		MathBase = NULL;
+	}
+#endif
+}
 
 int open_muimaster( void )
 {
@@ -832,14 +999,49 @@ void close_muimaster( void )
 		CloseLibrary( MUIMasterBase );
 	}
 }
+
+int open_vaportoolkit( void )
+{
+	char libpath[ 256 ];
+	
+	D( db_init, bug( "opening vapor_toolkit.library..\n" ) );
+	
+	/* Construct path: PROGDIR:libs/vapor_toolkit.library */
+	strncpy( libpath, "PROGDIR:Libs/vapor_toolkit.library", sizeof(libpath) - 1 );
+	libpath[ sizeof(libpath) - 1 ] = '\0';
+	
+	VaporToolkitBase = OpenLibrary( libpath, 0 );
+	if( !VaporToolkitBase )
+	{
+		D( db_init, bug( "failed to open vapor_toolkit.library\n" ) );
+		Printf( "[INIT] WARNING: Could not open %s\n", libpath );
+		Flush( Output() );
+		return( FALSE );
+	}
+	
+	D( db_init, bug( "vapor_toolkit.library opened successfully\n" ) );
+	Printf( "[INIT] vapor_toolkit.library opened successfully\n" );
+	Flush( Output() );
+	return( TRUE );
+}
+
+close_vaportoolkit( )
+{
+	if( VaporToolkitBase )
+	{
+		D( db_init, bug( "closing vapor_toolkit.library..\n" ) );
+		CloseLibrary( VaporToolkitBase );
+		VaporToolkitBase = NULL;
+	}
+}
 #endif
 
 static __far struct mccchk {
 	STRPTR name;
 	int minver, minrev;
 } mccs[] = {
-	{ MUIC_Textinput      , 28, 0 },
-	{ MUIC_Textinputscroll, 28, 0 },
+	{ MUIC_Textinput      , 29, 0 },
+	{ MUIC_Textinputscroll, 29, 0 },
 	{ "Listtree.mcc"      , 15, 0 }, /* XXX: not sure about the version.. check */
 	{ "Busy.mcc"          , 16, 0 }, /* XXX: not sure about the version.. check */
 #if USE_SPEEDBAR
@@ -870,30 +1072,70 @@ int mcccheck( void )
 	char message[ 1024 ];
 	int error = 0;
 	int status = 0;
+	char verinfo[ 64 ];
+	APTR o;
+	int ver;
+	int rev;
+	char *msgend;
+	STRPTR classname;
+	STRPTR altname;
+	char altnamebuf[ 128 ];
+	ULONG len;
 	
 	D( db_init, bug( "initializing..\n" ) );
+	Printf( "[MCC] mcccheck() starting...\n" );
+	Flush( Output() );
 
-	strcpy( message, GS( MCCCHECK_TITLE ) );
+	strcpy( message, voyager_catalog_str( MSG_MCCCHECK_TITLE, MSG_MCCCHECK_TITLE_STR ) );
 
 	for( c = 0; mccs[ c ].name; c++ )
 	{
-		char verinfo[ 64 ];
-		APTR o = MUI_NewObject( mccs[ c ].name, TAG_DONE );
+		Printf( "[MCC] Checking class: %s (required: v%ld.%ld)\n", mccs[ c ].name, (long)mccs[ c ].minver, (long)mccs[ c ].minrev );
+		Flush( Output() );
+		
+		classname = mccs[ c ].name;
+		o = MUI_NewObject( classname, TAG_DONE );
+		
+		/* If failed and name ends with .mcc, try without extension */
+		if( !o && classname != NULL )
+		{
+			len = strlen( classname );
+			if( len > 4 && !strcmp( classname + len - 4, ".mcc" ) )
+			{
+				strncpy( altnamebuf, classname, len - 4 );
+				altnamebuf[ len - 4 ] = '\0';
+				altname = altnamebuf;
+				Printf( "[MCC] Trying alternative name: %s\n", altname );
+				Flush( Output() );
+				o = MUI_NewObject( altname, TAG_DONE );
+			}
+		}
+		
 		if( o )
 		{
-			int ver = getv( o, MUIA_Version );
-			int rev = getv( o, MUIA_Revision );
+			ver = getv( o, MUIA_Version );
+			rev = getv( o, MUIA_Revision );
+#ifdef __SASC
+			SNPrintf( verinfo, sizeof(verinfo), "%d.%d", ver, rev );
+#else
 			sprintf( verinfo, "%d.%d", ver, rev );
+#endif
 
+			Printf( "[MCC] Class %s found: v%s\n", mccs[ c ].name, verinfo );
+			Flush( Output() );
 			D( db_init, bug( "creation of of %s (%s) successfull\n", mccs[ c ].name, verinfo ) );
 
 			if( ver < mccs[ c ].minver || ( ver == mccs[ c ].minver && rev < mccs[ c ].minrev ) )
 			{
+				Printf( "[MCC] ERROR: Class %s version %s is too old (required: v%ld.%ld)\n", mccs[ c ].name, verinfo, (long)mccs[ c ].minver, (long)mccs[ c ].minrev );
+				Flush( Output() );
 				error++;
 				status = MCCCHK_FAILED;
 			}
 			else
 			{
+				Printf( "[MCC] Class %s version OK\n", mccs[ c ].name );
+				Flush( Output() );
 				status = MCCCHK_OK;
 			}
 			
@@ -901,39 +1143,72 @@ int mcccheck( void )
 		}
 		else
 		{
+			Printf( "[MCC] ERROR: Class %s not found!\n", mccs[ c ].name );
+			Flush( Output() );
 			D( db_init, bug( "creation of %s failed\n", mccs[ c ].name ) );
 			strcpy( verinfo, "-" );
 			error++;
 			status = MCCCHK_MISSING;
 		}
 
-		sprintf( strchr( message, 0 ), GS( MCCCHECK_LINE ),
+		msgend = strchr( message, 0 );
+#ifdef __SASC
+		SNPrintf( msgend, sizeof(message) - (msgend - message), GS( MCCCHECK_LINE ),
 			mccs[ c ].name, mccs[ c ].minver, mccs[ c ].minrev,
 			verinfo
 		);
+#else
+		sprintf( msgend, GS( MCCCHECK_LINE ),
+			mccs[ c ].name, mccs[ c ].minver, mccs[ c ].minrev,
+			verinfo
+		);
+#endif
 		
 		switch ( status )
 		{
 			case MCCCHK_OK:
-				sprintf( strchr( message, 0), ": %s", GS( MCCCHECK_GOOD ) );
+				msgend = strchr( message, 0 );
+#ifdef __SASC
+				SNPrintf( msgend, sizeof(message) - (msgend - message), ": %s", GS( MCCCHECK_GOOD ) );
+#else
+				sprintf( msgend, ": %s", GS( MCCCHECK_GOOD ) );
+#endif
 				break;
 
 			case MCCCHK_FAILED:
-				sprintf( strchr( message, 0), ": %s", GS( MCCCHECK_BAD ) );
+				msgend = strchr( message, 0 );
+#ifdef __SASC
+				SNPrintf( msgend, sizeof(message) - (msgend - message), ": %s", GS( MCCCHECK_BAD ) );
+#else
+				sprintf( msgend, ": %s", GS( MCCCHECK_BAD ) );
+#endif
 				break;
 
 			case MCCCHK_MISSING:
-				sprintf( strchr( message, 0), ": %s", GS( MCCCHECK_MISSING ) );
+				msgend = strchr( message, 0 );
+#ifdef __SASC
+				SNPrintf( msgend, sizeof(message) - (msgend - message), ": %s", GS( MCCCHECK_MISSING ) );
+#else
+				sprintf( msgend, ": %s", GS( MCCCHECK_MISSING ) );
+#endif
 				break;
 		}
 	}
 
 	if( error )
 	{
-		MUI_Request( NULL, NULL, 0, (char*)GS( ERROR ), (char*)GS( CANCEL ), message, 0 ); 
+		Printf( "[MCC] ERROR: %ld class(es) failed check\n", (long)error );
+		Printf( "[MCC] Error message: %s\n", message );
+		Flush( Output() );
+		MUI_Request( NULL, NULL, 0,
+			(char*)voyager_catalog_str( MSG_ERROR, MSG_ERROR_STR ),
+			(char*)voyager_catalog_str( MSG_CANCEL, MSG_CANCEL_STR ),
+			message, 0 ); 
 		return( FALSE );
 	}
 
+	Printf( "[MCC] All classes OK!\n" );
+	Flush( Output() );
 	return( TRUE );
 }
 
@@ -964,7 +1239,7 @@ BPTR urltestfile;
 #endif
 char myfullpath[ 256 ];
 struct DiskObject *diskobj;
-char **openurls;
+char **openurls = NULL; /* Initialize to NULL to avoid address errors */
 
 /* arguments */
 #if USE_TESTFILE
@@ -1445,6 +1720,11 @@ static int buildapp( void )
 		MUIA_Application_Window, build_url_window(),					 
 #endif
 	End;
+
+#if USE_MENUS
+	Printf( "[INIT] menustrip=%lx app=%lx\n", (ULONG)menu, (ULONG)app );
+	Flush( Output() );
+#endif /* USE_MENUS */
 
 	if( !app )
 	{

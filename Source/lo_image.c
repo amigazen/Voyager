@@ -228,12 +228,24 @@ static void __inline blitnode( APTR obj, struct Data *data, struct imgframenode 
 	{
 #ifndef MBX
 #if USE_ALPHA
-		if( imf->maskbm == (APTR)-1 ) /* TOFIX: is that enough ? */
+		if( imf->maskbm == (APTR)-1
+#if USE_CGX
+		    && CyberGfxBase
+#endif
+		) /* TOFIX: is that enough ? */
 		{
 			WritePixelArrayAlpha( imf->bm->Planes[ 0 ], 0, 0, GetCyberMapAttr( imf->bm, CYBRMATTR_XMOD ),
 				_rp( obj ), data->mleft + imf->xp, data->mtop + imf->yp,
 				imf->xs, imf->ys,
 				0xffffffff
+			);
+		}
+		else if( imf->maskbm == (APTR)-1 )
+		{
+			BltBitMapRastPort( getclone( imf->bm, FALSE ), 0, 0,
+				_rp( obj ), data->mleft + imf->xp, data->mtop + imf->yp,
+				imf->xs, imf->ys,
+				0xc0
 			);
 		}
 		else
@@ -280,12 +292,24 @@ static void __inline blitnode_scaled( APTR obj, struct Data *data )
 		}
 #ifndef MBX
 #if USE_ALPHA
-		if( data->maskbm == (APTR)-1 ) /* TOFIX: is that enough ? */
+		if( data->maskbm == (APTR)-1
+#if USE_CGX
+		    && CyberGfxBase
+#endif
+		) /* TOFIX: is that enough ? */
 		{
 			WritePixelArrayAlpha( data->bm->Planes[ 0 ], 0, 0, GetCyberMapAttr( data->bm, CYBRMATTR_XMOD ), /* hopeing that ixs is the right field :) */
 				_rp( obj ), data->mleft, data->mtop,
 				data->width, data->height,
 				0xffffffff
+			);
+		}
+		else if( data->maskbm == (APTR)-1 )
+		{
+			BltBitMapRastPort( getclone( data->bm, FALSE ), 0, 0,
+				_rp( obj ), data->mleft, data->mtop,
+				data->width, data->height,
+				0xc0
 			);
 		}
 		else
@@ -322,12 +346,24 @@ static void __inline blitnode_keepold( APTR obj, struct Data *data, struct imgfr
 	{
 #ifndef MBX
 #if USE_ALPHA
-		if( imf->maskbm == (APTR)-1 ) /* TOFIX: is that enough ? */
+		if( imf->maskbm == (APTR)-1
+#if USE_CGX
+		    && CyberGfxBase
+#endif
+		) /* TOFIX: is that enough ? */
 		{
 			WritePixelArrayAlpha( imf->bm->Planes[ 0 ], 0, 0, GetCyberMapAttr( imf->bm, CYBRMATTR_XMOD ),
 				_rp( obj ), data->mleft + imf->xp, data->mtop + imf->yp,
 				imf->xs, imf->ys,
 				0xffffffff
+			);
+		}
+		else if( imf->maskbm == (APTR)-1 )
+		{
+			BltBitMapRastPort( getclone( imf->bm, FALSE ), 0, 0,
+				_rp( obj ), data->mleft + imf->xp, data->mtop + imf->yp,
+				imf->xs, imf->ys,
+				0xc0
 			);
 		}
 		else
@@ -382,12 +418,24 @@ static void blitnodepartial( struct Data *data, APTR obj, struct imgframenode *i
 	{
 #ifndef MBX
 #if USE_ALPHA
-		if( imf->maskbm == (APTR)-1 ) /* TOFIX: is that enough ? */
+		if( imf->maskbm == (APTR)-1
+#if USE_CGX
+		    && CyberGfxBase
+#endif
+		) /* TOFIX: is that enough ? */
 		{
 			WritePixelArrayAlpha( imf->bm->Planes[ 0 ], rox, roy, GetCyberMapAttr( imf->bm, CYBRMATTR_XMOD ),
 				_rp( obj ), data->mleft + ixp, data->mtop + iyp,
 				ixs, iys,
 				0xffffffff
+			);
+		}
+		else if( imf->maskbm == (APTR)-1 )
+		{
+			BltBitMapRastPort( getclone( imf->bm, FALSE ), rox, roy,
+				_rp( obj ), data->mleft + ixp, data->mtop + iyp,
+				ixs, iys,
+				0xc0
 			);
 		}
 		else
@@ -954,12 +1002,24 @@ static void draw_newscanlines( APTR obj, struct Data *data )
 			drawbackground( data, obj, data->newpartialys, data->newpartialye );
 #ifndef MBX
 #if USE_ALPHA
-			if( data->maskbm == (APTR)-1 ) /* TOFIX: is that enough ? */
+			if( data->maskbm == (APTR)-1
+#if USE_CGX
+			    && CyberGfxBase
+#endif
+			) /* TOFIX: is that enough ? */
 			{
 				WritePixelArrayAlpha( imf->bm->Planes[ 0 ], 0, data->newpartialys, GetCyberMapAttr( imf->bm, CYBRMATTR_XMOD ),
 					_rp( obj ), data->mleft + imf->xp, data->mtop + data->newpartialys + imf->yp,
 					imf->xs, data->newpartialye - data->newpartialys + 1,
 					0xffffffff
+				);
+			}
+			else if( data->maskbm == (APTR)-1 )
+			{
+				BltBitMapRastPort( getclone( imf->bm, FALSE ), 0, data->newpartialys,
+					_rp( obj ), data->mleft + imf->xp, data->mtop + data->newpartialys + imf->yp,
+					imf->xs, data->newpartialye - data->newpartialys + 1,
+					0xc0
 				);
 			}
 			else
@@ -1588,8 +1648,11 @@ DECMMETHOD( Setup )
 	rc = DOSUPER;
 
 #ifndef MBX
-	destscreen = _screen( obj );
-	dest_is_interleaved = GetBitMapAttr( _screen( obj )->RastPort.BitMap, BMA_FLAGS ) & BMF_INTERLEAVED;
+	if( _screen( obj ) )
+	{
+		destscreen = _screen( obj );
+		dest_is_interleaved = GetBitMapAttr( _screen( obj )->RastPort.BitMap, BMA_FLAGS ) & BMF_INTERLEAVED;
+	}
 #endif
 
 	data->ehnode.ehn_Object = obj;
@@ -1597,7 +1660,8 @@ DECMMETHOD( Setup )
 	data->ehnode.ehn_Events = IDCMP_MOUSEBUTTONS | IDCMP_ACTIVEWINDOW | IDCMP_INACTIVEWINDOW;
 	data->ehnode.ehn_Priority = 1;
 	data->ehnode.ehn_Flags = MUI_EHF_GUIMODE;
-	DoMethod( _win( obj ), MUIM_Window_AddEventHandler, ( ULONG )&data->ehnode );
+	if( _win( obj ) )
+		DoMethod( _win( obj ), MUIM_Window_AddEventHandler, ( ULONG )&data->ehnode );
 
 	return( rc );
 }
@@ -1606,7 +1670,8 @@ DECMMETHOD( Cleanup )
 {
 	GETDATA;
 
-	DoMethod( _win( obj ), MUIM_Window_RemEventHandler, ( ULONG )&data->ehnode );
+	if( _win( obj ) )
+		DoMethod( _win( obj ), MUIM_Window_RemEventHandler, ( ULONG )&data->ehnode );
 
 	return( DOSUPER );
 }

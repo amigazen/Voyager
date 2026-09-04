@@ -223,8 +223,6 @@ char *FilePart( char *path )
 
 MUI_HOOK( layoutwinfunc, APTR grp, struct MUI_LayoutMsg *lm )
 {
-	//struct Data *data = INST_DATA( OCLASS( grp ), grp );
-
 	switch( lm->lm_Type )
 	{
 		case MUILM_MINMAX:
@@ -238,18 +236,30 @@ MUI_HOOK( layoutwinfunc, APTR grp, struct MUI_LayoutMsg *lm )
 
 		case MUILM_LAYOUT:
 			{
-				Object *cstate = (Object *)lm->lm_Children->mlh_Head;
+				Object *cstate;
 				Object *child;
-				int yp = 0, ys = lm->lm_Layout.Height;
+				int yp, ys;
 
-				while( child = NextObject( &cstate ) )
+				if( !lm->lm_Children )
+					return( TRUE );
+
+				cstate = (Object *)lm->lm_Children->mlh_Head;
+				yp = 0;
+				ys = lm->lm_Layout.Height;
+
+				Printf( "[WINLAYOUT] enter w=%ld h=%ld\n", (long)lm->lm_Layout.Width, (long)lm->lm_Layout.Height );
+				Flush( Output() );
+
+				while( ( child = NextObject( &cstate ) ) )
 				{
 					D( db_html, bug( "sending layout to child 0x%lx\n", child ) );
-					//if ( getv( child, MUIA_UserData ) != 2 )
-					{
-						MUI_Layout( child, 0, yp, lm->lm_Layout.Width, ys, 0 ); /* XXX: ahee.. no check ? well.. MUI would just change the fontsize anyway */
-					}
+					Printf( "[WINLAYOUT] child=%lx\n", (ULONG)child );
+					Flush( Output() );
+					MUI_Layout( child, 0, yp, lm->lm_Layout.Width, ys, 0 );
 				}
+
+				Printf( "[WINLAYOUT] exit\n" );
+				Flush( Output() );
 			}
 			return( TRUE );
 	}
@@ -1358,15 +1368,33 @@ DECMETHOD( HTMLWin_SetupToolbar, ULONG )
 	struct Data *data = INST_DATA( cl, obj );
 	struct MyBrush *brushes[ 128 ];
 
+	Printf( "[WIN] SetupToolbar entry panel_toolbar=%lx grp_toolbar=%lx\n", (ULONG)data->panel_toolbar, (ULONG)data->grp_toolbar );
+	Flush( Output() );
+
 	if( !data->panel_toolbar )
 	{
+		Printf( "[WIN] SetupToolbar exit no panel_toolbar\n" );
+		Flush( Output() );
+		return( 0 );
+	}
+	if( !data->grp_toolbar )
+	{
+		Printf( "[WIN] SetupToolbar exit no grp_toolbar\n" );
+		Flush( Output() );
 		return( 0 );
 	}
 
+	Printf( "[WIN] SetupToolbar InitChange rem bar_tool=%lx spc_tool=%lx\n", (ULONG)data->bar_tool, (ULONG)data->spc_tool );
+	Flush( Output() );
 	DoMethod( data->grp_toolbar, MUIM_Group_InitChange );
-	DoMethod( data->grp_toolbar, OM_REMMEMBER, data->spc_tool );
-	DoMethod( data->grp_toolbar, OM_REMMEMBER, data->bar_tool );
-	MUI_DisposeObject( data->bar_tool );
+	if( data->spc_tool )
+		DoMethod( data->grp_toolbar, OM_REMMEMBER, data->spc_tool );
+	if( data->bar_tool )
+	{
+		DoMethod( data->grp_toolbar, OM_REMMEMBER, data->bar_tool );
+		MUI_DisposeObject( data->bar_tool );
+		data->bar_tool = NULL;
+	}
 
 	num = getprefslong( DSI_BUTTON_NUM, 0 );
 
@@ -1444,11 +1472,16 @@ DECMETHOD( HTMLWin_SetupToolbar, ULONG )
 		MUIA_Group_Horiz, data->toolbar_is_horiz,
 	End;
 
+	Printf( "[WIN] SetupToolbar bar_tool=%lx num=%ld\n", (ULONG)data->bar_tool, (long)num );
+	Flush( Output() );
+
 	if( data->bar_tool )
 	{
 		for( c = 0; c < num; c++ )
 		{
 			data->tb_buts[ c ] = bspecs[ c ].Object;
+			if( data->tb_buts[ c ] )
+			{
 			DoMethod( data->tb_buts[ c ], MUIM_Notify, MUIA_Pressed, FALSE,
 				obj, 2, MM_HTMLWin_DoToolbutton, c
 			);
@@ -1479,6 +1512,7 @@ DECMETHOD( HTMLWin_SetupToolbar, ULONG )
 					DoMethod( data->bar_tool, MUIM_SpeedBar_DoOnButton, c, MUIM_Set, MUIA_Disabled, FALSE );
 				}
 			}
+			}
 
 		}
 
@@ -1491,7 +1525,21 @@ DECMETHOD( HTMLWin_SetupToolbar, ULONG )
 		if( data->iconobj )
 			DoMethod( data->grp_toolbar, OM_ADDMEMBER, data->iconobj );
 	}
+	else
+	{
+		/* bar_tool creation failed: ensure spc_tool is back so grp_toolbar is not empty */
+		if( data->spc_tool )
+		{
+			DoMethod( data->grp_toolbar, OM_ADDMEMBER, data->spc_tool );
+			Printf( "[WIN] SetupToolbar bar_tool failed, re-added spc_tool\n" );
+			Flush( Output() );
+		}
+	}
+	Printf( "[WIN] SetupToolbar ExitChange\n" );
+	Flush( Output() );
 	DoMethod( data->grp_toolbar, MUIM_Group_ExitChange );
+	Printf( "[WIN] SetupToolbar exit\n" );
+	Flush( Output() );
 
 	free( bspecs );
 
@@ -1506,6 +1554,29 @@ DECMETHOD( HTMLWin_SetupToolbar, ULONG )
 }
 
 #endif
+
+#if USE_TEAROFF
+/* Apply TearOffPanel_Horiz to toolbar_is_horiz and grp_toolbar, then SetupToolbar. Called deferred (PushMethod) so nothing runs during layout. */
+DECMETHOD( HTMLWin_ApplyToolbarHoriz, ULONG )
+{
+	GETDATA;
+	ULONG horiz;
+
+	if( !data->panel_toolbar || !data->grp_toolbar )
+		return( 0 );
+	horiz = (ULONG)getv( data->panel_toolbar, MUIA_TearOffPanel_Horiz );
+	data->toolbar_is_horiz = (BOOL)horiz;
+	SetAttrs( data->grp_toolbar, MUIA_Group_Horiz, horiz, TAG_DONE );
+	DoMethod( obj, MM_HTMLWin_SetupToolbar );
+	return( 0 );
+}
+#endif /* USE_TEAROFF */
+
+/* Previously ExitChange'd htmlwin here; that RecalcDisplays the Scrollgroup and deadlocks. */
+DECMETHOD( HTMLWin_ExitChangeAfterLoad, ULONG )
+{
+	return( 0 );
+}
 
 #if USE_NET
 static APTR fastlinkbutton( int num, int setmin )
@@ -1746,6 +1817,8 @@ DECMETHOD( HTMLWin_ToStandalone, APTR )
 
 			if( data->bay_top )
 			{
+				Printf( "[WIN] ToStandalone bay_top=%lx\n", (ULONG)data->bay_top );
+				Flush( Output() );
 				data->bay_left = TearOffBayObject, MUIA_VertWeight, 0,
 					MUIA_ObjectID, MAKE_ID( f_flags, 'B','2', winnum ),
 					MUIA_TearOffBay_Horiz, 0,
@@ -1768,6 +1841,8 @@ DECMETHOD( HTMLWin_ToStandalone, APTR )
 					);
 				}
 				DoMethod( grp_contents, OM_ADDMEMBER, data->bay_top );
+				Printf( "[WIN] ToStandalone bay_top added to grp_contents\n" );
+				Flush( Output() );
 			}
 		}
 	}
@@ -1802,16 +1877,15 @@ DECMETHOD( HTMLWin_ToStandalone, APTR )
 
 			if( data->panel_toolbar )
 			{
+				Printf( "[WIN] ToStandalone panel_toolbar=%lx grp_toolbar=%lx\n", (ULONG)data->panel_toolbar, (ULONG)data->grp_toolbar );
+				Flush( Output() );
 	            DoMethod( data->bay_top, OM_ADDMEMBER, data->panel_toolbar );
+				Printf( "[WIN] ToStandalone panel_toolbar added to bay_top\n" );
+				Flush( Output() );
 
+				/* Defer all toolbar-horiz updates so nothing runs during layout (avoids hang in MUI_Layout child 0) */
 				DoMethod( data->panel_toolbar, MUIM_Notify, MUIA_TearOffPanel_Horiz, MUIV_EveryTime,
-					app, 3, MUIM_WriteLong, MUIV_TriggerValue, &data->toolbar_is_horiz
-				);
-				DoMethod( data->panel_toolbar, MUIM_Notify, MUIA_TearOffPanel_Horiz, MUIV_EveryTime,
-					data->grp_toolbar, 3, MUIM_Set, MUIA_Group_Horiz, MUIV_TriggerValue
-				);
-				DoMethod( data->panel_toolbar, MUIM_Notify, MUIA_TearOffPanel_Horiz, MUIV_EveryTime,
-					obj, 1, MM_HTMLWin_SetupToolbar
+					app, 4, MUIM_Application_PushMethod, obj, 1, MM_HTMLWin_ApplyToolbarHoriz
 				);
 			}
 			else
@@ -2136,8 +2210,14 @@ DECMETHOD( HTMLWin_ToStandalone, APTR )
 	DoMethod( app, OM_ADDMEMBER, data->winobj );
 
 #if USE_TEAROFF
-	if( gp_tearoff )
-		DoMethod( (APTR)getv( data->winobj, MUIA_Window_RootObject ), MUIM_Import, tearoff_dataspace );
+	if( gp_tearoff && tearoff_dataspace && data->winobj )
+	{
+		APTR root;
+
+		root = (APTR)getv( data->winobj, MUIA_Window_RootObject );
+		if( root )
+			DoMethod( root, MUIM_Import, tearoff_dataspace );
+	}
 #endif
 
 	// Setup notifications
@@ -2158,6 +2238,10 @@ DECMETHOD( HTMLWin_ToStandalone, APTR )
 	DoMethod( obj, MM_HTMLWin_SetupFastlinks );
 
 	set( data->winobj, MUIA_Window_Open, TRUE );
+	Printf( "[WIN] open winobj=%lx app_menu=%lx win_menu=%lx\n",
+		(ULONG)data->winobj, (ULONG)menu,
+		(ULONG)getv( data->winobj, MUIA_Window_Menustrip ) );
+	Flush( Output() );
 
 	/*
 	 * I don't know why the above notification doesn't work.
@@ -2864,6 +2948,9 @@ DECMETHOD( NStream_GotInfo, APTR )
 {
 	GETDATA;
 
+	Printf( "[WIN] NStream_GotInfo entry doc_loading=%lx\n", (ULONG)data->doc_loading );
+	Flush( Output() );
+
 	if( data->doc_loading )
 	{
 		int imageloadmode = 0;
@@ -2963,12 +3050,16 @@ DECMETHOD( NStream_GotInfo, APTR )
 			}
 #endif /* USE_NET */
 		}
+		Printf( "[WIN] NStream_GotInfo: nets_settomem\n" );
+		Flush( Output() );
 		nets_settomem( data->doc_loading );
 
 		DoMethod( obj, MUIM_Group_InitChange );
 
 		if( data->doc_main )
 		{
+			Printf( "[WIN] NStream_GotInfo: ShowNStream(NULL) (clear old doc)\n" );
+			Flush( Output() );
 			DoMethod( data->v, MM_HTMLView_ShowNStream, NULL );
 			nets_close( data->doc_main );
 		}
@@ -3002,7 +3093,11 @@ DECMETHOD( NStream_GotInfo, APTR )
 		DoMethod( obj, MM_HTMLWin_SetPointer, POINTERTYPE_NORMAL );
 
 		// Attach nstream to view object now
+		Printf( "[WIN] NStream_GotInfo: ShowNStream(doc_main)\n" );
+		Flush( Output() );
 		DoMethod( data->v, MM_HTMLView_ShowNStream, data->doc_main );
+		Printf( "[WIN] NStream_GotInfo: ShowNStream returned\n" );
+		Flush( Output() );
 
 		if( !gp_cacheimg )
 			imgdec_flushimages();
@@ -3183,7 +3278,12 @@ DECMETHOD( HTMLWin_DoToolbutton, ULONG )
 	int num = msg[ 1 ];
 
 
+	v = 0;
 	DoMethod( data->bar_tool, MUIM_SpeedBar_DoOnButton, num, OM_GET, MUIA_Disabled, &v );
+	Printf( "[TOOLBTN] num=%ld disabled=%ld action=%ld args='%s'\n",
+		(long)num, (long)v, (long)data->but_acts[ num ],
+		getprefsstr( DSI_BUTTONS_ARGS + msg[ 1 ], "" ) );
+	Flush( Output() );
 	if( v )
 		return( 0 );
 
@@ -4373,6 +4473,11 @@ DEFSET
 DEFSMETHOD( HTMLWin_ToStandalone )
 DEFSMETHOD( HTMLWin_ToDormant )
 DEFSMETHOD( HTMLWin_SetupToolbar )
+#if USE_TEAROFF
+/* DECMETHOD( HTMLWin_ApplyToolbarHoriz ) is compiled only with tear-off; table entry must match or link fails. */
+DEFSMETHOD( HTMLWin_ApplyToolbarHoriz )
+#endif /* USE_TEAROFF */
+DEFSMETHOD( HTMLWin_ExitChangeAfterLoad )
 DEFSMETHOD( HTMLWin_SetupIcon )
 #if USE_NET
 DEFSMETHOD( HTMLWin_SetupFastlinks )

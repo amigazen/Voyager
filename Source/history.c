@@ -167,10 +167,13 @@ time_t checkurlhistory( char *url )
 
 void addurlhistory( char *url )
 {
-	ULONG myhash = hash( url );
+	ULONG myhash;
 	struct histent *hpp = histents;
 	int c;
 
+	if( !url || !url[ 0 ] )
+		return;
+	myhash = hash( url );
 	for( c = 0; c < MAXHISTORY; c++, hpp++ )
 	{
 		if( !hpp->url )

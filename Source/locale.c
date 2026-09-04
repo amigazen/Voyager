@@ -35,6 +35,15 @@
 /* private */
 #include "config.h"
 #include "v_locale.h"
+/*
+ * CatCompArray lives in this translation unit so GSI(id) can recover the
+ * English builtin when the catalog is missing. VAT used to do that; the
+ * empty-string fallback left every NewMenu title blank, so MUI built an
+ * empty strip and the window never showed menus.
+ */
+#ifndef MBX
+#define CATCOMP_ARRAY
+#endif /* !MBX */
 #include "voyager_cat.h"
 
 struct Locale *locale;
@@ -48,6 +57,43 @@ struct Library *LocaleBase;
 #endif /* (INCLUDE_VERSION >= 44) || defined(__MORPHOS__) */
 #endif /* MBX */
 int locale_timezone_offset;
+
+#ifndef MBX
+/*
+ * GetCatalogStr() may still return NULL when the catalog is open but the
+ * message id is missing; never pass that through to strcpy/printf.
+ */
+static STRPTR voyager_catalog_builtin( ULONG msgid )
+{
+	ULONG i;
+	ULONG n;
+
+	n = sizeof( CatCompArray ) / sizeof( CatCompArray[ 0 ] );
+	for( i = 0; i < n; i++ )
+	{
+		if( (ULONG)CatCompArray[ i ].cca_ID == msgid )
+			return( CatCompArray[ i ].cca_Str );
+	}
+	return( (STRPTR)"" );
+}
+
+STRPTR voyager_catalog_str( ULONG msgid, STRPTR builtin )
+{
+	STRPTR s;
+
+	if( !builtin || !builtin[ 0 ] )
+		builtin = voyager_catalog_builtin( msgid );
+
+	if( !CatalogBase )
+		return( builtin );
+
+	s = GetCatalogStr( CatalogBase, msgid, builtin );
+	if( !s || !s[ 0 ] )
+		return( builtin );
+
+	return( s );
+}
+#endif /* !MBX */
 
 int init_locale( void )
 {

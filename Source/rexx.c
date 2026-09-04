@@ -1000,12 +1000,20 @@ void send_internal_command(STRPTR buf)
 		}
 	}
 
+	Printf( "[CMD] send_internal_command buf='%s' cmdlen=%ld\n", buf, (long)cmdlen );
+	Flush( Output() );
+
 	if (cmdlen > 0)
 	{
 		struct MUI_Command *com;
 
 
 		for (com = rexxcmds; com && com->mc_Name && strnicmp(buf, com->mc_Name, cmdlen); com++);
+
+		Printf( "[CMD] match=%s hook=%lx\n",
+			( com && com->mc_Name ) ? com->mc_Name : "(none)",
+			( com && com->mc_Name ) ? (ULONG)com->mc_Hook : 0 );
+		Flush( Output() );
 
 		if (com && com->mc_Name)
 		{
@@ -1019,7 +1027,9 @@ void send_internal_command(STRPTR buf)
 				{
 					struct RDArgs *rda = NULL;
 
-					memset(array, '\0', com->mc_Parameters * 4);
+					/* array stays NULL when the command takes no arguments */
+					if (array)
+						memset(array, '\0', com->mc_Parameters * 4);
 
 					if (!array || (rda = readargsstring(params, com->mc_Template, array)))
 					{
@@ -1082,6 +1092,9 @@ void execute_command( int type, STRPTR str, ULONG mode, STRPTR obj_url, STRPTR o
 
 	D( db_rexx, bug( "obj_url == %s, obj_link == %s, obj_window == %s\n", ( STRPTR )obj_url ? ( STRPTR )obj_url : ( STRPTR )"none", ( STRPTR ) obj_link ? ( STRPTR )obj_link : ( STRPTR )"none", ( STRPTR )obj_window ? ( STRPTR )obj_window : ( STRPTR )"none" ) );
 
+	Printf( "[CMD] execute_command type=%ld str='%s'\n", (long)type, str ? str : "(null)" );
+	Flush( Output() );
+
 	if( str[ 0 ] )
 	{
 		/*
@@ -1123,17 +1136,19 @@ void execute_command( int type, STRPTR str, ULONG mode, STRPTR obj_url, STRPTR o
 					command_runmode = VREXX_FRAME;
 				}
 
-#if USE_REXX
+/*
+ * Only hand the command to ARexx when there is actually something to hand it
+ * to. Without VAT the ARexx branch was an empty statement, so every toolbar
+ * button silently discarded its command instead of falling through to the
+ * internal dispatcher below.
+ */
+#if USE_REXX && USE_VAT
 				if ( use_rexx )
 				{
 					sprintf( buf, "'%s'", str_parsed );
 					D( db_rexx, bug( "sending message %s\n", buf ) );
 
-#if USE_VAT
 					VAT_SendRXMsg( buf, VREXXPORT, VREXXEXT );
-#else
-					/* VAT not available - can't send Rexx message TO DO reimplement without VAT */
-#endif
 				}
 				else
 #endif

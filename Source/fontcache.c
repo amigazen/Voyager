@@ -71,7 +71,9 @@ void cleanup_fonts( void )
 
 	while( fn = REMHEAD( &fontlist ) )
 	{
-		CloseFont( fn->tf );
+		if( fn->tf )
+			CloseFont( fn->tf );
+		free( fn );
 	}
 }
 
@@ -122,9 +124,9 @@ struct TextFont *myopenfont( char *name, char **fontarray )
 		strcat( buffer, ".font" );
 
 	fn = malloc( sizeof( *fn ) );
+	if( !fn )
+		return( NULL );
 	memset( fn, '\0', sizeof( *fn ) );
-
-    ADDTAIL( &fontlist, fn );
 	stccpy( fn->name, name, sizeof( fn->name ) );
 
 #if USE_DOS
@@ -146,11 +148,18 @@ struct TextFont *myopenfont( char *name, char **fontarray )
 		}
 	}
 
+	if( !fn->tf )
+	{
+		free( fn );
+		return( NULL );
+	}
+
 #ifndef MBX
 	makefontarray( fn->tf, fn->fontarray );
 	*fontarray = fn->fontarray;
 #endif
 
+	ADDTAIL( &fontlist, fn );
 	return( fn->tf );
 }
 

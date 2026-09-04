@@ -20,7 +20,7 @@
  * General UI style
  * ----------------
  *
- * © 2000-2003 VaporWare CVS team <ibcvs@vapor.com>
+ * ? 2000-2003 VaporWare CVS team <ibcvs@vapor.com>
  * All rights reserved
  *
  * $Id: prefswin_general.c,v 1.20 2004/06/09 22:50:32 zapek Exp $
@@ -142,7 +142,7 @@ DECNEW
 #endif
 
 	DoMethod( cyc_homepageurlmode, MUIM_Notify, MUIA_Cycle_Active, 0, str_homepage, 3, MUIM_Set, MUIA_Disabled, TRUE);
-	DoMethod( cyc_homepageurlmode, MUIM_Notify, MUIA_Cycle_Active, 0, str_homepage, 3, MUIM_SetAsString, MUIA_Text_Contents, "http://v3.vapor.com/" );
+	DoMethod( cyc_homepageurlmode, MUIM_Notify, MUIA_Cycle_Active, 0, str_homepage, 3, MUIM_SetAsString, MUIA_Text_Contents, "http://www.amigazen.com" );
 	DoMethod( cyc_homepageurlmode, MUIM_Notify, MUIA_Cycle_Active, 1, str_homepage, 3, MUIM_Set, MUIA_Disabled, TRUE);
 	DoMethod( cyc_homepageurlmode, MUIM_Notify, MUIA_Cycle_Active, 1, str_homepage, 3, MUIM_SetAsString, MUIA_Text_Contents, "about:" );
 	DoMethod( cyc_homepageurlmode, MUIM_Notify, MUIA_Cycle_Active, 2, str_homepage, 3, MUIM_Set, MUIA_Disabled, TRUE);
@@ -164,7 +164,7 @@ DECNEW
 
 	switch( getv( cyc_homepageurlmode, MUIA_Cycle_Active ) )
 	{
-		case 0: DoMethod( str_homepage, MUIM_SetAsString, MUIA_Text_Contents, "http://v3.vapor.com/" );
+		case 0: DoMethod( str_homepage, MUIM_SetAsString, MUIA_Text_Contents, "http://www.amigazen.com" );
 				break;
 
 		case 1: DoMethod( str_homepage, MUIM_SetAsString, MUIA_Text_Contents, "about:" );

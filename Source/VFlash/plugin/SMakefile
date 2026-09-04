@@ -17,7 +17,7 @@ all: $(OBJS)
 	LIBFD include/fd/v_plugin_lib.fd LIBID "\$LIBID" to VFlash.VPlug
 
 rev.h:
-	rev DIR=/ LIBID=flash_plugin GLOBAL QUIET
+	-rev DIR=/ LIBID=flash_plugin GLOBAL QUIET
 
 flash_vplug.o: rev.h flash_mcc_private.h flash_vplug.c
 	$(CC) $(CFLAGS) $(DEBUG) flash_vplug.c

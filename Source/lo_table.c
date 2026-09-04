@@ -30,6 +30,7 @@
 #define VAPOR_H_BROKEN
 #endif
 #include <math.h>
+#include "dos_func.h"
 
 /* public */
 #if defined( AMIGAOS ) || defined( __MORPHOS__ )
@@ -143,6 +144,9 @@ DECDEST
 	return( DOSUPER );
 }
 
+/* Upper bound for the spanning-cell column walk in Layout_CalcMinMax */
+#define MAX_TABLE_COLS 512
+
 static void calcdefwidth( int maxel, double *pct, int *def, int *min, int *defout, int *minout, int contwidth );
 static void spreadpercent( int totunpctdef, double totpct, int totdef, int maxel, int *def, double *pct );
 
@@ -166,9 +170,15 @@ DECSMETHOD( Layout_DoLayout )
 
 	li->flags &= ~LOF_NEW;
 
-	if( data->maxcol == 0 || data->colpct == NULL || data->colmin == NULL || data->coldef == NULL )
+	if( data->pool == NULL || data->maxcol == 0 || data->colpct == NULL
+		|| data->colmin == NULL || data->coldef == NULL )
 	{
-		// Table still empty, possibly during incremental layout
+		// Table still empty, possibly during incremental layout.
+		// data->pool is NULL when CalcMinMax hit an allocation failure and
+		// threw the pool away; AllocPooled( NULL, ... ) below would crash.
+		Printf( "[TABLE] DoLayout skip obj=%lx pool=%lx maxcol=%ld\n",
+			(ULONG)obj, (ULONG)data->pool, (long)data->maxcol );
+		Flush( Output() );
 		return( (ULONG)li );
 	}
 
@@ -457,6 +467,16 @@ retry:
 
 	DeletePool( data->pool );
 	data->pool = NULL;
+	/*
+	 * Everything below was allocated from that pool. Clear the pointers as
+	 * well, otherwise a second Layout_DoLayout without an intervening
+	 * CalcMinMax sees non-NULL values, decides the widths are valid and reads
+	 * freed memory.
+	 */
+	data->cellarray = NULL;
+	data->colpct = NULL;
+	data->colmin = NULL;
+	data->coldef = NULL;
 
 	D( db_html, bug( "finished TABLE_dolayout(%lx) -> %ld,%ld\r\n", obj, li->xs, li->ys ));
 
@@ -497,6 +517,7 @@ static int realloccellarray( struct Data *data, int nmaxrow, int nmaxcol )
 			newa[ r ] = AllocPooled( data->pool, data->amaxcol * sizeof( struct cellinfo* ) );
 			if( !newa[ r ] )
 				return -1;
+			memset( newa[ r ], 0, data->amaxcol * sizeof( struct cellinfo* ) );
 			if( r < omaxrow )
 			{
 				memcpy( newa[ r ], data->cellarray[ r ], omaxcol * sizeof( struct cellinfo* ) );
@@ -513,6 +534,7 @@ static int realloccellarray( struct Data *data, int nmaxrow, int nmaxcol )
 			newa[ r ] = AllocPooled( data->pool, data->amaxcol * sizeof( struct cellinfo* ) );
 			if( !newa[ r ] )
 				return( -1 );
+			memset( newa[ r ], 0, data->amaxcol * sizeof( struct cellinfo* ) );
 		}
 	}
 	if( data->cellarray )
@@ -543,6 +565,13 @@ static void squashtable( struct Data *data )
 	canlosecol = AllocPooled( data->pool, data->maxcol * sizeof( int ) );
 	if( !canlosecol )
 		goto cleanup;
+	/*
+	 * Only the losable entries are assigned below, but every entry is read
+	 * again when the matrix is rebuilt. AllocPooled does not clear reused
+	 * puddle memory, so rows/columns were kept or dropped at random.
+	 */
+	memset( canloserow, 0, data->maxrow * sizeof( int ) );
+	memset( canlosecol, 0, data->maxcol * sizeof( int ) );
 	for( y = 0; y != data->maxrow; y++ )
 	{
 		for( x = 0; x != data->maxcol; x++ )
@@ -620,8 +649,13 @@ static void squashtable( struct Data *data )
 	FreePooled( data->pool, data->cellarray, data->amaxrow * sizeof( struct cellinfo** ) );
 	data->cellarray = newa;
 	newa = NULL; /* Prevent it getting cleaned up below */
-	data->amaxcol = data->maxrow = newmaxrow;
-	data->amaxrow = data->maxcol = newmaxcol;
+	/*
+	 * amaxrow/amaxcol describe the allocation: newa is newmaxrow rows of
+	 * newmaxcol entries. They were assigned the other way round, so a later
+	 * realloccellarray() sized and memcpy'd the matrix wrongly.
+	 */
+	data->amaxrow = data->maxrow = newmaxrow;
+	data->amaxcol = data->maxcol = newmaxcol;
 
 cleanup:
 	if( canloserow )
@@ -630,7 +664,8 @@ cleanup:
 		FreePooled( data->pool, canlosecol, omaxcol * sizeof( int ) );
 	if( newa )
 	{
-		for( y = 0; y != newmaxcol; y++ )
+		/* newa has newmaxrow rows, not newmaxcol */
+		for( y = 0; y != newmaxrow; y++ )
 			if( newa[ y ] )
 				FreePooled( data->pool, newa[ y ], newmaxcol * sizeof( struct cellinfo* ) );
 		FreePooled( data->pool, newa, newmaxrow * sizeof( struct cellinfo ** ) );
@@ -723,6 +758,10 @@ DECSMETHOD( Layout_CalcMinMax )
 	char *widthspec;
 	struct cellinfo *ci;
 
+	Printf( "[TABLE] CalcMinMax enter obj=%lx sw=%ld sh=%ld\n",
+		(ULONG)obj, (long)msg->suggested_width, (long)msg->suggested_height );
+	Flush( Output() );
+
 	if( data->pool )
 		DeletePool( data->pool );
 	data->pool = CreatePool( MEMF_CLEAR, 1024, 512 );
@@ -732,6 +771,15 @@ DECSMETHOD( Layout_CalcMinMax )
 	D( db_html, bug( "in TABLE_calcminmax(%lx), sw=%ld, sh=%ld\n", obj, msg->suggested_width, msg->suggested_height ));
 
 	data->cellarray = NULL;
+	/*
+	 * These three live in the pool that was just deleted. Layout_DoLayout
+	 * treats a non-NULL value as "widths are valid", so leaving them dangling
+	 * made it read freed memory whenever CalcMinMax returned early - which it
+	 * does for every still-empty table during incremental layout.
+	 */
+	data->colpct = NULL;
+	data->colmin = NULL;
+	data->coldef = NULL;
 	data->maxrow = 0;
 	data->maxcol = 0;
 	data->amaxcol = 0;
@@ -779,6 +827,20 @@ DECSMETHOD( Layout_CalcMinMax )
 		{
 			// Cell already used by spanning cell, shift right
 			col++;
+			/*
+			 * A bogus COLSPAN/ROWSPAN can fill the row and make this walk
+			 * grow the cell array without end, so cap it at a width no real
+			 * table reaches rather than allocating until the machine dies.
+			 */
+			if( col > MAX_TABLE_COLS )
+			{
+				Printf( "[TABLE] CalcMinMax runaway column scan obj=%lx row=%ld col=%ld\n",
+					(ULONG)obj, (long)row, (long)col );
+				Flush( Output() );
+				DeletePool( data->pool );
+				data->pool = NULL;
+				return( (ULONG)li );
+			}
 			if( realloccellarray( data, row, col ) )
 			{
 				DeletePool( data->pool );
@@ -805,6 +867,11 @@ DECSMETHOD( Layout_CalcMinMax )
 
 		ci->obj = o;
 		ci->li = (APTR)DoMethod( ci->obj, MM_Layout_CalcMinMax, msg->suggested_width, msg->suggested_height, 0 );
+		if( !ci->li )
+		{
+			FreePooled( data->pool, ci, sizeof( struct cellinfo ) );
+			continue;
+		}
 
 		if( ci->widthspec )
 		{
@@ -868,6 +935,10 @@ DECSMETHOD( Layout_CalcMinMax )
 
 	D( db_html, bug( "cell matrix size %ld x %ld, %ld objs\n", data->maxcol, data->maxrow, objcount ));
 
+	Printf( "[TABLE] CalcMinMax cells=%ld matrix=%ldx%ld\n",
+		(long)objcount, (long)data->maxcol, (long)data->maxrow );
+	Flush( Output() );
+
 	if( !data->maxcol )
 	{
 		// Table still empty, possibly during incremental layout
@@ -876,9 +947,22 @@ DECSMETHOD( Layout_CalcMinMax )
 
 	squashtable( data );
 
+	Printf( "[TABLE] squashed matrix=%ldx%ld maxcolspan=%ld maxrowspan=%ld\n",
+		(long)data->maxcol, (long)data->maxrow, (long)data->maxcolspan, (long)data->maxrowspan );
+	Flush( Output() );
+
+	Printf( "[TABLE] alloc pool=%lx maxcol=%ld\n", (ULONG)data->pool, (long)data->maxcol );
+	Flush( Output() );
+
 	data->colpct = AllocPooled( data->pool, data->maxcol * sizeof( double ) );
+	Printf( "[TABLE] alloc colpct=%lx\n", (ULONG)data->colpct );
+	Flush( Output() );
 	data->colmin = AllocPooled( data->pool, data->maxcol * sizeof( int ) );
+	Printf( "[TABLE] alloc colmin=%lx\n", (ULONG)data->colmin );
+	Flush( Output() );
 	data->coldef = AllocPooled( data->pool, data->maxcol * sizeof( int ) );
+	Printf( "[TABLE] alloc coldef=%lx\n", (ULONG)data->coldef );
+	Flush( Output() );
 
 	if( data->colpct == NULL || data->colmin == NULL || data->coldef == NULL )
 	{
@@ -900,7 +984,9 @@ DECSMETHOD( Layout_CalcMinMax )
 		for( y = 0; y < data->maxrow; y++ )
 		{
 			ci = data->cellarray[ y ][ x ];
-			if( !ci || ci->colspan>1 )
+			if( !ci || !ci->li || ci->colspan > 1 )
+				continue;
+			if( ci->startcol != x || ci->startrow != y )
 				continue;
 
 			if( (double)ci->pctwidth > data->colpct[ x ] )
@@ -925,13 +1011,32 @@ DECSMETHOD( Layout_CalcMinMax )
 		}
 	}
 */
+	Printf( "[TABLE] colscan done\n" );
+	Flush( Output() );
+
 	for( y = 0; y < data->maxrow; y++ )
 		for( x = 0; x < data->maxcol; x++ )
 		{
 			ci = data->cellarray[ y ][ x ];
-			if( ci && ci->colspan > 1 && ci->startcol == x && ci->li->minwidth )
+			if( ci && ci->li && ci->colspan > 1 && ci->startcol == x && ci->li->minwidth )
 			{
 				int cs,mintot=0,deftot=0,deforabs;
+				int retries = 0;
+
+				/*
+				 * colmin/coldef only have maxcol entries. A colspan reaching
+				 * past the last column (possible after squashtable trims the
+				 * matrix) would read and write off the end of both arrays.
+				 */
+				if( x + ci->colspan > data->maxcol )
+				{
+					Printf( "[TABLE] colspan clamp x=%ld colspan=%ld maxcol=%ld\n",
+						(long)x, (long)ci->colspan, (long)data->maxcol );
+					Flush( Output() );
+					ci->colspan = data->maxcol - x;
+					if( ci->colspan <= 1 )
+						continue;
+				}
 
 				deforabs = ci->abswidth > 0 ? ci->abswidth : ci->li->defwidth;
 				for( cs = 0; cs != ci->colspan; cs++ )
@@ -957,10 +1062,24 @@ retry:
 							nv = csmin / ci->colspan;
 						if( nv < data->colmin[ x + cs ] )
 						{
-							csmin -= data->colmin[ x + cs ];
-							mintot -= data->colmin[ x + cs ];
-							data->colmin[ x + cs ] = -data->colmin[ x + cs ];
-							goto retry;
+							/*
+							 * A column is taken out of the redistribution by
+							 * negating its minimum, which the test above then
+							 * skips. That only works for a minimum above zero:
+							 * an empty cell leaves colmin at 0, and once csmin
+							 * has gone negative nv is negative too, so this
+							 * branch would negate 0, subtract 0 and retry for
+							 * ever. Keep 0 as the floor in that case.
+							 */
+							if( data->colmin[ x + cs ] > 0 && retries++ < ci->colspan )
+							{
+								csmin -= data->colmin[ x + cs ];
+								mintot -= data->colmin[ x + cs ];
+								data->colmin[ x + cs ] = -data->colmin[ x + cs ];
+								goto retry;
+							}
+
+							nv = data->colmin[ x + cs ] > 0 ? data->colmin[ x + cs ] : 0;
 						}
 						data->colmin[ x + cs ] = nv;
 					}
@@ -984,6 +1103,9 @@ retry:
 			}
 		}
 	
+	Printf( "[TABLE] colspan done\n" );
+	Flush( Output() );
+
 	for( x = 0; x < data->maxcol; x++ )
 	{
 		if( data->colmin[ x ] > abs( data->coldef[ x ] ) )
@@ -1034,7 +1156,13 @@ retry:
 
 	D( db_html, int x; for( x = 0; x != data->maxcol; x++ ) { bug( "P1b Col %ld min %ld def %ld pct %ld\r\n", x, data->colmin[ x ], data->coldef[ x ], (int)( data->colpct[ x ] * 10000.0 ) ); });
 	
+	Printf( "[TABLE] pct done coltotpct=%ld\n", (long)data->coltotpct );
+	Flush( Output() );
+
 	calcdefwidth( data->maxcol, data->colpct, data->coldef, data->colmin, &( li->defwidth ), &( li->minwidth ), msg->suggested_width );
+
+	Printf( "[TABLE] calcdefwidth done minw=%ld defw=%ld\n", (long)li->minwidth, (long)li->defwidth );
+	Flush( Output() );
 
 	D( db_html, int x; for( x = 0; x != data->maxcol; x++ ) { bug( "P2 Col %ld min %ld def %ld pct %ld\r\n", x, data->colmin[ x ], data->coldef[ x ], (int)( data->colpct[ x ] * 10000.0 ) ); });
 
@@ -1076,6 +1204,10 @@ retry:
 	li->minheight = li->defheight = li->maxheight = 0;
 
 	D( db_html, bug( "finished TABLE_calcminmax(%lx) -> %ld,%ld %ld,%ld \n", obj, li->minwidth, li->minheight, li->defwidth, li->defheight ));
+
+	Printf( "[TABLE] CalcMinMax exit obj=%lx minw=%ld defw=%ld\n",
+		(ULONG)obj, (long)li->minwidth, (long)li->defwidth );
+	Flush( Output() );
 
 	return( (ULONG)li );
 }

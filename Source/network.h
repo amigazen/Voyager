@@ -313,4 +313,13 @@ int isonline( void );
 
 void setup_useragent( void );
 
+/** Log HTTP response status line (e.g. 403) to voyager_net.log when response is 4xx/5xx */
+void net_log_http_response( const char *status_line );
+
+/** Log one HTTP response line (status or header) to voyager_net.log */
+void net_log_http_response_line( const char *line );
+
+/** Log full HTTP request to voyager_net.log (buf may contain \\r\\n; truncated to max_len) */
+void net_log_http_request( const char *buf, int len );
+
 #endif /* VOYAGER_NETWORK_H */

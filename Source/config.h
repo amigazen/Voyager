@@ -243,10 +243,10 @@ struct dnsmsg;
 #include <exec/types.h>
 #endif
 extern struct Catalog *CatalogBase;
-/* GetCatalogStr will be provided by proto/locale.h when included */
-/* Use NULL as default string - GetCatalogStr will use the built-in string from the catalog */
-#define GS(x) GetCatalogStr(CatalogBase, MSG_##x, NULL)
-#define GSI(x) GetCatalogStr(CatalogBase, x, NULL)
+STRPTR voyager_catalog_str( ULONG msgid, STRPTR builtin );
+/* Fall back to built-in English strings when the catalog is missing or incomplete */
+#define GS(x) voyager_catalog_str( MSG_##x, (STRPTR)MSG_##x##_STR )
+#define GSI(x) voyager_catalog_str( x, (STRPTR)"" ) /* builtin filled in by voyager_catalog_str() */
 #endif /* GS */
 #endif /* MBX */
 
@@ -308,7 +308,7 @@ extern struct Catalog *CatalogBase;
 #define USE_AUTOCOMPLETE   1
 #define USE_BLOCKING_CONN  0
 #define USE_BUSY           1
-#define USE_CGX            0
+#define USE_CGX            1
 #define USE_CLIPBOARD      1
 #define USE_CLOCK          1
 #define USE_CMANAGER       0
@@ -334,12 +334,12 @@ extern struct Catalog *CatalogBase;
 #define USE_REXX           1
 #define USE_SINGLEWINDOW   0 /* nasty hack */
 #define USE_SMOOTH_SCROLLING 0 /* doesn't work properly */
-#define USE_SPEEDBAR       0
+#define USE_SPEEDBAR       1
 #define USE_SPLASHWIN      0
 #define USE_SSCREEN        1
 #define USE_SSL            0
 #define USE_STB_NAV        0
-#define USE_TEAROFF        1
+#define USE_TEAROFF        0 /* TearOffPanel.mcc hits bogus pointers under Enforcer; compile without tear-off UI */
 #define USE_TESTFILE       1
 #define USE_TMPRAS         1
 #define USE_TURBOPRINT     0

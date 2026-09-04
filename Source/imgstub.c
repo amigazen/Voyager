@@ -42,6 +42,9 @@
 #include "bitmapclone.h"
 #endif /* !MBX */
 void ASM SAVEDS removeclone( __reg( a0, struct BitMap *src ) ); //TOFIX!! sux..
+/* Forward declarations for statically linked versions */
+int imgdec_libinit_internal( struct imgcallback *cbtptr );
+void imgdec_setprefs_internal( long img_jpeg_dct, long img_jpeg_dither, long img_jpeg_quant, long img_lamedecode, long img_progressive_jpeg, long img_gif_dither, long img_png_dither );
 #include "copyright.h"
 #include "mui_func.h"
 
@@ -71,10 +74,6 @@ static void tryopen( char *n )
 
 int init_imgdec( void )
 {
-#ifndef MBX
-	extern char hostos[ 8 ];
-#endif
-	
 	D( db_init, bug( "initializing..\n" ) );
 
 #if USE_SPLASHWIN
@@ -86,37 +85,10 @@ int init_imgdec( void )
 
 #ifndef MBX
 	/*
-	 * Try to open the image decoders
+	 * Image decoder is now statically linked - no need to open library
+	 * Set VIDBase to non-NULL to indicate it's available
 	 */
-#ifdef __MORPHOS__
-	if( !VIDBase && strstr( hostos, "MorphOS" ) )
-	{
-		tryopen( "604e" );
-	}
-#endif
-
-	/*
-	 * MorphOS *needs* the PPC version because
-	 * it uses directcalls. What's the point
-	 * in having 68k decoding with a PPC version
-	 * anyway..
-	 */
-#ifdef AMIGAOS
-	if( !VIDBase && ( SysBase->AttnFlags & AFF_68060 ) && ( SysBase->AttnFlags & AFF_68881 ) )
-		tryopen( "68060" );
-	if( !VIDBase && ( SysBase->AttnFlags & AFF_68040 ) && ( SysBase->AttnFlags & AFF_FPU40 ) )
-		tryopen( "68040fpu" );
-	if( !VIDBase && ( SysBase->AttnFlags & AFF_68020 ) && ( SysBase->AttnFlags & AFF_68881 ) )
-		tryopen( "68030fpu" );
-	if( !VIDBase && ( SysBase->AttnFlags & AFF_68020 ) )
-		tryopen( "68020" );
-#endif /* AMIGAOS */
-
-	if( !VIDBase )
-	{
-		MUI_Request( NULL, NULL, 0, ( char * )GS( ERROR ), ( char * )GS( CANCEL ), ( char * )GS( IMGDEC_ERROR ), 0 );
-		return( FALSE );
-	}
+	VIDBase = (struct Library *)1; /* Dummy value to indicate statically linked */
 #endif /* !MBX */
 
 	icbt.nets_open = nets_open;
@@ -158,7 +130,8 @@ void imgdec_storeprefs( void )
 	}
 #endif /* !MBX */
 
-	imgdec_setprefs(
+	/* Call internal version directly to avoid SAVEDS issues when statically linked */
+	imgdec_setprefs_internal(
 		getprefslong( DSI_IMG_JPEG_DCT, JDCT_ISLOW ),
 		getprefslong( DSI_IMG_JPEG_DITHER, JDITHER_NONE ),
 		getprefslong( DSI_IMG_JPEG_QUANT, FALSE ),
@@ -175,11 +148,29 @@ int	start_image_decoders( void )
 {
 	D( db_init, bug( "initializing..\n" ) );
 	
-	if( imgdec_libinit( &icbt ) )
+	Printf( "[IMGDEC] start_image_decoders() entry, icbt=0x%lx\n", &icbt );
+	Flush( Output() );
+	
+	Printf( "[IMGDEC] About to call imgdec_libinit_internal()...\n" );
+	Flush( Output() );
+	/* Call internal version directly to avoid SAVEDS issues when statically linked */
+	if( imgdec_libinit_internal( &icbt ) )
 	{
+		Printf( "[IMGDEC] imgdec_libinit() returned TRUE\n" );
+		Flush( Output() );
+		
+		Printf( "[IMGDEC] About to call imgdec_storeprefs()...\n" );
+		Flush( Output() );
 		imgdec_storeprefs();
+		Printf( "[IMGDEC] imgdec_storeprefs() complete\n" );
+		Flush( Output() );
+		
+		Printf( "[IMGDEC] start_image_decoders() succeeded\n" );
+		Flush( Output() );
 		return( TRUE );
 	}
+	Printf( "[IMGDEC] imgdec_libinit() returned FALSE\n" );
+	Flush( Output() );
 	return( FALSE );
 }
 
@@ -192,8 +183,8 @@ void close_image_decoders( void )
 	if( VIDBase )
 	{
 		imgdec_libexit();
-		CloseLibrary( VIDBase );
-		VIDBase = 0;
+		/* No need to CloseLibrary - statically linked */
+		VIDBase = NULL;
 	}
 #endif /* !MBX */
 	D( db_init, bug( "done closing decoders..\n" ) );

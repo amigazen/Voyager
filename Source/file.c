@@ -20,7 +20,7 @@
  * DOS support functions
  * ---------------------
  *
- * © 2000 by Vapor CVS team <ibcvs@vapor.com>
+ * Â© 2000 by Vapor CVS team <ibcvs@vapor.com>
  * All rights reserved
  *
  * $Id: file.c,v 1.12 2003/07/06 16:51:33 olli Exp $
@@ -94,8 +94,11 @@ static int testpathname( char *pn, char *cmd )
 }
 
 
+#define MY_SYSTEMTAGS_MAX_TAGS 32
+
 /*
- * extended SystemTags() with WB support
+ * extended SystemTags() with WB support.
+ * Builds a proper TagItem array from varargs (va_list as TagItem* is undefined behaviour).
  */
 int STDARGS mySystemTags( char *cmd, ... )
 {
@@ -107,8 +110,34 @@ int STDARGS mySystemTags( char *cmd, ... )
 	struct Process *wb;
 	struct CommandLineInterface *wbcli;
 	va_list va;
+	struct TagItem tags[ MY_SYSTEMTAGS_MAX_TAGS ];
+	ULONG tag, data;
+	int i;
+	int result;
 
-	va_start(va, cmd);
+	va_start( va, cmd );
+
+	i = 0;
+	do
+	{
+		tag = va_arg( va, ULONG );
+		if( tag == TAG_DONE )
+		{
+			tags[ i ].ti_Tag = TAG_DONE;
+			tags[ i ].ti_Data = 0;
+			break;
+		}
+		data = va_arg( va, ULONG );
+		tags[ i ].ti_Tag = tag;
+		tags[ i ].ti_Data = data;
+		i++;
+	} while( i < MY_SYSTEMTAGS_MAX_TAGS );
+
+	if( i >= MY_SYSTEMTAGS_MAX_TAGS )
+	{
+		tags[ MY_SYSTEMTAGS_MAX_TAGS - 1 ].ti_Tag = TAG_DONE;
+		tags[ MY_SYSTEMTAGS_MAX_TAGS - 1 ].ti_Data = 0;
+	}
 
 	if (!Cli())
 	{
@@ -140,12 +169,9 @@ int STDARGS mySystemTags( char *cmd, ... )
 							{
 								strcat(strchr(ncmd, '\0'), p);
 							}
-#ifdef __MORPHOS__
-							return (SystemTagList(ncmd, (struct TagItem*)va->overflow_arg_area));
-#else
-							return (SystemTagList(ncmd, (struct TagItem*)va));
-#endif /* !__MORPHOS__ */
-						
+							result = SystemTagList( ncmd, tags );
+							va_end( va );
+							return result;
 						}
 						pn = BADDR(pn->next);
 					}
@@ -153,11 +179,9 @@ int STDARGS mySystemTags( char *cmd, ... )
 			}
 		}
 	}
-#ifdef __MORPHOS__
-	return (SystemTagList(cmd, (struct TagItem*)va->overflow_arg_area));
-#else
-	return (SystemTagList(cmd, (struct TagItem*)va));
-#endif
+	result = SystemTagList( cmd, tags );
+	va_end( va );
+	return result;
 }
 
 

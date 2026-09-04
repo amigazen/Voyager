@@ -34,6 +34,11 @@
 #endif
 
 #include "voyager.h"
+#include "dos_func.h"
+
+#if USE_CGX
+extern struct Screen *destscreen;
+#endif
 
 /* public */
 #if defined( AMIGAOS ) || defined( __MORPHOS__ )
@@ -175,7 +180,7 @@ struct VirtgroupData38
 
 struct GroupData
 {
-	struct MinList ChildList; // muß an erster Stelle sein!	/* 0x00 */
+	struct MinList ChildList; // mu? an erster Stelle sein!	/* 0x00 */
 	ULONG gidcmp;						/* 0x0c */
 	struct BresenhamInfo *binfo[DIMS];			/* 0x10 */
 	WORD dim[DIMS];						/* 0x18 */
@@ -239,11 +244,9 @@ static int cachebminuse;
 static struct BitMap *get_cachebitmap( struct BitMap *friend, int w, int h, struct RastPort **rp )
 {
 	if( cachebminuse )
-	{
-		#warning why it happens with only one window upon opaqueresize.. could you have a look, Olli ?
-		//dprintf( "in use! aborting\n" );
 		return( NULL );
-	}
+	if( w <= 0 || h <= 0 || w > 8192 || h > 8192 )
+		return( NULL );
 
 	if( oldfriendbitmap != friend || w != oldlayer_w || h != oldlayer_h )
 	{
@@ -268,13 +271,11 @@ static struct BitMap *get_cachebitmap( struct BitMap *friend, int w, int h, stru
 		}
 	}
 
-	if( !oldbitmap )
-	{
-		oldbitmap = AllocBitMap( w, h, GetBitMapAttr( friend, BMA_DEPTH ), BMF_MINPLANES | BMF_DISPLAYABLE, friend );
 		if( !oldbitmap )
 		{
-			return( NULL );
-		}
+			oldbitmap = AllocBitMap( w, h, GetBitMapAttr( friend, BMA_DEPTH ), BMF_MINPLANES | BMF_DISPLAYABLE, friend );
+			if( !oldbitmap )
+				return( NULL );
 		oldbitmap_w = w;
 		oldbitmap_h = h;
 		oldfriendbitmap = friend;
@@ -340,6 +341,7 @@ struct Data {
 	int imagemode;
 	int textmode;
 	int in_layout; // For document.write(), and stuff
+	int in_mui_layout; /* MUILM_LAYOUT on this view; nested Scrollgroup retries must not re-enter */
 
 	struct imgclient *img; /* holds an imageclient in imagemode display (TOFIX: except plugins) */
 
@@ -350,6 +352,7 @@ struct Data {
 	ULONG last_ys;
 	#endif
 	int usedamageclip;
+	int in_draw;
 
 	// JS stuff
 	struct MinList cpl;
@@ -373,6 +376,8 @@ struct Data {
 #endif
 
 	struct MUI_EventHandlerNode ehn;
+
+	int imgdec_destscreen_set; /* 1 after we have called imgdec_setdestscreen from Draw (deferred from Setup to avoid crash in imgdec during window open) */
 };
 
 // This is used to hold fragments send by document.write(ln)
@@ -387,6 +392,9 @@ static struct MUI_CustomClass *mcc;
 MUI_HOOK( layoutfunc, APTR grp, struct MUI_LayoutMsg *lm )
 {
 	struct Data *data = INST_DATA( mcc->mcc_Class, grp );
+
+	if ( !lm )
+		return( MUILM_UNKNOWN );
 
 	D( db_html, bug( "MUIM_Layout(%lx), action = %ld\n", grp, lm->lm_Type ));
 
@@ -403,37 +411,61 @@ MUI_HOOK( layoutfunc, APTR grp, struct MUI_LayoutMsg *lm )
 
 		case MUILM_LAYOUT:
 			{
-				Object *cstate = (Object *)lm->lm_Children->mlh_Head;
-				Object *child = NextObject( &cstate );
+				Object *cstate;
+				Object *child;
 				int maxx = 0, maxy = 0;
+
+				if( data->in_mui_layout )
+					return( TRUE );
+				if ( !lm->lm_Children )
+					return( TRUE );
+
+				data->in_mui_layout = 1;
+
+				cstate = (Object *)lm->lm_Children->mlh_Head;
+				child = NextObject( &cstate );
 
 				if( data->virtual_width > 0 && !data->is_frameset )
 					lm->lm_Layout.Width = data->virtual_width;
 
-				while (child = NextObject(&cstate))
+				Printf( "[VIEWLAYOUT] enter w=%ld h=%ld virtwidth=%ld\n",
+					(long)lm->lm_Layout.Width, (long)lm->lm_Layout.Height, (long)data->virtual_width );
+				Flush( Output() );
+
+				while ( ( child = NextObject( &cstate ) ) )
 				{
 					D( db_html, bug( "sending MM_Layout_CalcMinMax to child 0x%lx\n", child ) );
+					Printf( "[VIEWLAYOUT] CalcMinMax child=%lx\n", (ULONG)child );
+					Flush( Output() );
 					DoMethod( child, MM_Layout_CalcMinMax, lm->lm_Layout.Width, lm->lm_Layout.Height, lm->lm_Layout.Width );
 				}
+				Printf( "[VIEWLAYOUT] CalcMinMax pass done\n" );
+				Flush( Output() );
 
 				cstate = (Object *)lm->lm_Children->mlh_Head;
 				child = NextObject( &cstate );
 
 				// Layout dummy object
-				MUI_Layout( child, 0, 0, 1, 1, 0 );
+				if ( child )
+					MUI_Layout( child, 0, 0, 1, 1, 0 );
 
-				while (child = NextObject(&cstate))
+				while ( ( child = NextObject( &cstate ) ) )
 				{
-					struct layout_info *li;
+					struct layout_info *li = NULL;
 
 					get( child, MA_Layout_Info, &li );
+					if ( !li )
+						continue;
 
+					Printf( "[VIEWLAYOUT] DoLayout child=%lx minw=%ld minh=%ld\n",
+						(ULONG)child, (long)li->minwidth, (long)li->minheight );
+					Flush( Output() );
 					DoMethod( child, MM_Layout_DoLayout, max( lm->lm_Layout.Width, li->minwidth ), max( lm->lm_Layout.Height, li->minheight ), lm->lm_Layout.Width );
 
 					li->ys = max( lm->lm_Layout.Height, li->ys );
 					li->xs = max( lm->lm_Layout.Width, li->xs );
 
-					MUI_Layout( child, li->xp, li->xp, min( 8191, li->xs ), min( 8192, li->ys ), 0 );
+					MUI_Layout( child, li->xp, li->yp, min( 8191, li->xs ), min( 8192, li->ys ), 0 );
 
 					maxx = max( li->xp + li->xs, maxx );
 					maxy = max( li->yp + li->ys, maxy );
@@ -443,6 +475,9 @@ MUI_HOOK( layoutfunc, APTR grp, struct MUI_LayoutMsg *lm )
 				data->layout_width = lm->lm_Layout.Width = max( lm->lm_Layout.Width, maxx );
 
 				D( db_html, bug( "MUIM_Layout(%lx), final size %ld/%ld\n", grp, lm->lm_Layout.Width, lm->lm_Layout.Height ));
+				Printf( "[VIEWLAYOUT] exit w=%ld h=%ld\n", (long)lm->lm_Layout.Width, (long)lm->lm_Layout.Height );
+				Flush( Output() );
+				data->in_mui_layout = 0;
 			}
 			return( TRUE );
 	}
@@ -576,6 +611,10 @@ DECDISPOSE
 DECSMETHOD( HTMLView_ShowNStream )
 {
 	GETDATA;
+	APTR ns = msg->ns;
+
+	Printf( "[VIEW] ShowNStream entry ns=%lx\n", (ULONG)ns );
+	Flush( Output() );
 
 	/*
 	 * Cleanup possible images which were displayed in
@@ -623,6 +662,8 @@ DECSMETHOD( HTMLView_ShowNStream )
 
 	DoMethod( data->htmlwin, MUIM_Group_InitChange );
 
+	data->usedamageclip = FALSE;
+
 	if( data->lctx )
 	{
 		layout_delete( data->lctx );
@@ -651,14 +692,24 @@ DECSMETHOD( HTMLView_ShowNStream )
 	data->finished = FALSE;
 	data->gottitle = FALSE;
 
+	Printf( "[VIEW] ShowNStream doc set doc=%lx\n", (ULONG)data->doc );
+	Flush( Output() );
+
 	data->lctx = layout_new();
+	Printf( "[VIEW] ShowNStream layout_new returned lctx=%lx\n", (ULONG)data->lctx );
+	Flush( Output() );
 
 	if( data->lastcmap )
 		layout_setuppens( data->lctx, data->lastcmap );
 
+	Printf( "[VIEW] ShowNStream layout_attach\n" );
+	Flush( Output() );
 	layout_attach( data->lctx, obj );
+	Printf( "[VIEW] ShowNStream layout_setdom\n" );
+	Flush( Output() );
 	layout_setdom( data->lctx, data->htmlwin, obj );
-
+	Printf( "[VIEW] ShowNStream layout_setmargins\n" );
+	Flush( Output() );
 	layout_setmargins( data->lctx,
 		getv( data->htmlwin, MA_Layout_MarginLeft ),
 		getv( data->htmlwin, MA_Layout_MarginRight ),
@@ -666,12 +717,15 @@ DECSMETHOD( HTMLView_ShowNStream )
 		getv( data->htmlwin, MA_Layout_MarginBottom )
 	);
 
-	// Run the garbage collector
+	/* Run the garbage collector */
 	js_gc();
 
 #if USE_LO_PIP
 	DoMethod( data->htmlwin, MM_HTMLWin_ResetPIPNum );
 #endif
+
+	Printf( "[VIEW] ShowNStream doc path start (mime etc)\n" );
+	Flush( Output() );
 
 	if( data->doc )
 	{
@@ -726,6 +780,8 @@ DECSMETHOD( HTMLView_ShowNStream )
 		{
 			data->imagemode = 0;
 			data->textmode = 1;
+			Printf( "[VIEW] ShowNStream text/plain: NStream_GotData\n" );
+			Flush( Output() );
 			DoMethod( obj, MM_NStream_GotData );
 		}
 		else
@@ -754,9 +810,11 @@ DECSMETHOD( HTMLView_ShowNStream )
 				free(uri);	// don't need this anymore
 			}
 
-			// .. and then carry on..
+			/* .. and then carry on.. */
 			data->imagemode = 0;
 			data->textmode = 0;
+			Printf( "[VIEW] ShowNStream HTML: NStream_GotData\n" );
+			Flush( Output() );
 			DoMethod( obj, MM_NStream_GotData );
 		}
 	}
@@ -828,47 +886,65 @@ DECTMETHOD( NStream_GotData )
 
 	newoffset = nets_getdocptr( data->doc );
 	finished = nets_state( data->doc );
+	Printf( "[VIEW] NStream_GotData entry newoffset=%ld finished=%ld lastoffset=%ld\n", (long)newoffset, (long)finished, (long)data->lastoffset );
+	Flush( Output() );
 
 	if( newoffset > data->lastoffset )
 	{
-		nets_lockdocmem();
-		if( !finished && data->lastoffset > 1024 && newoffset - data->lastoffset < 16384 )
-		{
-			// No need to relayout just yet
-			nets_unlockdocmem();
+		if( !data->lctx )
 			return( 0 );
-		}
 
-		if( !data->lastoffset && data->textmode && ( nets_sourceid( data->doc ) != 1 ) ) /* TOFIX: sux */
+		nets_lockdocmem();
 		{
-			char *ptr;
-			// Apply some guessing whether it's not really HTML we're looking at after all
-			ptr = nets_getdocmem( data->doc );
-			if( ptr )
+			char *docmem = nets_getdocmem( data->doc );
+			if( !docmem )
 			{
-				char *srch = stpblk( ptr );
-				if( !strnicmp( srch, "<HTML>", 6 ) || !strnicmp( srch, "<!DOCTYPE", 10 ) )
+				nets_unlockdocmem();
+				return( 0 );
+			}
+			if( !finished && data->lastoffset > 1024 && newoffset - data->lastoffset < 16384 )
+			{
+				nets_unlockdocmem();
+				return( 0 );
+			}
+
+			if( !data->lastoffset && data->textmode && ( nets_sourceid( data->doc ) != 1 ) ) /* TOFIX: sux */
+			{
+				char *srch = stpblk( docmem );
+				if( srch && ( !strnicmp( srch, "<HTML>", 6 ) || !strnicmp( srch, "<!DOCTYPE", 10 ) ) )
 					data->textmode = 0;
 			}
-		}
 
-		DoMethod( data->htmlwin, MUIM_Group_InitChange );
-		if( data->textmode )
-			data->lastoffset = layout_do_text( data->lctx, nets_getdocmem( data->doc ), newoffset, data->lastoffset, finished );
-		else
-			data->lastoffset = layout_do( data->lctx, nets_getdocmem( data->doc ), newoffset, data->lastoffset, finished );
+			Printf( "[VIEW] NStream_GotData: layout_do start (textmode=%ld) newoff=%ld\n", (long)data->textmode, (long)newoffset );
+			Flush( Output() );
+			DoMethod( data->htmlwin, MUIM_Group_InitChange );
+			if( data->textmode )
+				data->lastoffset = layout_do_text( data->lctx, docmem, newoffset, data->lastoffset, finished );
+			else
+				data->lastoffset = layout_do( data->lctx, docmem, newoffset, data->lastoffset, finished );
+			Printf( "[VIEW] NStream_GotData: layout_do done lastoffset=%ld\n", (long)data->lastoffset );
+			Flush( Output() );
+		}
 		nets_unlockdocmem();
 
 		// Did we get the document title?
 		if( !data->gottitle && data->lctx->title[ 0 ] )
 		{
 			data->gottitle = TRUE;
+			Printf( "[VIEW] NStream_GotData: setting window title\n" );
+			Flush( Output() );
 			DoMethod( data->htmlwin, MM_HTMLWin_SetTitle, ( ULONG )data->lctx->title );
+			Printf( "[VIEW] NStream_GotData: SetTitle returned\n" );
+			Flush( Output() );
 		}
 
 		data->usedamageclip = TRUE;
 
+		Printf( "[VIEW] NStream_GotData: htmlwin ExitChange\n" );
+		Flush( Output() );
 		DoMethod( data->htmlwin, MUIM_Group_ExitChange );
+		Printf( "[VIEW] NStream_GotData: htmlwin ExitChange returned\n" );
+		Flush( Output() );
 
 		/*
 		 * Record that the first layout is done
@@ -974,31 +1050,90 @@ DECTMETHOD( HTMLView_RefreshTrigger )
 
 DECMMETHOD( AskMinMax )
 {
-	// since we're doing our own layout, we don't want
-	// mui to fiddle with that. We still need Area class'
-	// method to get the minmaxinfo
-	DOSUPER;
-	msg->MinMaxInfo->MinWidth = 1;
-	msg->MinMaxInfo->MinHeight = 1;
-//	CoerceMethodA( cl->cl_Super->cl_Super, obj, msg );
+	struct MUI_MinMax *mmx;
 
+	if( !msg )
+		return( 0 );
+	DOSUPER;
+	mmx = msg->MinMaxInfo;
+	if( !mmx )
+		return( 0 );
+	/*
+	 * Since we do our own layout we do not want MUI to fiddle with it,
+	 * but we still need Area's method to fill in the minmaxinfo.
+	 */
+	mmx->MinWidth = 1;
+	mmx->MinHeight = 1;
 	return( 0 );
 }
 
 DECMMETHOD( Setup )
 {
 	ULONG rc;
-	GETDATA;
+	struct MUI_RenderInfo *mri;
+	APTR scr = NULL;
+	APTR win = NULL;
+	struct Data *data;
 
-	rc = DOSUPER;
+	Printf( "[VIEW] Setup entry obj=%lx cl=%lx\n", (ULONG)obj, (ULONG)cl );
+	Flush( Output() );
+	Printf( "[VIEW] Setup step1: GETDATA\n" );
+	Flush( Output() );
+	data = INST_DATA( cl, obj );
+	Printf( "[VIEW] Setup step2: data=%lx\n", (ULONG)data );
+	Flush( Output() );
 
+	Printf( "[VIEW] Setup step3: muiRenderInfo\n" );
+	Flush( Output() );
+	mri = muiRenderInfo( obj );
+	Printf( "[VIEW] Setup step4: mri=%lx\n", (ULONG)mri );
+	Flush( Output() );
+
+	/* When Window_Open is set to TRUE, MUI sends Setup before the Intuition window exists.
+	 * Area_Setup (DOSUPER) can crash if render info/screen/font are not yet set.
+	 * Skip superclass Setup when we have no render context. */
+	if( mri )
+	{
+		Printf( "[VIEW] Setup step5: calling DOSUPER\n" );
+		Flush( Output() );
+		rc = DOSUPER;
+		Printf( "[VIEW] Setup step6: DOSUPER done rc=%lu\n", rc );
+		Flush( Output() );
+	}
+	else
+	{
+		Printf( "[VIEW] Setup step5: no mri, skip DOSUPER\n" );
+		Flush( Output() );
+		rc = 0;
+	}
+
+	Printf( "[VIEW] Setup step7: _screen\n" );
+	Flush( Output() );
 #ifndef MBX
-	data->lastcmap = _screen( obj )->sc_ViewPort.vp_ColorMap;
+	scr = (APTR)_screen( obj );
+	if( scr )
+	{
+		data->lastcmap = _screen( obj )->sc_ViewPort.vp_ColorMap;
+		destscreen = (struct Screen *)scr;  /* set global so getclone/lo_group have screen before any lo_image */
+	}
+	Printf( "[VIEW] Setup step8: scr=%lx lastcmap=%lx\n", (ULONG)scr, (ULONG)data->lastcmap );
+	Flush( Output() );
 #endif
 
+	Printf( "[VIEW] Setup step9: layout_setuppens\n" );
+	Flush( Output() );
 	if( data->lctx )
 		layout_setuppens( data->lctx, data->lastcmap  );
 
+	/*
+	 * This used to crash during window open, so it was "deferred to Draw" -
+	 * except nothing in Draw ever did it, so the decoder was never told which
+	 * screen to render for and never picked up FTF_CYBERMAP/FTF_TRUECOLOR.
+	 * The crash was the libcall pragma sending it through VIDBase; with that
+	 * fixed it can be called from Setup again, as the original did.
+	 */
+	Printf( "[VIEW] Setup step10: imgdec_setdestscreen scr=%lx\n", (ULONG)muiRenderInfo( obj )->mri_Screen );
+	Flush( Output() );
 	if( muiRenderInfo( obj )->mri_Screen )
 	{
 #if USE_CGX
@@ -1007,8 +1142,13 @@ DECMMETHOD( Setup )
 #else
 		imgdec_setdestscreen( muiRenderInfo( obj )->mri_Screen, 0, 0, 0, 0 );
 #endif
+		data->imgdec_destscreen_set = 1;
 	}
+	Printf( "[VIEW] Setup step10 done\n" );
+	Flush( Output() );
 
+	Printf( "[VIEW] Setup step11: ehn\n" );
+	Flush( Output() );
 	data->ehn.ehn_Class  = cl;
 	data->ehn.ehn_Object = obj;
 	data->ehn.ehn_Events = IDCMP_RAWKEY;
@@ -1018,8 +1158,14 @@ DECMMETHOD( Setup )
 	#else
 	data->ehn.ehn_Priority = -4;
 	#endif
-	DoMethod(_win(obj),MUIM_Window_AddEventHandler,(ULONG) &data->ehn);
+	Printf( "[VIEW] Setup step12: _win AddEventHandler\n" );
+	Flush( Output() );
+	win = (APTR)_win( obj );
+	if( win )
+		DoMethod( win, MUIM_Window_AddEventHandler, (ULONG) &data->ehn );
 
+	Printf( "[VIEW] Setup exit scr=%lx mri=%lx win=%lx\n", (ULONG)scr, (ULONG)mri, (ULONG)win );
+	Flush( Output() );
 	return( rc );
 }
 
@@ -1027,13 +1173,17 @@ DECMMETHOD( Cleanup )
 {
 	GETDATA;
 
-	DoMethod(_win(obj),MUIM_Window_RemEventHandler,(ULONG) &data->ehn);
+	Printf( "[VIEW] HTML view Cleanup entry\n" );
+	Flush( Output() );
+	if( _win( obj ) )
+		DoMethod( _win( obj ), MUIM_Window_RemEventHandler, (ULONG) &data->ehn );
 
 	if( data->lctx )
 	{
 		layout_freepens( data->lctx );
 	}
-
+	Printf( "[VIEW] HTML view Cleanup exit\n" );
+	Flush( Output() );
 	return( DOSUPER );
 }
 
@@ -1042,36 +1192,65 @@ DECMMETHOD( Draw )
 	GETDATA;
 	int redraw_done = FALSE;
 	ULONG V_GroupDraw( APTR obj, struct IClass *cl, struct MUIP_Draw *msg );
-	LONG w,h;
+	LONG w, h;
 	LONG left = _left(obj);
 	LONG top = _top(obj);
+	ULONG rc;
 
-	w = left + _width( obj );
-	h = top + _height( obj );
-	// EVIL! EVIL! 666! ( well, evil is good )
+	Printf( "[VIEW] Draw entry doc=%lx usedamageclip=%ld w=%ld h=%ld\n", (ULONG)data->doc, (long)data->usedamageclip, (long)_width( obj ), (long)_height( obj ) );
+	Flush( Output() );
+
+	if( data->in_draw )
+		return( V_GroupDraw( obj, cl->cl_Super->cl_Super, msg ) );
+	data->in_draw = 1;
+
+	/* Use object dimensions for cache; _left/_top can be wrong during nested redraw (e.g. _window==NULL). */
+	w = _width( obj );
+	h = _height( obj );
+
+	/* Only use cache path when we have a document and layout to draw; otherwise
+	 * MUI_Redraw/RefreshAfterIncrementalDump can crash and we'd blit garbage (orange). */
 	#if USE_DBUF_RESIZE
-	if( ( data->last_xs != w ) || ( data->last_ys != h ) || data->usedamageclip )
+	if( data->doc && ( ( data->last_xs != w ) || ( data->last_ys != h ) || data->usedamageclip ) )
 	#else
-	if( data->usedamageclip )
+	if( data->doc && data->usedamageclip )
 	#endif
 	{
 		struct BitMap *bm;
 		struct RastPort *rp, *oldrp;
 		struct Window *oldwin;
 
-		if ( ( bm = get_cachebitmap( _rp( obj )->BitMap, w, h, &rp ) ) )
+		Printf( "[VIEW] Draw cache path branch\n" );
+		Flush( Output() );
+		if( !_rp( obj ) || !_rp( obj )->BitMap )
+			; /* skip cache path, fall through to V_GroupDraw */
+		else 		if ( ( bm = get_cachebitmap( _rp( obj )->BitMap, w, h, &rp ) ) )
 		{
+			Printf( "[VIEW] Draw cache: MUI_Redraw\n" );
+			Flush( Output() );
 			oldrp = _rp( obj );
 			oldwin = _window( obj );
 			SetDrMd( rp, JAM1 );
 			data->usedamageclip = FALSE;
 			_rp( obj ) = rp;
-			_window( obj ) = NULL;
+			/* Keep _window set during MUI_Redraw so layout/V_GroupDraw code that
+			 * dereferences _window(obj) does not crash (Guru 80000002). */
 			MUI_Redraw( obj, MADF_DRAWALL );
+			Printf( "[VIEW] Draw cache: MUI_Redraw done, BltBitMap\n" );
+			Flush( Output() );
 			_rp( obj ) = oldrp;
 			_window( obj ) = oldwin;
-			BltBitMapRastPort( bm, left, top, oldrp, _left( obj ), _top( obj ), _width( obj ), _height( obj ), 0xc0 );
-			DoMethod( obj, MM_Layout_RefreshAfterIncrementalDump );
+			/* Use saved left/top; _left/_top can be invalid after MUI_Redraw. */
+			if( oldrp && left >= -32768 && left <= 32767 && top >= -32768 && top <= 32767 && w > 0 && h > 0 )
+				BltBitMapRastPort( bm, 0, 0, oldrp, left, top, w, h, 0xc0 );
+			if( data->lctx )
+			{
+				Printf( "[VIEW] Draw cache: RefreshAfterIncrementalDump\n" );
+				Flush( Output() );
+				DoMethod( obj, MM_Layout_RefreshAfterIncrementalDump );
+				Printf( "[VIEW] Draw cache: RefreshAfterIncrementalDump returned\n" );
+				Flush( Output() );
+			}
 			redraw_done = TRUE;
 
 			cachebminuse = FALSE;
@@ -1091,22 +1270,26 @@ DECMMETHOD( Draw )
 
 	if( !redraw_done )
 	{
+		Printf( "[VIEW] Draw V_GroupDraw path\n" );
+		Flush( Output() );
 		#ifndef __MORPHOS__
 		if( MUIMasterBase->lib_Version > 19 )
 		#endif
 		{
-			struct VirtgroupData *data = INST_DATA(cl->cl_Super,obj);
-			if( data->clipdraw )
+			struct VirtgroupData *vgdata = INST_DATA(cl->cl_Super,obj);
+			if( vgdata->clipdraw && _rp( obj ) )
 			{
-				MUIG_ScrollRaster(_rp(obj),data->pos[H]-data->oldpos[H],data->pos[V]-data->oldpos[V],_mleft(obj),_mtop(obj),_mright(obj),_mbottom(obj));
+				LONG ml = _mleft(obj), mt = _mtop(obj), mr = _mright(obj), mb = _mbottom(obj);
+				if( ml <= mr && mt <= mb && ml >= -32768 && mr <= 32767 && mt >= -32768 && mb <= 32767 )
+					MUIG_ScrollRaster(_rp(obj),vgdata->pos[H]-vgdata->oldpos[H],vgdata->pos[V]-vgdata->oldpos[V],(WORD)ml,(WORD)mt,(WORD)mr,(WORD)mb);
 			}
 		}
 		#ifndef __MORPHOS__
 		else
 		{
-			struct VirtgroupData38 *data = INST_DATA(cl->cl_Super,obj);
+			struct VirtgroupData38 *vgdata = INST_DATA(cl->cl_Super,obj);
 
-			if (data->clipdraw)
+			if (vgdata->clipdraw && _rp( obj ) )
 			{
 				LONG pos[DIMS],size[DIMS];
 				LONG add[DIMS];
@@ -1115,54 +1298,54 @@ DECMMETHOD( Draw )
 				pos[V]  = _mtop(obj);
 				size[H] = _mwidth(obj);
 				size[V] = _mheight(obj);
+				add[H] = vgdata->pos[H] - vgdata->oldpos[H];
+				add[V] = vgdata->pos[V] - vgdata->oldpos[V];
 
-				add[H] = data->pos[H] - data->oldpos[H];
-				add[V] = data->pos[V] - data->oldpos[V];
-
-				/*
-				** Optimiertes Zeichnen durch verschieben der Area um delta
-				** und anschließendes Zeichnen durch eine ClipRegion ist nur
-				** möglich, wenn das Objekt nicht selbst in einer VirtualGroup
-				** ist. In diesem Fall kann ich nicht die Positionen herausfinden,
-				** wo neu gezeichnet werden muß (_mleft, _mright etc. müssen ja
-				** nicht unbedingt sichtbar sein).
-				*/
-
-				#define USE_VIRTGROUPFIX 1
-				#ifdef USE_VIRTGROUPFIX
-				if (abs(add[H])<size[H] && abs(add[V])<size[V] && (add[H] || add[V]))
-				#else
-				if (abs(add[H])<size[H] && abs(add[V])<size[V] && (add[H] || add[V]) && !_isinvirtual(obj))
-				#endif
+				/* Validate before ClipBlit/ScrollRaster to avoid Address Error */
+				if( size[H] > 0 && size[V] > 0 && size[H] <= 32767 && size[V] <= 32767 &&
+				    pos[H] >= -32768 && pos[H] <= 32767 && pos[V] >= -32768 && pos[V] <= 32767 )
 				{
-					if (add[H]>=0)
+					#define USE_VIRTGROUPFIX 1
+					#ifdef USE_VIRTGROUPFIX
+					if (abs(add[H])<size[H] && abs(add[V])<size[V] && (add[H] || add[V]))
+					#else
+					if (abs(add[H])<size[H] && abs(add[V])<size[V] && (add[H] || add[V]) && !_isinvirtual(obj))
+					#endif
 					{
-						if (add[V]>=0) ClipBlit(_rp(obj),pos[H]+add[H],pos[V]+add[V],_rp(obj),pos[H],pos[V]       ,size[H]-add[H],size[V]-add[V],0xc0);
-						else           ClipBlit(_rp(obj),pos[H]+add[H],pos[V]       ,_rp(obj),pos[H],pos[V]-add[V],size[H]-add[H],size[V]+add[V],0xc0);
-					}
-					else
-					{
-						if (add[V]>=0) ClipBlit(_rp(obj),pos[H],pos[V]+add[V],_rp(obj),pos[H]-add[H],pos[V]       ,size[H]+add[H],size[V]-add[V],0xc0);
-						else           ClipBlit(_rp(obj),pos[H],pos[V]       ,_rp(obj),pos[H]-add[H],pos[V]-add[V],size[H]+add[H],size[V]+add[V],0xc0);
-					}
-
-					if(_window(obj) && (_window(obj)->Flags & WFLG_SIMPLE_REFRESH))
-					{
-						if (_window(obj)->WLayer->front)
+						if (add[H]>=0)
 						{
-							UBYTE oldmask = _rp(obj)->Mask;
-							SetWrMsk(_rp(obj),0);
-							ScrollRaster(_rp(obj),add[H],add[V],pos[H],pos[V],pos[H]+size[H]-1,pos[V]+size[V]-1);
-							SetWrMsk(_rp(obj),oldmask);
+							if (add[V]>=0) ClipBlit(_rp(obj),pos[H]+add[H],pos[V]+add[V],_rp(obj),pos[H],pos[V]       ,size[H]-add[H],size[V]-add[V],0xc0);
+							else           ClipBlit(_rp(obj),pos[H]+add[H],pos[V]       ,_rp(obj),pos[H],pos[V]-add[V],size[H]-add[H],size[V]+add[V],0xc0);
+						}
+						else
+						{
+							if (add[V]>=0) ClipBlit(_rp(obj),pos[H],pos[V]+add[V],_rp(obj),pos[H]-add[H],pos[V]       ,size[H]+add[H],size[V]-add[V],0xc0);
+							else           ClipBlit(_rp(obj),pos[H],pos[V]       ,_rp(obj),pos[H]-add[H],pos[V]-add[V],size[H]+add[H],size[V]+add[V],0xc0);
+						}
+
+						if(_window(obj) && (_window(obj)->Flags & WFLG_SIMPLE_REFRESH))
+						{
+							if (_window(obj)->WLayer->front)
+							{
+								UBYTE oldmask = _rp(obj)->Mask;
+								SetWrMsk(_rp(obj),0);
+								ScrollRaster(_rp(obj),add[H],add[V],pos[H],pos[V],pos[H]+size[H]-1,pos[V]+size[V]-1);
+								SetWrMsk(_rp(obj),oldmask);
+							}
 						}
 					}
 				}
 			}
 		}
 		#endif
-		return( V_GroupDraw( obj, cl->cl_Super->cl_Super, msg ) );
+		Printf( "[VIEW] Draw calling V_GroupDraw\n" );
+		Flush( Output() );
+		rc = V_GroupDraw( obj, cl->cl_Super->cl_Super, msg );
+		data->in_draw = 0;
+		return( rc );
 	}
 
+	data->in_draw = 0;
 	return( 0 );
 }
 
@@ -1187,14 +1370,21 @@ DECTMETHOD( HTMLView_NewImageSizes )
 DECMMETHOD( Backfill )
 {
 	GETDATA;
-	
-	if( !data->lctx )
+	LONG ml, mt, mr, mb;
+
+	if( !data->lctx && _rp( obj ) )
 	{
-		// If nothing to layout, simply backfill
-		SetAPen( _rp( obj ), _pens( obj )[ MPEN_BACKGROUND ] );
-		RectFill( _rp( obj ), _mleft( obj ), _mtop( obj ), _mright( obj ), _mbottom( obj ) );
+		ml = _mleft( obj );
+		mt = _mtop( obj );
+		mr = _mright( obj );
+		mb = _mbottom( obj );
+		/* Validate rect to avoid Address Error (80000002) from graphics.library */
+		if( ml <= mr && mt <= mb && ml >= -32768 && mr <= 32767 && mt >= -32768 && mb <= 32767 )
+		{
+			SetAPen( _rp( obj ), _pens( obj )[ MPEN_BACKGROUND ] );
+			RectFill( _rp( obj ), ml, mt, mr, mb );
+		}
 	}
-	// We do not want Virtgroup to backfill
 	return( 0 );
 }
 

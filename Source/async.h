@@ -21,6 +21,12 @@
 
 /*****************************************************************************/
 
+/* When VAT library headers are already included (e.g. via gst.h), they provide
+ * AsyncFile, MODE_*, and the async/VAT declarations - skip duplicates to avoid
+ * "already declared" and "conflict with previous declaration" errors.
+ */
+#ifndef VAT_LIB_H
+
 /* This structure is public only by necessity, don't muck with it yourself, or
  * you're looking for trouble
  */
@@ -77,6 +83,8 @@ void FreeVecPooled(APTR poolheader, APTR memory);
 struct Screen *VAT_GetAppScreen(APTR app);
 STRPTR VAT_GetAppScreenName(APTR app);
 int VAT_SendRXMsg(STRPTR cmd, STRPTR basename, STRPTR suffix);
+
+#endif /* !VAT_LIB_H */
 
 /*****************************************************************************/
 

@@ -21,7 +21,7 @@
 ** -----------------
 ** - Handles the Tearoff panels
 **
-** © 2000 by VaporWare CVS team <ibcvs@vapor.com>
+** ï¿½ 2000 by VaporWare CVS team <ibcvs@vapor.com>
 ** All rights reserved
 **
 ** $Id: tearoff.c,v 1.5 2003/07/06 16:51:34 olli Exp $
@@ -124,12 +124,8 @@ void loadtearoff( STRPTR filename )
  */
 void init_tearoff( void )
 {
-	extern char startup_cfgfile[ 256 ];
-
+	/* Dataspace only here; loadtearoff() runs from cfg_load() once startup_cfgfile exists */
 	tearoff_dataspace = MUI_NewObject( MUIC_Dataspace, TAG_DONE );
-
-	loadtearoff( startup_cfgfile );
-
 }
 
 

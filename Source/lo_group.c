@@ -577,7 +577,7 @@ DECSMETHOD( Layout_Group_AddText )
 		DoMethod( obj, MUIM_Group_InitChange );
 		data->changed = 1;
 		DoMethod( obj, MUIM_Group_ExitChange2, TRUE );
-		
+
 		return( TRUE );
 	}
 	else
@@ -736,7 +736,11 @@ static void SAVEDS ASM bffunc( __reg( a0, struct mybfhook *h ), __reg( a2, struc
 	so_y = ( h->yo + bfm->OffsetY ) % h->bmy;
 
 #if USE_ALPHA
-	if ( h->maskbm == ( APTR )-1 )
+	if ( h->maskbm == ( APTR )-1
+#if USE_CGX
+	    && CyberGfxBase
+#endif
+	)
 	{
 		/*
 		 * Alpha PNGs
@@ -772,6 +776,19 @@ static void SAVEDS ASM bffunc( __reg( a0, struct mybfhook *h ), __reg( a2, struc
 			o_x = 0;
 		}
 
+	}
+	else if ( h->maskbm == ( APTR )-1 )
+	{
+		/* No cybergraphics: tile with non-alpha blit */
+		CopyTiledBitMap(
+			h->bm,
+			so_x,
+			so_y,
+			h->bmx,
+			h->bmy,
+			rp->rp_BitMap,
+			&bfm->Bounds
+		);
 	}
 	else if ( h->maskbm != 0 )
 #else
@@ -896,6 +913,9 @@ DECSMETHOD( Layout_CalcMinMax )
 		if( !tn->textlen )
 		{
 			struct layout_info *li = (APTR)DoMethod( tn->o, MM_Layout_CalcMinMax, msg->suggested_width - data->innerleft - data->innerright, msg->suggested_height - data->innerbottom - data->innertop, msg->window_width - data->innerbottom - data->innertop );
+
+			if( !li )
+				continue;
 
 			minheight = max( minheight, li->minheight );
 
@@ -1258,12 +1278,13 @@ DECSMETHOD( Layout_DoLayout )
 	int maxx = 0;
 	struct MinList marginfloat_left, marginfloat_right;
 #ifdef VDEBUG
-	/* clock_t ts = 0; */ /* Unused variable */
+	clock_t ts = 0;
 #endif
 	struct marginnode *left_margin = NULL, *right_margin = NULL;
 	int linealign = data->default_linealign, newalign;
 	int lastfit = 0;
 	int marginwidth_left = xoffs;
+	int forced_overflow = 0;
 
 	data->li.flags &= ~LOF_NEW;
 
@@ -1274,7 +1295,13 @@ DECSMETHOD( Layout_DoLayout )
 
 	if( msg->suggested_width < data->li.minwidth )
 	{
-		MUI_Request( app, _win( obj ), 0, "Error", "Skip cell", "Internal error:\nLayout width %ld, min %ld for object %lx", msg->suggested_width, data->li.minwidth, ( ULONG )obj );
+		/*
+		 * Was a MUI_Request here, but this runs inside the window's layout pass:
+		 * a modal requester at that point blocks the app that has to service it.
+		 */
+		Printf( "[GROUP] DoLayout skip obj=%lx suggested_width=%ld < minwidth=%ld\n",
+			(ULONG)obj, (long)msg->suggested_width, (long)data->li.minwidth );
+		Flush( Output() );
 		return( (ULONG)&data->li );
 	}
 
@@ -1341,10 +1368,24 @@ DECSMETHOD( Layout_DoLayout )
 			if( tn->li->minwidth > restwidth )
 			{
 				LINEBREAK;
-				while( tn->li->minwidth > restwidth )
+				/*
+				 * Step down until floating margins expire and release width.
+				 * LINEBREAK derives restwidth solely from the float lists, so
+				 * once both are empty it can never grow again: stop there and
+				 * let the object overflow rather than spinning forever.
+				 */
+				while( tn->li->minwidth > restwidth &&
+					( !ISLISTEMPTY( &marginfloat_left ) || !ISLISTEMPTY( &marginfloat_right ) ) )
 				{
 					yoffs++;
 					LINEBREAK;
+				}
+
+				if( tn->li->minwidth > restwidth )
+				{
+					Printf( "[GROUP] DoLayout overflow obj=%lx child=%lx minwidth=%ld restwidth=%ld (no floats left)\n",
+						(ULONG)obj, (ULONG)tn->o, (long)tn->li->minwidth, (long)restwidth );
+					Flush( Output() );
 				}
 			}
 
@@ -1428,11 +1469,14 @@ DECSMETHOD( Layout_DoLayout )
 #else
 			thisfit = mbxtextfit( txt, remainlength, restwidth, tn->font );
 #endif
-			if( tn->style & FSF_PRE && thisfit < remainlength )
+			if( tn->style & FSF_PRE && thisfit < remainlength && xoffs > marginwidth_left )
 			{
 				// If this is a pre-formatted segment, and we don't have
 				// enough space to fit it completely, we need to wrap,
-				// and retry
+				// and retry.
+				// Only worth retrying when we are not already at line start:
+				// on a fresh line restwidth cannot grow any further, so
+				// retrying there would never terminate.
 				LINEBREAK;
 
 				if( !lastfit )
@@ -1458,18 +1502,43 @@ DECSMETHOD( Layout_DoLayout )
 
 			if( !thisfit )
 			{
-				LINEBREAK;
+				if( xoffs > marginwidth_left )
+				{
+					// Not at line start: a full width line may still fit it.
+					LINEBREAK;
+					while( remainlength && isspace( *txt ) )
+						txt++, remainlength--;
+
+					if( !lastfit )
+					{
+						yoffs++;
+					}
+
+					lastfit = 0;
+
+					continue;
+				}
+
+				// Already at line start and still nothing fits, so this token
+				// is wider than a whole line. Wrapping again cannot help
+				// (LINEBREAK only regains width from expiring floats), so
+				// place one character and let it overflow: the loop must
+				// always consume input or it never ends.
 				while( remainlength && isspace( *txt ) )
 					txt++, remainlength--;
 
-				if( !lastfit )
+				if( !remainlength )
+					break;
+
+				if( !forced_overflow )
 				{
-					yoffs++;
+					forced_overflow = 1;
+					Printf( "[GROUP] DoLayout forced overflow obj=%lx restwidth=%ld remain=%ld\n",
+						(ULONG)obj, (long)restwidth, (long)remainlength );
+					Flush( Output() );
 				}
 
-				lastfit = 0;
-
-				continue;
+				thisfit = 1;
 			}
 
 			lastfit = thisfit;
@@ -1804,7 +1873,6 @@ DECMMETHOD( Backfill )
 	#if USE_FAST_LISTWALK
 	if( data->last_tnr ) /* XXX: kill it if that's a new page !! */
 	{
-		/* int ty; */ /* Unused variable */
 
 		/*
 		 * Find which direction we have to go.
@@ -2067,7 +2135,11 @@ DECTMETHOD( ImgDecode_Done )
 				int xp, yp;
 
 #if USE_ALPHA
-				if( data->bgmask == ( APTR )-1 )
+				if( data->bgmask == ( APTR )-1
+#if USE_CGX
+				    && CyberGfxBase
+#endif
+				)
 				{
 					struct RastPort rp;
 					InitRastPort( &rp );
@@ -2082,6 +2154,25 @@ DECTMETHOD( ImgDecode_Done )
 								&rp, xp, yp,
 								data->bgbitmap_xs, data->bgbitmap_ys,
 								0xffffffff
+							);
+						}
+					}
+				}
+				else if( data->bgmask == ( APTR )-1 )
+				{
+					/* No cybergraphics: use normal BltBitMap */
+					struct RastPort rp;
+					InitRastPort( &rp );
+					rp.BitMap = new_bm;
+					for( xp = 0; xp < new_xs; xp += data->bgbitmap_xs )
+					{
+						for( yp = 0; yp < new_ys; yp += data->bgbitmap_ys )
+						{
+							BltBitMap(
+								data->bgbitmap, 0, 0,
+								new_bm, xp, yp,
+								data->bgbitmap_xs, data->bgbitmap_ys,
+								0xc0, -1, NULL
 							);
 						}
 					}
@@ -2373,7 +2464,7 @@ DECMMETHOD( Draw )
 	ULONG alink_pen;
 	ULONG V_GroupDraw( APTR obj, struct IClass *cl, struct MUIP_Draw *msg );
 
-	// Calling super method...
+	/* Calling super method... */
 	V_GroupDraw( obj, cl->cl_Super, msg );
 
 	if( msg->flags & MADF_DRAWOBJECT )
@@ -2527,37 +2618,37 @@ DECSMETHOD( Layout_Backfill )
 	if( data->bgbitmap )
 	{
 #ifndef MBX
-		struct mybfhook mbfh;
-		struct Rectangle rect;
+		struct mybfhook mbfh_lb;
+		struct Rectangle rect_lb;
 
-		rect.MinX = msg->left;
-		rect.MinY = msg->top;
-		rect.MaxX = msg->right;
-		rect.MaxY = msg->bottom;
+		rect_lb.MinX = msg->left;
+		rect_lb.MinY = msg->top;
+		rect_lb.MaxX = msg->right;
+		rect_lb.MaxY = msg->bottom;
 
 #ifdef __MORPHOS__
-		mbfh.h.h_Entry = ( void * )&bffunc;
+		mbfh_lb.h.h_Entry = ( void * )&bffunc;
 #else
-		mbfh.h.h_Entry = (HOOKFUNC)bffunc;
+		mbfh_lb.h.h_Entry = (HOOKFUNC)bffunc;
 #endif
-		mbfh.xo = -_mleft(obj);//-msg->left;
-		mbfh.yo = -_mtop(obj);//-msg->top;
+		mbfh_lb.xo = -_mleft(obj);//-msg->left;
+		mbfh_lb.yo = -_mtop(obj);//-msg->top;
 
-		mbfh.bm = getclone( data->bgbitmap, ( ( data->bgmask != NULL && data->bgmask != ( APTR )-1 ) ? TRUE : FALSE ) );
+		mbfh_lb.bm = getclone( data->bgbitmap, ( ( data->bgmask != NULL && data->bgmask != ( APTR )-1 ) ? TRUE : FALSE ) );
 
 		//DB( ( "data->bgmask: 0x%lx\n", data->bgmask ) );
 
 		if( data->bgmask != NULL && data->bgmask != ( APTR )-1 )
-			mbfh.maskbm = getclone( data->bgmask, TRUE );
+			mbfh_lb.maskbm = getclone( data->bgmask, TRUE );
 		else
-			mbfh.maskbm = data->bgmask;
+			mbfh_lb.maskbm = data->bgmask;
 
-		mbfh.bmx = data->bgbitmap_xs;
-		mbfh.bmy = data->bgbitmap_ys;
+		mbfh_lb.bmx = data->bgbitmap_xs;
+		mbfh_lb.bmy = data->bgbitmap_ys;
 
-		InitRastPort( &mbfh.drp );
+		InitRastPort( &mbfh_lb.drp );
 
-		DoHookClipRects( &mbfh, _rp( obj ), &rect );
+		DoHookClipRects( &mbfh_lb, _rp( obj ), &rect_lb );
 #else
 		BltBitMapRastPortTiled( data->bgbitmap, 0, 0, data->bgbitmap_xs, data->bgbitmap_ys,
 			msg->left - _mleft(obj), msg->top - _mtop(obj),

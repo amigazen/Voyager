@@ -48,18 +48,44 @@ struct Data {
 	ULONG gcmagic;
 };
 
-// Function for wrapping NewObject and
+/* Max tag pairs we support in one JSNewObject() call (tag+data = 2 ULONGs each) */
+#define JS_NEWOBJECT_MAX_TAGS 64
+
+// Function for wrapping NewObject. Builds a proper TagItem array from varargs
+// instead of passing va_list as TagItem* (undefined behaviour on non-MorphOS).
 APTR STDARGS JSNewObject( APTR class, ... )
 {
 	va_list va;
 	APTR o;
+	ULONG tag, data;
+	int i;
+	struct TagItem tags[ JS_NEWOBJECT_MAX_TAGS ];
 
 	va_start( va, class );
-#ifdef __MORPHOS__
-	o = NewObjectA( class, NULL, (struct TagItem *)va->overflow_arg_area );
-#else
-	o = NewObjectA( class, NULL, (struct TagItem *)va );
-#endif /* !__MORPHOS__ */
+
+	i = 0;
+	do
+	{
+		tag = va_arg( va, ULONG );
+		if( tag == TAG_DONE )
+		{
+			tags[ i ].ti_Tag = TAG_DONE;
+			tags[ i ].ti_Data = 0;
+			break;
+		}
+		data = va_arg( va, ULONG );
+		tags[ i ].ti_Tag = tag;
+		tags[ i ].ti_Data = data;
+		i++;
+	} while( i < JS_NEWOBJECT_MAX_TAGS );
+
+	if( i >= JS_NEWOBJECT_MAX_TAGS )
+	{
+		tags[ JS_NEWOBJECT_MAX_TAGS - 1 ].ti_Tag = TAG_DONE;
+		tags[ JS_NEWOBJECT_MAX_TAGS - 1 ].ti_Data = 0;
+	}
+
+	o = NewObjectA( class, NULL, tags );
 	js_gc_add( o );
 	va_end( va );
 	return( o );

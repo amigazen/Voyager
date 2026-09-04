@@ -22,7 +22,7 @@
  * - Please don't add useless stuff here. Use direct MUI macros/functions
  * whenever possible because they're the same for all apps.
  *
- * © 2000 by Vapor CVS team <ibcvs@vapor.com>
+ * Â© 2000 by Vapor CVS team <ibcvs@vapor.com>
  * All rights reserved
  *
  * $Id: mui_func.c,v 1.13 2003/07/06 16:51:34 olli Exp $
@@ -78,18 +78,40 @@ APTR makebutton( ULONG id )
 // ***************************************************
 
 #ifdef GETOBJECTDIMENSIONS
+#define GETOBJECTDIMENSIONS_MAX_TAGS 32
 void STDARGS getobjectdimensions( APTR class, APTR wobj, int *xsize, int *ysize, ... )
 {
 	APTR obj;
 	va_list va;
+	struct TagItem tags[ GETOBJECTDIMENSIONS_MAX_TAGS ];
+	ULONG tag, data;
+	int i;
 
 	va_start( va, ysize );
 
-#ifdef __MORPHOS__
-	obj = ( APTR )NewObjectA( class, NULL, ( struct TagItem * )va->overflow_arg_area );
-#else
-	obj = ( APTR )NewObjectA( class, NULL, ( struct TagItem * )va );
-#endif /* !__MORPHOS__ */
+	i = 0;
+	do
+	{
+		tag = va_arg( va, ULONG );
+		if( tag == TAG_DONE )
+		{
+			tags[ i ].ti_Tag = TAG_DONE;
+			tags[ i ].ti_Data = 0;
+			break;
+		}
+		data = va_arg( va, ULONG );
+		tags[ i ].ti_Tag = tag;
+		tags[ i ].ti_Data = data;
+		i++;
+	} while( i < GETOBJECTDIMENSIONS_MAX_TAGS );
+
+	if( i >= GETOBJECTDIMENSIONS_MAX_TAGS )
+	{
+		tags[ GETOBJECTDIMENSIONS_MAX_TAGS - 1 ].ti_Tag = TAG_DONE;
+		tags[ GETOBJECTDIMENSIONS_MAX_TAGS - 1 ].ti_Data = 0;
+	}
+
+	obj = ( APTR )NewObjectA( class, NULL, tags );
 	if( obj )
 	{
 		muiGlobalInfo( obj ) = muiGlobalInfo( wobj );

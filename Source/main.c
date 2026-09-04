@@ -103,6 +103,7 @@ ULONG __vat_requirements = VATIR_OS3;
 #ifdef __SASC
 // SAS/C Startup vars
 long __stack = 65536;
+const char *stack_cookie = "$STACK: 65536";
 long __oslibversion = 37;
 #endif
 
@@ -128,6 +129,9 @@ void STDARGS reporterror( char *msg, ... )
 {
 	va_list va;
 	char buffer[ 2048 ];
+
+	if( !msg )
+		msg = "(null)";
 
 	va_start( va, msg );
 
@@ -268,49 +272,25 @@ static void doloop( void )
 	struct plugin *plugin;
 #endif
 
-	#ifdef USE_SMARTCARDFAKE
-	MsgQueue_p scqueue=NULL;
-	DrvIOReqStd_p scior=NULL;
-	BOOL scdrv=FALSE;
-	UDWORD scsig=-1;
-	for (;;)
-	{
-		if ( (scqueue = CreateMsgQueue("TestSuite", 0, TRUE)) )
-		{
-			if ( (scior = CreateStdIO( scqueue )) )
-			{
-				if(!OpenDriver( SMARTCARDDRVNAME, 0, (DrvIOReq_p)scior, 0 ) )
-				{
-					scdrv = TRUE;
+	Printf( "[DOLOOP] doloop() entry\n" );
+	Flush( Output() );
 
-					scior->ior_Command = CMD_SCDINIT;	// general init and interrupt enable
-					DoIO( (DrvIOReq_p)scior);
-
-					// *** Add signal bit to smartcard driver for this process    ***
-					// *** We need to get informed about a CardChanged interrupt. ***
-					if ( -1 != ( scsig = AllocSignal( -1 ) ) )
-					{
-						SmartCardSignal_s scd_signal;
-						scd_signal.scdss_SigProcess = FindProcess(NULL);
-						scd_signal.scdss_SignalBit = scsig;
-						scior->ior_Command = CMD_SCD_ADD_SIGNAL;
-						scior->ior_DataPtr = (VPTR)&scd_signal;
-						scior->ior_Length = sizeof( SmartCardSignal_s );
-						DoIO( (DrvIOReq_p)scior );
-						break;
-					}
-				}
-			}
-		}
-		break;
-	}
-	#endif
+	Printf( "[DOLOOP] Entering main event loop...\n" );
+	Flush( Output() );
 
 	while( !Done )
 	{
+		Printf( "[DOLOOP] Calling MUIM_Application_NewInput...\n" );
+		Flush( Output() );
 		id = DoMethod( app, MUIM_Application_NewInput, &sig );
+		Printf( "[DOLOOP] MUIM_Application_NewInput returned: %ld\n", id );
+		Flush( Output() );
 
+		Printf( "[DOLOOP] Calling checkmethods()...\n" );
+		Flush( Output() );
 		checkmethods();
+		Printf( "[DOLOOP] checkmethods() returned\n" );
+		Flush( Output() );
 
 		switch( id )
 		{
@@ -593,44 +573,6 @@ static void doloop( void )
 			ULONG waitsig = sig | internalipcsig | SIGBREAKF_CTRL_C | SIGBREAKF_CTRL_F | SIGBREAKF_CTRL_E;
 #endif /* !USE_NET */
 
-			#ifdef USE_SMARTCARDFAKE
-			if (scsig!=-1) waitsig |= (1<<scsig);
-			#endif
-
-			sig = Wait( waitsig );
-
-			#if USE_TESTFILE
-			{
-				extern BPTR urltestfile;
-
-				if( urltestfile )
-					urltest();
-			}
-			#endif
-
-			#ifdef USE_SMARTCARDFAKE
-			if (scsig!=-1 && (sig & (1<<scsig)))
-			{
-				DWORD cardstatus = 0L;
-			  	scior->ior_Command = CMD_SCD_QUERYSTATUS;
-			  	scior->ior_DataPtr = (VPTR)&cardstatus;
-			  	scior->ior_Length = sizeof( DWORD );
-			  	DoIO( (DrvIOReq_p)scior );
-			  	if( cardstatus & SCD_QSTAT_CARDINSERTED )
-				{
-			  		KPrintF( "Smartcard was inserted.\r\n" );
-					SendInspireMessage(GetActiveWindow(),IDCMP_RAWKEY,0x2ce,0x0000,NULL);
-					SendInspireMessage(GetActiveWindow(),IDCMP_RAWKEY,0x2ce|0x8000,0x0000,NULL);
-				}
-			  	else
-				{
-			  		KPrintF( "Smartcard was removed.\r\n" );
-					SendInspireMessage(GetActiveWindow(),IDCMP_RAWKEY,0x2cd,0x0000,NULL);
-					SendInspireMessage(GetActiveWindow(),IDCMP_RAWKEY,0x2cd|0x8000,0x0000,NULL);
-				}
-			}
-			#endif
-
 			if( sig & SIGBREAKF_CTRL_C )
 				Done = TRUE;
 
@@ -641,6 +583,20 @@ static void doloop( void )
 			if( sig & authportsigmask )
 				auth_process();
 #endif /* USE_NET */
+		}
+
+		/* When NewInput returns 0 (no input), block to avoid infinite busy loop
+		 * (e.g. after network process crash when no events are delivered). */
+		if( id == 0 )
+		{
+			if( sig )
+				Wait( sig | SIGBREAKF_CTRL_C | SIGBREAKF_CTRL_F | SIGBREAKF_CTRL_E
+#if USE_NET
+					| internalipcsig | authportsigmask
+#endif
+				);
+			else
+				Delay( 1 );
 		}
 
 		checkmethods();
@@ -655,13 +611,6 @@ kprintf("free %ld/%ld\n",AvailMem(0),AvailMem(MEMF_LARGEST));
 #endif
 
 	}
-
-	#ifdef USE_SMARTCARDFAKE
-	if (scdrv) CloseDriver( (DrvIOReq_p)scior );
-	if (scior) DeleteStdIO( scior );
-	if (scqueue) DeleteMsgQueue( scqueue, TRUE);
-	if (scsig!=-1) FreeSignal(scsig);
-	#endif
 }
 
 extern char **openurls;
@@ -729,9 +678,14 @@ int vmain( void )
 		goto ex;
 	}
 	Printf( "[MAIN] initstuff() succeeded, app_started=TRUE\n" );
+	Flush( Output() );
 	app_started = TRUE;
+	Printf( "[MAIN] app_started set to TRUE\n" );
+	Flush( Output() );
 
 #if USE_KEYFILES
+	Printf( "[MAIN] Checking USE_KEYFILES...\n" );
+	Flush( Output() );
 	if( !serialnumber )
 	{
 #if NEED_KEYFILE
@@ -746,20 +700,61 @@ int vmain( void )
 	}
 #endif /* !USE_KEYFILE */
 
+	Printf( "[MAIN] After USE_KEYFILES check\n" );
+	Flush( Output() );
+
 #if USE_SPLASHWIN
+	Printf( "[MAIN] Checking USE_SPLASHWIN...\n" );
+	Flush( Output() );
 	if( use_splashwin )
 	{
+		Printf( "[MAIN] Updating splash window...\n" );
+		Flush( Output() );
 		DoMethod( splashwin, MM_SplashWin_Update, GS( SPLASHWIN_DONE ) );
+		Printf( "[MAIN] Splash window updated\n" );
+		Flush( Output() );
 	}
 #endif
+	Printf( "[MAIN] After USE_SPLASHWIN check\n" );
+	Flush( Output() );
+
+	Printf( "[MAIN] Checking USE_KEYFILES and openurls...\n" );
+	Flush( Output() );
 
 #if USE_KEYFILES
+	Printf( "[MAIN] USE_KEYFILES is enabled, checking piratekey...\n" );
+	Flush( Output() );
 	if( piratekey )
 	{
+		Printf( "[MAIN] piratekey is set, creating PieRat window...\n" );
+		Flush( Output() );
 		win_create( "PieRat", pirateurl, NULL, NULL, FALSE, TRUE, FALSE );
+		Printf( "[MAIN] PieRat window created\n" );
+		Flush( Output() );
 	}
 	else
+	{
+		Printf( "[MAIN] piratekey is not set\n" );
+		Flush( Output() );
+	}
 #endif /* USE_KEYFILES */
+	
+	Printf( "[MAIN] Checking openurls...\n" );
+	Flush( Output() );
+	
+	/* Check if openurls pointer is valid before accessing it */
+	if( openurls && (ULONG)openurls >= 0x1000 )
+	{
+		Printf( "[MAIN] openurls is valid, checking contents...\n" );
+		Flush( Output() );
+	}
+	else
+	{
+		Printf( "[MAIN] openurls is NULL or invalid (0x%lx), skipping\n", openurls );
+		Flush( Output() );
+		openurls = NULL; /* Ensure it's NULL to skip the block */
+	}
+	
 	if( openurls )
 	{
 		Printf( "[MAIN] Creating browser windows from command line URLs...\n" );
@@ -773,21 +768,67 @@ int vmain( void )
 	}
 	else
 	{
+		int autoload;
+		char *homepage;
+		
 		Printf( "[MAIN] Creating first browser window (homepage)...\n" );
-		win_create( "", getflag( VFLG_HOMEPAGE_AUTOLOAD ) ? getprefs( DSI_HOMEPAGE ) : "" , NULL, NULL, FALSE, FALSE, FALSE /*getflag( VFLG_FULLSCREEN )*/ );
+		Flush( Output() );
+		
+		Printf( "[MAIN] About to call getflag(VFLG_HOMEPAGE_AUTOLOAD)...\n" );
+		Flush( Output() );
+		autoload = getflag( VFLG_HOMEPAGE_AUTOLOAD );
+		Printf( "[MAIN] getflag(VFLG_HOMEPAGE_AUTOLOAD) = %ld\n", (long)autoload );
+		Flush( Output() );
+		
+		homepage = autoload ? getprefs( DSI_HOMEPAGE ) : "";
+		Printf( "[MAIN] Homepage URL: %s\n", homepage ? homepage : "(null)" );
+		Flush( Output() );
+		
+		Printf( "[MAIN] About to call win_create()...\n" );
+		Flush( Output() );
+		win_create( "", homepage, NULL, NULL, FALSE, FALSE, FALSE /*getflag( VFLG_FULLSCREEN )*/ );
+		Printf( "[MAIN] win_create() returned\n" );
+		Flush( Output() );
+		
 		Printf( "[MAIN] First browser window created\n" );
+		Flush( Output() );
 	}
+
+	Printf( "[MAIN] After window creation, checking splashwin...\n" );
+	Flush( Output() );
 
 #if USE_SPLASHWIN
+	Printf( "[MAIN] USE_SPLASHWIN is enabled\n" );
+	Flush( Output() );
 	if( splashwin )
 	{
+		Printf( "[MAIN] splashwin exists, closing it...\n" );
+		Flush( Output() );
 		set( splashwin, MUIA_Window_Open, FALSE );
+		Printf( "[MAIN] splashwin closed\n" );
+		Flush( Output() );
 		DoMethod( app, OM_REMMEMBER, splashwin );
+		Printf( "[MAIN] splashwin removed from app\n" );
+		Flush( Output() );
 		MUI_DisposeObject( splashwin );
+		Printf( "[MAIN] splashwin disposed\n" );
+		Flush( Output() );
 	}
+	else
+	{
+		Printf( "[MAIN] splashwin is NULL\n" );
+		Flush( Output() );
+	}
+#else
+	Printf( "[MAIN] USE_SPLASHWIN is disabled\n" );
+	Flush( Output() );
 #endif
 
+	Printf( "[MAIN] About to call doloop()...\n" );
+	Flush( Output() );
 	doloop();
+	Printf( "[MAIN] doloop() returned\n" );
+	Flush( Output() );
 
 	closestuff();
 

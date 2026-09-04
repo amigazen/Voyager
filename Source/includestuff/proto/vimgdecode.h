@@ -5,17 +5,12 @@
 
 #include <clib/vimgdecode_protos.h>
 
-#ifndef _NO_PPCINLINE
-#ifdef __GNUC__
-#ifdef __PPC__
-#include <ppcinline/vimgdecode.h>
-#else
-#include <inline/vimgdecode.h>
-#endif /* __PPC__ */
-#else
-#include <pragmas/vimgdecode_pragmas.h>
-#endif /* __GNUC__ */
-#endif /* _NO_PPCINLINE */
+/*
+ * No inlines or libcall pragmas: the decoder is linked into the executable,
+ * so <clib/vimgdecode_protos.h> above declares plain (register-argument)
+ * functions. Pulling in the pragmas here would turn every call back into a
+ * jsr through VIDBase, which is never a real library base any more.
+ */
 
 #ifndef __NOLIBBASE__
 extern struct Library *

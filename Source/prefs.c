@@ -57,7 +57,7 @@ static time_t starttime, lastusedtime;
 static int usecount;
 #endif
 
-#define PREFSFILEID MAKE_ID('V','Y','²',0)
+#define PREFSFILEID MAKE_ID('V','Y','2',0)
 
 #define MAXDATALENGTH 1024 /* maximum length of the data of a prefsnode */
 
@@ -578,6 +578,8 @@ static void maketb( int num, char *label, char *file, int func, char *args, char
 	setprefsstr( DSI_BUTTONS_ARGS + num, args );
 }
 
+static void initprefs_continuation( void );
+
 void initprefs( void )
 {
 	static struct MUI_PenSpec pcols[ 5 ] = {
@@ -733,7 +735,7 @@ void initprefs( void )
 //	setprefsstr( DSI_HOMEPAGE, "http://212.96.33.222:8082" );
 //	setprefsstr( DSI_HOMEPAGE, "http://www.vorwerkbox.de" );	
 #else
-	setprefsstr( DSI_HOMEPAGE, "http://v3.vapor.com/" );
+	setprefsstr( DSI_HOMEPAGE, "http://www.amigazen.com/" );
 #endif
 #if USE_NET
 	setflag( VFLG_HOMEPAGEURL_MODES, 0 );
@@ -822,6 +824,30 @@ void initprefs( void )
 
 	// misc
 	setprefslong( DSI_MISC_COOKIEBROWSER_SORT_COLUMN, 0 );
+	initprefs_continuation();
+}
+
+/*
+ * Ensure default toolbar button prefs exist (e.g. when prefs file has no toolbar or first run).
+ * Call when SetupToolbar sees 0 buttons so the toolbar shows Back/Forward/Home/Stop etc.
+ */
+void ensure_default_toolbar_prefs( void )
+{
+	maketb( 0, "Back", "Buttons/Devo/_n_back.iff", BFUNC_COMMAND, "GoBackward", "b" );
+	maketb( 1, "Forward", "Buttons/Devo/_n_forward.iff", BFUNC_COMMAND, "GoForward", "f" );
+	maketb( 2, "Home", "Buttons/Devo/_n_home.iff", BFUNC_COMMAND, "GoHome", "h" );
+	maketb( 3, "", "", BFUNC_SEP, "", "" );
+	maketb( 4, "Reload", "Buttons/Devo/_n_reload.iff", BFUNC_COMMAND, "LoadURL RELOAD FORCE", "r" );
+	maketb( 5, "", "", BFUNC_SEP, "", "" );
+	maketb( 6, "Search", "Buttons/Devo/_n_find.iff", BFUNC_COMMAND, "LoadURL URL=search:", "i" );
+	maketb( 7, "Print", "Buttons/Devo/_n_print.iff", BFUNC_COMMAND, "Print ASK", "p" );
+	maketb( 8, "", "", BFUNC_SEP, "", "" );
+	maketb( 9, "Stop", "Buttons/Devo/_n_stop.iff", BFUNC_COMMAND, "Stop", "s" );
+	setprefslong( DSI_BUTTON_NUM, 10 );
+}
+
+static void initprefs_continuation( void )
+{
 	setprefslong( DSI_MISC_COOKIEBROWSER_SORT_REVERSE, FALSE );
 
 	setflag( VFLG_HIDE_ICON, FALSE );

@@ -198,12 +198,23 @@ void SAVEDS dnshandler( void )
 	int mytasknum;
 	char *p;
 	ULONG *ip[ 2 ], ipn;
-	struct Library *DOSBase = NULL;
 	
-	/* Open DOSBase for Printf - child processes need to open it themselves */
-	DOSBase = OpenLibrary( "dos.library", 0 );
-	if( DOSBase )
-		Printf( "[DNS] dnshandler() entry point called\n" );
+	/* Create message port FIRST - parent process is waiting for this! */
+	/* Do this before anything else that might fail or hang */
+	#ifndef __MORPHOS__
+	mytasknum = 0; /* With DNSTASKS=1, always use index 0 */
+	dnsport[ mytasknum ] = CreateMsgPort();
+	if( !dnsport[ mytasknum ] )
+	{
+		dnsproc[ mytasknum ] = NULL;
+		return;
+	}
+	psig = 1L<<dnsport[ mytasknum ]->mp_SigBit;
+	#endif
+
+	ip[ 0 ] = &ipn;
+	ip[ 1 ] = 0;
+	hent.h_addr_list = (APTR)&ip[ 0 ];
 	
 #if USE_EXECUTIVE
 	APTR executivemsg;
@@ -215,91 +226,6 @@ void SAVEDS dnshandler( void )
 		ExitExecutive( executivemsg );
 	}
 #endif /* USE_EXECUTIVE */
-
-	Printf( "[DNS] After USE_EXECUTIVE block\n" );
-	
-	ip[ 0 ] = &ipn;
-	ip[ 1 ] = 0;
-	hent.h_addr_list = (APTR)&ip[ 0 ];
-	
-	Printf( "[DNS] Before task name parsing\n" );
-
-	/* Parse task number from process name - must be safe! */
-	mytasknum = 0;
-	{
-		struct Task *mytask;
-		char *taskname;
-		
-		mytask = FindTask( 0 );
-		Printf( "[DNS] FindTask returned: %lx\n", (long)mytask );
-		if( mytask != NULL && mytask->tc_Node.ln_Name != NULL )
-		{
-			taskname = mytask->tc_Node.ln_Name;
-			Printf( "[DNS] Task name: %s\n", taskname );
-			p = strchr( taskname, 0 );
-			if( p != NULL && p > taskname )
-			{
-				p--; /* Point to last character */
-				Printf( "[DNS] Last character: '%c'\n", *p );
-				if( *p >= '1' && *p <= '9' )
-				{
-					mytasknum = *p - '1';
-					Printf( "[DNS] Parsed mytasknum: %ld\n", (long)mytasknum );
-				}
-				else
-				{
-					Printf( "[DNS] Last character not a digit 1-9\n" );
-				}
-			}
-			else
-			{
-				Printf( "[DNS] Failed to find end of task name\n" );
-			}
-		}
-		else
-		{
-			Printf( "[DNS] FindTask returned NULL or name is NULL\n" );
-		}
-	}
-
-	/* Bounds check - mytasknum must be valid array index */
-	if( mytasknum < 0 || mytasknum >= DNSTASKS )
-	{
-		/* Invalid task number - set to 0 as safe default */
-		mytasknum = 0;
-	}
-
-#ifdef IPLOG
-	if( !mytasknum )
-		iplog();
-#endif
-
-	D( db_dns, bug( "starting up DNS handler %ld\r\n", mytasknum ));
-	if( DOSBase )
-		Printf( "[DNS] DNS handler starting, mytasknum=%ld\n", (long)mytasknum );
-
-	#ifndef __MORPHOS__
-	if( DOSBase )
-		Printf( "[DNS] Creating message port for handler %ld...\n", (long)mytasknum );
-	dnsport[ mytasknum ] = CreateMsgPort();
-	if( dnsport[ mytasknum ] )
-	{
-		if( DOSBase )
-			Printf( "[DNS] Message port created successfully for handler %ld\n", (long)mytasknum );
-		psig = 1L<<dnsport[ mytasknum ]->mp_SigBit;
-		if( DOSBase )
-			Printf( "[DNS] Handler %ld initialized, entering main loop\n", (long)mytasknum );
-	}
-	else
-	{
-		if( DOSBase )
-			Printf( "[DNS] ERROR: Failed to create message port for handler %ld!\n", (long)mytasknum );
-		dnsproc[ mytasknum ] = NULL;
-		if( DOSBase )
-			CloseLibrary( DOSBase );
-		return;
-	}
-	#endif
 
 	while( !dnshandler_die )
 	{
@@ -315,10 +241,15 @@ void SAVEDS dnshandler( void )
 		while( dnsmsg = (struct dnsmsg*)GetMsg( dnsport[ mytasknum ] ) )
 		{
 			/* dnscache_find may access uninitialized globals - check first */
+			/* Also check dnscachepool to ensure semaphore is initialized */
 			if( dnscachepool != NULL )
+			{
 				dnsmsg->dcn = dnscache_find( dnsmsg->name );
+			}
 			else
+			{
 				dnsmsg->dcn = NULL;
+			}
 			if( !dnsmsg->dcn )
 			{
 				if( !netopen )
@@ -343,20 +274,16 @@ void SAVEDS dnshandler( void )
 				// currently queued..
 				stccpy( &dnsbusy[ mytasknum * 64 ], dnsmsg->name, 64 );
 
-				D( db_dns, bug( "%lx: querying for %s (%lx/%lx)\r\n", FindTask( 0 ), dnsmsg->name, dnsmsg, dnsmsg->name ));
-
 				host = NULL;
 				if( SocketBase )
 				{
 					ipn = inet_addr( dnsmsg->name );
 					if( !ipn || ipn == INADDR_NONE )
 					{
-						D( db_dns, bug( "%lx: gethostbyname() for %s\r\n", FindTask( 0 ), dnsmsg->name ));
 						host = gethostbyname( dnsmsg->name );
 					}
 					else
 					{
-						D( db_dns, bug( "%lx: inet_addr() succeeded for %s (%d.%d.%d.%d)\r\n", FindTask( 0 ), dnsmsg->name, ipn>>24, (ipn>>16)&0xFF, (ipn>>8)&0xFF, ipn&0xFF ));
 						host = &hent;
 						hent.h_name = dnsmsg->name;
 					}
@@ -377,8 +304,6 @@ void SAVEDS dnshandler( void )
 		CloseLibrary( SocketBase );
 	}
 
-	Forbid();
-
 	// Flush pending messages
 	while( dnsmsg = (struct dnsmsg*)GetMsg( dnsport[ mytasknum ] ) )
 		ReplyMsg( (struct Message *)dnsmsg );
@@ -387,6 +312,7 @@ void SAVEDS dnshandler( void )
 	DeleteMsgPort( dnsport[ mytasknum ] );
 	dnsport[ mytasknum ] = NULL;
 	#endif
+	
 	dnsproc[ mytasknum ] = NULL;
 }
 
@@ -404,7 +330,6 @@ void dnsmsg_queue( struct dnsmsg *dm )
 	if( c == DNSTASKS )
 		c = ( dnstaskcnt++ ) % DNSTASKS;
 
-	Forbid();
 	if( dnsport[ c ] )
 	{
 		PutMsg( dnsport[ c ], (struct Message *)dm );
@@ -414,7 +339,6 @@ void dnsmsg_queue( struct dnsmsg *dm )
 		// Already shut down
 		ReplyMsg( (struct Message *)dm );
 	}
-	Permit();
 }
 
 #endif /* USE_NET */

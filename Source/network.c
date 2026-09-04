@@ -250,6 +250,72 @@ static void nfree( APTR o )
 
 UWORD nethandler_die;
 
+/* Log file for network process (subprocess stdout not always same as main) */
+static BPTR net_log_file = (BPTR)0;
+
+static void NetLog( const char *fmt, ... )
+{
+	char buf[ 256 ];
+	va_list args;
+	if( !net_log_file )
+		return;
+	va_start( args, fmt );
+	VSNPrintf( buf, sizeof( buf ), fmt, args );
+	va_end( args );
+	FPrintf( net_log_file, "[NET] %s", buf );
+	Flush( net_log_file );
+}
+
+void net_log_http_response( const char *status_line )
+{
+	if( !net_log_file || !status_line || !status_line[ 0 ] )
+		return;
+	FPrintf( net_log_file, "[HTTP] %s\n", status_line );
+	Flush( net_log_file );
+}
+
+void net_log_http_response_line( const char *line )
+{
+	if( !net_log_file )
+		return;
+	if( line )
+		FPrintf( net_log_file, "[HTTP] <<< %s\n", line );
+	Flush( net_log_file );
+}
+
+#define HTTP_LOG_MAX 4096
+void net_log_http_request( const char *buf, int len )
+{
+	const char *p, *end;
+	char line[ 256 ];
+	int n;
+	if( !net_log_file || !buf || len <= 0 )
+		return;
+	if( len > HTTP_LOG_MAX )
+		len = HTTP_LOG_MAX;
+	end = buf + len;
+	FPrintf( net_log_file, "[HTTP] >>> REQUEST >>>\n" );
+	Flush( net_log_file );
+	for( p = buf; p < end; )
+	{
+		n = 0;
+		while( p < end && n < (int)sizeof( line ) - 1 && *p != '\r' && *p != '\n' )
+			line[ n++ ] = *p++;
+		line[ n ] = '\0';
+		if( n > 0 )
+		{
+			FPrintf( net_log_file, "[HTTP] >>> %s\n", line );
+			Flush( net_log_file );
+		}
+		while( p < end && ( *p == '\r' || *p == '\n' ) )
+			p++;
+	}
+	FPrintf( net_log_file, "[HTTP] <<< END REQUEST <<<\n" );
+	Flush( net_log_file );
+}
+
+#undef HTTP_LOG_MAX
+
 APTR unalloc( struct unode *un, int size )
 {
 	APTR o = AllocPooled( un->pool, size );
@@ -258,7 +324,10 @@ APTR unalloc( struct unode *un, int size )
 
 STRPTR unstrdup( struct unode *un, STRPTR str )
 {
-	STRPTR s = unalloc( un, strlen( str ) + 1 );
+	STRPTR s;
+	if( !str )
+		return( NULL );
+	s = unalloc( un, strlen( str ) + 1 );
 	if( s )
 		strcpy( s, str );
 	return( s );
@@ -684,6 +753,19 @@ static void addstream( struct nstream *ns )
 	char *p;
 	APTR pool;
 
+	NetLog( "addstream entry ns=%lx\n", (ULONG)(APTR)ns );
+
+	if( !ns || !ns->url )
+	{
+		NetLog( "addstream: NULL ns or ns->url, dropping\n" );
+		DL( DEBUG_WARNING, db_net, bug( "addstream: NULL ns or ns->url, dropping\n" ) );
+		if( ns )
+			nfree( ns );
+		return;
+	}
+
+	NetLog( "addstream: ns->url=%s\n", ns->url );
+
 	/*
 	 * Scan if there's an existing unode
 	 */
@@ -715,24 +797,42 @@ static void addstream( struct nstream *ns )
 	/*
 	 * Create an unode from scratch then
 	 */
+	NetLog( "addstream: creating from scratch\n" );
 	DL( DEBUG_CHATTY, db_net, bug( "creating from scratch\n" ) );
 
 	pool = CreatePool( 0, 2048, 1024 );
 	if( !pool )
+	{
+		NetLog( "addstream: CreatePool failed\n" );
 		return;
+	}
 	un = AllocPooled( pool, sizeof( *un ) );
 	if( !un )
+	{
+		NetLog( "addstream: AllocPooled failed\n" );
+		DeletePool( pool );
 		return;
+	}
 	memset( un, 0, sizeof( *un ) );
 
 	un->pool = pool;
 
 	un->ledobjnum = -1; // no LED
 
-
+	NetLog( "addstream: calling unstrdup for url\n" );
 	un->url = unstrdup( un, ns->url );
 	un->urlcopy = unstrdup( un, ns->url );
 	un->urlcopy2 = unstrdup( un, ns->url );
+	NetLog( "addstream: unstrdup done url=%lx urlcopy=%lx urlcopy2=%lx\n",
+		(ULONG)(APTR)un->url, (ULONG)(APTR)un->urlcopy, (ULONG)(APTR)un->urlcopy2 );
+	if( !un->url || !un->urlcopy || !un->urlcopy2 )
+	{
+		NetLog( "addstream: unstrdup failed, dropping unode\n" );
+		DL( DEBUG_WARNING, db_net, bug( "addstream: unstrdup failed for url, dropping unode\n" ) );
+		DeletePool( un->pool );
+		nfree( ns );
+		return;
+	}
 
 	un->reload = ns->flags & NOF_RELOAD; /* TOFIX: maybe put flags in un as well */
 	un->timeout = ns->timeout;
@@ -752,8 +852,9 @@ static void addstream( struct nstream *ns )
 	}
 
 	// filter postid from URL
-	strcpy( un->urlcopy2, un->url );
-	p = strrchr( un->urlcopy2, '?' );
+	if( un->url && un->urlcopy2 )
+		strcpy( un->urlcopy2, un->url );
+	p = un->urlcopy2 ? strrchr( un->urlcopy2, '?' ) : NULL;
 	if( p )
 	{
 		if( p[ 1 ] == '{' )
@@ -785,10 +886,12 @@ static void addstream( struct nstream *ns )
 
 	ADDTAIL( &ulist, un );
 
+	NetLog( "addstream: stream added, calling processunode un=%lx\n", (ULONG)(APTR)un );
 	DL( DEBUG_CHATTY, db_net, bug( "stream added\n" ) );
 
 	// kick off
 	processunode( un );
+	NetLog( "addstream: processunode returned\n" );
 }
 
 /*
@@ -1398,6 +1501,8 @@ static void un_setup( struct unode *un )
 	int	size;
 #endif /* USE_PLUGINS */
 
+	NetLog( "un_setup entry un=%lx url=%s\n", (ULONG)(APTR)un, un && un->url ? un->url : "(null)" );
+
 	// initial setup
 
 	// parse URL
@@ -1994,7 +2099,12 @@ static void un_setup( struct unode *un )
 				strcpy( bf2, "� Freely distributable NoNet version �" );
 #endif /* USE_NET */
 
-				data = VABOUT_GetAboutPtr( LVERTAG, bf2, VIDBase->lib_IdString );
+				/*
+				 * VIDBase is no longer a real library base - the decoder is
+				 * linked in and imgstub.c only parks a dummy non-NULL value
+				 * there, so it must not be dereferenced.
+				 */
+				data = VABOUT_GetAboutPtr( LVERTAG, bf2, (STRPTR)LVERTAG );
 				pushstring( un, data );
 				CloseLibrary( VAboutBase );
 			}
@@ -2731,6 +2841,8 @@ static void processunode( struct unode *un )
 	struct nstream *ns, *nsn;
 	int informstate = 0;
 
+	NetLog( "processunode entry un=%lx url=%s\n", (ULONG)(APTR)un, un && un->url ? un->url : "(null)" );
+
 rescanall:
 	// check for closed clients
 	for( ns = FIRSTNODE( &un->clients ); nsn = NEXTNODE( ns ); ns = nsn )
@@ -2874,7 +2986,8 @@ dothatinform:
 					{
 						ASSERT( ns->informobj );
 						ASSERT( ns->un );
-						
+						NetLog( "processunode: pushmethod informstate=%ld (1=GotInfo 2=GotData 3=Done) informobj=%lx ns=%lx\n",
+							(long)ns->informstate, (ULONG)(APTR)ns->informobj, (ULONG)(APTR)ns );
 						pushmethod( ns->informobj,
 									4,
 									MM_NStream_GotInfo + ns->informstate - 1,
@@ -2882,6 +2995,7 @@ dothatinform:
 									( ns->flags & NOF_TIMESTAMP ) ? timedm() : 0,
 									ns->un->docptr + ns->offset /* TOFIX: the flag is useless, really */
 						);
+						NetLog( "processunode: pushmethod GotInfo returned\n" );
 					}
 				}
 			}
@@ -2917,7 +3031,14 @@ static void SAVEDS nethandler( void )
 	ULONG connectreplysig = 0;
 #if USE_EXECUTIVE
 	APTR executivemsg;
+#endif
 
+	net_log_file = Open( "V:voyager_net.log", MODE_NEWFILE );
+	NetLog( "nethandler entry (network process started)\n" );
+
+	/* timed() returns 0 if timer not initialized (subprocess never calls init_timer) */
+
+#if USE_EXECUTIVE
 	executivemsg = InitExecutive();
 	if( executivemsg )
 	{
@@ -2930,14 +3051,19 @@ static void SAVEDS nethandler( void )
 	NEWLIST( &sslcertlist );
 
 	InitSemaphore( &unlistsem );
+	NetLog( "nethandler: creating netport...\n" );
 	netport = CreateMsgPort();
 	if( !netport )
 	{
+		NetLog( "nethandler: CreateMsgPort failed!\n" );
+		if( net_log_file ) { Close( net_log_file ); net_log_file = (BPTR)0; }
 		netproc = NULL;
 		return;
 	}
+	NetLog( "nethandler: netport created, entering main loop\n" );
 
 #if USE_NET
+	NetLog( "nethandler: creating dnsreply port\n" );
 	dnsreply = CreateMsgPort();
 	dnssig = 1L<<dnsreply->mp_SigBit;
 #else /* !USE_NET  */
@@ -3129,11 +3255,14 @@ static void SAVEDS nethandler( void )
 #endif /* USE_NET */
 
 		DL( DEBUG_CHATTY, db_net, bug( "after wait\n" ));
+		NetLog( "nethandler: after wait, calling timed()\n" );
 
 		now = timed();
 
+		NetLog( "nethandler: timed() done, obtaining unlistsem\n" );
 		ObtainSemaphore( &unlistsem );
 
+		NetLog( "nethandler: processing unodes (processunode loop)\n" );
 		for(;;)
 		{
 			activelinksbefore = activelinks;
@@ -3142,7 +3271,9 @@ static void SAVEDS nethandler( void )
 			{
 				if( netclose_requested )
 					un->net_abort = TRUE;
+				NetLog( "nethandler: calling processunode un=%lx\n", (ULONG)(APTR)un );
 				processunode( un );
+				NetLog( "nethandler: processunode returned for un=%lx\n", (ULONG)(APTR)un );
 			}
 
 			// WARNING!
@@ -3217,8 +3348,13 @@ static void SAVEDS nethandler( void )
 			}
 		}
 
-		while( ns = (struct nstream*)GetMsg( netport ) )
+		NetLog( "nethandler: draining netport (GetMsg loop)\n" );
+		while( (ns = (struct nstream*)GetMsg( netport )) )
+		{
+			NetLog( "nethandler: GetMsg got ns=%lx, calling addstream\n", (ULONG)(APTR)ns );
 			addstream( ns );
+			NetLog( "nethandler: addstream returned\n" );
+		}
 
 		ReleaseSemaphore( &unlistsem );
 
@@ -3279,6 +3415,12 @@ static void SAVEDS nethandler( void )
 
 	DL( DEBUG_CHATTY, db_net, bug( "done, zeroing netproc and leaving\n" ));
 
+	if( net_log_file )
+	{
+		NetLog( "nethandler: exiting, closing log\n" );
+		Close( net_log_file );
+		net_log_file = (BPTR)0;
+	}
 	netproc = NULL;
 }
 
@@ -3298,17 +3440,35 @@ int init_netprocess( void )
 		Printf( "[NET] netpool created successfully\n" );
 #if USE_NET
 		Printf( "[NET] About to create DNS processes\n" );
+		Printf( "[NET] DNSTASKS = %ld\n", (long)DNSTASKS );
 		Printf( "[NET] Entering DNS process creation loop\n" );
+		Printf( "[NET] Loop starting, c will go from 0 to %ld\n", (long)(DNSTASKS - 1) );
 		for( c = 0; c < DNSTASKS; c++ )
 		{
-			Printf( "[NET] DNS loop iteration %ld\n", (long)(c + 1) );
+			Printf( "[NET] DNS loop iteration %ld (c=%ld)\n", (long)(c + 1), (long)c );
+			
+			/* Initialize name buffer to ensure it's clean */
+			{
+				int i;
+				for( i = 0; i < sizeof(name); i++ )
+					name[ i ] = '\0';
+			}
+			
 #ifdef __SASC
-			SNPrintf( name, sizeof(name), "V's DNS Server %d", c + 1 );
+			{
+				int result = SNPrintf( name, sizeof(name), "V's DNS Server %d", c + 1 );
+				Printf( "[NET] SNPrintf returned: %ld\n", (long)result );
+			}
 #else
 			sprintf( name, "V's DNS Server %d", c + 1 );
 #endif
-
-			Printf( "[NET] Creating DNS process: %s\n", name );
+			
+			/* Ensure null termination */
+			name[ sizeof(name) - 1 ] = '\0';
+			
+			Printf( "[NET] Creating DNS process\n" );
+			Flush( Output() );
+			
 			dnsproc[ c ] = CreateNewProcTags(
 				NP_Entry, dnshandler,
 				NP_Name, name,
@@ -3324,40 +3484,42 @@ int init_netprocess( void )
 				TAG_DONE
 			);
 
+			Printf( "[NET] CreateNewProcTags returned\n" );
+			Flush( Output() );
+
 			if( !dnsproc[ c ] )
 			{
-				Printf( "[NET] ERROR: DNS process %ld creation failed immediately!\n", (long)(c + 1) );
-			}
-			else
-			{
-				Printf( "[NET] DNS process %ld created, waiting for port...\n", (long)(c + 1) );
+				Printf( "[NET] ERROR: DNS process creation failed!\n" );
+				return( FALSE );
 			}
 
+			Printf( "[NET] Waiting for DNS port...\n" );
+			Flush( Output() );
+
 			#ifndef __MORPHOS__
+			/* Wait for port creation with timeout (max 50 ticks = ~1 second) */
 			{
 				int waitcount = 0;
-				while( dnsproc[ c ] && !dnsport[ c ] && waitcount < 100 )
+				while( dnsproc[ c ] && !dnsport[ c ] && waitcount < 50 )
 				{
 					Delay( 1 );
 					waitcount++;
 					if( (waitcount % 10) == 0 )
-						Printf( "[NET] Still waiting for DNS port %ld (waited %ld ticks)...\n", (long)(c + 1), (long)waitcount );
+					{
+						Printf( "[NET] Still waiting... (%ld)\n", (long)waitcount );
+						Flush( Output() );
+					}
 				}
-				if( dnsport[ c ] )
-					Printf( "[NET] DNS port %ld created successfully\n", (long)(c + 1) );
-				else if( waitcount >= 100 )
-					Printf( "[NET] ERROR: DNS port %ld timeout after 100 ticks!\n", (long)(c + 1) );
-				else
-					Printf( "[NET] WARNING: DNS port %ld not created (process may have exited)!\n", (long)(c + 1) );
+				if( !dnsport[ c ] )
+				{
+					Printf( "[NET] ERROR: DNS port not created after timeout!\n" );
+					return( FALSE );
+				}
 			}
 			#endif
 
-			if( !dnsproc[ c ] )
-			{
-				Printf( "[NET] ERROR: DNS process %ld creation failed!\n", (long)(c + 1) );
-				return( FALSE );
-			}
-			Printf( "[NET] DNS process %ld created successfully\n", (long)(c + 1) );
+			Printf( "[NET] DNS process created successfully\n" );
+			Flush( Output() );
 		}
 
 #if USE_CONNECT_PROC
@@ -3518,7 +3680,8 @@ void cleanup_netprocess( void )
 		while( netproc )
 		{
 			D( db_init, bug( "netproc %lx\n", netproc ) );
-			Signal( ( struct Task * )netproc, SIGBREAKF_CTRL_C );
+			if( netproc )
+				Signal( ( struct Task * )netproc, SIGBREAKF_CTRL_C );
 			if( !netproc )
 				break;
 			DL( DEBUG_WARNING, db_net, bug( "waiting to kill netproc\n" ));
@@ -3528,8 +3691,13 @@ void cleanup_netprocess( void )
 
 		Permit();
 
-		DeletePool( netpool );
+		if( netpool )
+		{
+			DeletePool( netpool );
+			netpool = NULL;
+		}
 	}
+	netproc = NULL;
 }
 
 int nets_flushmem( void )
@@ -3860,11 +4028,12 @@ int ASM SAVEDS nets_state( __reg( a0, struct nstream *ns ) )
 
 void ASM SAVEDS nets_close( __reg( a0, struct nstream *ns ) )
 {
+	if( !ns )
+		return;
 	ns->removeme = TRUE;
-	// TEMP!
-	//ns->un = (APTR)1; /* XXX: TEMP? WTF is that? [zapek]
-	// let netproc rescan its client list
-	Signal( ( struct Task * )netproc, SIGBREAKF_CTRL_D );
+	// let netproc rescan its client list (skip if net process already gone)
+	if( netproc )
+		Signal( ( struct Task * )netproc, SIGBREAKF_CTRL_D );
 }
 
 
@@ -3943,7 +4112,8 @@ void ASM SAVEDS nets_settomem( __reg( a0, struct nstream *ns ) )
 	// notify net proc
 	if( ns->un )
 		ns->un->newclientdestmode++;
-	Signal( ( struct Task * )netproc, SIGBREAKF_CTRL_D );
+	if( netproc )
+		Signal( ( struct Task * )netproc, SIGBREAKF_CTRL_D );
 }
 
 /* redirects a http stream to a file */
@@ -3963,7 +4133,8 @@ void nets_settofile( struct nstream *ns, STRPTR filename, ULONG offset )
 		sur_gauge_clear( ns->un );
 	}
 
-	Signal( ( struct Task * )netproc, SIGBREAKF_CTRL_D );
+	if( netproc )
+		Signal( ( struct Task * )netproc, SIGBREAKF_CTRL_D );
 }
 
 char * ASM SAVEDS nets_redirecturl( __reg( a0, struct nstream *ns ) )
@@ -3994,7 +4165,7 @@ void nets_abort( struct nstream *ns )
 
 char * ASM SAVEDS nets_url( __reg( a0, struct nstream *ns ) )
 {
-	return( ns->url );
+	return( ns ? ns->url : NULL );
 }
 
 char * ASM SAVEDS nets_fullurl( __reg( a0, struct nstream *ns ) )
