@@ -1,0 +1,225 @@
+;
+; $VER: MimePerfs.cd 1.0
+;
+;
+; Usefull strings
+MSG_OK (//)
+OK
+;
+MSG_CANCEL (//)
+Cancel
+;
+MSG_NO (//)
+No
+;
+MSG_YES (//)
+Yes
+;
+MSG_ERROR (//)
+An error occured!
+;
+MSG_APP_DESC (//)
+Global media type handling preferences
+MSG_APP_GUIDENAME (//)
+MimePrefs.guide
+MSG_APP_FAILED (//)
+Internal error:\nFailed to create MUI Application Object\nMUI Error code %ld\n\
+Please report this bug via email immediately to\n<bugs@vapor.com>\n\
+State your system configuration and, if possible,\nthe circumstances which caused the bug.
+;
+MSG_WIN_TITLE (//)
+MIME Media Type Preferences
+MSG_BT_SAVE (//)
+Save
+MSG_BT_USE (//)
+Use
+MSG_BT_CANCEL (//)
+Cancel
+;
+MSG_BT_ADD (//)
+Add
+MSG_BT_DEL (//)
+Remove
+MSG_BT_COPY (//)
+Copy
+MSG_BT_TESTVIEW (//)
+Test 'View'
+;
+MSG_MIME_E_TYPE (//)
+MIME type:
+MSG_MIME_E_EXT (//)
+Extensions:
+MSG_MIME_E_APP (//)
+Application:
+MSG_MIME_E_STORE (//)
+Directory:
+MSG_MIME_ACTS_1 (//)
+Ask user
+MSG_MIME_ACTS_2 (//)
+Save to disk
+MSG_MIME_ACTS_3 (//)
+View
+MSG_MIME_ACTS_4 (//)
+Save & View
+MSG_MIME_LV1 (//)
+\033uType
+MSG_MIME_LV2 (//)
+\033uExtensions
+MSG_MIME_LV3 (//)
+\033uAction
+MSG_MIME_LV4 (//)
+\033uDir
+MSG_MIME_LV5 (//)
+\033uViewer
+MSG_MIME_LV6 (//)
+\033uIS
+;
+MSG_MIME_LV_ACT1 (//)
+Ask
+MSG_MIME_LV_ACT2 (//)
+Save
+MSG_MIME_LV_ACT3 (//)
+View
+MSG_MIME_LV_ACT4 (//)
+S&V
+;
+MSG_MIME_LV_CLASS (//)
+(class)
+MSG_MIME_LV_ASK (//)
+(ask everytime)
+;
+MSG_MIME_E_UCD (//)
+Use class directory?
+;
+MSG_VIEWER (//)
+Viewer
+MSG_VIEWINFO (//)
+\033c(Placeholders: %f filename, %p pubscreenname)
+MSG_VIEW_USE_INTERNAL (//)
+Use internal viewer?
+MSG_VIEW_USE_STREAM (//)
+PIPE Streaming?
+;
+MSG_MENU_PROJECT (//)
+Project
+MSG_MENU_OPEN (//)
+O\000Open...
+MSG_MENU_SAVEAS (//)
+A\000Save as...
+MSG_MENU_ABOUT (//)
+?\000About...
+MSG_MENU_QUIT (//)
+Q\000Quit
+MSG_MENU_EDIT (//)
+Edit
+MSG_MENU_DEFAULTS (//)
+D\000Reset to Defaults...
+MSG_MENU_LASTSAVED (//)
+L\000Last Saved
+MSG_MENU_RESTORE (//)
+R\000Restore
+MSG_MENU_IMPORT_V (//)
+V\000Import old Voyager MIME prefs...
+MSG_MENU_SETTINGS (//)
+Settings
+MSG_MENU_CREATEICONS (//)
+I\000Create Icons?
+MSG_MENU_MUI (//)
+M\000MUI Settings...
+MSG_MENU_TEST (//)
+T\000Test...
+;
+MSG_SH_MIME_CLASS (//)
+General \033bclass\033n of media.\n\
+This forms the MIME media type\n\
+together with the more specific\n\
+\033btype\033n string.
+MSG_SH_MIME_TYPE (//)
+Specific \033btype\033n of media. This forms the\n\
+MIME media type together with the\n\
+\033bclass\033n.\n\n\
+You can specify a default behavior for a\n\
+whole class by specifying "*" here.
+MSG_SH_MIME_EXT (//)
+File extensions which identify a specific\n\
+MIME media type. For example, GIF pictures\n\
+generally have the extension ".GIF", thus\n\
+you would enter ".GIF" here for the MIME type\n\
+"image/gif".\n\n\
+You can specify multiple file extensions\n\
+delimited by spaces, in case there are\n\
+several standard extensions for certain type\n\
+of files (for example, ".html" and ".htm".)
+MSG_SH_MIME_ACT (//)
+The action you want to take place\n\
+when an applications encounters\n\
+a media of the specific type.\n\n\
+"View" here only means that the media\n\
+file is processed with some application,\n\
+which can be an player or viewer of any\n\
+kind, a ARexx script or whatever you like.
+MSG_SH_MIME_STORE (//)
+A directory where you want files\n\
+of the specific MIME type to be stored.\n\
+You can also select to store all files of a\n\
+class in the same directory.\n\n\
+If you leave this blank, applications\n\
+will ask you everytime when you are\n\
+downloading a file of the specific type.
+MSG_SH_MIME_INTERNAL (//)
+If an application has a internal viewer\n\
+for a certain media type, use this in\n\
+preference to the viewing app specified above.\n\n\
+You should still define an external viewer\n\
+for applications which don't have a internal\n\
+viewer (for example, Voyager can internally\n\
+display GIF pictures, AmIRC can't.)
+MSG_SH_MIME_STREAM (//)
+Feed the media data to the viewing application\n\
+using streaming. This is only possible with some\n\
+viewers, and may require special options.
+MSG_SH_MIME_APP (//)
+The "Viewer" application for this media type.\n\
+In addition to the pathname, you can specify\n\
+placeholders:\n\
+· %f will be replaced with the filename of\n\
+  media file to be viewed\n\
+· %p will be replaced with the public screen\n\
+  name of the application which processes\n\
+  the media file
+;
+MSG_IMPORT_V (//)
+Import Voyager MIME preferences
+;
+MSG_NOFILE (//)
+\033cUnable to open file\n\033b%s\033n\n\nReason: %s (%ld)
+;
+MSG_FR_LOAD (//)
+Load MIME prefs preset...
+MSG_FR_SAVE (//)
+Save MIME prefs preset...
+;
+MSG_WINTEST_TITLE (//)
+MIMEPrefs · Testing window
+MSG_WINTEST_FILE (//)
+File to test:
+MSG_SH_WINTEST_FILE (//)
+Here you can drop or select a file\nto test your MIME prefs with.\nThis only works for files with extensions.
+MSG_WINTEST_DO (//)
+Test
+MSG_WINTEST_T_HEADER (//)
+File: '%s'\n\n
+MSG_WINTEST_T_UNKNOWN (//)
+Sorry, cannot identify file by extension.
+MSG_WINTEST_T_INFO (//)
+Type: %s%s\nAction: %s\n
+MSG_WINTEST_T_RUN (//)
+Viewing with '%s'
+;
+MSG_MIME_NOCLASS (//)
+You have no class wide specification for files\nof class \033b%s*\033n. Do you want MIMEPrefs\nto create such an entry for you now?
+MSG_MIME_NOCLASS_ASK (//)
+*\033bYes|No
+;
+MSG_TESTVIEW_FILETITLE (//)
+Select a file to test with:

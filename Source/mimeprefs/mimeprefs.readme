@@ -1,0 +1,112 @@
+MimePrefs 1.5
+=============
+
+(C) 1998-2000 Oliver Wagner
+<owagner@vapor.com>
+All Rights Reserved
+http://www.vapor.com/
+
+
+Introduction
+------------
+
+MimePrefs is a system-wide preference utility which allows
+you to define how certain data types are handled when received
+via the net (Downloaded, DCCed, attached to E-Mail).
+
+The MimePrefs settings are currently honored by the following 
+applications:
+
+ - Voyager 3.x (http://v3.vapor.com/)
+ - AmIRC 2.x and 3.x (http://www.vapor.com/amirc/)
+ - MicroDot-II (http://www.vapor.com/md2/)
+
+MimePrefs has an extensive online help facility using
+MUI's bubble help. If you want information about a certain
+entry field, just let the mouse pointer stay idle over it
+and a description will pop up.
+
+
+Revision history
+----------------
+
+0.3 beta
+--------
+- fixed view section enabling
+- fixed a few typos in the help strings
+- extended "Internal viewer" explanation
+- added all variants of load/save functionality
+- added default prefs
+- added localisation support
+
+0.4 beta
+--------
+- changed default prefs to contain a per-class
+  definition and "Use class dir?" for the subtypes
+- will now automatically whine when you select
+  "Use class dir?" and there is no class wide
+  specification, offering auto-creation of such
+  an entry
+- added Test functionality
+- the PUBSCREEN/K args and tooltype now work
+
+0.5 beta
+--------
+- fixed %p in test mode
+- fixed a few more enable/disable problems
+- "Use class Dir?" is now rejected if there is
+  no class entry and the user rejects to
+  create one
+- added "Test view" mode which asks for a filename
+  and does a test "view" with the currently selected
+  MIME entry
+
+0.6 beta
+--------
+- '%p' was broken in test view mode
+
+0.7 beta
+--------
+- "Extensions:" is now disabled when a class
+  specification is edited
+- auto-created class entries no longer copy the
+  file extensions from the currently selected
+  entry
+- improved bubble help texts
+- will now use NList.mcc if installed
+- fixed usedclasses definition
+
+0.8 beta
+--------
+- added UseOldStyleLists keyword/tooltype
+  to disable usage of Nlist.mcc
+- the test window is now a workbench appwindow
+  accepting dragged icons for the filename
+- fixed PUBSCREEN and CREATEICONS shell args
+
+1.0
+---
+- added support for vapor_update.library
+
+1.1
+---
+- fixed Add button not working with newer MUI betas
+
+1.2
+---
+[internal]
+
+1.3
+---
+- now uses vapor_toolkit.library
+- removed some stale code
+- added "message/" mime class
+
+1.4
+---
+- now uses VAT_AppScreenName() to get application
+  screen name for testing (Olli)
+
+1.5
+---
+- added "multipart/" mime class (Olli)
