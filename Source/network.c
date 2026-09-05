@@ -88,6 +88,10 @@
 #include "errorwin.h"
 #include "htmlclasses.h"
 
+#if USE_ABOUTLIB
+struct Library *VAboutBase;
+#endif
+
 time_t now;
 
 /* defines */
@@ -539,6 +543,18 @@ int openssl( void )
 
 	return( TRUE );
 }
+
+#if USE_ABOUTLIB
+static int openabout( void )
+{
+	if( VAboutBase )
+		return( TRUE );
+	VAboutBase = OpenLibrary( "PROGDIR:Plugins/voyager_about.vlib", VABOUT_VERSION );
+	if( !VAboutBase )
+		VAboutBase = OpenLibrary( "PROGDIR:Plugins/voyager_about.vlib", 0 );
+	return( VAboutBase ? TRUE : FALSE );
+}
+#endif
 
 void closessl( void )
 {
@@ -1594,16 +1610,13 @@ static void un_setup( struct unode *un )
 		else if( !strcmp( purl.path, "vaporlogo" ) )  /* about:vaporlogo */
 		{
 #if USE_ABOUTLIB
-			struct Library *VAboutBase;
-			VAboutBase = OpenLibrary( VABOUT_NAME, VABOUT_VERSION );
-			if( VAboutBase )
+			if( openabout() )
 			{
 				int size;
 				APTR data;
 				data = VABOUT_GetVLogo( &size );
 				pushdata( un, data, size );
 				strcpy( un->mimetype, "image/jpeg" );
-				CloseLibrary( VAboutBase );
 			}
 			else
 #endif /* USE_ABOUTLIB */
@@ -1612,16 +1625,13 @@ static void un_setup( struct unode *un )
 		else if( !strcmp( purl.path, "v3logo" ) )  /* about:vaporlogo */
 		{
 #if USE_ABOUTLIB
-			struct Library *VAboutBase;
-			VAboutBase = OpenLibrary( VABOUT_NAME, VABOUT_VERSION );
-			if( VAboutBase )
+			if( openabout() )
 			{
 				int size;
 				APTR data;
 				data = VABOUT_GetV3Logo( &size );
 				pushdata( un, data, size );
 				strcpy( un->mimetype, "image/jpeg" );
-				CloseLibrary( VAboutBase );
 			}
 			else
 #endif /* USE_ABOUTLIB */
@@ -1630,16 +1640,13 @@ static void un_setup( struct unode *un )
 		else if( !strcmp( purl.path, "flashlogo" ) )  /* about:vaporlogo */
 		{
 #if USE_ABOUTLIB
-			struct Library *VAboutBase;
-			VAboutBase = OpenLibrary( VABOUT_NAME, VABOUT_VERSION );
-			if( VAboutBase )
+			if( openabout() )
 			{
 				int size;
 				APTR data;
 				data = VABOUT_GetFlashLogo( &size );
 				pushdata( un, data, size );
 				strcpy( un->mimetype, "image/jpeg" );
-				CloseLibrary( VAboutBase );
 			}
 			else
 #endif /* USE_ABOUTLIB */
@@ -1648,16 +1655,13 @@ static void un_setup( struct unode *un )
 		else if( !strcmp( purl.path, "pnglogo" ) )  /* about:pnglogo */
 		{
 #if USE_ABOUTLIB
-			struct Library *VAboutBase;
-			VAboutBase = OpenLibrary( VABOUT_NAME, VABOUT_VERSION );
-			if( VAboutBase )
+			if( openabout() )
 			{
 				int size;
 				APTR data;
 				data = VABOUT_GetPNGLogo( &size );
 				pushdata( un, data, size );
 				strcpy( un->mimetype, "image/gif" );
-				CloseLibrary( VAboutBase );
 			}
 			else
 #endif /* USE_ABOUTLIB */
@@ -1666,16 +1670,13 @@ static void un_setup( struct unode *un )
 		else if( !strcmp( purl.path, "ssllogo" ) ) /* about:ssllogo TOFIX: disable if there's no SSL available */
 		{
 #if USE_ABOUTLIB
-			struct Library *VAboutBase;
-			VAboutBase = OpenLibrary( VABOUT_NAME, VABOUT_VERSION );
-			if( VAboutBase )
+			if( openabout() )
 			{
 				int size;
 				APTR data;
 				data = VABOUT_GetSSLLogo( &size );
 				pushdata( un, data, size );
 				strcpy( un->mimetype, "image/gif" );
-				CloseLibrary( VAboutBase );
 			}
 			else
 #endif /* USE_ABOUTLIB */
@@ -1684,13 +1685,10 @@ static void un_setup( struct unode *un )
 		else if( !strcmp( purl.path, "ibeta" ) )  /* about:ibeta */
 		{
 #if USE_ABOUTLIB
-			struct Library *VAboutBase;
-			VAboutBase = OpenLibrary( VABOUT_NAME, VABOUT_VERSION );
-			if( VAboutBase )
+			if( openabout() )
 			{
 				pushstring( un, VABOUT_GetAboutIbeta() );
 				strcpy( un->mimetype, "text/html" );
-				CloseLibrary( VAboutBase );
 			}
 			else
 #endif /* USE_ABOUTLIB */
@@ -2125,9 +2123,7 @@ static void un_setup( struct unode *un )
 		else
 		{
 #if USE_ABOUTLIB
-			struct Library *VAboutBase;
-			VAboutBase = OpenLibrary( VABOUT_NAME, VABOUT_VERSION );
-			if( VAboutBase )
+			if( openabout() )
 			{
 				STRPTR data;
 				char bf2[ 256 ];
@@ -2169,7 +2165,6 @@ static void un_setup( struct unode *un )
 				 */
 				data = VABOUT_GetAboutPtr( LVERTAG, bf2, (STRPTR)LVERTAG );
 				pushstring( un, data );
-				CloseLibrary( VAboutBase );
 			}
 			else
 #endif /* USE_ABOUTLIB */
@@ -3104,9 +3099,21 @@ static void SAVEDS nethandler( void )
 #if USE_EXECUTIVE
 	APTR executivemsg;
 #endif
+#if VLOG_NET
+	char logpath[ 256 ];
+	BPTR progdir;
+#endif
 
 #if VLOG_NET
-	net_log_file = Open( "V:voyager_net.log", MODE_NEWFILE );
+	net_log_file = NULL;
+	progdir = GetProgramDir();
+	if( progdir && NameFromLock( progdir, logpath, sizeof( logpath ) ) )
+	{
+		AddPart( logpath, "voyager_net.log", sizeof( logpath ) );
+		net_log_file = Open( logpath, MODE_NEWFILE );
+	}
+	if( !net_log_file )
+		net_log_file = Open( "PROGDIR:voyager_net.log", MODE_NEWFILE );
 	if( !net_log_file )
 		net_log_file = Open( "RAM:voyager_net.log", MODE_NEWFILE );
 #endif

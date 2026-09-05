@@ -50,6 +50,11 @@
 #define EAGAIN 11
 #endif
 
+/* Handshake log to PROGDIR:/RAM:voyager_net.log.  Off for release. */
+#ifndef VSSL_TRACE
+#define VSSL_TRACE 0
+#endif
+
 #include "rev.h"
 
 /* SAS/C: __reg(a0, T x) -> register __a0 T x (same as Voyager macros/compilers.h). */
@@ -214,6 +219,7 @@ vssl_find_ca(char *buf, ULONG buflen)
 	return NULL;
 }
 
+#if VSSL_TRACE
 static void
 vssl_trace(STRPTR host, LONG attach_rc, LONG hs_rc)
 {
@@ -237,6 +243,9 @@ vssl_trace(STRPTR host, LONG attach_rc, LONG hs_rc)
 	Flush(fh);
 	Close(fh);
 }
+#else
+#define vssl_trace(h, a, b) ((void)0)
+#endif
 
 static int
 vssl_tls_want(LONG rc)
@@ -566,6 +575,9 @@ long __saveds __asm __UserLibInit(register __a6 struct Library *libbase)
 	}
 
 	TlsBase = OpenLibrary(AMITLSNAME, AMITLSVERSION);
+	if (TlsBase == NULL) {
+		TlsBase = OpenLibrary("Libs/" AMITLSNAME, AMITLSVERSION);
+	}
 	if (TlsBase == NULL) {
 		CloseLibrary(UtilityBase);
 		CloseLibrary((struct Library *)DOSBase);

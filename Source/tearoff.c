@@ -21,7 +21,7 @@
 ** -----------------
 ** - Handles the Tearoff panels
 **
-** © 2000 by VaporWare CVS team <ibcvs@vapor.com>
+** ï¿½ 2000 by VaporWare CVS team <ibcvs@vapor.com>
 ** All rights reserved
 **
 ** $Id: tearoff.c,v 1.5 2003/07/06 16:51:34 olli Exp $

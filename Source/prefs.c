@@ -674,14 +674,14 @@ void initprefs( void )
 #define FASTLINKG( n, l, u ) setprefsstr( DSI_FASTLINKS_LABELS + n, l ); setprefsstr( DSI_FASTLINKS_URLS + n, u );
 
 #ifndef MBX
-	FASTLINKG( 0, "amigazen", "https://www.amigazen.com/" )
-	FASTLINKG( 1, "Aminet", "https://aminet.net/" )
-	FASTLINKG( 2, "AmigaNews", "https://www.amiga-news.de/" )
-	FASTLINKG( 3, "EAB", "https://eab.abime.net/" )
-	FASTLINKG( 4, "Google", "https://www.google.com/" )
-	FASTLINKG( 5, "Voyager", "https://zapek.com/software/voyager/" )
-	FASTLINKG( 6, "AWeb", "https://www.amigazen.com/aweb/" )
-	FASTLINKG( 7, "DuckDuckGo", "https://html.duckduckgo.com/html/" )
+	FASTLINKG( 0, "Amiga", "https://amiga.com/" )
+	FASTLINKG( 1, "Aminet", "http://aminet.net/" )
+	FASTLINKG( 2, "amiga-news", "http://www.amiga-news.de/" )
+	FASTLINKG( 3, "AmigaWorld", "https://amigaworld.net/" )
+	/* Local V3 HTML manual (replaces the historical www.vapor.com fastlink). */
+	FASTLINKG( 4, "Docs", "file:///Docs/voyager3docs/main.html" )
+	FASTLINKG( 5, "amigazen", "https://www.amigazen.com/" )
+	FASTLINKG( 6, "DuckDuckGo", "https://html.duckduckgo.com/html/" )
 #else
 	FASTLINKG( 0, "Met@box", "http://www.metabox.de/" )
 	FASTLINKG( 1, "Met@TV", "http://www.metatv.de/html/content/index.html" )
@@ -991,21 +991,19 @@ static void initprefs_continuation( void )
 	setprefslong( DSI_CMENUS_IMAGE_ACTION + 1, BFUNC_COMMAND );
 	setprefsstr( DSI_CMENUS_IMAGE_ARGS + 1, "LoadURL NEW" );
 
-	setprefsstr( DSI_CMENUS_IMAGE_LABELS + 2, "View with WebVision..." );
-	
-	setprefsstr( DSI_CMENUS_IMAGE_LABELS + 3, "Save image" );
+	setprefsstr( DSI_CMENUS_IMAGE_LABELS + 2, "Save image" );
+	setprefslong( DSI_CMENUS_IMAGE_ACTION + 2, BFUNC_COMMAND );
+	setprefsstr( DSI_CMENUS_IMAGE_ARGS + 2, "SaveURL" );
+
+	setprefsstr( DSI_CMENUS_IMAGE_LABELS + 3, "Save image as..." );
 	setprefslong( DSI_CMENUS_IMAGE_ACTION + 3, BFUNC_COMMAND );
-	setprefsstr( DSI_CMENUS_IMAGE_ARGS + 3, "SaveURL" );
-
-	setprefsstr( DSI_CMENUS_IMAGE_LABELS + 4, "Save image as..." );
-	setprefslong( DSI_CMENUS_IMAGE_ACTION + 4, BFUNC_COMMAND );
-	setprefsstr( DSI_CMENUS_IMAGE_ARGS + 4, "SaveURL ASK" );
+	setprefsstr( DSI_CMENUS_IMAGE_ARGS + 3, "SaveURL ASK" );
 	
-	setprefsstr( DSI_CMENUS_IMAGE_LABELS + 5, "Set image as wallpaper" );
+	setprefsstr( DSI_CMENUS_IMAGE_LABELS + 4, "Set image as wallpaper" );
 
-	setprefsstr( DSI_CMENUS_IMAGE_LABELS + 6, "Copy URL to Clipboard" );
-	setprefslong( DSI_CMENUS_IMAGE_ACTION + 6, BFUNC_COMMAND );
-	setprefsstr( DSI_CMENUS_IMAGE_ARGS + 6, "CopyToClip" );
+	setprefsstr( DSI_CMENUS_IMAGE_LABELS + 5, "Copy URL to Clipboard" );
+	setprefslong( DSI_CMENUS_IMAGE_ACTION + 5, BFUNC_COMMAND );
+	setprefsstr( DSI_CMENUS_IMAGE_ARGS + 5, "CopyToClip" );
 
 	/* Links */
 	setprefsstr( DSI_CMENUS_LINK_LABELS, "Open..." );

@@ -21,7 +21,7 @@
  * --------------
  * - Context menus, normal menus, etc...
  *
- * © 2000 VaporWare CVS team <ibcvs@vapor.com>
+ * ù 2000 VaporWare CVS team <ibcvs@vapor.com>
  * All rights reserved
  *
  * $Id: menus.c,v 1.16 2003/07/06 16:51:34 olli Exp $
@@ -74,6 +74,7 @@ static ULONG context_menu_struct( int menumode, APTR menustripobj, APTR menuobj,
 	APTR m;
 	ULONG c;
 	ULONG mode[ 4 ]; //TOFIX!! hm, perhaps not 4... well I'm lazy atm. check later
+	STRPTR lab;
 
 	/*
 	 * Set the right context menu
@@ -127,6 +128,28 @@ static ULONG context_menu_struct( int menumode, APTR menustripobj, APTR menuobj,
 
 		for( c = 0; getprefsstr( mode[ MODE_LABELS ] + c, "" )[ 0 ] || ( getprefslong( mode[ MODE_ACTION ] + c, 0 ) == BFUNC_BAR ); c++ )
 		{
+			lab = getprefsstr( mode[ MODE_LABELS ] + c, "" );
+			if( lab[ 0 ] )
+			{
+				STRPTR p;
+				int skipwv;
+
+				skipwv = FALSE;
+				for( p = lab; *p; p++ )
+				{
+					if( !strnicmp( p, "WebVision", 9 ) )
+					{
+						skipwv = TRUE;
+						break;
+					}
+				}
+				if( skipwv )
+				{
+					userdatanum++;
+					continue;
+				}
+			}
+
 			D( db_gui, bug( "adding menu %s\n", ( getprefslong( mode[ MODE_ACTION ] + c, 0 ) == BFUNC_BAR ) ? "---" : getprefsstr( mode[ MODE_LABELS ] + c, "" ) ) );
 			depth = getprefslong( mode[ MODE_DEPTH ] + c, 0 );
 

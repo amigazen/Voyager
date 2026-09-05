@@ -87,7 +87,7 @@ UnicodeData_p UnicodeBase;
 #define VSPEC ""
 #endif
 
-char copyright[] = { "Voyager " LVERTAG " " VSPEC "(C) 1995-2003 Oliver Wagner & David Gerber, All Rights Reserved" };
+char copyright[] = { "Voyager " LVERTAG " " VSPEC "ù 1995-2003 Oliver Wagner & David Gerber, All Rights Reserved" };
 
 int app_started;
 static int app_doublestart;
@@ -197,8 +197,8 @@ int initstuff( void )
 #ifndef MBX
 	if( !open_mathlibs() ) return( FALSE );
 	if( !open_muimaster() ) return( FALSE );
-	if( !open_vaportoolkit() ) return( FALSE );
-	VoyLog(( "[INIT] After open_vaportoolkit, about to check USE_KEYFILES\n" ));
+	open_vaportoolkit();
+	VoyLog(( "[INIT] After open_muimaster, about to check USE_KEYFILES\n" ));
 	VoyFlush();
 #endif /* !MBX */
 
@@ -856,6 +856,7 @@ void closestuff( void )
 	close_cybergfx();
 #endif /* USE_CGX */
 #ifndef MBX
+	close_bundled_mccs();
 	close_vaportoolkit();
 	close_muimaster();
 	close_mathlibs();
@@ -1000,41 +1001,34 @@ void close_muimaster( void )
 	}
 }
 
+/*
+ * Textinput.mcc OpenLibrarys vapor_toolkit.library in LibInit. Try the
+ * usual ramlib name first; if that misses, open Libs/vapor_toolkit.library
+ * from the current directory (the Voyager drawer).
+ */
 int open_vaportoolkit( void )
 {
-	char libpath[ 256 ];
-	
-	D( db_init, bug( "opening vapor_toolkit.library..\n" ) );
-	
-	/* Construct path: PROGDIR:libs/vapor_toolkit.library */
-	strncpy( libpath, "PROGDIR:Libs/vapor_toolkit.library", sizeof(libpath) - 1 );
-	libpath[ sizeof(libpath) - 1 ] = '\0';
-	
-	VaporToolkitBase = OpenLibrary( libpath, 0 );
+	VaporToolkitBase = OpenLibrary( "vapor_toolkit.library", 0 );
+	VoyLog(( "[INIT] OpenLibrary(vapor_toolkit.library) = %lx\n", (ULONG)VaporToolkitBase ));
+	VoyFlush();
 	if( !VaporToolkitBase )
 	{
-		D( db_init, bug( "failed to open vapor_toolkit.library\n" ) );
-		VoyLog(( "[INIT] WARNING: Could not open %s\n", libpath ));
+		VaporToolkitBase = OpenLibrary( "Libs/vapor_toolkit.library", 0 );
+		VoyLog(( "[INIT] OpenLibrary(Libs/vapor_toolkit.library) = %lx\n", (ULONG)VaporToolkitBase ));
 		VoyFlush();
-		return( FALSE );
 	}
-	
-	D( db_init, bug( "vapor_toolkit.library opened successfully\n" ) );
-	VoyLog(( "[INIT] vapor_toolkit.library opened successfully\n" ));
-	VoyFlush();
-	return( TRUE );
+	return( VaporToolkitBase != NULL );
 }
 
-close_vaportoolkit( )
+void close_vaportoolkit( void )
 {
 	if( VaporToolkitBase )
 	{
-		D( db_init, bug( "closing vapor_toolkit.library..\n" ) );
 		CloseLibrary( VaporToolkitBase );
 		VaporToolkitBase = NULL;
 	}
 }
-#endif
+#endif /* !MBX */
 
 static __far struct mccchk {
 	STRPTR name;
@@ -1058,6 +1052,133 @@ static __far struct mccchk {
 	//"CompactWindow.mcc", 12, 6,
 	{ NULL }
 };
+
+#define MAX_BUNDLED_MCC 16
+static struct Library *bundled_mcc_bases[ MAX_BUNDLED_MCC ];
+static int bundled_mcc_count;
+
+static struct Library *keep_mcc_base( struct Library *base )
+{
+	if( !base )
+		return( NULL );
+	if( bundled_mcc_count < MAX_BUNDLED_MCC )
+	{
+		bundled_mcc_bases[ bundled_mcc_count ] = base;
+		bundled_mcc_count++;
+		return( base );
+	}
+	CloseLibrary( base );
+	return( NULL );
+}
+
+static struct Library *try_open_mcc_path( STRPTR path )
+{
+	BPTR lock;
+	struct Library *base;
+
+	lock = Lock( path, ACCESS_READ );
+	VoyLog(( "[MCC] Lock(%s) = %lx\n", path, (ULONG)lock ));
+	VoyFlush();
+	if( lock )
+		UnLock( lock );
+
+	base = OpenLibrary( path, 0 );
+	VoyLog(( "[MCC] OpenLibrary(%s) = %lx\n", path, (ULONG)base ));
+	VoyFlush();
+	return( base );
+}
+
+static int copy_mcc_file( STRPTR from, STRPTR to )
+{
+	BPTR in;
+	BPTR out;
+	char buf[ 512 ];
+	LONG n;
+
+	in = Open( from, MODE_OLDFILE );
+	if( !in )
+	{
+		VoyLog(( "[MCC] copy: cannot Open %s\n", from ));
+		VoyFlush();
+		return( FALSE );
+	}
+	out = Open( to, MODE_NEWFILE );
+	if( !out )
+	{
+		VoyLog(( "[MCC] copy: cannot create %s\n", to ));
+		VoyFlush();
+		Close( in );
+		return( FALSE );
+	}
+	n = 1;
+	while( n > 0 )
+	{
+		n = Read( in, buf, (LONG)sizeof( buf ) );
+		if( n > 0 && Write( out, buf, n ) != n )
+		{
+			Close( out );
+			Close( in );
+			VoyLog(( "[MCC] copy: write failed to %s\n", to ));
+			VoyFlush();
+			return( FALSE );
+		}
+	}
+	Close( out );
+	Close( in );
+	VoyLog(( "[MCC] copied %s -> %s\n", from, to ));
+	VoyFlush();
+	return( n == 0 );
+}
+
+/*
+ * Search LIBS:mui then <program dir>/Libs/mui (the merged Voyager Libs drawer).
+ */
+static struct Library *open_progdir_mcc( STRPTR name )
+{
+	char libspath[ 256 ];
+	char path[ 256 ];
+	char progdirpath[ 256 ];
+	struct Library *base;
+	BPTR progdir;
+
+	strcpy( libspath, "LIBS:mui/" );
+	strcat( libspath, name );
+	base = try_open_mcc_path( libspath );
+	if( base )
+		return( keep_mcc_base( base ) );
+
+	progdir = GetProgramDir();
+	if( !progdir || !NameFromLock( progdir, progdirpath, sizeof( progdirpath ) ) )
+		return( NULL );
+
+	VoyLog(( "[MCC] program dir is %s\n", progdirpath ));
+	VoyFlush();
+
+	strcpy( path, progdirpath );
+	AddPart( path, "Libs", sizeof( path ) );
+	AddPart( path, "mui", sizeof( path ) );
+	AddPart( path, name, sizeof( path ) );
+	base = try_open_mcc_path( path );
+	if( !base && copy_mcc_file( path, libspath ) )
+		base = try_open_mcc_path( libspath );
+	if( base )
+		return( keep_mcc_base( base ) );
+
+	return( NULL );
+}
+
+void close_bundled_mccs( void )
+{
+	while( bundled_mcc_count > 0 )
+	{
+		bundled_mcc_count--;
+		if( bundled_mcc_bases[ bundled_mcc_count ] )
+		{
+			CloseLibrary( bundled_mcc_bases[ bundled_mcc_count ] );
+			bundled_mcc_bases[ bundled_mcc_count ] = NULL;
+		}
+	}
+}
 
 /*
  * Opens all the MCC in the mccs[] array and shows a requester
@@ -1094,6 +1215,7 @@ int mcccheck( void )
 		VoyFlush();
 		
 		classname = mccs[ c ].name;
+		altname = NULL;
 		o = MUI_NewObject( classname, TAG_DONE );
 		
 		/* If failed and name ends with .mcc, try without extension */
@@ -1110,15 +1232,25 @@ int mcccheck( void )
 				o = MUI_NewObject( altname, TAG_DONE );
 			}
 		}
+
+		if( !o && classname != NULL )
+		{
+			if( open_progdir_mcc( classname ) )
+			{
+				o = MUI_NewObject( classname, TAG_DONE );
+				if( !o && altname )
+					o = MUI_NewObject( altname, TAG_DONE );
+			}
+		}
 		
 		if( o )
 		{
 			ver = getv( o, MUIA_Version );
 			rev = getv( o, MUIA_Revision );
 #ifdef __SASC
-			SNPrintf( verinfo, sizeof(verinfo), "%d.%d", ver, rev );
+			SNPrintf( verinfo, sizeof(verinfo), "%ld.%ld", (long)ver, (long)rev );
 #else
-			sprintf( verinfo, "%d.%d", ver, rev );
+			sprintf( verinfo, "%ld.%ld", (long)ver, (long)rev );
 #endif
 
 			VoyLog(( "[MCC] Class %s found: v%s\n", mccs[ c ].name, verinfo ));
@@ -1153,13 +1285,16 @@ int mcccheck( void )
 
 		msgend = strchr( message, 0 );
 #ifdef __SASC
-		SNPrintf( msgend, sizeof(message) - (msgend - message), GS( MCCCHECK_LINE ),
-			mccs[ c ].name, mccs[ c ].minver, mccs[ c ].minrev,
+		/* RawDoFmt %d/%u are 16-bit; %u printed v0.29 and ate the version string. */
+		SNPrintf( msgend, sizeof(message) - (msgend - message),
+			"\n%s: required v%ld.%ld, installed %s",
+			mccs[ c ].name, (long)mccs[ c ].minver, (long)mccs[ c ].minrev,
 			verinfo
 		);
 #else
-		sprintf( msgend, GS( MCCCHECK_LINE ),
-			mccs[ c ].name, mccs[ c ].minver, mccs[ c ].minrev,
+		sprintf( msgend,
+			"\n%s: required v%ld.%ld, installed %s",
+			mccs[ c ].name, (long)mccs[ c ].minver, (long)mccs[ c ].minrev,
 			verinfo
 		);
 #endif

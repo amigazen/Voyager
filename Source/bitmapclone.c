@@ -85,16 +85,19 @@ void init_fakebitmap( void )
 	VoyFlush();
 	if( SysBase != NULL )
 	{
-		/* Don't use Forbid()/Permit() - can cause deadlocks during init */
+		/*
+		 * FindPort() on a public port must run inside Forbid/Permit so the
+		 * port cannot vanish while we look it up. Do not Printf/Flush here:
+		 * DOS inside Forbid can stall the scheduler.
+		 */
+		Forbid();
 		if( FindPort( "FBlit" ) != NULL )
-		{
 			fblitinstalled = TRUE;
+		Permit();
+		if( fblitinstalled )
 			VoyLog(( "[INIT] FBlit found, fblitinstalled=TRUE\n" ));
-		}
 		else
-		{
 			VoyLog(( "[INIT] FBlit not found, fblitinstalled=FALSE\n" ));
-		}
 		VoyFlush();
 	}
 	else
@@ -103,7 +106,7 @@ void init_fakebitmap( void )
 		VoyFlush();
 	}
 	VoyLog(( "[INIT] init_fakebitmap() complete\n" ));
-
+	VoyFlush();
 }
 
 void close_cybergfx( void )

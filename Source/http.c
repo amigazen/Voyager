@@ -63,13 +63,11 @@
 /*
  * Default HTTP User-Agent (gp_spoof == 0).
  *
- * Firefox 4 grammar (Gecko/20100101 Firefox/4.0.1). Extra tokens after
- * the Firefox product make some servers 400; AmigaVoyager stays inside
- * the Mozilla comment. Targeting current mainstream sites is a dead end;
- * this is for Amiga-related HTML that still speaks HTTP.
+ * Firefox 4.0.1 on Windows 7. StackCDN (and similar WAFs) 403 a
+ * Firefox-shaped UA that also lists AmigaVoyager in the Mozilla comment.
  */
-#define DEFAULT_USERAGENT_FMT \
-	"Mozilla/5.0 (Windows NT 6.1; rv:2.0.1; AmigaVoyager/" VERSIONSTRING "; %s; %s) Gecko/20100101 Firefox/4.0.1"
+#define DEFAULT_USERAGENT \
+	"Mozilla/5.0 (Windows NT 6.1; rv:2.0.1) Gecko/20100101 Firefox/4.0.1"
 
 char vuseragent[ 256 ];
 void SAVEDS setup_useragent( void )
@@ -78,7 +76,7 @@ void SAVEDS setup_useragent( void )
 	SNPrintf( vuseragent, sizeof(vuseragent), "Mozilla/5.0 (compatible; Met@box1000-Browser/" VERSIONSTRING ") (KHTML, like Gecko)" );
 #else
 	if( !gp_spoof )
-		SNPrintf( vuseragent, sizeof(vuseragent), DEFAULT_USERAGENT_FMT, hostos, cpuid );
+		SNPrintf( vuseragent, sizeof(vuseragent), "%s", DEFAULT_USERAGENT );
 	else
 		SNPrintf( vuseragent, sizeof(vuseragent), "%s", getprefsstr( DSI_NET_SPOOF_AS_1 + gp_spoof - 1, "(none)" ) );
 #endif

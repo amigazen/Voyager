@@ -45,10 +45,10 @@
 #define VoyLog(args)
 #define VoyFlush()
 #endif
-/* HTTP/net process file log. Independent of VLOG. Opens V:voyager_net.log,
- * then RAM:voyager_net.log if V: is not assigned. */
+/* HTTP/net process file log. Independent of VLOG. Opens voyager_net.log
+ * in the program drawer, then PROGDIR:voyager_net.log, then RAM:. */
 #ifndef VLOG_NET
-#define VLOG_NET 1
+#define VLOG_NET 0
 #endif
 
 

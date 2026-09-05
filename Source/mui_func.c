@@ -79,6 +79,7 @@ APTR makebutton( ULONG id )
 
 #ifdef GETOBJECTDIMENSIONS
 #define GETOBJECTDIMENSIONS_MAX_TAGS 32
+/* Same va_arg TagItem copy as mySystemTags: one path for SAS/C, GCC, MorphOS. */
 void STDARGS getobjectdimensions( APTR class, APTR wobj, int *xsize, int *ysize, ... )
 {
 	APTR obj;
