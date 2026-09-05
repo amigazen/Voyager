@@ -1,0 +1,38 @@
+# AmiTLS backend for voyager_ssl.vlib (VSSL ABI v10, VSSL_Pending).
+# Requires amitls.library at runtime and AmiTLS SDK headers at compile time.
+# From Source/VSSL/amitls: smake
+#
+# slink does not understand Unix "../"; Amiga parent of this dir is /fd/
+
+CC = sc
+OBJS = vssl.o libbases.o
+FD = /fd/vssl.fd
+
+all: voyager_ssl.vlib
+
+voyager_ssl.vlib: $(OBJS)
+	slink FROM lib:libent.o,lib:libinit.o $(OBJS) LIB lib:sc.lib LIB lib:amiga.lib \
+	SMALLCODE SMALLDATA ADDSYM NOICONS \
+	LIBVERSION 10 LIBREVISION 0 \
+	LIBFD $(FD) \
+	LIBID "Voyager SSL (AmiTLS) 10.0 (5.9.26)" \
+	to voyager_ssl.vlib.debug
+	slink FROM lib:libent.o,lib:libinit.o $(OBJS) LIB lib:sc.lib LIB lib:amiga.lib \
+	SMALLCODE ND SMALLDATA NOICONS \
+	LIBVERSION 10 LIBREVISION 0 \
+	LIBFD $(FD) \
+	LIBID "Voyager SSL (AmiTLS) 10.0 (5.9.26)" \
+	to voyager_ssl.vlib
+
+vssl.o: vssl.c rev.h
+	$(CC) vssl.c to vssl.o
+
+libbases.o: libbases.c
+	$(CC) libbases.c to libbases.o
+
+clean:
+	-delete vssl.o libbases.o voyager_ssl.vlib voyager_ssl.vlib.debug QUIET
+
+install: all
+	copy voyager_ssl.vlib to ///Internet/Voyager/Plugins
+	-avail flush

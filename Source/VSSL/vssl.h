@@ -46,6 +46,9 @@ struct VSSL_CacheInfo {
 #pragma libcall VSSLBase VSSL_GetVersion d2 801
 /* V8*/
 #pragma libcall VSSLBase VSSL_SetDefaultOptions d8 001
+/* V9 */
+#pragma libcall VSSLBase VSSL_ConnectHost de 90803
+#pragma libcall VSSLBase VSSL_Pending e4 801
 
 typedef void *X509;
 typedef void *ASN1_UTCTIME;
@@ -83,6 +86,8 @@ void VSSL_GetStats( APTR ctx, struct VSSL_CacheInfo *ci );
 void VSSL_CTX_Set_Options( APTR ctx, ULONG options );
 STRPTR VSSL_GetVersion( APTR ssl );
 void VSSL_SetDefaultOptions( ULONG options );
+APTR VSSL_ConnectHost( APTR ctx, int sock, STRPTR hostname );
+ULONG VSSL_Pending( APTR ssl );
 
 #define SSL_OP_MICROSOFT_SESS_ID_BUG			0x00000001L
 #define SSL_OP_NETSCAPE_CHALLENGE_BUG			0x00000002L

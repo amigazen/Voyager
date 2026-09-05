@@ -33,4 +33,6 @@ VSSL_GetStats(ctx,ci)(a0/a1)
 VSSL_CTX_Set_Options(ctx,options)(a0/d0)
 VSSL_GetVersion(ssl)(a0)
 VSSL_SetDefaultOptions(options)(d0)
+VSSL_ConnectHost(ctx,sock,hostname)(a0/d0/a1)
+VSSL_Pending(ssl)(a0)
 ##end

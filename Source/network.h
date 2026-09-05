@@ -322,4 +322,7 @@ void net_log_http_response_line( const char *line );
 /** Log full HTTP request to voyager_net.log (buf may contain \\r\\n; truncated to max_len) */
 void net_log_http_request( const char *buf, int len );
 
+/** Network process log (RAM:voyager_net.log when VLOG_NET). */
+void net_log( const char *fmt, ... );
+
 #endif /* VOYAGER_NETWORK_H */

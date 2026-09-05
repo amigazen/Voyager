@@ -363,6 +363,128 @@ char *date2string( time_t t )
 }
 
 
+/* 1978-01-01 (DateStamp day 0) was a Sunday. */
+static int v_isleap( int y )
+{
+	if( ( y % 4 ) != 0 )
+		return( 0 );
+	if( ( y % 100 ) != 0 )
+		return( 1 );
+	if( ( y % 400 ) == 0 )
+		return( 1 );
+	return( 0 );
+}
+
+static int v_month_days( int y, int m )
+{
+	static const UBYTE dim[ 12 ] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+
+	if( m < 1 || m > 12 )
+		return( 0 );
+	if( m == 2 && v_isleap( y ) )
+		return( 29 );
+	return( (int)dim[ m - 1 ] );
+}
+
+/*
+ * RFC 1123 GMT from a Voyager/SAS/C time_t via DateStamp fields only.
+ * Do not use gmtime, utunpk, or Amiga2Date (ClockData came back as
+ * "Sat, 00     11322 00:2026:00 GMT" and still 400'd amiga.com).
+ */
+int format_rfc1123_gmt( time_t t, char *out, int outlen )
+{
+#ifndef MBX
+	struct DateStamp *ds;
+	LONG totmin;
+	ULONG days;
+	int year, mon, mday, hour, min, sec, wday, ydays, mdays;
+	char tmp[ 40 ];
+	extern int locale_timezone_offset;
+
+	if( !out || outlen < 30 || !t )
+		return( FALSE );
+
+	ds = __timecvt( t );
+	if( !ds || ds->ds_Days < 0 || ds->ds_Minute < 0 || ds->ds_Minute > 24 * 60 - 1 )
+		return( FALSE );
+
+	totmin = (LONG)ds->ds_Days * 1440L + (LONG)ds->ds_Minute;
+	totmin -= locale_timezone_offset / 60;
+	if( totmin < 0 )
+		return( FALSE );
+
+	days = (ULONG)( totmin / 1440L );
+	min = (int)( totmin % 1440L );
+	hour = min / 60;
+	min = min % 60;
+	sec = (int)( ds->ds_Tick / TICKS_PER_SECOND );
+	if( sec < 0 )
+		sec = 0;
+	if( sec > 59 )
+		sec = 59;
+
+	year = 1978;
+	for( ;; )
+	{
+		ydays = v_isleap( year ) ? 366 : 365;
+		if( days < (ULONG)ydays )
+			break;
+		days -= (ULONG)ydays;
+		year++;
+		if( year > 2037 )
+			return( FALSE );
+	}
+
+	mon = 1;
+	for( ;; )
+	{
+		mdays = v_month_days( year, mon );
+		if( mdays <= 0 || days < (ULONG)mdays )
+			break;
+		days -= (ULONG)mdays;
+		mon++;
+		if( mon > 12 )
+			return( FALSE );
+	}
+	mday = (int)days + 1;
+
+	if( year < 1996 || year > 2037
+		|| mon < 1 || mon > 12
+		|| mday < 1 || mday > 31
+		|| hour < 0 || hour > 23
+		|| min < 0 || min > 59 )
+		return( FALSE );
+
+	/* DateStamp day 0 = Sunday 1 Jan 1978 */
+	wday = (int)( ( totmin / 1440L ) % 7L );
+	if( wday < 0 )
+		wday += 7;
+
+	sprintf( tmp, "%3.3s, %02d %3.3s %04d %02d:%02d:%02d GMT",
+		&"SunMonTueWedThuFriSat"[ wday * 3 ],
+		mday,
+		&"JanFebMarAprMayJunJulAugSepOctNovDec"[ ( mon - 1 ) * 3 ],
+		year,
+		hour, min, sec
+	);
+	/* Must be "20xx" or "19xx" in the year slot, never 11322. */
+	if( tmp[ 12 ] != '1' && tmp[ 12 ] != '2' )
+		return( FALSE );
+	if( tmp[ 5 ] == '0' && tmp[ 6 ] == '0' )
+		return( FALSE );
+	if( (int)strlen( tmp ) >= outlen )
+		return( FALSE );
+	strcpy( out, tmp );
+	return( TRUE );
+#else
+	(void)t;
+	(void)out;
+	(void)outlen;
+	return( FALSE );
+#endif
+}
+
+
 /*
  * Converts an RFC date into a time_t
  */

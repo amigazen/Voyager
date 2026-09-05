@@ -253,7 +253,7 @@ UWORD nethandler_die;
 /* Log file for network process (subprocess stdout not always same as main) */
 static BPTR net_log_file = (BPTR)0;
 
-static void NetLog( const char *fmt, ... )
+void net_log( const char *fmt, ... )
 {
 	char buf[ 256 ];
 	va_list args;
@@ -265,6 +265,8 @@ static void NetLog( const char *fmt, ... )
 	FPrintf( net_log_file, "[NET] %s", buf );
 	Flush( net_log_file );
 }
+
+#define NetLog net_log
 
 void net_log_http_response( const char *status_line )
 {
@@ -488,7 +490,7 @@ int openssl( void )
 		return( TRUE );
 
 #ifndef MBX
-	VSSLBase = OpenLibrary( "PROGDIR:Plugins/voyager_ssl.vlib", 8 );
+	VSSLBase = OpenLibrary( "PROGDIR:Plugins/voyager_ssl.vlib", 10 );
 	if( !VSSLBase )
 	{
 /* MiamiSSL deprecated - commented out
@@ -522,14 +524,17 @@ int openssl( void )
 #ifndef MBX
 		VSSL_SetTCPMode( netopen == 2, SocketBase ); //TOFIX!!
 		DL( DEBUG_INFO, db_net, bug( "SSL: tcpmode %ld, libbase 0x%lx, sslbase 0x%lx\n", netopen == 2, SocketBase, VSSLBase ));
+		NetLog( "openssl: VSSLBase=%lx SocketBase=%lx tcpmode=%ld\n",
+			(ULONG)(APTR)VSSLBase, (ULONG)(APTR)SocketBase, (long)( netopen == 2 ) );
 #endif
 		ssl_ctx = VSSL_Create_CTX();
 		DL( DEBUG_INFO, db_net, bug( "SSL: got ctx 0x%lx\n", ssl_ctx ) );
+		NetLog( "openssl: ssl_ctx=%lx\n", (ULONG)(APTR)ssl_ctx );
 		if( !ssl_ctx )
 		{
 			return( FALSE );
 		}
-		//VSSL_AddCertDir( ssl_ctx, "PROGDIR:Certificates" );
+		VSSL_AddCertDir( ssl_ctx, "PROGDIR:Certificates" );
 	}
 
 	return( TRUE );
@@ -2428,6 +2433,9 @@ int uns_write( struct unode *un, STRPTR data, int len )
 			if( VSSLBase )
 #endif
 				rc = VSSL_Write( un->sslh, data, len );
+				if( rc <= 0 )
+					NetLog( "VSSL_Write url=%s len=%ld rc=%ld errno=%ld\n",
+						un->url ? un->url : "", (long)len, (long)rc, (long)Errno() );
 /* MiamiSSL deprecated - commented out
 #if USE_MIAMI
 			else
@@ -2465,6 +2473,9 @@ int uns_read( struct unode *un, char *buffer, int maxlen )
 		if( VSSLBase )
 #endif
 			rc = VSSL_Read( un->sslh, buffer, maxlen );
+			if( rc <= 0 )
+				NetLog( "VSSL_Read url=%s maxlen=%ld rc=%ld errno=%ld\n",
+					un->url ? un->url : "", (long)maxlen, (long)rc, (long)Errno() );
 /* MiamiSSL deprecated - commented out
 #if USE_MIAMI
 		else
@@ -3035,6 +3046,8 @@ static void SAVEDS nethandler( void )
 
 #if VLOG_NET
 	net_log_file = Open( "V:voyager_net.log", MODE_NEWFILE );
+	if( !net_log_file )
+		net_log_file = Open( "RAM:voyager_net.log", MODE_NEWFILE );
 #endif
 	NetLog( "nethandler entry (network process started)\n" );
 
@@ -3158,6 +3171,7 @@ static void SAVEDS nethandler( void )
 		if( maxsock >= 0 )
 		{
 			int rc;
+			int sslpend;
 			ULONG sig = SIGBREAKF_CTRL_C | SIGBREAKF_CTRL_D | psig | dnssig | connectreplysig;
 #ifndef MBX
 			struct timeval tv;
@@ -3170,6 +3184,29 @@ static void SAVEDS nethandler( void )
 			tv.tv_secs = 5;
 			tv.tv_usec = 0;
 #endif
+			sslpend = 0;
+#if USE_SSL
+			if( VSSLBase )
+			{
+				for( un = FIRSTNODE( &ulist ); NEXTNODE( un ); un = NEXTNODE( un ) )
+				{
+					if( un->sslh && VSSL_Pending( un->sslh ) > 0 )
+					{
+						sslpend = 1;
+						break;
+					}
+				}
+			}
+#endif
+			if( sslpend )
+			{
+				tv.tv_secs = 0;
+#ifndef MBX
+				tv.tv_micro = 0;
+#else
+				tv.tv_usec = 0;
+#endif
+			}
 			rc = WaitSelect( maxsock + 1, &fdrset, &fdwset, NULL, &tv, &sig );
 
 			if( rc < 0 || ( sig & SIGBREAKF_CTRL_C ) )
@@ -3257,6 +3294,16 @@ static void SAVEDS nethandler( void )
 #endif /* USE_NET */
 
 		DL( DEBUG_CHATTY, db_net, bug( "after wait\n" ));
+#if USE_SSL
+		if( VSSLBase )
+		{
+			for( un = FIRSTNODE( &ulist ); NEXTNODE( un ); un = NEXTNODE( un ) )
+			{
+				if( un->sslh && VSSL_Pending( un->sslh ) > 0 )
+					un->sockstategot |= SSW_SR;
+			}
+		}
+#endif
 		NetLog( "nethandler: after wait, calling timed()\n" );
 
 		now = timed();

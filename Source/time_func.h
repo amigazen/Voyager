@@ -26,6 +26,7 @@ time_t timev( void );
 long UtPack(const char *x);
 char *datestamp2string( struct DateStamp *ds );
 char *date2string( time_t t );
+int format_rfc1123_gmt( time_t t, char *out, int outlen );
 time_t convertrfcdate( char *uudate );
 #ifdef MBX
 #define timed timev

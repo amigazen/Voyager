@@ -185,4 +185,16 @@
 		APTR , __p1, a0, \
 		, _BASE_NAME, 0, 0, 0, 0, 0, 0)
 
+#define VSSL_ConnectHost(__p0, __p1, __p2) \
+	LP3(222, APTR , VSSL_ConnectHost, \
+		APTR , __p0, a0, \
+		int , __p1, d0, \
+		STRPTR , __p2, a1, \
+		, _BASE_NAME, 0, 0, 0, 0, 0, 0)
+
+#define VSSL_Pending(__p0) \
+	LP1(228, ULONG , VSSL_Pending, \
+		APTR , __p0, a0, \
+		, _BASE_NAME, 0, 0, 0, 0, 0, 0)
+
 #endif /* !_PPCINLINE__H */

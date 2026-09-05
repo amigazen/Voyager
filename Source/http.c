@@ -86,6 +86,10 @@ void SAVEDS setup_useragent( void )
 
 #if USE_NET
 
+#if USE_SSL
+static int un_doprotocol_http_ssl_after_write( struct unode *un );
+#endif
+
 /*
  * Setups the HTTP request.
  */
@@ -178,6 +182,7 @@ static void un_doprotocol_http_req( struct unode *un )
 	int len;
 	int formlen = 0;
 	char *formdata = 0; // Make GCC happy
+	int wrc;
 
 	// assemble send initial request
 
@@ -307,48 +312,21 @@ static void un_doprotocol_http_req( struct unode *un )
 			bp = strchr( bp, 0 );
 		}
 
+		/*
+		 * If-Modified-Since from DateStamp day/min (format_rfc1123_gmt).
+		 */
 #ifndef MBX
 		if( un->cachedate && !un->reload )
 		{
-			extern struct Locale *locale;
-			extern int locale_timezone_offset;
-			time_t tdate;
-			struct tm *gmt;
-			struct tm gmtcopy;
-			int have_gmt;
+			char ims[ 40 ];
 
-			tdate = un->cachedate;
-			if( locale )
-				tdate -= locale_timezone_offset;
-			Forbid();
-			gmt = gmtime( &tdate );
-			have_gmt = FALSE;
-			if( gmt )
+			if( format_rfc1123_gmt( un->cachedate, ims, (int)sizeof( ims ) ) )
 			{
-				gmtcopy = *gmt;
-				have_gmt = TRUE;
-			}
-			Permit();
-			/*
-			 * Skip a garbage date: uninitialised tdate produced
-			 * If-Modified-Since values Apache and Google 400.
-			 */
-			if( have_gmt && gmtcopy.tm_wday >= 0 && gmtcopy.tm_wday <= 6
-				&& gmtcopy.tm_mon >= 0 && gmtcopy.tm_mon <= 11
-				&& gmtcopy.tm_mday >= 1 && gmtcopy.tm_mday <= 31
-				&& gmtcopy.tm_year >= 70 && gmtcopy.tm_year < 200 )
-			{
-				sprintf( bp, "If-Modified-Since: %3.3s, %u %3.3s %04d %02d:%02d:%02d GMT\r\n",
-					&"SunMonTueWedThuFriSat"[ gmtcopy.tm_wday * 3 ],
-					gmtcopy.tm_mday,
-					&"JanFebMarAprMayJunJulAugSepOctNovDec"[ gmtcopy.tm_mon * 3 ],
-					gmtcopy.tm_year + 1900,
-					gmtcopy.tm_hour, gmtcopy.tm_min, gmtcopy.tm_sec
-				);
+				sprintf( bp, "If-Modified-Since: %s\r\n", ims );
 				bp = strchr( bp, 0 );
 			}
 		}
-		else 
+		else
 #endif
 		if( un->reload )
 		{
@@ -398,13 +376,33 @@ static void un_doprotocol_http_req( struct unode *un )
 		len = strlen( buffer );
 	}*/
 
-	uns_write( un, bp, len ); /* XXX: that one can crash.. */
+	wrc = uns_write( un, bp, len ); /* XXX: that one can crash.. */
 
 	if( formlen )
 	{
 		DL( DEBUG_CHATTY, db_http, bug( "posting formdata (%ld bytes): '%s'\n", formlen, formdata ));
-		uns_write( un, formdata, formlen );
+		if( wrc > 0 )
+			wrc = uns_write( un, formdata, formlen );
 	}
+
+#if USE_SSL
+	if( un->ssl && un->sslh )
+	{
+		if( wrc <= 0 )
+		{
+			net_log( "ssl_setup: request write failed host=%s rc=%ld errno=%ld\n",
+				un->purl.host ? (char *)un->purl.host : "",
+				(long)wrc, (long)Errno() );
+			strcpy( un->errorstring, GS( NWM_ERROR_SSLFAILED ) );
+			makehtmlerror( un );
+			un->state = UNS_FAILED;
+			un_netclose( un );
+			return;
+		}
+		if( !un_doprotocol_http_ssl_after_write( un ) )
+			return;
+	}
+#endif
 
 	un->protocolstate = HTTP_WAIT_REPLY; // waiting for (initital) HTTP reply
 
@@ -957,6 +955,13 @@ static void un_doprotocol_http_readdata_10( struct unode *un )
 
 		DL( DEBUG_CHATTY, db_http, bug( "(%s) got %ld bytes of data\r\n", un->url, rc ));
 
+#if USE_SSL
+		if( rc == 0 && un->sslh )
+		{
+			un->sockstategot = 0;
+			return;
+		}
+#endif
 		if( rc <= 0 )
 		{
 			// end of data
@@ -1162,15 +1167,12 @@ static void un_doprotocol_http_readdata_postchunk( struct unode *un )
 static void un_doprotocol_http_ssl_setup( struct unode *un )
 {
 #if USE_SSL
-	char *cipher = cipher; /* shut up gcc */
-	STRPTR sslver = sslver; /* shut up gcc */
-	APTR peercert;
-	char cert_info[ 2048 ];
-
 	sur_txt( un, GS( NETST_SSLHANDSHAKE ) );
 
 	if( !openssl() )
 	{
+		net_log( "ssl_setup: openssl() failed url=%s\n",
+			un->url ? un->url : "" );
 #endif
 		// no SSL
 		strcpy( un->errorstring, GS( NWM_ERROR_NOSSL ) );
@@ -1188,7 +1190,11 @@ static void un_doprotocol_http_ssl_setup( struct unode *un )
 	if( VSSLBase )
 #endif
 	{
-		un->sslh = VSSL_Connect( ssl_ctx, un->sock );
+		net_log( "ssl_setup: ConnectHost host=%s sock=%ld ctx=%lx\n",
+			un->purl.host ? (char *)un->purl.host : "",
+			(long)un->sock, (ULONG)(APTR)ssl_ctx );
+		un->sslh = VSSL_ConnectHost( ssl_ctx, un->sock,
+			un->purl.host ? un->purl.host : (STRPTR)"localhost" );
 	}
 /* MiamiSSL deprecated - commented out
 #if USE_MIAMI
@@ -1207,8 +1213,10 @@ static void un_doprotocol_http_ssl_setup( struct unode *un )
 
 	if( !un->sslh )
 	{
+		net_log( "ssl_setup: ConnectHost failed host=%s sock=%ld errno=%ld\n",
+			un->purl.host ? (char *)un->purl.host : "",
+			(long)un->sock, (long)Errno() );
 		DL( DEBUG_CHATTY, db_http, bug( "ssl_connect() failed\r\n" ));
-ssl_failed:
 		strcpy( un->errorstring, GS( NWM_ERROR_SSLFAILED ) );
 		makehtmlerror( un );
 		un->state = UNS_FAILED;
@@ -1216,76 +1224,81 @@ ssl_failed:
 		return;
 	}
 
-	// at this point, the SSL handshake was completed
-
-#ifndef MBX	
-	if( VSSLBase)
-#endif
-	{
-		peercert = VSSL_GetPeerCertificate( un->sslh );
-
-		if( !peercert )
-			goto ssl_failed;
-
-		DL( DEBUG_INFO, db_http, bug( "peercert %lx\r\n", peercert ));
-		
-		cert_getinfo( peercert, cert_info, VSSLVAR );
-		un->sslpeercert = StrDupPooled( un->pool, cert_info );
-
-		DL( DEBUG_CHATTY, db_http, bug( "un->sslpeercert == %s\r\n", un->sslpeercert ));
-
-		if( !FINDNAME( &sslcertlist, un->purl.host ) )
-		{
-			char *errorp;
-			int rc;
-			rc = VSSL_GetVerifyResult( un->sslh, &errorp );
-			if( rc >= 2 )
-			{
-				rc = certreq_ask( peercert, errorp, VSSLVAR, un );
-				if( !rc )
-				{
-					DL( DEBUG_CHATTY, db_http, bug( "nocert!!!\r\n" ));
-					strcpy( un->errorstring, GS( NWM_ERROR_SSLFAILED ) );
-					makehtmlerror( un );
-					un->state = UNS_FAILED;
-					un_netclose( un );
-					return;
-				}
-				else
-				{
-					struct Node *ssln;
-					ssln = (APTR)nalloc( sizeof( *ssln ) + strlen( un->purl.host ) + 1 );
-					if( ssln )
-					{
-						ssln->ln_Name = (char*)(ssln + 1 );
-						strcpy( ssln->ln_Name, un->purl.host );
-						ADDTAIL( &sslcertlist, ssln );
-					}
-				}
-			}
-		}
-		cipher = VSSL_GetCipher( un->sslh );    
-		sslver = VSSL_GetVersion( un->sslh );
-	}
-/* MiamiSSL deprecated - commented out
-#if USE_MIAMI
-	else
-	{
-		cipher = SSL_get_cipher( un->sslh );
-		sslver = "Not implemented in Miami"; //TOFIX !! not available in that version at least..
-	}
-#endif
-*/
-
-	/* copy the cipher and version in the unode */
-	un->sslcipher = StrDupPooled( un->pool, cipher );
-	un->sslversion = StrDupPooled( un->pool, sslver );
-
-	sur_text( un, GS( NETST_SSLESTABLISHED ), cipher );
-
+	/*
+	 * AmiTLS deferred handshake: attach only.  Peer cert exists after
+	 * the first VSSL_Write (HTTP request).
+	 */
+	net_log( "ssl_setup: attached host=%s sslh=%lx (handshake on first write)\n",
+		un->purl.host ? (char *)un->purl.host : "", (ULONG)(APTR)un->sslh );
 	un->protocolstate = HTTP_SEND_REQUEST;
 #endif
 }
+
+#if USE_SSL
+static int un_doprotocol_http_ssl_after_write( struct unode *un )
+{
+	char *cipher = cipher;
+	STRPTR sslver = sslver;
+	APTR peercert;
+	char cert_info[ 2048 ];
+
+	peercert = VSSL_GetPeerCertificate( un->sslh );
+	if( !peercert )
+	{
+		net_log( "ssl_setup: no peer cert host=%s errno=%ld\n",
+			un->purl.host ? (char *)un->purl.host : "", (long)Errno() );
+		strcpy( un->errorstring, GS( NWM_ERROR_SSLFAILED ) );
+		makehtmlerror( un );
+		un->state = UNS_FAILED;
+		un_netclose( un );
+		return FALSE;
+	}
+
+	cert_getinfo( peercert, cert_info, VSSLVAR );
+	un->sslpeercert = StrDupPooled( un->pool, cert_info );
+
+	if( !FINDNAME( &sslcertlist, un->purl.host ) )
+	{
+		char *errorp;
+		int rc;
+
+		rc = VSSL_GetVerifyResult( un->sslh, &errorp );
+		net_log( "ssl_setup: verify rc=%ld host=%s\n",
+			(long)rc, un->purl.host ? (char *)un->purl.host : "" );
+		if( rc >= 2 )
+		{
+			rc = certreq_ask( peercert, errorp, VSSLVAR, un );
+			if( !rc )
+			{
+				strcpy( un->errorstring, GS( NWM_ERROR_SSLFAILED ) );
+				makehtmlerror( un );
+				un->state = UNS_FAILED;
+				un_netclose( un );
+				return FALSE;
+			}
+			else
+			{
+				struct Node *ssln;
+				ssln = (APTR)nalloc( sizeof( *ssln ) + strlen( un->purl.host ) + 1 );
+				if( ssln )
+				{
+					ssln->ln_Name = (char*)(ssln + 1 );
+					strcpy( ssln->ln_Name, un->purl.host );
+					ADDTAIL( &sslcertlist, ssln );
+				}
+			}
+		}
+	}
+	cipher = VSSL_GetCipher( un->sslh );
+	sslver = VSSL_GetVersion( un->sslh );
+	un->sslcipher = StrDupPooled( un->pool, cipher );
+	un->sslversion = StrDupPooled( un->pool, sslver );
+	sur_text( un, GS( NETST_SSLESTABLISHED ), cipher );
+	net_log( "ssl_setup: handshake ok host=%s sslh=%lx\n",
+		un->purl.host ? (char *)un->purl.host : "", (ULONG)(APTR)un->sslh );
+	return TRUE;
+}
+#endif
 
 void un_doprotocol_http( struct unode *un )
 {

@@ -45,9 +45,10 @@
 #define VoyLog(args)
 #define VoyFlush()
 #endif
-/* HTTP request/response file log (V:voyager_net.log). Independent of VLOG. */
+/* HTTP/net process file log. Independent of VLOG. Opens V:voyager_net.log,
+ * then RAM:voyager_net.log if V: is not assigned. */
 #ifndef VLOG_NET
-#define VLOG_NET 0
+#define VLOG_NET 1
 #endif
 
 
@@ -324,7 +325,9 @@ STRPTR voyager_catalog_str( ULONG msgid, STRPTR builtin );
 #elif defined( AMIGAOS )
 
 #define USE_ABOUTLIB       1
-#define USE_ALPHA          0
+/* CGX/P96 truecolor cannot cookie-cut with BltMaskBitMapRastPort; use
+ * WritePixelArrayAlpha (cybergraphics.library 41+) like MorphOS. */
+#define USE_ALPHA          1
 #define USE_AUTOCOMPLETE   1
 #define USE_BLOCKING_CONN  0
 #define USE_BUSY           1
@@ -357,7 +360,7 @@ STRPTR voyager_catalog_str( ULONG msgid, STRPTR builtin );
 #define USE_SPEEDBAR       1
 #define USE_SPLASHWIN      0
 #define USE_SSCREEN        1
-#define USE_SSL            0
+#define USE_SSL            1
 #define USE_STB_NAV        0
 #define USE_TEAROFF        0 /* TearOffPanel.mcc hits bogus pointers under Enforcer; compile without tear-off UI */
 #define USE_TESTFILE       1

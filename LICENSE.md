@@ -35,7 +35,8 @@ Some directories in this tree carry their own notices:
 | Vapor Application Toolkit (VAT) | `Source/vat/LICENSE` | LGPL-3.0 |
 | libmath64 | `Source/libmath64/LICENSE` | LGPL-3.0 |
 | VSSL | `Source/VSSL/LICENSE` | LGPL-3.0 |
-| OpenSSL (bundled with VSSL) | `Source/VSSL/openssl/LICENSE` | OpenSSL |
+| OpenSSL (historical VSSL tree) | `Source/VSSL/openssl/LICENSE` | OpenSSL |
+| AmiTLS (runtime, not bundled) | sibling `AmiTLS` tree | BSD-2-Clause / MIT (BearSSL) |
 
 JPEG, PNG, Zlib, and similar decoder libraries under imgdecode / VFlash
 remain under their upstream licenses as shipped in the GPL drop.

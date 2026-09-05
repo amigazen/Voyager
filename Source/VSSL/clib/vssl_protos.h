@@ -34,4 +34,6 @@ void VSSL_GetStats( APTR ctx, struct VSSL_CacheInfo *ci );
 void VSSL_CTX_Set_Options( APTR ctx, ULONG options );
 STRPTR VSSL_GetVersion( APTR ssl );
 void VSSL_SetDefaultOptions( ULONG options );
+APTR VSSL_ConnectHost( APTR ctx, int sock, STRPTR hostname );
+ULONG VSSL_Pending( APTR ssl );
 

@@ -9,6 +9,10 @@ This file follows Keep a Changelog. Product version **3.5.1** is the amigazen pr
   drop it if the lockup stays gone.
 - Tear-off panels remain off (`USE_TEAROFF 0`) until TearOffPanel.mcc is
   Enforcer-clean.
+- HTTPS via AmiTLS: `Source/VSSL/amitls` builds `voyager_ssl.vlib` on
+  `amitls.library` (TLS 1.2, SNI). `VSSL_ConnectHost` is VSSL ABI v9.
+  OpenSSL 0.9 under `Source/VSSL/openssl` is not linked. Needs
+  `LIBS:amitls.library` and a PEM CA bundle (`PROGDIR:Certificates/cacert.pem`).
 
 ## [3.5.1] - 2026-09-04
 
