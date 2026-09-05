@@ -702,6 +702,64 @@ static int un_netunpark( struct unode *un, ULONG ip, int port, int *sock, int *l
 }
 
 /*
+ * Same host already has a request on the wire.  Do not unpark/open
+ * another HTTP socket (that was pipelining GETs on keep-alive in one
+ * nethandler pass).
+ */
+static int http_peer_in_flight( struct unode *me )
+{
+	struct unode *un;
+	ULONG ip;
+
+	if( !me || !me->dcn || !me->dcn->ip )
+		return( FALSE );
+	ip = *me->dcn->ip;
+	for( un = FIRSTNODE( &ulist ); NEXTNODE( un ); un = NEXTNODE( un ) )
+	{
+		if( un == me )
+			continue;
+		if( un->retr_mode != me->retr_mode )
+			continue;
+		if( un->port != me->port )
+			continue;
+		if( !un->dcn || !un->dcn->ip || *un->dcn->ip != ip )
+			continue;
+		if( un->sock < 0 )
+			continue;
+		if( un->state == UNS_CONNECTING || un->state == UNS_CONNECTED
+			|| un->state == UNS_READING )
+			return( TRUE );
+	}
+	return( FALSE );
+}
+
+/*
+ * Finished page still on ulist for in-memory cache.  Nethandler must not
+ * processunode it every WaitSelect (starves downloads).
+ */
+static int un_idle_cached( struct unode *un )
+{
+	struct nstream *ns;
+
+	if( un->state != UNS_DONE && un->state != UNS_FAILED )
+		return( FALSE );
+	if( un->sock >= 0 || un->sock_pasv >= 0 )
+		return( FALSE );
+#if USE_SSL
+	if( un->sslh )
+		return( FALSE );
+#endif
+	if( un->newclientdestmode )
+		return( FALSE );
+	for( ns = FIRSTNODE( &un->clients ); NEXTNODE( ns ); ns = NEXTNODE( ns ) )
+	{
+		if( !ns->removeme && ns->informstate < 3 )
+			return( FALSE );
+	}
+	return( TRUE );
+}
+
+/*
  * Finds the oldest parked connection and free it
  */
 static int un_netfreeparked( void )
@@ -1686,7 +1744,7 @@ static void un_setup( struct unode *un )
 				"<A HREF=\"http://www.metabox.de/\">Met@Box</A><BR>"
 				"<A HREF=\"http://www.metatv.de/1/\">MetaTV Phoenix Portal</A><BR>"
 				"<A HREF=\"http://www.discovery.com/\">Disovery Channel</A><BR>"
-				"<A HREF=\"http://v3.vapor.com/vapor/vtestsuite/\">Voyager Test Suite</A><BR>"
+				"<A HREF=\"https://zapek.com/software/voyager/\">Voyager notes (zapek.com)</A><BR>"
 				"<A HREF=\"http://www.heise.de/\">Heise</A><BR>"
 				"<A HREF=\"http://212.96.44.167/\">Show</A><BR>"
 				"<A HREF=\"http://www.theregister.co.uk/\">The Register</A><BR>"
@@ -2577,6 +2635,9 @@ static int un_startnet( struct unode *un )
 	static int ledcnt;
 	struct sockaddr_in sockadr;
 
+	if( http_peer_in_flight( un ) )
+		return( FALSE );
+
 	// check for a parked connection...
 	if( un_netunpark( un, *un->dcn->ip, un->port, &un->sock, &un->ledobjnum, un->retr_mode ) )
 	{
@@ -3320,6 +3381,8 @@ static void SAVEDS nethandler( void )
 			{
 				if( netclose_requested )
 					un->net_abort = TRUE;
+				if( un_idle_cached( un ) )
+					continue;
 				NetLog( "nethandler: calling processunode un=%lx\n", (ULONG)(APTR)un );
 				processunode( un );
 				NetLog( "nethandler: processunode returned for un=%lx\n", (ULONG)(APTR)un );

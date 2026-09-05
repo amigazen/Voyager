@@ -674,14 +674,14 @@ void initprefs( void )
 #define FASTLINKG( n, l, u ) setprefsstr( DSI_FASTLINKS_LABELS + n, l ); setprefsstr( DSI_FASTLINKS_URLS + n, u );
 
 #ifndef MBX
-	FASTLINKG( 0, "Vapor", "http://www.vapor.com/" )
-	FASTLINKG( 1, "AmigaNews", "http://www.amiga-news.de/" )
-	FASTLINKG( 2, "Google", "http://www.google.com/" )
-	FASTLINKG( 3, "Yahoo", "http://www.yahoo.com/" )
-	FASTLINKG( 4, "Alta Vista", "http://www.altavista.com/" )
-	FASTLINKG( 5, "Lycos", "http://www.lycos.com/" )
-	FASTLINKG( 6, "Metacrawler", "http://www.metacrawler.com/" )
-	FASTLINKG( 7, "AllTheWeb", "http://www.alltheweb.com/" )
+	FASTLINKG( 0, "amigazen", "https://www.amigazen.com/" )
+	FASTLINKG( 1, "Aminet", "https://aminet.net/" )
+	FASTLINKG( 2, "AmigaNews", "https://www.amiga-news.de/" )
+	FASTLINKG( 3, "EAB", "https://eab.abime.net/" )
+	FASTLINKG( 4, "Google", "https://www.google.com/" )
+	FASTLINKG( 5, "Voyager", "https://zapek.com/software/voyager/" )
+	FASTLINKG( 6, "AWeb", "https://www.amigazen.com/aweb/" )
+	FASTLINKG( 7, "DuckDuckGo", "https://html.duckduckgo.com/html/" )
 #else
 	FASTLINKG( 0, "Met@box", "http://www.metabox.de/" )
 	FASTLINKG( 1, "Met@TV", "http://www.metatv.de/html/content/index.html" )
@@ -879,10 +879,10 @@ static void initprefs_continuation( void )
 	setprefsstr( DSI_NET_SPOOF_AS_1_AV, "4.6 (compatible; AmigaVoyager; AmigaOS)" );
 #endif
 
-	setprefsstr( DSI_NET_SPOOF_AS_2, "Mozilla/4.6 (i386; Win9x; D)" );
-	setprefsstr( DSI_NET_SPOOF_AS_2_AN, "Netscape" );
+	setprefsstr( DSI_NET_SPOOF_AS_2, "Mozilla/5.0 (Windows NT 6.1; rv:2.0.1) Gecko/20100101 Firefox/4.0.1" );
+	setprefsstr( DSI_NET_SPOOF_AS_2_AN, "Firefox" );
 	setprefsstr( DSI_NET_SPOOF_AS_2_AC, "Mozilla" );
-	setprefsstr( DSI_NET_SPOOF_AS_2_AV, "4.6 (i386; Win9x; D)" );
+	setprefsstr( DSI_NET_SPOOF_AS_2_AV, "5.0 (Windows NT 6.1; rv:2.0.1) Gecko/20100101 Firefox/4.0.1" );
 
 	setprefsstr( DSI_NET_SPOOF_AS_3, "Mozilla/4.0 (compatible; MSIE 5.0; Win98)" );
 	setprefsstr( DSI_NET_SPOOF_AS_3_AN, "Microsoft Internet Explorer" );

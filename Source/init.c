@@ -87,7 +87,7 @@ UnicodeData_p UnicodeBase;
 #define VSPEC ""
 #endif
 
-char copyright[] = { "Voyager " LVERTAG " " VSPEC "ù 1995-2003 Oliver Wagner & David Gerber, All Rights Reserved" };
+char copyright[] = { "Voyager " LVERTAG " " VSPEC "(C) 1995-2003 Oliver Wagner & David Gerber, All Rights Reserved" };
 
 int app_started;
 static int app_doublestart;
@@ -1698,8 +1698,8 @@ static int buildapp( void )
 	app = NewObject( getappclass(), NULL,
 		MUIA_Application_Title, "" APPNAME "",
 		MUIA_Application_Version, lversion,
-		MUIA_Application_Copyright, "ù 1995-2002 Oliver Wagner & David Gerber, All Rights Reserved",
-		MUIA_Application_Author, "Oliver Wagner",
+		MUIA_Application_Copyright, "(C) 1995-2003 Oliver Wagner & David Gerber",
+		MUIA_Application_Author, "Oliver Wagner & David Gerber",
 		MUIA_Application_UsedClasses, classlist,
 		MUIA_Application_Description, GS( APP_DESC ),
 		MUIA_Application_Base, "VOYAGER",

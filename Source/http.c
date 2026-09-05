@@ -63,9 +63,10 @@
 /*
  * Default HTTP User-Agent (gp_spoof == 0).
  *
- * Extra product tokens after Firefox/x.y are valid RFC 9110 but many
- * servers (mod_security, nginx maps) answer 400. Keep AmigaVoyager
- * inside the Mozilla comment so the line still ends Firefox/4.0.1.
+ * Firefox 4 grammar (Gecko/20100101 Firefox/4.0.1). Extra tokens after
+ * the Firefox product make some servers 400; AmigaVoyager stays inside
+ * the Mozilla comment. Targeting current mainstream sites is a dead end;
+ * this is for Amiga-related HTML that still speaks HTTP.
  */
 #define DEFAULT_USERAGENT_FMT \
 	"Mozilla/5.0 (Windows NT 6.1; rv:2.0.1; AmigaVoyager/" VERSIONSTRING "; %s; %s) Gecko/20100101 Firefox/4.0.1"
