@@ -7,6 +7,8 @@
  * $Id: libfunctable.c,v 1.1 2003/06/22 23:04:50 zapek Exp $
  */
 
+#if defined( __MORPHOS__ )
+
 //#include "globals.h"
 
 /* public */
@@ -47,3 +49,5 @@ ULONG LibFuncTable[] =
 	0xffffffff,
 	FUNCARRAY_END
 };
+
+#endif /* __MORPHOS__ */

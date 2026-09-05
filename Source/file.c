@@ -20,7 +20,7 @@
  * DOS support functions
  * ---------------------
  *
- * © 2000 by Vapor CVS team <ibcvs@vapor.com>
+ * ù 2000 by Vapor CVS team <ibcvs@vapor.com>
  * All rights reserved
  *
  * $Id: file.c,v 1.12 2003/07/06 16:51:33 olli Exp $
@@ -43,6 +43,7 @@
 
 static BPTR oldprogdir;
 BPTR currentdir_lock;
+char voyager_progdir[ 256 ];
 
 /*
  * Sets the comment of a file to 80 chars. This stripping
@@ -98,7 +99,9 @@ static int testpathname( char *pn, char *cmd )
 
 /*
  * extended SystemTags() with WB support.
- * Builds a proper TagItem array from varargs (va_list as TagItem* is undefined behaviour).
+ * On 68k the tags are linear after cmd, so (TagItem *)va / (&cmd + 1) is the
+ * usual Amiga/MorphOS ABox idiom (reference ù2.1.3.3). We copy via va_arg
+ * instead so SAS/C, GCC, and MorphOS PPC share one path; it is not a 68k fix.
  */
 int STDARGS mySystemTags( char *cmd, ... )
 {
@@ -192,6 +195,12 @@ void init_progdir( void )
 {
 #if USE_DOS
 	char progdirname[ 256 ];
+	BPTR pd;
+
+	voyager_progdir[ 0 ] = 0;
+	pd = GetProgramDir();
+	if( pd )
+		NameFromLock( pd, voyager_progdir, sizeof( voyager_progdir ) );
 
 	if( GetVar( "VOYAGERDIR", progdirname, sizeof( progdirname ), 0 ) > 0 )
 	{
@@ -199,6 +208,7 @@ void init_progdir( void )
 		if( currentdir_lock )
 		{
 			oldprogdir = SetProgramDir( currentdir_lock );
+			NameFromLock( currentdir_lock, voyager_progdir, sizeof( voyager_progdir ) );
 		}
 	}
 #endif

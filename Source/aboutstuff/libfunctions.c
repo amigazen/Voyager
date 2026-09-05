@@ -1,5 +1,7 @@
 /* Automatically generated file! Do not edit! */
 
+#if defined( __MORPHOS__ )
+
 #include "clib/v_about_protos.h"
 
 #include <emul/emulregs.h>
@@ -38,4 +40,6 @@ APTR  LIB_VABOUT_GetFlashLogo(void)
 {
 	return (APTR )VABOUT_GetFlashLogo((int *)REG_A0);
 }
+
+#endif /* __MORPHOS__ */
 

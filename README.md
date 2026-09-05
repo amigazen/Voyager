@@ -364,4 +364,4 @@ Original Voyager by Oliver Wagner, with David Gerber, Jon Bright, Matt Sealey, S
 
 MUI by Stefan Stuntz. SpeedBar by Simone Tellini. Historical TearOff classes by Szymon Ulatowski. [AmiTLS from amigazen project](https://github.com/amigazen/AmiTLS) as the current VSSL backend.
 
-Voyager V3 is dedicated to the memory of Oliver Wagner, 1969 - 2016.
+Voyager V3 is forever dedicated to the memory of Oliver "Olli" Wagner.

@@ -51,8 +51,8 @@ struct Data {
 /* Max tag pairs we support in one JSNewObject() call (tag+data = 2 ULONGs each) */
 #define JS_NEWOBJECT_MAX_TAGS 64
 
-// Function for wrapping NewObject. Builds a proper TagItem array from varargs
-// instead of passing va_list as TagItem* (undefined behaviour on non-MorphOS).
+/* Wrap NewObjectA. 68k can pass (TagItem *)va; we copy via va_arg so SAS/C,
+ * GCC, and MorphOS PPC share one path (same approach as mySystemTags). */
 APTR STDARGS JSNewObject( APTR class, ... )
 {
 	va_list va;

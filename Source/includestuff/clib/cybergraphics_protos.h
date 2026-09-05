@@ -3,7 +3,7 @@
 **
 **	C prototypes for cybergraphics.library
 **
-**	Copyright · 1996-1998 by phase5 digital products
+**	Copyright Â· 1996-1998 by phase5 digital products
 **      All Rights reserved.
 **
 */

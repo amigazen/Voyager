@@ -23,6 +23,7 @@
 */
 
 extern BPTR currentdir_lock;
+extern char voyager_progdir[ 256 ];
 
 void setcomment( STRPTR filename, STRPTR comment );
 #ifdef __MORPHOS__

@@ -2,6 +2,8 @@
  * $Id: lib.c,v 1.1 2003/06/22 23:04:48 zapek Exp $
  */
 
+#if defined( __MORPHOS__ )
+
 //#include "globals.h"
 
 #include "rev.h"
@@ -12,7 +14,7 @@
  * and copy the file somewhere else.
  */
 #define LIBNAME      "voyager_about.vlib"
-#define LIBCOPYRIGHT "© 1998-2003 by Oliver Wagner & David Gerber"
+#define LIBCOPYRIGHT "ï¿½ 1998-2003 by Oliver Wagner & David Gerber"
 #define LIBPRI 0
 #define LIBBASE VAboutBase
 
@@ -163,4 +165,6 @@ ULONG LIB_Reserved(void)
 {
 	return (0);
 }
+
+#endif /* __MORPHOS__ */
 
