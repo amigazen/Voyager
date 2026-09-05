@@ -76,6 +76,7 @@ extern struct Screen *destscreen;
 #include "cookies.h"
 #include "clip.h"
 #include "win_func.h"
+#include "menus.h"
 #ifndef __MORPHOS__
 #include "newmouse.h"
 #endif
@@ -2289,6 +2290,86 @@ DECSMETHOD( Cross_SetDir )
 
 #define DK(k) {DoMethod( _parent( obj ), fwdmethod, NULL, MUIKEY_##k );return(MUI_EventHandlerRC_Eat);}
 
+#ifndef MBX
+/* Page objects set MUIA_ContextMenu, which makes MUI set WFLG_RMBTRAP
+ * while the pointer is over the document. Intuition then never turns
+ * RAmiga+key into MENUPICK, even though the strip shows the shortcuts. */
+static int menuitem_fire_if_key( APTR item, UBYTE key )
+{
+	char *sc;
+	ULONG enabled;
+	ULONG udata;
+	APTR appobj;
+
+	sc = NULL;
+	get( item, MUIA_Menuitem_Shortcut, &sc );
+	if( !sc || !sc[ 0 ] )
+		return( FALSE );
+	if( toupper( (UBYTE)sc[ 0 ] ) != key )
+		return( FALSE );
+	enabled = TRUE;
+	get( item, MUIA_Menuitem_Enabled, &enabled );
+	if( !enabled )
+		return( TRUE );
+	udata = 0;
+	get( item, MUIA_UserData, &udata );
+	appobj = _app( item );
+	if( !appobj )
+		return( FALSE );
+	set( item, MUIA_Menuitem_Trigger, item );
+	set( appobj, MUIA_Application_MenuAction, udata );
+	DoMethod( appobj, MUIM_Application_ReturnID, udata );
+	return( TRUE );
+}
+
+static int family_fire_shortcut( APTR fam, UBYTE key )
+{
+	struct MinList *l;
+	APTR o;
+	APTR state;
+
+	l = NULL;
+	get( fam, MUIA_Family_List, &l );
+	if( !l )
+		return( FALSE );
+	state = l->mlh_Head;
+	while( o = NextObject( &state ) )
+	{
+		if( menuitem_fire_if_key( o, key ) )
+			return( TRUE );
+		if( family_fire_shortcut( o, key ) )
+			return( TRUE );
+	}
+	return( FALSE );
+}
+
+static int fire_menustrip_shortcut( APTR obj, struct IntuiMessage *imsg )
+{
+	struct InputEvent ie;
+	char buf[ 4 ];
+
+	(void)obj;
+	if( imsg->Code & IECODE_UP_PREFIX )
+		return( FALSE );
+	if( !( imsg->Qualifier & ( IEQUALIFIER_RCOMMAND | IEQUALIFIER_LCOMMAND ) ) )
+		return( FALSE );
+
+	memset( &ie, 0, sizeof( ie ) );
+	ie.ie_Class = IECLASS_RAWKEY;
+	ie.ie_Code = imsg->Code;
+	ie.ie_Qualifier = imsg->Qualifier;
+	buf[ 0 ] = 0;
+	buf[ 1 ] = 0;
+	MapRawKey( &ie, buf, 1, NULL );
+	if( !buf[ 0 ] )
+		return( FALSE );
+
+	if( !menu )
+		return( FALSE );
+	return( family_fire_shortcut( menu, (UBYTE)toupper( (UBYTE)buf[ 0 ] ) ) );
+}
+#endif
+
 DECMMETHOD( HandleEvent )
 {
 
@@ -2296,9 +2377,16 @@ DECMMETHOD( HandleEvent )
 	ULONG fwdmethod = ( MUIMasterBase->lib_Version > 19 ) ? MUIM_HandleEvent : MUIM_HandleInput;
 	if( msg->imsg->Class == IDCMP_RAWKEY )
 	{
-		int ctrl = msg->imsg->Qualifier & ( IEQUALIFIER_CONTROL );
-		int shift = msg->imsg->Qualifier & ( IEQUALIFIER_LSHIFT | IEQUALIFIER_RSHIFT );
-		int alt = msg->imsg->Qualifier & ( IEQUALIFIER_LALT | IEQUALIFIER_RALT );
+		int ctrl;
+		int shift;
+		int alt;
+
+		if( fire_menustrip_shortcut( obj, msg->imsg ) )
+			return( MUI_EventHandlerRC_Eat );
+
+		ctrl = msg->imsg->Qualifier & ( IEQUALIFIER_CONTROL );
+		shift = msg->imsg->Qualifier & ( IEQUALIFIER_LSHIFT | IEQUALIFIER_RSHIFT );
+		alt = msg->imsg->Qualifier & ( IEQUALIFIER_LALT | IEQUALIFIER_RALT );
 
 		//Printf( "raw code = %ld\n", msg->imsg->Code );
 

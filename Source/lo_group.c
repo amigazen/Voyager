@@ -966,6 +966,13 @@ DECSMETHOD( Layout_CalcMinMax )
 			continue;
 		}
 
+		if( !tn->font )
+			continue;
+#ifndef MBX
+		if( !tn->fontarray )
+			continue;
+#endif
+
 		p = tn->text;
 		p3 = p + tn->textlen;
 
@@ -1295,14 +1302,10 @@ DECSMETHOD( Layout_DoLayout )
 
 	if( msg->suggested_width < data->li.minwidth )
 	{
-		/*
-		 * Was a MUI_Request here, but this runs inside the window's layout pass:
-		 * a modal requester at that point blocks the app that has to service it.
-		 */
-		VoyLog(( "[GROUP] DoLayout skip obj=%lx suggested_width=%ld < minwidth=%ld\n",
+		VoyLog(( "[GROUP] DoLayout widen obj=%lx suggested_width=%ld < minwidth=%ld\n",
 			(ULONG)obj, (long)msg->suggested_width, (long)data->li.minwidth ));
 		VoyFlush();
-		return( (ULONG)&data->li );
+		msg->suggested_width = data->li.minwidth;
 	}
 
 	// Flush any existing text nodes
@@ -1457,18 +1460,38 @@ DECSMETHOD( Layout_DoLayout )
 			continue;
 		}
 
+		if( !tn->font )
+			continue;
+#ifndef MBX
+		if( !tn->fontarray )
+			continue;
+#endif
+
 // !!! FIXME adapt the whole wordwrap loop (txt++ or txt-=tryfit etc for UTF8)
 		while( remainlength > 0 )
 		{
 			int thislength;
 			int tryfit;
 			int didwrap = FALSE;
+			int fitpixels;
+
+			/* patextfit takes a UWORD. A negative restwidth (cell narrower
+			 * than its padding) becomes ~65535 and looks like a huge line,
+			 * or the 68k fit returns -1 when the pixel budget is 0. The
+			 * old thisfit<0 path then discarded every character, leaving
+			 * an empty cell whose height is only padding (a 1px line). */
+			fitpixels = restwidth;
+			if( fitpixels < 0 )
+				fitpixels = 0;
 
 #ifndef MBX
-			thisfit = patextfit( txt, tn->fontarray, remainlength, restwidth, tn->style );
+			thisfit = patextfit( txt, tn->fontarray, remainlength, fitpixels, tn->style );
 #else
-			thisfit = mbxtextfit( txt, remainlength, restwidth, tn->font );
+			thisfit = mbxtextfit( txt, remainlength, fitpixels, tn->font );
 #endif
+			if( thisfit < 0 )
+				thisfit = 0;
+
 			if( tn->style & FSF_PRE && thisfit < remainlength && xoffs > marginwidth_left )
 			{
 				// If this is a pre-formatted segment, and we don't have
@@ -1483,19 +1506,6 @@ DECSMETHOD( Layout_DoLayout )
 				{
 					yoffs++;
 				}
-				lastfit = 0;
-				continue;
-			}
-
-			if( thisfit < 0 )
-			{
-				char tmp[ 256 ];
-
-				// Dump some sensible error message, then retry
-				strncpy( tmp, txt, min( 256, remainlength + 1 ) );
-				ALERT( ( "ERROR!!! textfit() returned %ld, remainlength=%ld, restwidth=%ld, font=%lx, txt='%s'\n", thisfit, remainlength, restwidth, tn->font, tmp ) );
-				txt++;
-				remainlength--;
 				lastfit = 0;
 				continue;
 			}

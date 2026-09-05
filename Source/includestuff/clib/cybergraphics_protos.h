@@ -44,6 +44,8 @@ LONG         ScalePixelArray(APTR,UWORD,UWORD,UWORD,struct RastPort *,UWORD,
 void         UnLockBitMap(APTR);
 ULONG        WritePixelArray(APTR, UWORD, UWORD, UWORD, struct RastPort *, UWORD,
                              UWORD, UWORD, UWORD, UBYTE);
+ULONG        WritePixelArrayAlpha(APTR, UWORD, UWORD, UWORD, struct RastPort *, UWORD,
+                             UWORD, UWORD, UWORD, ULONG);
 ULONG        WriteLUTPixelArray(APTR, UWORD, UWORD, UWORD, struct RastPort *, APTR,
 			        UWORD, UWORD, UWORD, UWORD, UBYTE);
 LONG         WriteRGBPixel(struct RastPort *, UWORD, UWORD, ULONG);

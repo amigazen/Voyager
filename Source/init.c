@@ -87,7 +87,7 @@ UnicodeData_p UnicodeBase;
 #define VSPEC ""
 #endif
 
-char copyright[] = { "Voyager " LVERTAG " " VSPEC "© 1995-2003 Oliver Wagner & David Gerber, All Rights Reserved" };
+char copyright[] = { "Voyager " LVERTAG " " VSPEC "ù 1995-2003 Oliver Wagner & David Gerber, All Rights Reserved" };
 
 int app_started;
 static int app_doublestart;
@@ -1698,7 +1698,7 @@ static int buildapp( void )
 	app = NewObject( getappclass(), NULL,
 		MUIA_Application_Title, "" APPNAME "",
 		MUIA_Application_Version, lversion,
-		MUIA_Application_Copyright, "© 1995-2002 Oliver Wagner & David Gerber, All Rights Reserved",
+		MUIA_Application_Copyright, "ù 1995-2002 Oliver Wagner & David Gerber, All Rights Reserved",
 		MUIA_Application_Author, "Oliver Wagner",
 		MUIA_Application_UsedClasses, classlist,
 		MUIA_Application_Description, GS( APP_DESC ),
@@ -1706,7 +1706,7 @@ static int buildapp( void )
 		MUIA_Application_HelpFile, GS( APP_GUIDENAME ),
 		MUIA_Application_SingleTask, TRUE,
 #if USE_MENUS
-		MUIA_Application_Menustrip, menu = MUI_MakeObject( MUIO_MenustripNM, ( ULONG )newmenus, 0 ),
+		MUIA_Application_Menustrip, menu = MUI_MakeObject( MUIO_MenustripNM, ( ULONG )newmenus, MUIO_MenustripNM_CommandKeyCheck ),
 #endif
 #if USE_REXX
 		MUIA_Application_Commands, rexxcmds,

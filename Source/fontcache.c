@@ -217,58 +217,81 @@ static struct TextFont *setupfont( int st_font, char *st_face, UBYTE **cfa, int 
 
 struct TextFont *getfont( char *facespec, int sizespec, UBYTE **cfa )
 {
-	struct TextFont *currentfont = NULL;
+	struct TextFont *currentfont;
 	char *p;
 	struct fontcachenode *fcn;
-	int facespeclen = strlen( facespec );
+	int facespeclen;
+	char facetmp[ 256 ];
+	UBYTE *localcfa;
+
+	currentfont = NULL;
+	localcfa = NULL;
+	if( !facespec || !facespec[ 0 ] )
+		facespec = "(Default)";
+	if( !cfa )
+		cfa = &localcfa;
+	facespeclen = strlen( facespec );
 
 	for( fcn = FIRSTNODE( &fontcachelist ); NEXTNODE( fcn ); fcn = NEXTNODE( fcn ) )
 	{
 		if( fcn->namelen == facespeclen && fcn->sizespec == sizespec && !strcmp( fcn->name, facespec ) )
 		{
-			*cfa = fcn->fontarray;
-			return( fcn->tf );
+			if( fcn->tf )
+			{
+				*cfa = fcn->fontarray;
+				return( fcn->tf );
+			}
 		}
 	}
 
-	fcn = malloc( sizeof( *fcn ) + facespeclen + 1 );
-	memset( fcn, '\0', sizeof( *fcn ) + facespeclen + 1 ); /* TOFIX: maybe not necessary */
-    strcpy( fcn->name, facespec );
-	fcn->sizespec = sizespec;
-	fcn->namelen = facespeclen;
-
 	D( db_html, bug( "getfont(%s,%ld)\n", facespec, sizespec ));
 
-	for( p = strtok( facespec, "," ); p; p = strtok( NULL, "," ) )
+	/* strtok() writes NULs into its buffer and is not reentrant, so never
+	 * split the caller's style->face (or the cache key) in place. */
+	stccpy( facetmp, facespec, sizeof( facetmp ) );
+	for( p = strtok( facetmp, "," ); p; p = strtok( NULL, "," ) )
 	{
 		char *p2;
 
 		p = stpblk( p );
 		p2 = strchr( p, 0 ) - 1;
-		while( p2 > p && isspace( *p2 ) ) 
+		while( p2 > p && isspace( *p2 ) )
 			*p2-- = 0;
+		if( !p[ 0 ] )
+			continue;
 
+		/* Prefs mapping only. Opening "Georgia"/"Times"/"serif" via
+		 * the size template picks Compugraphic/TTF fonts whose
+		 * kerning tables lay out to 0-wide glyphs (empty cells,
+		 * 1px borders). Unmapped FACE lists use (Default). */
 		currentfont = setupfont( sizespec, p, cfa, FALSE );
 		D( db_html, bug( "trying(%s,%ld), got %lx\n", p, sizespec, currentfont ) );
 		if( currentfont )
 			break;
-
-		currentfont = setupfont( sizespec, p, cfa, TRUE );
-		D( db_html, bug( "trying(%s,%ld) as template, got %lx\n", p, sizespec, currentfont ) );
-		if( currentfont )
-			break;
 	}
 	if( !currentfont )
-	{
 		currentfont = setupfont( sizespec, "(Default)", cfa, TRUE );
+	if( !currentfont )
+		currentfont = myopenfont( "topaz/8", (char **)cfa );
+
+	fcn = malloc( sizeof( *fcn ) + facespeclen + 1 );
+	if( fcn && currentfont )
+	{
+		memset( fcn, '\0', sizeof( *fcn ) + facespeclen + 1 );
+		strcpy( fcn->name, facespec );
+		fcn->sizespec = sizespec;
+		fcn->namelen = facespeclen;
+		fcn->tf = currentfont;
+		fcn->fontarray = *cfa;
+		ADDTAIL( &fontcachelist, fcn );
 	}
+	else if( fcn )
+		free( fcn );
 
-	fcn->tf = currentfont;
-	fcn->fontarray = *cfa;
-
-	ADDTAIL( &fontcachelist, fcn );
-
-	D( db_html, bug( "-> selected %s/%ld\n", currentfont->tf_Message.mn_Node.ln_Name, currentfont->tf_YSize ) );
+	if( currentfont )
+	{
+		D( db_html, bug( "-> selected %s/%ld\n", currentfont->tf_Message.mn_Node.ln_Name, currentfont->tf_YSize ) );
+	}
 
 	return( currentfont );
 }

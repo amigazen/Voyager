@@ -484,6 +484,32 @@ enum {
 	MASK_PLANAR   /* GIF or PNG-68k-Amiga planar mask */
 };
 
+#ifndef MBX
+/* MASK_ALPHA on CGX v41+ stores (APTR)-1 here; Planes[0] is not a mask. */
+static int img_mask_is_planar( struct BitMap *maskbm )
+{
+	if( maskbm == NULL )
+		return( 0 );
+	if( maskbm == (APTR)-1 )
+		return( 0 );
+	return( 1 );
+}
+
+#if USE_CGX
+/* LUT8 masked frames are planar so cookie-cut works; do not WritePixelArray. */
+static int img_use_cgx_write( struct imgframenode *imf )
+{
+	if( !( features & FTF_CYBERMAP ) )
+		return( 0 );
+	if( features & FTF_TRUECOLOR )
+		return( 1 );
+	if( img_mask_is_planar( imf->maskbm ) )
+		return( 0 );
+	return( 1 );
+}
+#endif /* USE_CGX */
+#endif /* !MBX */
+
 /*
  * Allocates an imageframenode. This is used
  * for every image. Masking/alpha is allocated here too.
@@ -552,6 +578,18 @@ retry:
 		}
 		else
 #endif /* USE_ALPHA */
+		/* Cookie-cut needs a standard planar BitMap (friend NULL).
+		 * A CGX friend bitmap makes BltMaskBitMapRastPort ignore the mask. */
+		if( maskmode != MASK_NONE && !( features & FTF_TRUECOLOR ) )
+		{
+			imf->bm = AllocBitMap(
+				xs, ys,
+				GetBitMapAttr( destscreen->RastPort.BitMap, BMA_DEPTH ),
+				BMF_CLEAR,
+				NULL
+			);
+		}
+		else
 		{
 			imf->bm = AllocBitMap(
 				xs, ys,
@@ -676,6 +714,12 @@ retry:
 #if USE_CGX
 		else if( features & FTF_CYBERMAP )
 		{
+#if USE_ALPHA
+			/* Opaque placeholder would show through until every pixel is
+			 * written, and RectFill does not set PNG/GIF alpha. */
+			if( !( maskmode == MASK_ALPHA && ( features & FTF_ALPHA ) ) )
+#endif /* USE_ALPHA */
+			{
 			/*
 			 * Draw a rectangle around the image.
 			 */
@@ -697,6 +741,7 @@ retry:
 			else
 			{
 				RectFill( &rp, 0, 0, xs - 1, ys - 1 );
+			}
 			}
 		}
 #endif /* USE_CGX */
@@ -1905,6 +1950,45 @@ static void term_gif( struct imgnode *imn )
 	}
 }
 
+#if USE_ALPHA
+#ifndef MBX
+/* Palette index row -> ARGB8888. Transparent GIF index gets alpha 0. */
+static int gif_indices_to_argb( UBYTE *source, UBYTE *dest, UBYTE *colmap, int num, int transcolor )
+{
+	int mask_used;
+	int non_trans;
+	int i;
+	UBYTE srcb;
+	UBYTE *cp;
+
+	mask_used = 0;
+	non_trans = 0;
+	i = 0;
+	while( i < num )
+	{
+		srcb = source[ i ];
+		cp = colmap + ( 3 * (int)srcb );
+		if( (int)srcb == transcolor )
+		{
+			dest[ 0 ] = 0;
+			mask_used = 2;
+		}
+		else
+		{
+			dest[ 0 ] = 0xff;
+			non_trans = 1;
+		}
+		dest[ 1 ] = cp[ 0 ];
+		dest[ 2 ] = cp[ 1 ];
+		dest[ 3 ] = cp[ 2 ];
+		dest += 4;
+		i++;
+	}
+	return( non_trans | mask_used );
+}
+#endif /* !MBX */
+#endif /* USE_ALPHA */
+
 static void procread_gif( struct imgnode *imn )
 {
 #ifndef MBX
@@ -1945,6 +2029,7 @@ retrybegin:
 	{
 		int rc;
 		int local_depth, local_delay, local_disposal;
+		ULONG gifmask;
 
 		rc = gif_begin_image( imn->gifh, &imn->local_xs, &imn->local_ys, &imn->local_xp, &imn->local_yp, &local_depth, &local_delay, &local_disposal, &imn->local_mask, &imn->repeatcnt );
 
@@ -1990,7 +2075,17 @@ giffailed:
 		// at this point, we can create the bitmap and allocate colors
 
 		v_nets_unlockdocmem();
-		if( !alloc_imfnode( imn, ( imn->local_mask >= 0 ) ? MASK_PLANAR : MASK_NONE, imn->local_xs, imn->local_ys, imn->local_xp, imn->local_yp ) )
+		gifmask = MASK_NONE;
+		if( imn->local_mask >= 0 )
+		{
+#if USE_ALPHA
+			if( features & FTF_ALPHA )
+				gifmask = MASK_ALPHA;
+			else
+#endif /* USE_ALPHA */
+				gifmask = MASK_PLANAR;
+		}
+		if( !alloc_imfnode( imn, gifmask, imn->local_xs, imn->local_ys, imn->local_xp, imn->local_yp ) )
 		{
 			v_nets_lockdocmem();
 			goto giffailed;
@@ -2091,7 +2186,7 @@ giffailed:
 #endif /* !MBX */
 
 #if USE_CGX
-					if( features & FTF_CYBERMAP )
+					if( img_use_cgx_write( imn->currentimf ) )
 					{
 						WritePixelArray(
 							imn->raw_data, 0, 0, imn->local_xs,
@@ -2158,7 +2253,7 @@ giffailed:
 				oldpass = rc;
 
 #ifndef MBX
-			if( imn->local_mask >= 0 )
+			if( imn->local_mask >= 0 && img_mask_is_planar( imn->currentimf->maskbm ) )
 			{
 				int rc;
 
@@ -2173,6 +2268,13 @@ giffailed:
 				if( rc & 2 )
 					imn->local_mask_used = TRUE;
 			}
+#if USE_ALPHA
+			else if( imn->local_mask >= 0 && ( features & FTF_ALPHA ) )
+			{
+				imn->local_non_trans = TRUE;
+				imn->local_mask_used = TRUE;
+			}
+#endif /* USE_ALPHA */
 
 			gotlines++;
 
@@ -2188,7 +2290,7 @@ giffailed:
 
 				// linebuff now has the actual pen numbers to write
 #if USE_CGX
-				if( features & FTF_CYBERMAP )
+				if( img_use_cgx_write( imn->currentimf ) )
 				{
 					WritePixelArray(
 						linebuff, 0, 0, imn->local_xs,
@@ -2242,13 +2344,32 @@ giffailed:
 				}
 #else
 #if USE_CGX
+#if USE_ALPHA
+				if( ( features & FTF_ALPHA ) && imn->local_mask >= 0 )
+				{
+					UBYTE argbbuff[ MAXIMAGEWIDTH * 4 ];
+					rc = gif_indices_to_argb( jpeg_rowbuffer[ 0 ], argbbuff, imn->colmap, imn->local_xs, imn->local_mask );
+					if( rc & 1 )
+						imn->local_non_trans = TRUE;
+					if( rc & 2 )
+						imn->local_mask_used = TRUE;
+					WritePixelArray(
+						argbbuff, 0, 0, imn->local_xs * 4,
+						&rp, 0, yline, imn->local_xs, 1,
+						RECTFMT_ARGB
+					);
+				}
+				else
+#endif /* USE_ALPHA */
+				{
 				UBYTE linebuff[ MAXIMAGEWIDTH * 3 ];
 				penarray2rgb( jpeg_rowbuffer[ 0 ], linebuff, imn->colmap, imn->local_xs );
 				WritePixelArray(
-					linebuff, 0, 0, imn->local_xs,
+					linebuff, 0, 0, imn->local_xs * 3,
 					&rp, 0, yline, imn->local_xs, 1,
 					RECTFMT_RGB
 				);
+				}
 #else
 				/* Without cybergraphics, this path should use bitplane writing instead */
 				/* This code path should not be reached when USE_CGX is 0 */
@@ -2269,7 +2390,7 @@ giffailed:
 					copylines( imn->bm, yline, yline + 1, 1, imn->local_xs );
 					// Mask?
 #ifndef MBX
-					if( imn->currentimf->maskbm )
+					if( img_mask_is_planar( imn->currentimf->maskbm ) )
 						copylines( imn->currentimf->maskbm, yline, yline + 1, 1, imn->local_xs );
 #endif
 
@@ -2279,7 +2400,7 @@ giffailed:
 				{
 					copylines( imn->bm, yline, yline + 2, 2, imn->local_xs );
 #ifndef MBX
-					if( imn->currentimf->maskbm )
+					if( img_mask_is_planar( imn->currentimf->maskbm ) )
 						copylines( imn->currentimf->maskbm, yline, yline + 2, 2, imn->local_xs );
 #endif
 
@@ -2289,7 +2410,7 @@ giffailed:
 				{
 					copylines( imn->bm, yline, yline + 4, 4, imn->local_xs );
 #ifndef MBX
-					if( imn->currentimf->maskbm )
+					if( img_mask_is_planar( imn->currentimf->maskbm ) )
 						copylines( imn->currentimf->maskbm, yline, yline + 4, 4, imn->local_xs );
 #endif
 
@@ -2410,10 +2531,12 @@ static void png_info_callback( png_structp png_ptr, png_infop info_ptr )
 			hasmask = TRUE;
 		}
 
-#if defined( MBX ) || USE_ALPHA
-		// Swap RGBA to ARGB
-		//png_set_invert_alpha( png_ptr );
+#ifdef MBX
 		png_set_swap_alpha( png_ptr );
+#elif USE_ALPHA
+		/* Only swap when we will WritePixelArray RECTFMT_ARGB. */
+		if( features & FTF_ALPHA )
+			png_set_swap_alpha( png_ptr );
 #endif
 
 		//png_read_update_info( png_ptr, info_ptr );
@@ -2765,6 +2888,21 @@ static void png_row_callback(png_structp png_ptr, png_bytep new_row,
 					&rp, 0, row_num, imn->img_x, 1,
 					RECTFMT_RGB
 				);
+				if( img_mask_is_planar( imn->currentimf->maskbm ) )
+				{
+					for( c = 0; c < imn->img_x; c++ )
+						linebuff[ c ] = ( imn->pngrows[ row_num ][ c * 4 + 3 ] >= 1 ) ? 1 : 0;
+					rc = makemaskline(
+						linebuff,
+						imn->currentimf->maskbm->Planes[ 0 ] + ( imn->currentimf->maskbm->BytesPerRow * row_num ),
+						imn->img_x,
+						0
+					);
+					if( rc & 1 )
+						imn->local_non_trans = TRUE;
+					if( rc & 2 )
+						imn->local_mask_used = TRUE;
+				}
 			}
 #else
 			/* Without cybergraphics, this path should use bitplane writing instead */
@@ -2785,10 +2923,12 @@ static void png_row_callback(png_structp png_ptr, png_bytep new_row,
 #endif
 
 #if !USE_ALPHA
-			// parse alpha channel
+			/* parse alpha channel (RGBA, no swap) */
 			for( c = 0; c < imn->img_x; c++ )
 				linebuff[ c ] = ( imn->pngrows[ row_num ][ c * 4 + 3 ] >= 1 ) ? 1 : 0;
 
+			if( img_mask_is_planar( imn->currentimf->maskbm ) )
+			{
 			rc = makemaskline(
 				linebuff,
 				imn->currentimf->maskbm->Planes[ 0 ] + ( imn->currentimf->maskbm->BytesPerRow * row_num ),
@@ -2799,7 +2939,8 @@ static void png_row_callback(png_structp png_ptr, png_bytep new_row,
 				imn->local_non_trans = TRUE;
 			if( rc & 2 )
 				imn->local_mask_used = TRUE;
-#endif /* !MBX */
+			}
+#endif /* !USE_ALPHA */
 		}
 		else
 		{
@@ -2835,7 +2976,7 @@ static void png_row_callback(png_structp png_ptr, png_bytep new_row,
 
 		//kprintf( "nt %ld trns %ld\r\n", imn->png_info_ptr->num_trans, imn->png_info_ptr->trans[ 0 ] );
 
-		if( imn->png_info_ptr->num_trans )
+		if( imn->png_info_ptr->num_trans && img_mask_is_planar( imn->currentimf->maskbm ) )
 		{
 			int d;
 			int rc;
@@ -2879,7 +3020,7 @@ static void png_row_callback(png_structp png_ptr, png_bytep new_row,
 
 		penarrayconvert( imn->pngrows[ row_num ], linebuff, imn->currentimf->pens, imn->img_x, 0 );
 #if USE_CGX
-		if( features & FTF_CYBERMAP )
+		if( img_use_cgx_write( imn->currentimf ) )
 		{
 			struct RastPort rp;
 
@@ -4029,7 +4170,8 @@ int ASM SAVEDS imgdec_setdestscreen(
 					{
 						features |= FTF_TRUECOLOR;
 #if USE_ALPHA
-						if( CyberGfxBase->lib_Version >= 43 )
+						/* WritePixelArrayAlpha exists from cybergraphics 41. */
+						if( CyberGfxBase->lib_Version >= 41 )
 						{
 							features |= FTF_ALPHA;
 						}

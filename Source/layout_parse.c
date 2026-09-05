@@ -2309,7 +2309,18 @@ dotext:
 
 					if( ( gp_fontface && face ) || size )
 					{
-						style->font = getfont( style->face, style->fontstepsize, &style->fontarray );
+						struct TextFont *tf;
+						UBYTE *fa;
+
+						fa = style->fontarray;
+						tf = getfont( style->face, style->fontstepsize, &fa );
+						/* Unknown FACE lists (Georgia, Times, serif, ...) must
+						 * not wipe the pushed default font with NULL. */
+						if( tf )
+						{
+							style->font = tf;
+							style->fontarray = fa;
+						}
 					}
 
 					// If basefont, replace default style

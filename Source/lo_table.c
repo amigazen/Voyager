@@ -165,6 +165,8 @@ DECSMETHOD( Layout_DoLayout )
 	int *lineheights;
 	UBYTE *rowspanflags;
 	double rempct = 0.0;
+	int colmintot;
+	int colsnofixedpct;
 
 	get( obj, MA_Layout_Info, &li );
 
@@ -198,27 +200,47 @@ DECSMETHOD( Layout_DoLayout )
 		}
 	}
 
-	// Calculate final table output width
+	// Calculate final table output width. Never shrink below minwidth:
+	// WIDTH=800 or WIDTH=100% on a narrower window used to clip the
+	// table, then the column loop below retried forever.
+	/* AWeb Layouttable: WIDTH is a hint on the containing block
+	 * (suggested_width). Shrink to the container when content fits;
+	 * never go below minwidth (that caused the old infinite retry). */
 	get( obj, MA_Layout_Width, &widthspec );
 	if( widthspec )
 	{
-		int specwidth = atoi( widthspec );
+		int specwidth;
+		int pctbase;
+		int container;
+
+		specwidth = atoi( widthspec );
+		container = msg->suggested_width;
+		if( container < 1 )
+			container = msg->outer_width;
 		if( strchr( widthspec, '%' ) )
 		{
 			specwidth = max( 1, specwidth );
-			specwidth = ( specwidth * msg->outer_width ) / 100;
+			pctbase = msg->outer_width;
+			if( pctbase < 1 )
+				pctbase = container;
+			if( pctbase < 1 )
+				pctbase = 1;
+			specwidth = ( specwidth * pctbase ) / 100;
 		}
-		specwidth = max( specwidth, li->minwidth );
-		specwidth = min( specwidth, tablewidth );
-
 		tablewidth = specwidth;
+		if( container > 0 && tablewidth > container && li->minwidth <= container )
+			tablewidth = container;
 	}
 	else
 	{
 		tablewidth = min( tablewidth, li->defwidth );
 	}
+	if( tablewidth < li->minwidth )
+		tablewidth = li->minwidth;
 
 	innertablewidth = tablewidth - ( data->maxcol + 1 ) * data->cellspacing - getv( obj, MA_Layout_MarginLeft ) - getv( obj, MA_Layout_MarginRight );
+	if( innertablewidth < 1 )
+		innertablewidth = 1;
 
 	D( db_html, bug( "in TABLE_dolayout(%lx), container width %ld, outer width %ld, tablewidth %ld, maxcol %ld, maxrow %ld\r\n", obj, msg->suggested_width, msg->outer_width, tablewidth, data->maxcol, data->maxrow ));
 
@@ -258,16 +280,19 @@ DECSMETHOD( Layout_DoLayout )
 		}
 	if( rempct > 0.0 )
 	{
-		int colsnofixedpct = 0;
+		colsnofixedpct = 0;
 		for( x = 0; x < data->maxcol; x++ )
 		{
 			if( data->colpct[ x ] >= 0.0 && data->coldef[ x ] >= 0 )
 				colsnofixedpct++;
 		}
-		for( x = 0; x < data->maxcol; x++ )
+		if( colsnofixedpct )
 		{
-			if( data->colpct[ x ] >= 0.0 && data->coldef[ x ] >= 0 )
-				data->colpct[ x ] += rempct / (double)colsnofixedpct;
+			for( x = 0; x < data->maxcol; x++ )
+			{
+				if( data->colpct[ x ] >= 0.0 && data->coldef[ x ] >= 0 )
+					data->colpct[ x ] += rempct / (double)colsnofixedpct;
+			}
 		}
 	}
 	for( x = 0; x < data->maxcol; x++ )
@@ -289,13 +314,23 @@ DECSMETHOD( Layout_DoLayout )
 
 	D( db_html, int x; for( x = 0; x != data->maxcol; x++ ) { bug( "P4 Col %ld min %ld def %ld pct %ld\r\n", x, data->colmin[ x ], data->coldef[ x ], ((int)(data->colpct[ x ]*10000.0)) ); });
 
+	colmintot = 0;
+	for( x = 0; x < data->maxcol; x++ )
+	{
+		if( data->colmin[ x ] < 0 )
+			data->colmin[ x ] = 0;
+		colmintot += data->colmin[ x ];
+	}
+
 	usetabwidth = innertablewidth;
 	usepct = 100.0;
 retry:
+	if( usetabwidth < 0 )
+		usetabwidth = 0;
 	deftot = 0;
 	for( x = 0; x < data->maxcol; x++ )
 	{
-		if( usepct>0.0 && data->colpct[ x ] >= 0.0 )
+		if( usepct > 0.0 && data->colpct[ x ] >= 0.0 && usetabwidth > 0 )
 		{
 			data->coldef[ x ] = (int)( ( data->colpct[ x ] * (double) usetabwidth ) / usepct );
 
@@ -311,8 +346,10 @@ retry:
 			data->coldef[ x ] = data->colmin[ x ];
 		deftot += data->coldef[ x ];
 	}
-	/* Rounding errors can mean we end up using more than we're supposed to */
-	if( deftot > innertablewidth )
+	/* Rounding can overshoot by a pixel. If column minima already exceed
+	 * the container (nowrap text, WIDTH=800 nav bars, forum date cells)
+	 * shrinking usetabwidth never catches up and layout never finishes. */
+	if( deftot > innertablewidth && colmintot < innertablewidth && usetabwidth > 0 )
 	{
 		usetabwidth--;
 		goto retry;
@@ -346,7 +383,14 @@ retry:
 				}
 				if( !ci->processed )
 				{
-					DoMethod( ci->obj, MM_Layout_DoLayout, width, ci->absheight < 0 ? msg->suggested_height : ci->absheight, width );
+					int cellwidth;
+					int cellheight;
+
+					cellwidth = width;
+					if( ci->li && ci->li->minwidth > cellwidth )
+						cellwidth = ci->li->minwidth;
+					cellheight = ( ci->absheight < 0 ) ? msg->suggested_height : ci->absheight;
+					DoMethod( ci->obj, MM_Layout_DoLayout, cellwidth, cellheight, cellwidth );
 					ci->li->xp = xp;
 					ci->processed = TRUE;
 				}
@@ -789,8 +833,6 @@ DECSMETHOD( Layout_CalcMinMax )
 
 	get( obj, MUIA_Group_ChildList, &l );
 	ostate = l->mlh_Head;
-	// Skip dummy
-	NextObject( &ostate );
 	col = 0;
 	lastrow = 0;
 	while( o = NextObject( &ostate ) )
@@ -798,9 +840,19 @@ DECSMETHOD( Layout_CalcMinMax )
 		int row;
 		int x, y;
 
-		objcount++;
-
+		/* Dummy (and any other MUI helper child) has no cell row.
+		 * Skipping a fixed first child used to drop the real first
+		 * cell when Dummy was not in ChildList; a failed get() also
+		 * left row uninitialized. */
+		/* Dummy has no row. Do not require get() to return TRUE:
+		 * on some MUI builds GetAttr returns 0 after storing the
+		 * value, which skipped every cell and left only 1px borders. */
+		row = 0;
 		get( o, MA_Layout_Cell_Row, &row );
+		if( row < 1 )
+			continue;
+
+		objcount++;
 		row--;
 
 #ifdef VDEBUG
@@ -872,6 +924,11 @@ DECSMETHOD( Layout_CalcMinMax )
 			FreePooled( data->pool, ci, sizeof( struct cellinfo ) );
 			continue;
 		}
+		/* AWeb Measuretable: width >= 1 so a cell cannot collapse the table. */
+		if( ci->li->minwidth < 1 )
+			ci->li->minwidth = 1;
+		if( ci->li->defwidth < ci->li->minwidth )
+			ci->li->defwidth = ci->li->minwidth;
 
 		if( ci->widthspec )
 		{
@@ -1181,10 +1238,18 @@ retry:
 		int specwidth = atoi( widthspec );
 		if( strchr( widthspec, '%' ) )
 		{
-			if( msg->window_width > 0 )
+			int pctbase;
+
+			/* Nested WIDTH=100% is the containing cell, not the window.
+			 * Using window_width made every inner 100% table as wide as
+			 * the view, then padding (CELLPADDING=30/40) crushed it. */
+			pctbase = msg->suggested_width;
+			if( pctbase < 1 )
+				pctbase = msg->window_width;
+			if( pctbase > 0 )
 			{
 				specwidth = max( 1, specwidth );
-				specwidth = ( specwidth * msg->window_width ) / 100;
+				specwidth = ( specwidth * pctbase ) / 100;
 				specwidth = max( specwidth, li->minwidth );
 
 				li->minwidth = specwidth;
