@@ -1,0 +1,75 @@
+<HTML>
+<HEAD>
+<TITLE>Voyager 3.5 Documentation - MIME Settings</TITLE>
+</HEAD>
+<BODY bgcolor=white>
+<P><FONT SIZE="-1">Voyager 3.5.2 (amigazen project). Original V3 manual by Chris Wiles, 1999.</FONT></P>
+<P>
+<font size="+2"><b>3.8 MIME Preferences</b></font>
+<p>
+<IMG SRC="images/vmime.gif" ALT="MIME Preferences">
+<P>
+The MIME GUI allows you to set "external viewers" to launch, run, play, view externally,
+view internally or save to disk, files on the Internet.
+<p>
+You need to tell Voyager what to do when it comes across certain files. For example,
+if someone had "click here to view this TIF file" how would Voyager show it normally?
+To view the file you would set a MIME type to recognise the TIF extension when it
+is encountered.
+<p>
+When you download a file, Voyager needs to know what to do - does it save to file, view
+it, play it etc. All files have <b>MIME</b>-types. For example a JPG file may have
+the MIME type of "image" and the sub-type of "JPG", which would normally look like
+"image/jpg".
+<p>
+Many of the preferences are already allocated for you (which you can change). An LHA
+file, for example, is already set to "save to disk" as standard.
+<p>
+<H4><b>Setting the MIME Types - a .wav Example</b></h4><p>
+The beauty of Voyager is that you can set the MIME types to recognise extensions such
+as a WAV sound file (normally found on a PC) or to play a AVI file (which is an animation
+file found on a PC or a MAC) when these are found within a web site.
+<p>
+To get Voyager to play a .wav file is relatively easy. Firstly you could get hold of the
+.wav datatype. Goto the section on the CD and extract the WAV datatype (ftWAV_dt40.2.lha).
+Install to the correct drawers on your Workbench. You would then use something like "Multiview"
+to play any .wav files.
+<p>
+In our example we are going to use an external program to play the .wav files. In this
+example we'll use a program called "Play 16" which is available on the Aminet.
+<p>
+WAV sound files have two different MIME types "audio/x-wav" and "audio/wav" so we need to make
+two entries within the MIME GUI to be completely secure.
+<p>
+<ol>
+<li>Press <b>Add</b> to create another MIME type.
+<p>
+<li>Select the <b>MIME Type</b> as "<b>audio</b>" and the sub-type (the blank box to the
+right of MIME type) as "<b>wav</b>".
+<p>
+<li>The <b>Extension</b> for a WAV file will be ".wav" so add <b>wav</b> into the blank
+extensions box.
+<p>
+<li>Configure the <b>Viewer</b> section to "view" and click the button which looks like
+a piece of paper to lauch a requestor. Use the requestor to find the Play 16 prorgram on
+your HD (this is the program we will use to play the WAV file). 
+<p>
+Note the path needs to be complete. ie. it will look similar to "sys:utilities/play16".
+</ol>
+<p>
+Use the function "%f" which indicates filename. ie. Voyager will place the filename
+in the position %f (ie. sys:utilities/play16 <filename>).
+<P>
+<br>
+<a name"mime1"><font size="+1"><b>3.81 Voyager's MIME Pre-settings</b></font></a>
+<p>
+Voyager understands and processes HTML and TXT (ASCII text) files internally and displays
+them within the main window. Voyager's internal image decoders also understand GIF and JPG
+and will also display these within the main window.
+<p>
+You can get Voyager to recognise other images but these would have to displayed outside
+the main window. Set your MIME-types to get Viewtek to show a TIF file, for example. Remember
+that you will need the relevant datatypes to do this!
+</body>
+</html>
+

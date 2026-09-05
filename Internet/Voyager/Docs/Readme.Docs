@@ -1,5 +1,78 @@
-The complete V3 documentation is available for
-download from all the Vapor download sites.
-Please see http://v3.vapor.com/ for details.
+Voyager 3.5.2 documentation
+==========================
 
-- Olli
+This drawer is the Workbench documentation for the amigazen project
+release of Voyager 3.5.2 (classic 68k).
+
+The original VaporWare V3 "complete documentation" archive was
+distributed from http://v3.vapor.com/ (Oliver Wagner, 2000). That
+site is offline. Historical notes remain at:
+
+  https://zapek.com/software/voyager/
+
+Source, changelog, licence, and the full feature list for 3.5.2 are
+in the GitHub tree and on the amigazen project site:
+
+  https://github.com/amigazen/Voyager
+  http://www.amigazen.com/voyager/
+  voyager@amigazen.com
+
+Files in this drawer
+--------------------
+
+  Readme.Docs     This file.
+  voyager3docs/   VaporWare HTML manual (open main.html). Factory
+                  fastlink "Docs" loads this from PROGDIR: (it
+                  replaces the old www.vapor.com favourite).
+  ReadMe.mui      MUI (MagicUserInterface) copyright and registration
+                  notes from Stefan Stuntz. Voyager still requires MUI.
+  ReadMe.TearOff  TearOff MUI classes by Szymon Ulatowski.
+
+In the 3.5.2 Workbench tree
+---------------------------
+
+  V               The browser (SAS/C 68k).
+  V.ReadMe        Program readme for 3.5.2. History for 3.4, 3.3, and
+                  3.2 and older is in CHANGELOG.md in the source tree.
+  Libs/           MUI classes used by Voyager.
+  Plugins/        Including voyager_ssl.vlib (AmiTLS / TLS 1.2, SNI).
+  Certificates/   CA bundle (cacert.pem) required for HTTPS.
+  Buttons/        Toolbar imagery.
+  Cache/          Disk cache (created/used at run time).
+
+A TCP/IP stack (bsdsocket.library) must be running. AmiTLS
+(LIBS:amitls.library) is required for HTTPS. cybergraphics.library
+is used when present for RTG. 
+
+HTML manual (voyager3docs)
+--------------------------
+
+The missing V3 HTML documentation is in voyager3docs/. Start at
+main.html. From a factory-reset prefs set, click the Docs fastlink
+(file:///PROGDIR:Docs/voyager3docs/main.html).
+
+Voyager.guide was a separate AmigaGuide from the VaporWare pack.
+Use the HTML manual, README.md / CHANGELOG.md from the source
+release, or the URLs above.
+
+Limited 3.3 line (after 3.2)
+----------------------------
+
+Voyager 3.2 (16.4.2000) was the last boxed public product. A limited
+3.3 alpha / public-beta line followed (from August 2000): new layout
+engine and window framework, vertical navigation panel, optional
+TearOff, CManager aliases in the URL gadget, ftp. auto-prefix, HTML
+error pages for HTTP 4xx/5xx, AS225 removed. Public betas 3.3.65 and
+3.3.75; 3.3.126 (27.12.2002) for 68k and MorphOS, not to be installed
+over 3.2. Printing and some layout/JS gaps remained. A short 3.4 CVS
+series followed. Headline list: CHANGELOG.md. Per-build 3.3.0-3.3.127
+log: Source/V.ReadMe in the GitHub tree.
+
+Licence
+-------
+
+Voyager is GNU GPL v3 (see LICENSE.md in the source tree). Original
+authors: Oliver Wagner, David Gerber, and the VaporWare Voyager team.
+The original authors are not affiliated with amigazen project.
+
+Voyager V3 is dedicated to the memory of Oliver "Olli" Wagner.

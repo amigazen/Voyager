@@ -1,0 +1,102 @@
+<HTML>
+<HEAD>
+<TITLE>Voyager V3 3.5 Documentation</TITLE>
+</HEAD>
+<BODY bgcolor=white>
+<P><FONT SIZE="-1">Voyager V3 3.5.2 by Chris Wiles, 1999.</FONT></P>
+<P>
+<font size="+2"><b>6 Security and the Internet - the Risks</b></font>
+<p>
+<h3>6.1 Introduction</h3></p>
+A couple of years ago credit card companies used to discourage the use of credit
+cards on the Internet, now they thoroughly recommend the use, but only on
+'secure' sites using encryption.
+<p>
+This is a general insight into ordering via the web. Voyager 3.5.2 can
+use https: when AmiTLS and voyager_ssl.vlib are installed. That protects
+the connection; it still does not guarantee the shop's prices or postage.
+<p>
+Are you someone who destroys all credit card receipts,
+does not order with a credit card over the phone or will only use
+credit cards for non mail order purchases? If you are you
+are the sort of person who will be very unsure about making
+a credit card purchase over the Internet.
+<p>
+If, like most people, you don't worry about using your credit
+card then purchasing your products via the Internet
+will be of no greater risk.
+<p>
+The <b>biggest</b> problem is that you can't be sure how
+much is going to be charged to your card! ie. are you
+absolutely sure how much you are going to pay in taxes 
+(if taxes are or are not included in the price) and how
+much it will cost to mail your product(s).
+<p>
+For example, if you ordered a compact disc from the United
+States a company may charge you �5 to post this to the
+United Kingdom. Often, it would still work out cheaper than buying it from a
+high-street music store.
+<p>
+<br>
+<a name="sec1"><font size="+1"><b>6.2 Looking More Closely at the
+Risks</b></font></a>
+<p>
+To be a little safer when making your purchases across the
+Internet you are best to not email your order. However
+you could use encryption, such as PGP (Pretty Good Privacy),
+to encode your email order.
+<p>
+PGP works by taking key information from the recipient,
+encoding the email order you want to send then posting this
+in the normal way. The recipient uses their key to decode 
+the email.
+<p>
+The problem here is that if someone else has the recipients
+PGP key information then they can also decode your email!
+<p>
+There are newer, more secure ways of making your purchases,
+one of which is the <b>Secure Socket Layer (SSL)</b>.
+<p>
+<br>
+<a name="sec2"><font size="+1"><b>6.3 SSL / TLS (HTTPS)</b></font>
+<p>
+The original V3 manual described SSL v3 as new. In 3.5.2, HTTPS is
+implemented by <B>voyager_ssl.vlib</B> on <B>AmiTLS</B> (TLS 1.2, SNI),
+not the historical OpenSSL 0.9 / MiamiSSL plugins. You need
+LIBS:amitls.library and PROGDIR:Certificates/cacert.pem.
+<p>
+TLS sits beneath HTTP (https) and above TCP/IP. When both ends speak
+it, the browser and server exchange encrypted data.
+<p>
+When SSL is implemented on both the client (you) and server
+(the web site), your communications between browser and
+web site are in encrypted form.
+<p>
+Normally this works by entering your information into a
+secure form (https) which is secure between you creating
+the form and the server receiving it.
+<p>
+This offers Internet security. However it still doesn't
+prevent unauthorised use when the information is received
+by the server managers. Neither does it stop the company
+adding extra charges for postage, taxes etc (which you
+didn't know would be charged).
+<p>
+Do remember, however, that this could happen with any
+mail order purchase via the telephone (a company could
+add extra charges onto your card).
+<p>
+<br>
+<a name="sec3"><font size="+1"><b>6.4 How Do You Know That a Web Site is
+Secure?</b></font></a>
+<p>
+You will know that a web site is secure when you see the
+<b>https:</b> protocol.
+<p>
+Normally a web site would be "http://www.amigaworld.com"
+but a secure section on the server would look similar
+to "https://www.amigaworld.com/order.html".
+</body>
+</html>
+
+

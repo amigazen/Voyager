@@ -1,0 +1,109 @@
+<HTML>
+<HEAD>
+<TITLE>Voyager V3 3.5 Documentation - Installing Voyager</TITLE>
+</HEAD>
+<BODY bgcolor=white>
+<P><FONT SIZE="-1">Voyager V3 3.5.2 by Chris Wiles, 1999.</FONT></P>
+<P>
+<font size="+2"><b>1.4 Installing Voyager 3.5.2</b></font>
+<P>
+You need MUI 3.8 (or later) before you run Voyager. MUI is on Aminet and
+many Amiga CDs.
+<p>
+3.5.2 is a Workbench drawer, not the old floppy-era Install_Voyager
+wizard. Copy the <B>Voyager</B> drawer to a hard disk partition with
+enough free space, then run <B>V</B> from that drawer.
+<p>
+A TCP/IP stack providing bsdsocket.library must be running. For HTTPS,
+install AmiTLS so LIBS:amitls.library is available, and keep
+Certificates/cacert.pem in the Voyager drawer.
+<P>
+<br>
+<a name="b1"><font size="+1"><b>1.41 Open the drawer</b></font></A>
+<P>
+Open the Voyager drawer on Workbench. Double-click <B>V</B> to start.
+V.ReadMe and Docs/Readme.Docs describe the same tree.
+<p>
+If an Install_Voyager icon is still present, it is the historical VaporWare
+script. Prefer copying the 3.5.2 drawer as shipped.
+<P>
+<br>
+<a name="b2"><font size="+1"><b>1.42 What used to be Install Mode</b></font></A>
+<P>
+The V3 installer asked Intermediate vs Expert and could install AmiTCP.
+3.5.2 does not install a TCP/IP stack. Use whatever stack you already
+run (AmiTCP, Miami, Roadshow, etc.) as long as it offers bsdsocket.library.
+<P>
+<br>
+<a name="b3"><font size="+1"><b>1.43 Where to put Voyager</b></font></A>
+<P>
+Copy the whole drawer (V, Libs, Plugins, Certificates, Docs, Buttons,
+Cache). Do not mix it over an old 3.2 or 3.3 install; those subsystems
+were not compatible even in the VaporWare 3.3.126 readme.
+<p>
+Keep PROGDIR: as the drawer that contains V, so file:///PROGDIR:Docs/...
+and Plugins/voyager_ssl.vlib resolve.
+<P>
+<br>
+<a name="b4"><font size="+1"><b>1.44 MIME Prefs</b></font></A>
+<P>
+MimePrefs ships in the 3.5.2 tree. You can leave it next to V, or copy
+it to SYS:Prefs if you prefer. It is not required by other VaporWare
+programs unless you still run those.
+<P>
+<br>
+<a name="b5"><font size="+1"><b>1.45 Documentation</b></font></A>
+<P>
+HTML documentation is already in Docs/voyager3docs/. Open main.html, or
+use the factory <B>Docs</B> Fastlink (new prefs / factory reset).
+V.ReadMe is the program readme. README.md and CHANGELOG.md are in the
+source tree on GitHub.
+<P>
+<br>
+<a name="b6"><font size="+1"><b>1.46 HTTPS (AmiTLS)</b></font></a>
+<p>
+US export restrictions on the old OpenSSL 0.9 VSSL module do not apply
+to this build. 3.5.2 ships voyager_ssl.vlib built on AmiTLS (TLS 1.2,
+SNI). Place:
+<UL>
+<LI>Plugins/voyager_ssl.vlib in the Voyager drawer
+<LI>LIBS:amitls.library from AmiTLS
+<LI>Certificates/cacert.pem (CA bundle) in the Voyager drawer
+</UL>
+MiamiSSL is not used. The historical OpenSSL 0.9 tree in the sources is
+not linked.
+<p>
+<br>
+<a name="b7"><font size="+1"><b>1.47 Button sets</b></font></a>
+<p>
+Toolbar images live in Buttons/. SpeedBar is enabled. Tear-off panels
+are disabled in 3.5.2 because TearOffPanel.mcc is not Enforcer-clean.
+<p>
+<br>
+<a name="b8"><font size="+1"><b>1.48 Readme vs HTML</b></font></a>
+<p>
+Use both: V.ReadMe for 3.5.2 runtime notes, this HTML set for the
+interface manual.
+<p>
+<br>
+<a name="b9"><font size="+1"><b>1.49 Plugins and certificates</b></font></a>
+<p>
+3.5.2 does not install vapor_toolkit.library. Required pieces in the
+drawer:
+<UL>
+<LI>Plugins/voyager_ssl.vlib for HTTPS
+<LI>Certificates/cacert.pem
+<LI>MUI classes in Libs/ (SpeedBar and others as shipped)
+</UL>
+The image decoder is linked into V; there is no separate
+vimgdecode.library to pick by CPU.
+<p>
+<br>
+<a name="b10"><font size="+1"><b>1.50 Ready to run</b></font></A>
+<P>
+Start your TCP/IP stack, then double-click V. Default homepage is
+<B>about:</B>. Factory Fastlink Docs opens this manual. If Fastlinks
+still show old VaporWare URLs, reset factory prefs or add the Docs URL:
+file:///PROGDIR:Docs/voyager3docs/main.html
+</BODY>
+</HTML>

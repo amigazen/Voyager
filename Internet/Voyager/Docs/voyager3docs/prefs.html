@@ -1,0 +1,368 @@
+<HTML>
+<HEAD>
+<TITLE>Voyager V3 3.5 Documentation</TITLE>
+</HEAD>
+<BODY bgcolor=white>
+<P><FONT SIZE="-1">Voyager V3 3.5.2 by Chris Wiles, 1999.</FONT></P>
+<P>
+<font size="+2"><b>3.5 Customising Voyager</b></font>
+<p>
+To customise some of Voyager's behavior to your liking, you can use the
+Settings editor, it is accessed through the "Settings" option of the
+Settings menu. It will open a new window with a listview on the
+left-hand side of it, like the one seen here. Clicking on an item in the
+listview changes the display on the right to reflect your seclection.
+<p>
+<br>
+<a name="e1"><font size="+1"><b>3.51 General</b></font></a>
+<P>
+<ul>
+<li><B>Hide?</B>&nbsp; will allow you to switch off or
+ on the transfer animation which appears on the main Voyager interface.
+<p>
+<li><b>Always finish looping</b>&nbsp;stops the transfer animation from spinning
+once you have clicked 'stop' (ie. before the page is fully downloaded onto your
+system).
+<P>
+<li><B>Home Page (URL)</B>&nbsp;defines Voyager's Home page. This is the page
+which Voyager loads by default every time you start it, or click on the <I>Home Page</I>&nbsp;Button.
+In 3.5.2 the factory default is <B>about:</B>.
+<p>
+<li><b>Scrollbars in window border</b>&nbsp;allows you to place the scroll bars,
+internally, within the main Voyager window. This saves space.
+<p>
+<li><b>Save prefs on exit</b>&nbsp; - when you close the settings interface the
+settings will save to your hard drive.
+</ul>
+<p>
+<HR WIDTH=100% NOSHADE>
+<a name="e2"><font size="+1"><b>3.52 Toolbar</b></font></a>
+<P>
+<li><B>Toolbar buttons appear as:</B>&nbsp; defines how you'd like Voyager's
+ <A HREF="interf.html">Buttons</A>&nbsp;to appear on your screen. You can
+ select <I>Icons and Text</I>, <I>Icons Only</I>, or <I>Text Only</I>.
+<p>
+<li><b>Highlite?</b>&nbsp;- highlight the buttons on mouse over. When you hold
+your mouse over a Voyager button, it will highlight in colour.
+<p>
+<li><b>Raised?</b>&nbsp;- will raise the button (ie. give the button a border)
+when you hold your mouse over the button.
+<p>
+<li><b>Borderless?</b>&nbsp;will make the icons appear with no border. You will
+not see the buttons raised when you hold your mouse over the button bar.
+<p>
+<li><b>Small?</b>&nbsp;will reduce the size of the buttons by 50%.
+<p>
+<li><b>Add button</b>&nbsp;allows you to add a button to the button bar.
+<p>
+<li><b>Add space</b>&nbsp;- add a space between buttons within your bar. This
+could be used for grouping particular buttons.
+<p>
+<li><b>Remove</b>&nbsp;enables you to remove a button or spacer from your bar.
+<p>
+<li><b>Arrow buttons</b>&nbsp;- move a button through the button bar. ie. move
+it to another location within the bar.
+<p>
+<li><b>Icon:</b>&nbsp;- choose the icon for your bar. As default the Voyager bar
+already has an icon assigned to it.
+<p>
+<li><b>Label:</b>&nbsp;- the text label assigned to your button within your bar.
+As default you button will already have a label attached to it. If you choose
+'toolbar buttons appear as icons and text' (or text only), you will see this
+text label underneath your button.
+<p>
+<li><b>Hotkey</b>&nbsp;- choose a hotkey for your button. For instance, if you
+had 'b' assigned to your 'back' button, and you pressed 'b' on your keyboard,
+when using Voyager, this would emulate pressing the back button and would move
+to the previous page.
+<p>
+<li><b>Action</b>&nbsp;- the action you can assign to the function of your
+button. You can run one of the built-in commands (such as 'back', 'forward',
+'stop'), execute a JS command or an arexx script.
+<p>
+<li><b>Command:</b>&nbsp;- this is where you enter the command information for
+your button (ie. arexx script).
+</ul>
+<p>
+<HR WIDTH=100% NOSHADE>
+<a name="e3"><font size="+1"><b>3.53 Hyperlinks</b></font></a>
+<p>
+<ul>
+<li><B>Underline hyperlinks</B>&nbsp; - turn off underlined links or show links
+as underlined within Voyger.
+<P>
+<li><b>Followed links expire after</B>&nbsp; "x" number of days. Any links you
+ have visited will be automatically deleted from your HD after a certain
+ number of days.
+<P>
+<li><B>Flush now</B>&nbsp;will delete the cache (ie. followed hyperlinks) on your hard drive.
+<P>
+<li><b>Download to</b>&nbsp;option allows you to automatically set your
+directory for downloading files and images from the web. If you do not set a
+directory, Voyager will download to it's PROGDIR: as default.
+<p>
+<li><b>Always ask for path</b>&nbsp;will pop up a requestor asking you for a
+download directory, each time you go to download a file. It will direct itself
+to your chosen 'download to:' path or PROGDIR: if you have failed to choose a
+download path.
+<p>
+<li><b>Autoclose download window</b>&nbsp;will automatically close the download
+window once it has finished downloading chosen files.
+<p>
+<li><b>Download window entries</b>&nbsp;will control the function of the
+download window. For instance, 'cleanup everything' will automatically cleanup
+the contents of the download window. Handy when used with the "Autoclose download
+window feature".
+</ul>
+<p>
+<HR WIDTH=100% NOSHADE>
+<a name="e4"><font size="+1"><b>3.54 Fonts</b></font></a>
+<P>
+ There are three types of fonts Voyager uses to display its web pages. The
+ first group are the left-hand column, the font sizes. These are the fonts
+ Voyager uses when it encounters a <PRE>&lt;FONT SIZE=+/-&gt;</PRE> tag 
+ in the HTML source.
+<P>
+ The second group is the Headline fonts. These are used correspondingly
+ when Voyager sees <PRE>&lt;Hx&gt;</PRE>&nbsp;where <B>x</B>&nbsp;is a 
+ number from 1-6.
+<P>
+ The final font type Voyager uses is Fixed. This is used when a
+ <PRE>&lt;PRE&gt;</PRE>&nbsp;tag is encountered.
+<P>
+<HR WIDTH=100% NOSHADE>
+<a name="e5"><font size="+1"><b>3.55 Colours</b></font></a>
+<P>
+ Voyager allows you to select the default colours of various parts of web
+ pages you view, only if the author of the page has not previously defined
+ colors in their document.
+<P>
+ <B>Background</B>&nbsp;selects the background color, over which the
+ <B>Text</B>&nbsp;is seen. <B>New Link</B>&nbsp;defines the color of a link
+ on screen that Voyager has not previously visited, while <B>Followed
+ Link</B>&nbsp;defines the color of a link which has.
+<P>
+ Each item opens an MUI color selection window for it.
+<P>
+<HR WIDTH=100% NOSHADE>
+<a name="e6"><font size="+1"><b>3.56 Images</b></font></a>
+<P>
+<ul>
+<li><b>Flicker-free transparent images</b> - if you have a fast AGA Amiga you
+can check this option as it reduces flicker on images when you scroll through a
+web site. It does, however, use much more memory and will slow image display/scrolling.
+<p>
+<li><b>Optimized updating</b> - if checked, Voyager won't render the images while data
+is still comming thus saving some CPU time.
+<p>
+<li><b>Dithering</b> - select the dithering option for JPG display. None,
+Ordered and Floyd-Steinberg are the options available.
+<p>
+<li><b>Colour Quantization</b> - allows two options for JPG decoding,
+simple and two pass. Two pass will, obviously, give a better colour definition
+but take much longer.
+<P>
+<li><b>DCT Processing</b> - three options. They counteract speed v better
+colour definition. If you have an 040/060 you could pick "Integer, slow but
+more accurate". If you are using a slow 020 or 030 processor pick "Integer,
+fast but less accurate".
+</ul>
+<P>
+<HR WIDTH=100% NOSHADE>
+<a name="e7"><font size="+1"><b>3.57 Fastlinks</b></font></a>
+<P>
+ Voyager allows the user to define multiple Fastlink buttons. These are simply
+ defined by filling in the button <B>Label</B>&nbsp;on the left, and the
+ <B>URL</B>&nbsp;that is associated with it on the right.
+<P>
+ If you check "Allow labels stripping" Voyager will be allowed to strip the
+ contents of the buttons if needed (depending on the layout).
+<p>
+ Default Fastlinks in 3.5.2 include amigazen, Aminet, AmigaNews, EAB, Google,
+ <B>Docs</B> (this HTML manual), AWeb, and DuckDuckGo. <B>Docs</B> replaces
+ the old www.vapor.com favourite. Existing Voyager.prefs files keep whatever
+ you saved; use factory reset to pick up the new Docs link.
+<HR WIDTH=100% NOSHADE>
+<a name="e8"><font size="+1"><b>3.58 Network</b></font></a>
+<P>
+ Here you can configure the Proxy Server Voyager is to use. A Proxy Server
+ can speed up the browing of commonly-accessed pages, since it keeps the
+ page locally on it. When a request for the page - say,
+ <I>www.yahoo.com</I>&nbsp;- arrives, the proxy server simply sends what it
+ has stored to the browser if the original site has not changed.
+<P>
+<ul>
+<li><B>HTTP</B>&nbsp;is the proxy <B>Host</B>&nbsp;and <B>Port</B>&nbsp;number
+ which Voyager is to connect to for all WWW retrieval. It is not neccessary
+ to use a Proxy Server for HTTP, but recommended.
+<P>
+<li><B>FTP</B>&nbsp;is the proxy that Voyager is to connect to for all FTP
+ data transfers. This is often the same as the WWW proxy server.
+<P>
+<li><B>Gopher</B>&nbsp;and <B>WAIS</B>&nbsp;are generally used a lot less than
+ HTTP and FTP. Gopher is an alternative file download method.
+<p>
+<li><B>No Proxy for hosts</B>&nbsp;and <B>WAIS</B>&nbsp;sometimes a server may not require
+you to use a proxy for certain reasons. This option allows to enter the host/s where
+proxies will not be used.<p>
+Useful if you have a web server locally, or at your ISP and don't want it too be fetched
+by the proxy (would only mean more overhead in that case, and no benefit).
+<p>
+Enter as: host1.domain,host2.domain,host3.domain (The formula is host:port).
+<p>
+<li><B>Maximum number of connections</B>&nbsp;allows you to set the number of connections
+Voyager will open to download files. This doesn't always speed up web browsing, however,
+and can even cause buffer overflows within your TCP/IP stack.
+<p>
+The LED's on the Voyager main interface should the number of connections open.
+<p>
+<li><b>Offline detection</b>&nbsp;enables the browser to use your TCP/IP stack
+to determine whether you are currently online or offline. This will be an
+automated process.
+<p>
+You can override this by setting this to 'manual'. You can then choose 'offline
+mode' within the settings menu, when you want to read your cache contents
+offline.
+<p>
+</ul>
+<HR WIDTH=100% NOSHADE>
+<a name="e9"><font size="+1"><b>3.59 Cache</b></font></a>
+<P>
+<ul>
+<li><B>Cache location:</B>&nbsp;allows you define your cache directory. This is where
+ cached files are stored. As default this will be set to 'PRODIR:cache'.
+<p>
+You could choose any location for the cache. You could even choose ram:, but
+your cache would be lost everytime you reboot. We suggest you put the cache on a
+partition which is quite small, in case the computer crashes whilst you are
+writing to the cache.
+<P>
+<li><B>Maximum Size</B>&nbsp;defines the largest size (in kilobytes) that
+ Voyager's <b>disk</b> cache may grow to. Once it gets to this size, older
+ documents are removed from the cache to make way for newer ones. Put a size
+ of 0 to completely disable the cache but you still need to define a cache location
+ to allow Voyager to store cookies and URL history.
+<P>
+<li><B>Empty cache now</B>&nbsp;allows you to delete the current on-disk cache.
+<p>
+<li><b>Days between cleanups&nbsp;[x]</b>&nbsp;allows you to set the number of
+days between each cache cleanup. The cache cleanup will go through your cache
+looking for expired hyperlinks (and associated files - images and so on) and
+will delete them from the cache, thus freeing space.
+<P>
+<li><B>Verify</B>&nbsp;configures Voyager's cache verification. Voyager can
+ check when you access a document that resides in its cache to see if it has
+ been updated since your last access to it. If it has not been changed, it
+ displayed the cached version. You can tell Voyager to verify the
+ documents Once per session, Upon every access to the page, or Never (always
+ use the cache).
+<p>
+<li><B>Maximum Size</B>&nbsp;defines the largest size (in kilobytes) that
+ Voyager's <b>memory</b> cache may grow to. Once it gets to this size, older
+ documents are removed from the cache to make way for newer ones.
+<P>
+<li><B>Empty cache now</B>&nbsp;allows you to delete the current on-disk cache.
+<P>
+<li><B>Cache Images?</B>&nbsp;cache images within memory. If you have an AGA or
+ECS based Amiga, only cache images if you have a lot of spare memory! We recommend
+at least 10MB of spare memory, perhaps more.
+<P>
+</ul>
+<P>
+<HR WIDTH=100% NOSHADE>
+<a name="e10"><font size="+1"><b>3.60 Security</b></font></a>
+<P>
+<ul>
+<li><B>Ask before sending a mailto: form?</B>&nbsp; - when you create a email
+within Voyager (via mailto:) this option, if checked, will confirm that you
+really want to send the mail before it is despatched.
+<P>
+<li><B>Warn before posting unsecure form data?</B>&nbsp; - this option will
+ask you to confirm that you want to send form data via a unsecure, non-https
+server.
+<P>
+<li><B>Don't send Referer: HTTP header</B>&nbsp; - "Referer" is a header sent in HTTP
+requests which will show the URL from which link was estabilished.<p>
+Example:<p>
+www.porn.com has a "A HREF" to www.nice.site.org. If the user clicks on the www.nice.site.org
+link on www.porn.com, the Referer: header in the HTTP request sends this to www.nice.site.org
+with "www.porn.com" in it. Tthis can be used for tracking people and is widely used by banner systems.
+<P>
+<li><B>Don't send email address as FTP anon password</B>&nbsp; - if you
+connect to an FTP server they often take your email address for anonymous
+ftp login, which means that they have your email address on their records.
+<P>
+<li><B>Don't cache SSL pages</B>&nbsp; - if you don't want to keep all the pages going through
+an SSL connection (secured sites), check this.
+<P>
+<li><B>Cookie handling - Temporary</B>&nbsp; - you can reject, ask (Voyager will
+ask you if you want to accept a cookie) or accept any server asking for
+cookie information.
+<p>
+<li><B>Cookie handling - Persistant</B>&nbsp; - you can reject, ask (Voyager will
+ask you if you want to accept a cookie) or accept any server asking for
+cookie information.
+<p>
+</ul>
+<HR WIDTH=100% NOSHADE>
+<a name="e11"><font size="+1"><b>3.61 Certificates</b></font></a>
+<P>
+SSL / TLS encrypts the transfer and uses certificates so you can check
+who signed the server cert. 3.5.2 loads CA certificates from
+<B>PROGDIR:Certificates/cacert.pem</B> via the AmiTLS VSSL plugin
+(voyager_ssl.vlib). Keep that file in the Voyager drawer.
+<p>
+You can still view and toggle certificates in prefs where the GUI
+offers it. Protocol checkboxes from the V3 OpenSSL 0.9 era (SSLv2,
+SSLv3, TLSv1, MiamiSSL, SGC/export 128-bit) do not describe this
+build. 3.5.2 uses <B>TLS 1.2 with SNI</B>. 
+<p>
+<HR WIDTH=100% NOSHADE>
+<a name="e12"><font size="+1"><b>3.62 Mail/News</b></font></a>
+<P>
+ Voyager currently supports <I>mailto:</I>&nbsp;links to send email to
+ people on the net, and can access an NNTP news server to allow you to
+ browse Usenet newsgroups. Here is where you can configure your identity to
+ show the rest of the world.
+<P>
+<ul>
+<li><B>Your email address</B>&nbsp;is required so that people can write back
+ to you. Make sure this is correct!
+<P>
+<li><B>Your Real Name</B>&nbsp;is optional, but most people on the net prefer
+ to know who they are conversing with.
+<P>
+<li><B>Organization</B>&nbsp;is an optional field for anyone using Voyager
+ within a business to fill in their company name for email/news.
+<P>
+<li><B>SMTP (mail) server</B>&nbsp;and <B>NNTP (news)</B>&nbsp;are the servers
+ which Voyager needs to talk to in order to send the mail or news that you
+ have composed to the correct recipient. If you have any problems with
+ these, your ISP should be able to help you.
+<P>
+<li><B>Mail/News:</b>&nbsp; - when you come across a "mailto:" form, you can write
+ an email to the recipient. You can do this internally (select "internal"),
+ using Microdot-II or externally (choose "external").
+<P>
+<li><B>Telnet app</B>&nbsp;defines an application to be launched when you
+ click on a <I>telnet:</I>&nbsp;link within Voyager. %h sends the
+ hostname in the link to the telnet application, and %p the port (if any).
+ At Vaporware, of course, we recommend that you use
+<B>AmTelnet %h %p</B>.
+</ul>
+<p>
+<HR WIDTH=100% NOSHADE>
+<a name="e13"><font size="+1"><b>3.63 Javascript</b></font></a>
+<p>
+<li><b>Enable</b> - enable Javascript.
+<p>
+<li><b>Show error dialog</b> - when Voyager's Javascript engine fails to
+understand some Javascript code within the source of a web page, Voyager will
+throw up a warning requestor informing you of this problem.
+<p>
+<li><b>Javascript error log to JSERROR.LOG</b> - Voyager will offer you the
+option to log Javascript errors to a central log (JSERROR.LOG in the
+program drawer). Useful when reporting 3.5.2 JS quirks.
+</ul>
+</body>
+</html>
