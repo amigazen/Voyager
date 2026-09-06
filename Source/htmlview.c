@@ -87,6 +87,7 @@ extern struct Screen *destscreen;
 #include "newmouse.h"
 #endif
 #include "urlparser.h"
+#include "parse.h"
 
 /*
 	The following is internal MUI data
@@ -750,11 +751,18 @@ DECSMETHOD( HTMLView_ShowNStream )
 	VoyLog(( "[VIEW] ShowNStream doc path start (mime etc)\n" ));
 	VoyFlush();
 
+#if !USE_LIBUNICODE
+	parse_set_utf8( FALSE );
+#endif
+
 	if( data->doc )
 	{
 		char *p;
 #if USE_LIBUNICODE
 		data->lctx->iso_charset = charset_to_iso_code( nets_mimetype( data->doc ) );
+#endif
+#if !USE_LIBUNICODE
+		parse_set_utf8( mime_charset_is_utf8( nets_mimetype( data->doc ) ) );
 #endif
 		layout_setbaseref( data->lctx, nets_url( data->doc ) );
 
@@ -937,6 +945,11 @@ DECTMETHOD( NStream_GotData )
 				if( srch && ( !strnicmp( srch, "<HTML>", 6 ) || !strnicmp( srch, "<!DOCTYPE", 10 ) ) )
 					data->textmode = 0;
 			}
+
+#if !USE_LIBUNICODE
+			if( html_meta_charset_is_utf8( docmem, newoffset ) )
+				parse_set_utf8( TRUE );
+#endif
 
 			VoyLog(( "[VIEW] NStream_GotData: layout_do start (textmode=%ld) newoff=%ld\n", (long)data->textmode, (long)newoffset ));
 			VoyFlush();

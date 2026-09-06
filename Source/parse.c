@@ -44,6 +44,196 @@ void parse_setcurrentlayoutctx( struct layout_ctx *ctx )
 
 #endif
 
+#if !USE_LIBUNICODE
+/* OS3 has no Unicode fonts. Decode UTF-8 (and numeric entities above 255)
+ * down to Latin-1 / charmap, and wait on a chunk boundary if a sequence is
+ * incomplete (NUL-terminated by layout_do). */
+static int parse_in_utf8;
+
+void parse_set_utf8( int on )
+{
+	parse_in_utf8 = on ? TRUE : FALSE;
+}
+
+int mime_charset_is_utf8( char *mimetype )
+{
+	char buffer[ 256 ];
+	char *p;
+	char *p2;
+
+	if( !mimetype )
+		return( FALSE );
+
+	stccpy( buffer, mimetype, sizeof( buffer ) );
+	strlwr( buffer );
+
+	p = strstr( buffer, "charset" );
+	if( !p )
+		return( FALSE );
+	p += 7;
+	p = stpblk( p );
+	if( *p != '=' )
+		return( FALSE );
+	p = stpblk( ++p );
+	if( *p == '"' || *p == '\'' )
+		p++;
+	p2 = strpbrk( p, " \";,>" );
+	if( p2 )
+		*p2 = 0;
+	if( !strcmp( p, "utf-8" ) || !strcmp( p, "utf8" ) )
+		return( TRUE );
+	return( FALSE );
+}
+
+int html_meta_charset_is_utf8( char *data, int len )
+{
+	char *p;
+	char *end;
+
+	if( !data || len < 12 )
+		return( FALSE );
+	if( len > 8192 )
+		len = 8192;
+	end = data + len - 8;
+	for( p = data; p < end; p++ )
+	{
+		if( ( *p == 'c' || *p == 'C' ) && !strnicmp( p, "charset", 7 ) )
+		{
+			p += 7;
+			while( p < end && ( *p == ' ' || *p == '\t' || *p == '"' || *p == '\'' || *p == '=' ) )
+				p++;
+			if( p < end && ( !strnicmp( p, "utf-8", 5 ) || !strnicmp( p, "utf8", 4 ) ) )
+				return( TRUE );
+		}
+	}
+	return( FALSE );
+}
+
+static ULONG map_unicode( ULONG ch )
+{
+	if( ch < 256 )
+		return( (UBYTE)charmap[ (UBYTE)ch ] );
+
+	switch( ch )
+	{
+		case 0x0152:
+			return( 'O' );
+		case 0x0153:
+			return( 'o' );
+		case 0x0160:
+			return( 'S' );
+		case 0x0161:
+			return( 's' );
+		case 0x0178:
+			return( 'Y' );
+		case 0x017D:
+			return( 'Z' );
+		case 0x017E:
+			return( 'z' );
+		case 0x0192:
+			return( 'f' );
+		case 0x02C6:
+			return( '^' );
+		case 0x02DC:
+			return( '~' );
+		case 0x2013:
+		case 0x2014:
+		case 0x2212:
+			return( '-' );
+		case 0x2018:
+		case 0x2019:
+		case 0x201A:
+		case 0x2032:
+			return( '\'' );
+		case 0x201C:
+		case 0x201D:
+		case 0x201E:
+			return( '"' );
+		case 0x2022:
+			return( (UBYTE)charmap[ 183 ] );
+		case 0x2026:
+			return( '.' );
+		case 0x2039:
+			return( '<' );
+		case 0x203A:
+			return( '>' );
+		case 0x20AC:
+			return( (UBYTE)charmap[ 128 ] );
+		case 0x2122:
+			return( (UBYTE)charmap[ 153 ] );
+		case 0xFEFF:
+			return( 0 );
+		default:
+			return( '?' );
+	}
+}
+
+static int utf8_one( unsigned char *p, ULONG *outch, int *n )
+{
+	unsigned char c0, c1, c2, c3;
+	ULONG u;
+
+	c0 = p[ 0 ];
+	if( c0 < 0x80 )
+	{
+		*outch = c0;
+		*n = 1;
+		return( TRUE );
+	}
+	if( ( c0 & 0xE0 ) == 0xC0 )
+	{
+		c1 = p[ 1 ];
+		if( !c1 )
+			return( FALSE );
+		if( ( c1 & 0xC0 ) != 0x80 )
+		{
+			*outch = (ULONG)'?';
+			*n = 1;
+			return( TRUE );
+		}
+		u = ( (ULONG)( c0 & 0x1F ) << 6 ) | (ULONG)( c1 & 0x3F );
+		if( u < 0x80 )
+			u = (ULONG)'?';
+		*outch = u;
+		*n = 2;
+		return( TRUE );
+	}
+	if( ( c0 & 0xF0 ) == 0xE0 )
+	{
+		c1 = p[ 1 ];
+		c2 = p[ 2 ];
+		if( !c1 || !c2 )
+			return( FALSE );
+		if( ( c1 & 0xC0 ) != 0x80 || ( c2 & 0xC0 ) != 0x80 )
+		{
+			*outch = (ULONG)'?';
+			*n = 1;
+			return( TRUE );
+		}
+		u = ( (ULONG)( c0 & 0x0F ) << 12 ) | ( (ULONG)( c1 & 0x3F ) << 6 ) | (ULONG)( c2 & 0x3F );
+		if( u < 0x800 )
+			u = (ULONG)'?';
+		*outch = u;
+		*n = 3;
+		return( TRUE );
+	}
+	if( ( c0 & 0xF8 ) == 0xF0 )
+	{
+		c1 = p[ 1 ];
+		c2 = p[ 2 ];
+		c3 = p[ 3 ];
+		if( !c1 || !c2 || !c3 )
+			return( FALSE );
+		*outch = (ULONG)'?';
+		*n = 4;
+		return( TRUE );
+	}
+	*outch = (ULONG)'?';
+	*n = 1;
+	return( TRUE );
+}
+#endif /* !USE_LIBUNICODE */
+
 /*static int casecmp( char *from, char *what, int len )
 {
 	while( len-- )
@@ -523,6 +713,7 @@ DEFENT("bullet", '·' )
 DEFENT("bull", '·' )	/* this is against the specs, a for-AmigaOS hack ;) */
 DEFENT("beta", 'ß' )
 DEFENT("trade",'™' )	/* might not be in all fonts (Windows 1252 codepage) */
+DEFENT("hellip",'.')
 {0,0,0}
 };
 
@@ -556,29 +747,33 @@ static UBYTE getentity( char *ent, int *lenp )
 
 			ch = atoi( bf );
 
-			if( ch && ch < 256 )
 #if USE_LIBUNICODE
+			if( ch && ch < 256 )
 				return( ch );
+			return( ' ' );
 #else
-				return( charmap[ ch ] );
-#endif
-			else switch( ch )
 			{
-				case 0: // dummy... for the warning
-				default:
-					return( ' ' );
+				ULONG mapped;
+
+				mapped = map_unicode( (ULONG)ch );
+				if( mapped )
+					return( (UBYTE)mapped );
+				return( ' ' );
 			}
+#endif
 		}
 		// hex digit entity
 		else if( *ent == 'x' || *ent == 'X' )
 		{
 			char bf[ 16 ];
-			int ch;
+			int i;
+			int d;
 
 			ent++;
-			entlen++;
+			len++;
+			entlen = 0;
 
-			while( isxdigit( *ent ) && entlen < 16 )
+			while( isxdigit( *ent ) && entlen < 15 )
 				bf[ entlen++ ] = *ent++;
 
 			bf[ entlen ] = 0;
@@ -588,20 +783,32 @@ static UBYTE getentity( char *ent, int *lenp )
 				len++;
 			*lenp = len;
 
-			stch_l( &bf[ 1 ], (long*)&ch );
-
-			if( ch && ch < 256 )
-#if USE_LIBUNICODE
-				return( ch );
-#else
-				return( charmap[ ch ] );
-#endif
-			else switch( ch )
+			ch = 0;
+			for( i = 0; bf[ i ]; i++ )
 			{
-				case 0: // dummy... for the warning
-				default:
-					return( ' ' );
+				if( bf[ i ] >= '0' && bf[ i ] <= '9' )
+					d = bf[ i ] - '0';
+				else if( bf[ i ] >= 'a' && bf[ i ] <= 'f' )
+					d = bf[ i ] - 'a' + 10;
+				else
+					d = bf[ i ] - 'A' + 10;
+				ch = ( ch << 4 ) + d;
 			}
+
+#if USE_LIBUNICODE
+			if( ch && ch < 256 )
+				return( ch );
+			return( ' ' );
+#else
+			{
+				ULONG mapped;
+
+				mapped = map_unicode( (ULONG)ch );
+				if( mapped )
+					return( (UBYTE)mapped );
+				return( ' ' );
+			}
+#endif
 		}
 	}
 
@@ -650,6 +857,23 @@ void convertentities( char *from, char *to )
 			else
 				*to++ = *from++;
 		}
+#if !USE_LIBUNICODE
+		else if( parse_in_utf8 && (UBYTE)*from >= 0x80 )
+		{
+			ULONG uch;
+			int n;
+
+			if( !utf8_one( (unsigned char *)from, &uch, &n ) )
+			{
+				*to++ = *from++;
+				continue;
+			}
+			uch = map_unicode( uch );
+			if( uch )
+				*to++ = (char)uch;
+			from += n;
+		}
+#endif
 		else
 			*to++ = *from++;
 	}
@@ -669,7 +893,7 @@ redo:
 
 	if( *p != '<' )
 	{
-		ULONG ch = *p;
+		ULONG ch = (UBYTE)*p;
 
 		if( !ch )
 			return( 0 );
@@ -682,7 +906,7 @@ redo:
 			{
 				if( !p[ entlen + 1 ] )
 					return( 0 );
-				ch = *p;
+				ch = (UBYTE)*p;
 				goto skipit;
 			}
 			*text = *text + ( entlen + 1 );
@@ -694,6 +918,26 @@ redo:
 		}
 
 skipit:
+#if !USE_LIBUNICODE
+		if( parse_in_utf8 && ch >= 0x80 )
+		{
+			ULONG uch;
+			int n;
+
+			if( !utf8_one( (unsigned char *)p, &uch, &n ) )
+				return( 0 );
+			uch = map_unicode( uch );
+			if( !uch )
+			{
+				*text = *text + n;
+				p = *text;
+				goto redo;
+			}
+			*text = *text + n;
+			return( uch );
+		}
+#endif
+
 		if( ch == '\n' )
 			*lineno = *lineno + 1;
 

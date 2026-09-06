@@ -708,9 +708,13 @@ int layout_do(
 	char urlbuffer[ MAXURLSIZE ];
 	int isformimage = FALSE; // for <input type=image> hack
 	int rc = 0;
+	char saved_endbyte;
+	int did_nul;
 #ifdef VDEBUG
 	clock_t ts = 0;
 #endif
+
+	did_nul = FALSE;
 
 	D( db_html, bug( "layout_do offset %ld, totalsize %ld, is_complete %ld\n", offset, datasize, is_complete, ts = clock() ));
 
@@ -806,6 +810,14 @@ redocharsetconverter:
 		layout_make_shadow_shine( rgb, ctx );
 
 		set( ctx->dom_document, MA_HTMLView_IsFrameset, FALSE );
+	}
+
+	did_nul = FALSE;
+	if( !is_complete )
+	{
+		saved_endbyte = *endofdata;
+		*endofdata = 0;
+		did_nul = TRUE;
 	}
 
 	while( data < endofdata && !aborthere )
@@ -1011,6 +1023,12 @@ dotext:
 								ctx->iso_charset = iso_charset;
 								goto redocharsetconverter;
 							}
+						}
+#else
+						else if( !strcmp( http_equiv, "CONTENT-TYPE" ) )
+						{
+							if( mime_charset_is_utf8( content ) )
+								parse_set_utf8( TRUE );
 						}
 #endif
 					}
@@ -3059,6 +3077,9 @@ dotext:
 		rc = (char*)data - (char*)begindata;
 
 layout_do_done:
+	if( did_nul )
+		*endofdata = saved_endbyte;
+
 	/* Never claim to have consumed more than we were handed */
 	if( rc > datasize )
 		rc = datasize;

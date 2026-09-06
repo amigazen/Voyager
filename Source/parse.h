@@ -41,6 +41,12 @@ LONG getnumargmm( char *token, LONG defval, int minval, int maxval );
 void convertentities( char *from, char *to );
 void encodedata( char *from, char *to );
 
+#if !USE_LIBUNICODE
+void parse_set_utf8( int on );
+int mime_charset_is_utf8( char *mimetype );
+int html_meta_charset_is_utf8( char *data, int len );
+#endif
+
 #if USE_LIBUNICODE
 #include "layout.h"
 void parse_setcurrentlayoutctx( struct layout_ctx *ctx );
