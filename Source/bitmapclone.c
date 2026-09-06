@@ -29,7 +29,12 @@
 #include <proto/exec.h>
 #include <proto/dos.h>
 #include <proto/graphics.h>
+#include <graphics/displayinfo.h>
 #include <intuition/screens.h>
+#if USE_CGX
+#include <cybergraphx/cybergraphics.h>
+#include <proto/cybergraphics.h>
+#endif
 #endif
 
 /* private */
@@ -59,17 +64,70 @@ struct Library *CyberGfxBase;
 #endif
 extern struct Screen *destscreen;
 
+#if USE_CGX
+/*
+ * Do not OpenLibrary cybergraphics during init. A machine with the library
+ * and one without then take the same init path.
+ *
+ * GetCyberMapAttr on a planar/AGA bitmap gurus classic CGX. Gate screens
+ * with IsCyberModeID first. Do not require BMF_SPECIALFMT: OS4 graphics V54
+ * RTG maps are CyberMode but the 68k BitMap flags often omit that bit, and
+ * treating them as planar BltBitMapRastPort DSI's in the native kernel
+ * (DAR 0x70, GrimReaper on Sam460ex).
+ */
+int ensure_cybergfx( void )
+{
+	if( CyberGfxBase )
+		return( TRUE );
+
+	CyberGfxBase = OpenLibrary( "cybergraphics.library", 40 );
+	if( !CyberGfxBase )
+	{
+		VoyLog(( "[CGX] cybergraphics.library v40+ not opened\n" ));
+		VoyFlush();
+		return( FALSE );
+	}
+	VoyLog(( "[CGX] opened cybergraphics.library v%ld.%ld at %lx\n",
+		(long)CyberGfxBase->lib_Version, (long)CyberGfxBase->lib_Revision,
+		(ULONG)CyberGfxBase ));
+	VoyFlush();
+	return( TRUE );
+}
+
+int bitmap_is_cybergfx( struct BitMap *bm )
+{
+	if( !bm )
+		return( FALSE );
+	if( !ensure_cybergfx() )
+		return( FALSE );
+	if( !( bm->Flags & BMF_SPECIALFMT ) && !iscybermap )
+		return( FALSE );
+	return( GetCyberMapAttr( bm, CYBRMATTR_ISCYBERGFX ) != 0 );
+}
+
+int screen_is_cybergfx( struct Screen *scr )
+{
+	ULONG modeid;
+
+	if( !scr || !scr->RastPort.BitMap )
+		return( FALSE );
+	if( !ensure_cybergfx() )
+		return( FALSE );
+	modeid = GetVPModeID( &scr->ViewPort );
+	if( modeid != INVALID_ID && !IsCyberModeID( modeid ) )
+		return( FALSE );
+	return( GetCyberMapAttr( scr->RastPort.BitMap, CYBRMATTR_ISCYBERGFX ) != 0 );
+}
+#endif
+
 void init_fakebitmap( void )
 {
 	D( db_init, bug( "initializing..\n" ) );
 	VoyLog(( "[INIT] init_fakebitmap() entry\n" ));
 	VoyFlush();
-	
+
 #if USE_CGX
-	VoyLog(( "[INIT] Opening cybergraphics.library...\n" ));
-	VoyFlush();
-	CyberGfxBase = OpenLibrary( "cybergraphics.library", 0 );
-	VoyLog(( "[INIT] cybergraphics.library opened (or not needed)\n" ));
+	VoyLog(( "[INIT] cybergraphics.library deferred until a CGX screen is used\n" ));
 	VoyFlush();
 #endif
 
@@ -114,7 +172,10 @@ void close_cybergfx( void )
 	D( db_init, bug( "cleaning up..\n" ) );
 #if USE_CGX
 	if( CyberGfxBase )
+	{
 		CloseLibrary( CyberGfxBase );
+		CyberGfxBase = NULL;
+	}
 #endif
 }
 
@@ -285,13 +346,25 @@ void ASM __far removeclone( __reg( a0, struct BitMap *src ) )
 	ReleaseSemaphore( &clonesem );
 }
 
+/*
+ * PNG alpha uses maskbm == (APTR)-1. That is not a BitMap. Returning it
+ * from getclone() when iscybermap is set made callers do
+ * ((APTR)-1)->Planes[0] and jump to 0xfffffffe (OS4 68k exception
+ * 0x80000007, graphics.library / muimaster).
+ */
 struct BitMap *getclone( struct BitMap *src, int masked )
 {
 	struct bmclone *bm;
 	int xs, ys, depth;
 	int c;
 
+	if( !src || src == (struct BitMap *)-1 )
+		return( NULL );
+
 	if( iscybermap || fblitinstalled )
+		return( src );
+
+	if( !src->Planes[ 0 ] )
 		return( src );
 
 	if( ( TypeOfMem( src->Planes[ 0 ] ) & MEMF_CHIP ) == MEMF_CHIP )
@@ -392,6 +465,18 @@ struct BitMap *getclone( struct BitMap *src, int masked )
 	clonecount++;
 
 	return( bm->real_bm );
+}
+
+UBYTE *clone_maskplane( struct BitMap *maskbm )
+{
+	struct BitMap *cl;
+
+	if( !maskbm || maskbm == (struct BitMap *)-1 )
+		return( NULL );
+	cl = getclone( maskbm, TRUE );
+	if( !cl || cl == (struct BitMap *)-1 || !cl->Planes[ 0 ] )
+		return( NULL );
+	return( cl->Planes[ 0 ] );
 }
 
 void markclonemodified( struct BitMap *src )

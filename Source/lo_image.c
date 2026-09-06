@@ -230,7 +230,7 @@ static void __inline blitnode( APTR obj, struct Data *data, struct imgframenode 
 #if USE_ALPHA
 		if( imf->maskbm == (APTR)-1
 #if USE_CGX
-		    && CyberGfxBase
+		    && bitmap_is_cybergfx( imf->bm )
 #endif
 		) /* TOFIX: is that enough ? */
 		{
@@ -251,11 +251,25 @@ static void __inline blitnode( APTR obj, struct Data *data, struct imgframenode 
 		else
 #endif /* USE_ALPHA */
 		{
-			BltMaskBitMapRastPort( getclone( imf->bm, TRUE ), 0, 0,
-				_rp( obj ), data->mleft + imf->xp, data->mtop + imf->yp,
-				imf->xs, imf->ys,
-				(ABC|ABNC|ANBC), getclone( imf->maskbm, TRUE )->Planes[ 0 ]
-			);
+			UBYTE *mp;
+
+			mp = clone_maskplane( imf->maskbm );
+			if( mp )
+			{
+				BltMaskBitMapRastPort( getclone( imf->bm, TRUE ), 0, 0,
+					_rp( obj ), data->mleft + imf->xp, data->mtop + imf->yp,
+					imf->xs, imf->ys,
+					(ABC|ABNC|ANBC), mp
+				);
+			}
+			else
+			{
+				BltBitMapRastPort( getclone( imf->bm, FALSE ), 0, 0,
+					_rp( obj ), data->mleft + imf->xp, data->mtop + imf->yp,
+					imf->xs, imf->ys,
+					0xc0
+				);
+			}
 		}
 #else //TOFIX!!
 //SetAlphaChannelBM(imf->bm,0,0,imf->xs,imf->ys,0xff);
@@ -294,7 +308,7 @@ static void __inline blitnode_scaled( APTR obj, struct Data *data )
 #if USE_ALPHA
 		if( data->maskbm == (APTR)-1
 #if USE_CGX
-		    && CyberGfxBase
+		    && bitmap_is_cybergfx( data->bm )
 #endif
 		) /* TOFIX: is that enough ? */
 		{
@@ -315,11 +329,25 @@ static void __inline blitnode_scaled( APTR obj, struct Data *data )
 		else
 #endif /* USE_ALPHA */
 		{
-			BltMaskBitMapRastPort( getclone( data->bm, TRUE ), 0, 0,
-				_rp( obj ), data->mleft, data->mtop,
-				data->width, data->height,
-				(ABC|ABNC|ANBC), getclone( data->maskbm, TRUE )->Planes[ 0 ]
-			);
+			UBYTE *mp;
+
+			mp = clone_maskplane( data->maskbm );
+			if( mp )
+			{
+				BltMaskBitMapRastPort( getclone( data->bm, TRUE ), 0, 0,
+					_rp( obj ), data->mleft, data->mtop,
+					data->width, data->height,
+					(ABC|ABNC|ANBC), mp
+				);
+			}
+			else
+			{
+				BltBitMapRastPort( getclone( data->bm, FALSE ), 0, 0,
+					_rp( obj ), data->mleft, data->mtop,
+					data->width, data->height,
+					0xc0
+				);
+			}
 		}
 #else //TOFIX!!
 		BltBitMapAlphaRastPort( data->bm, 0, 0,
@@ -348,7 +376,7 @@ static void __inline blitnode_keepold( APTR obj, struct Data *data, struct imgfr
 #if USE_ALPHA
 		if( imf->maskbm == (APTR)-1
 #if USE_CGX
-		    && CyberGfxBase
+		    && bitmap_is_cybergfx( imf->bm )
 #endif
 		) /* TOFIX: is that enough ? */
 		{
@@ -369,11 +397,25 @@ static void __inline blitnode_keepold( APTR obj, struct Data *data, struct imgfr
 		else
 #endif
 		{
-			BltMaskBitMapRastPort( getclone( imf->bm, TRUE ), 0, 0,
-				_rp( obj ), data->mleft + imf->xp, data->mtop + imf->yp,
-				imf->xs, imf->ys,
-				(ABC|ABNC|ANBC), getclone( imf->maskbm, TRUE )->Planes[ 0 ]
-			);
+			UBYTE *mp;
+
+			mp = clone_maskplane( imf->maskbm );
+			if( mp )
+			{
+				BltMaskBitMapRastPort( getclone( imf->bm, TRUE ), 0, 0,
+					_rp( obj ), data->mleft + imf->xp, data->mtop + imf->yp,
+					imf->xs, imf->ys,
+					(ABC|ABNC|ANBC), mp
+				);
+			}
+			else
+			{
+				BltBitMapRastPort( getclone( imf->bm, FALSE ), 0, 0,
+					_rp( obj ), data->mleft + imf->xp, data->mtop + imf->yp,
+					imf->xs, imf->ys,
+					0xc0
+				);
+			}
 		}
 #else
 		{
@@ -420,7 +462,7 @@ static void blitnodepartial( struct Data *data, APTR obj, struct imgframenode *i
 #if USE_ALPHA
 		if( imf->maskbm == (APTR)-1
 #if USE_CGX
-		    && CyberGfxBase
+		    && bitmap_is_cybergfx( imf->bm )
 #endif
 		) /* TOFIX: is that enough ? */
 		{
@@ -441,11 +483,25 @@ static void blitnodepartial( struct Data *data, APTR obj, struct imgframenode *i
 		else
 #endif /* USE_ALPHA */
 		{
-			BltMaskBitMapRastPort( getclone( imf->bm, TRUE ), rox, roy,
-				_rp( obj ), data->mleft + ixp, data->mtop + iyp,
-				ixs, iys,
-				(ABC|ABNC|ANBC), getclone( imf->maskbm, TRUE )->Planes[ 0 ]
-			);
+			UBYTE *mp;
+
+			mp = clone_maskplane( imf->maskbm );
+			if( mp )
+			{
+				BltMaskBitMapRastPort( getclone( imf->bm, TRUE ), rox, roy,
+					_rp( obj ), data->mleft + ixp, data->mtop + iyp,
+					ixs, iys,
+					(ABC|ABNC|ANBC), mp
+				);
+			}
+			else
+			{
+				BltBitMapRastPort( getclone( imf->bm, FALSE ), rox, roy,
+					_rp( obj ), data->mleft + ixp, data->mtop + iyp,
+					ixs, iys,
+					0xc0
+				);
+			}
 		}
 #else //TOFIX!!
 		BltBitMapAlphaRastPort( getclone( imf->bm, TRUE ), rox, roy,
@@ -1004,7 +1060,7 @@ static void draw_newscanlines( APTR obj, struct Data *data )
 #if USE_ALPHA
 			if( data->maskbm == (APTR)-1
 #if USE_CGX
-			    && CyberGfxBase
+			    && bitmap_is_cybergfx( imf->bm )
 #endif
 			) /* TOFIX: is that enough ? */
 			{
@@ -1025,11 +1081,25 @@ static void draw_newscanlines( APTR obj, struct Data *data )
 			else
 #endif /* USE_ALPHA */
 			{
-				BltMaskBitMapRastPort( getclone( imf->bm, TRUE ), 0, data->newpartialys,
-					_rp( obj ), data->mleft + imf->xp, data->mtop + data->newpartialys + imf->yp,
-					imf->xs, data->newpartialye - data->newpartialys + 1,
-					(ABC|ABNC|ANBC), getclone( imf->maskbm, TRUE )->Planes[ 0 ]
-				);
+				UBYTE *mp;
+
+				mp = clone_maskplane( imf->maskbm );
+				if( mp )
+				{
+					BltMaskBitMapRastPort( getclone( imf->bm, TRUE ), 0, data->newpartialys,
+						_rp( obj ), data->mleft + imf->xp, data->mtop + data->newpartialys + imf->yp,
+						imf->xs, data->newpartialye - data->newpartialys + 1,
+						(ABC|ABNC|ANBC), mp
+					);
+				}
+				else
+				{
+					BltBitMapRastPort( getclone( imf->bm, FALSE ), 0, data->newpartialys,
+						_rp( obj ), data->mleft + imf->xp, data->mtop + data->newpartialys + imf->yp,
+						imf->xs, data->newpartialye - data->newpartialys + 1,
+						0xc0
+					);
+				}
 			}
 #else
 			BltBitMapAlphaRastPort( getclone( imf->bm, TRUE ), 0, data->newpartialys,
@@ -1476,6 +1546,11 @@ static void scalebitmap( APTR obj, struct Data *data )
 			return;
 
 		bsa2.bsa_SrcBitMap = getclone( data->maskbm, TRUE );
+		if( !bsa2.bsa_SrcBitMap )
+		{
+			FreeBitMap( newbm );
+			return;
+		}
 		bsa2.bsa_DestBitMap = newbm;
 
 		BitMapScale( &bsa2 );

@@ -27,6 +27,7 @@
 /* public */
 #if defined( AMIGAOS ) || defined( __MORPHOS__ )
 #include <libraries/locale.h>
+#include <exec/tasks.h>
 #include <proto/exec.h>
 #include <proto/locale.h>
 //#include <locale.h>
@@ -50,6 +51,7 @@ struct Locale *locale;
 struct Catalog *catalog;
 #ifndef MBX
 struct Catalog *CatalogBase;
+static struct Task *catalog_owner;
 #if (INCLUDE_VERSION >= 44) && !defined(__MORPHOS__)
 struct LocaleBase *LocaleBase;
 #else
@@ -85,6 +87,14 @@ STRPTR voyager_catalog_str( ULONG msgid, STRPTR builtin )
 		builtin = voyager_catalog_builtin( msgid );
 
 	if( !CatalogBase )
+		return( builtin );
+
+	/*
+	 * locale.library on OS4 (newlib) is not safe from the nethandler
+	 * child. GetCatalogStr() from that task DSI'd in strlen (r3 not a
+	 * 68k address). English builtins are process-local constants.
+	 */
+	if( FindTask( NULL ) != catalog_owner )
 		return( builtin );
 
 	s = GetCatalogStr( CatalogBase, msgid, builtin );
@@ -128,6 +138,7 @@ int init_locale( void )
 	);
 
 #ifndef MBX
+	catalog_owner = FindTask( NULL );
 	CatalogBase = catalog;
 #endif /* MBX */
 
@@ -157,6 +168,8 @@ void close_locale( void )
 		CloseCatalog( catalog );
 	}
 #ifndef MBX
+	CatalogBase = NULL;
+	catalog_owner = NULL;
 	if( LocaleBase )
 	{
 		CloseLibrary( (struct Library *)LocaleBase );

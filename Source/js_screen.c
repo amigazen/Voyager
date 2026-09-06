@@ -39,6 +39,9 @@
 #endif
 #include "js.h"
 #include "mui_func.h"
+#ifndef MBX
+#include "bitmapclone.h"
+#endif
 
 struct Data {
 	int dummy;
@@ -91,13 +94,10 @@ DECSMETHOD( JS_GetProperty )
 		case JSPID_pixelDepth:
 		case JSPID_colorDepth:
 #if USE_CGX
-			if( CyberGfxBase )
+			if( screen_is_cybergfx( scr ) )
 			{
-				if( GetCyberMapAttr( scr->RastPort.BitMap, CYBRMATTR_ISCYBERGFX ) )
-				{
-					storerealprop( msg, (double)GetCyberMapAttr( scr->RastPort.BitMap, CYBRMATTR_DEPTH ) );
-					return( TRUE );
-				}
+				storerealprop( msg, (double)GetCyberMapAttr( scr->RastPort.BitMap, CYBRMATTR_DEPTH ) );
+				return( TRUE );
 			}
 #endif
 #ifdef MBX

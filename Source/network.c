@@ -1495,8 +1495,12 @@ static void un_setup_file( struct unode *un )
 
 #if USE_DOS
 filerr:
-	// file error!
-	Fault( IoErr(), NULL, error, sizeof( error ) );
+	/* Fault() uses locale/newlib; unsafe from the nethandler child. */
+#ifdef __SASC
+	SNPrintf( error, sizeof( error ), "%ld", (long)IoErr() );
+#else
+	sprintf( error, "%ld", (long)IoErr() );
+#endif
 #ifdef __SASC
 	SNPrintf( un->errorstring, sizeof(un->errorstring), GS( NWM_ERROR_FILEOPENFAILED ), path, IoErr(), error );
 #else

@@ -738,7 +738,7 @@ static void SAVEDS ASM bffunc( __reg( a0, struct mybfhook *h ), __reg( a2, struc
 #if USE_ALPHA
 	if ( h->maskbm == ( APTR )-1
 #if USE_CGX
-	    && CyberGfxBase
+	    && bitmap_is_cybergfx( h->bm )
 #endif
 	)
 	{
@@ -797,9 +797,23 @@ static void SAVEDS ASM bffunc( __reg( a0, struct mybfhook *h ), __reg( a2, struc
 	{
 		int xs, ys;
 		int o_x = so_x, o_y;
+		UBYTE *mp;
 
-		//DB( ( "mask > 0\n" ) );
-
+		mp = clone_maskplane( h->maskbm );
+		if( !mp )
+		{
+			CopyTiledBitMap(
+				h->bm,
+				so_x,
+				so_y,
+				h->bmx,
+				h->bmy,
+				rp->rp_BitMap,
+				&bfm->Bounds
+			);
+		}
+		else
+		{
 		for( xs = bfm->Bounds.MinX; xs <= bfm->Bounds.MaxX; )
 		{
 			int thisxsize;
@@ -817,7 +831,7 @@ static void SAVEDS ASM bffunc( __reg( a0, struct mybfhook *h ), __reg( a2, struc
 				BltMaskBitMapRastPort( h->bm, o_x, o_y,
 					&h->drp, xs, ys,
 					thisxsize, thisysize,
-					(ABC|ABNC|ANBC), h->maskbm->Planes[ 0 ]
+					(ABC|ABNC|ANBC), mp
 				);
 
 				ys += thisysize;
@@ -826,6 +840,7 @@ static void SAVEDS ASM bffunc( __reg( a0, struct mybfhook *h ), __reg( a2, struc
 
 			xs += thisxsize;
 			o_x = 0;
+		}
 		}
 	}
 	else
@@ -2147,7 +2162,7 @@ DECTMETHOD( ImgDecode_Done )
 #if USE_ALPHA
 				if( data->bgmask == ( APTR )-1
 #if USE_CGX
-				    && CyberGfxBase
+				    && bitmap_is_cybergfx( data->bgbitmap )
 #endif
 				)
 				{

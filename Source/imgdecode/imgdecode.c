@@ -162,11 +162,12 @@ typedef APTR FILE;
 #if USE_CGX
 /*
  * Owned by bitmapclone.c in the main program now that the decoder is linked
- * in - it opens cybergraphics.library during init_fakebitmap(). Defining it
- * here as well would be a duplicate symbol, and the copy the decoder used to
- * open is never opened because lib_init() is dead code under static linking.
+ * in. Opened on first use (ensure_cybergfx), not during init_fakebitmap.
  */
 extern struct Library *CyberGfxBase;
+int ensure_cybergfx( void );
+int bitmap_is_cybergfx( struct BitMap *bm );
+int screen_is_cybergfx( struct Screen *scr );
 #endif /* USE_CGX */
 
 #ifndef MBX
@@ -3792,6 +3793,11 @@ static void imghandlerfunc( void )
 	if( !imgdec_inited )
 		imgdec_child_init();
 
+#if USE_CGX
+	/* Child has its own BSS; parent's CyberGfxBase is not visible here. */
+	ensure_cybergfx();
+#endif
+
 #if USE_EXECUTIVE
 	executivemsg = InitExecutive();
 	if( executivemsg )
@@ -4161,22 +4167,18 @@ int ASM SAVEDS imgdec_setdestscreen(
 		{
 #if USE_CGX
 			features &= ~FTF_CYBERMAP;
-			if( CyberGfxBase )
+			if( screen_is_cybergfx( scr ) )
 			{
-				if( GetCyberMapAttr( scr->RastPort.BitMap, CYBRMATTR_ISCYBERGFX ) )
+				features |= FTF_CYBERMAP;
+				if( GetCyberMapAttr( scr->RastPort.BitMap, CYBRMATTR_PIXFMT ) != PIXFMT_LUT8 )
 				{
-					features |= FTF_CYBERMAP;
-					if( GetCyberMapAttr( scr->RastPort.BitMap, CYBRMATTR_PIXFMT ) != PIXFMT_LUT8 )
-					{
-						features |= FTF_TRUECOLOR;
+					features |= FTF_TRUECOLOR;
 #if USE_ALPHA
-						/* WritePixelArrayAlpha exists from cybergraphics 41. */
-						if( CyberGfxBase->lib_Version >= 41 )
-						{
-							features |= FTF_ALPHA;
-						}
-#endif /* USE_ALPHA */
+					if( CyberGfxBase && CyberGfxBase->lib_Version >= 41 )
+					{
+						features |= FTF_ALPHA;
 					}
+#endif /* USE_ALPHA */
 				}
 			}
 #endif /* USE_CGX */

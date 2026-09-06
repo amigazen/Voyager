@@ -23,8 +23,14 @@
  */
 
 struct BitMap *getclone( struct BitMap *src, int masked );
+UBYTE *clone_maskplane( struct BitMap *maskbm );
 void markclonemodified( struct BitMap *src );
 void ASM SAVEDS removeclone( __reg( a0, struct BitMap *src ) );
+#if USE_CGX
+int ensure_cybergfx( void );
+int bitmap_is_cybergfx( struct BitMap *bm );
+int screen_is_cybergfx( struct Screen *scr );
+#endif
 
 // Hack & Kludge
 extern struct Screen *destscreen;
