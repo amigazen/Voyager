@@ -3983,6 +3983,60 @@ DECTMETHOD( HTMLWin_CleanupTimers )
 	return( 0 );
 }
 
+DECTMETHOD( HTMLWin_Print )
+{
+	GETDATA;
+	APTR pw;
+	STRPTR url;
+
+	if( !data->v )
+		return( 0 );
+
+	if( getv( data->v, MA_HTMLView_IsFrameset ) )
+	{
+		MUI_Request( app, data->winobj, 0, GS( ERROR ), GS( OK ), GS( PRINT_NOFRAMES ), 0 );
+		return( 0 );
+	}
+
+	pw = (APTR)getv( data->v, MA_HTMLView_PrintWin );
+	if( pw )
+	{
+		set( pw, MUIA_Window_Open, TRUE );
+		return( TRUE );
+	}
+
+	url = (STRPTR)MYURL;
+	pw = NewObject( getprintwinclass(), NULL,
+		MA_Printwin_HTMLView, data->v,
+		MA_Printwin_URL, url,
+		TAG_DONE
+	);
+	if( !pw )
+		return( 0 );
+
+	set( data->v, MA_HTMLView_PrintWin, pw );
+	DoMethod( app, OM_ADDMEMBER, pw );
+	set( pw, MUIA_Window_Open, TRUE );
+	return( TRUE );
+}
+
+DECSMETHOD( HTMLWin_DoPrint )
+{
+	GETDATA;
+
+	if( !data->v )
+		return( 0 );
+
+	if( getv( data->v, MA_HTMLView_IsFrameset ) )
+	{
+		MUI_Request( app, data->winobj, 0, GS( ERROR ), GS( OK ), GS( PRINT_NOFRAMES ), 0 );
+		return( 0 );
+	}
+
+	DoMethod( data->v, MM_HTMLView_DoPrint, NULL, NULL, msg->mode );
+	return( TRUE );
+}
+
 DECTMETHOD( HTMLWin_OpenFile )
 {
 	GETDATA;
@@ -4530,6 +4584,8 @@ DEFTMETHOD( HTMLWin_StartTimers )
 DEFTMETHOD( HTMLWin_TriggerTimers )
 DEFTMETHOD( HTMLWin_CleanupTimers )
 DEFTMETHOD( HTMLWin_OpenFile )
+DEFTMETHOD( HTMLWin_Print )
+DEFSMETHOD( HTMLWin_DoPrint )
 DEFTMETHOD( JS_SetGCMagic )
 DEFTMETHOD( JS_GetGCMagic )
 DEFSMETHOD( HTMLWin_SetSmoothScroll )

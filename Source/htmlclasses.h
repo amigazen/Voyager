@@ -327,7 +327,19 @@ enum {
 
 	/* Deferred (at end so no other method IDs shift): */
 	MM_HTMLWin_ApplyToolbarHoriz,
-	MM_HTMLWin_ExitChangeAfterLoad	/* deprecated no-op; kept so method IDs do not shift */
+	MM_HTMLWin_ExitChangeAfterLoad,	/* deprecated no-op; kept so method IDs do not shift */
+
+	MA_HTMLView_StreamHandle,
+	MA_HTMLView_PrintWin,
+	MA_HTMLWin_HTMLView,
+	MM_HTMLView_DoPrint,
+	MM_HTMLView_PrintWinClosed,
+	MM_HTMLWin_DoPrint
+};
+
+struct MP_HTMLWin_DoPrint {
+	ULONG MethodID;
+	ULONG mode;
 };
 
 struct MP_Layout_Embed_AddArg {

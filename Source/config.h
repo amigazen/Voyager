@@ -365,7 +365,7 @@ STRPTR voyager_catalog_str( ULONG msgid, STRPTR builtin );
 #define USE_TEAROFF        0 /* TearOffPanel.mcc hits bogus pointers under Enforcer; compile without tear-off UI */
 #define USE_TESTFILE       1
 #define USE_TMPRAS         1
-#define USE_TURBOPRINT     0
+#define USE_TURBOPRINT     1
 #define USE_VAPOR_UPDATE   0
 #define USE_VAT            0
 #define USE_WBSTART        0

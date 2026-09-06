@@ -598,17 +598,33 @@ struct RX_Print {
 
 RXFS( Print )
 {
+	ULONG winid;
+	APTR framewin;
+	int mode;
+
 	D( db_rexx, bug( "called\n" ) );
 
-	if( arg->win )
+	winid = arg->win ? *arg->win : 0;
+	framewin = NULL;
+	if( !arg->win && command_runmode == VREXX_FRAME && rexx_obj )
+		framewin = (APTR)getv( rexx_obj, MA_HTMLView_HTMLWin );
+
+	if( arg->text )
+		setflag( VFLG_PRINTMODE, 2 );
+	else if( arg->nobackground )
+		setflag( VFLG_PRINTMODE, 1 );
+
+	if( arg->ask || arg->text )
 	{
-		//TOFIX!! put the Window ID
+		if( framewin )
+			return( DoMethod( framewin, MM_HTMLWin_Print ) ? 0 : 5 );
+		return( DoMethod( app, MM_DoRexxWin, winid, MM_HTMLWin_Print ) ? 0 : 5 );
 	}
-	else
-	{
-		//TOFIX!! NYI :)
-		return( 0 );
-	}
+
+	mode = arg->nobackground ? 2 : 1;
+	if( framewin )
+		return( DoMethod( framewin, MM_HTMLWin_DoPrint, mode ) ? 0 : 5 );
+	return( DoMethod( app, MM_DoRexxWin, winid, MM_HTMLWin_DoPrint, mode ) ? 0 : 5 );
 }
 
 

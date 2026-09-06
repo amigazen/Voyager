@@ -44,7 +44,12 @@ extern struct Screen *destscreen;
 #if defined( AMIGAOS ) || defined( __MORPHOS__ )
 #include <proto/exec.h>
 #include <proto/graphics.h>
+#include <proto/dos.h>
 #include <graphics/gfxmacros.h>
+#include <graphics/displayinfo.h>
+#include <devices/printer.h>
+#include <devices/prtgfx.h>
+#include <dos/dosextens.h>
 #include <proto/layers.h>
 #endif
 
@@ -77,6 +82,7 @@ extern struct Screen *destscreen;
 #include "clip.h"
 #include "win_func.h"
 #include "menus.h"
+#include "turboprint.h"
 #ifndef __MORPHOS__
 #include "newmouse.h"
 #endif
@@ -379,6 +385,7 @@ struct Data {
 	struct MUI_EventHandlerNode ehn;
 
 	int imgdec_destscreen_set; /* 1 after we have called imgdec_setdestscreen from Draw (deferred from Setup to avoid crash in imgdec during window open) */
+	APTR printwin;
 };
 
 // This is used to hold fragments send by document.write(ln)
@@ -516,6 +523,10 @@ static int doset( APTR obj, struct Data *data, struct TagItem *tags )
 			data->is_frameset = (int)tag->ti_Data;
 			break;
 
+		case MA_HTMLView_PrintWin:
+			data->printwin = (APTR)tag->ti_Data;
+			break;
+
 
 #if USE_STB_NAV
 		case MUIA_Virtgroup_Left:
@@ -586,6 +597,17 @@ DECNEW
 DECDISPOSE
 {
 	GETDATA;
+
+	if( data->printwin )
+	{
+		APTR pw;
+
+		pw = data->printwin;
+		data->printwin = NULL;
+		set( pw, MUIA_Window_Open, FALSE );
+		DoMethod( app, OM_REMMEMBER, ( ULONG )pw );
+		MUI_DisposeObject( pw );
+	}
 
 	if( data->img )
 	{
@@ -1914,11 +1936,15 @@ DECTMETHOD( HTMLView_GetPushedData )
 
 DECGET
 {
+	GETDATA;
+
 	switch( (int)msg->opg_AttrID )
 	{
-		case MA_JS_ClassName:
-			*msg->opg_Storage = (ULONG)"document";
-			return( TRUE );
+		STOREATTR( MA_JS_ClassName, "document" );
+		STOREATTR( MA_HTMLView_IsFrameset, data->is_frameset );
+		STOREATTR( MA_HTMLView_StreamHandle, data->doc );
+		STOREATTR( MA_HTMLView_PrintWin, data->printwin );
+		STOREATTR( MA_HTMLView_HTMLWin, data->htmlwin );
 	}
 
 	return( DOSUPER );
@@ -2720,6 +2746,195 @@ DECSMETHOD( HTMLRexx_SaveURL )
 	return( FALSE );
 }
 
+DECTMETHOD( HTMLView_PrintWinClosed )
+{
+	GETDATA;
+
+	data->printwin = NULL;
+	return( 0 );
+}
+
+#if defined( AMIGAOS ) || defined( __MORPHOS__ )
+struct printior {
+	struct IODRPReq drp;
+	struct TPExtIODRP ext;
+};
+
+static int print_has_turboprint( void )
+{
+	struct DosList *dl;
+	int rc;
+
+	rc = FALSE;
+	dl = LockDosList( LDF_ASSIGNS | LDF_READ );
+	if( dl && FindDosEntry( dl, "Turboprint", LDF_ASSIGNS ) )
+		rc = TRUE;
+	if( dl )
+		UnLockDosList( LDF_ASSIGNS );
+	return( rc );
+}
+
+static LONG print_dump_band( struct printior *pio, struct RastPort *rp, struct Screen *scr, UWORD sx, UWORD sy, UWORD sw, UWORD sh, LONG dcols, LONG drows, UWORD special, int use_tp )
+{
+	pio->drp.io_Command = use_tp ? PRD_TPEXTDUMPRPORT : PRD_DUMPRPORT;
+	pio->drp.io_RastPort = rp;
+	pio->drp.io_ColorMap = scr->ViewPort.ColorMap;
+	pio->drp.io_Modes = GetVPModeID( &scr->ViewPort );
+	pio->drp.io_SrcX = sx;
+	pio->drp.io_SrcY = sy;
+	pio->drp.io_SrcWidth = sw;
+	pio->drp.io_SrcHeight = sh;
+	pio->drp.io_DestCols = dcols;
+	pio->drp.io_DestRows = drows;
+	pio->drp.io_Special = special;
+	pio->ext.PixAspX = 1;
+	pio->ext.PixAspY = 1;
+#if USE_CGX
+	pio->ext.Mode = TPFMT_CyberGraphX;
+#else
+	pio->ext.Mode = TPFMT_BitPlanes;
+#endif
+	return( DoIO( (struct IORequest *)&pio->drp ) );
+}
+#endif /* AMIGAOS || MORPHOS */
+
+DECSMETHOD( HTMLView_DoPrint )
+{
+	GETDATA;
+#if defined( AMIGAOS ) || defined( __MORPHOS__ )
+	struct MsgPort *port;
+	struct printior *pio;
+	struct Screen *scr;
+	struct RastPort *rp;
+	LONG vis_w, vis_h, doc_h, y, saved_top, band, destcols, destrows, drows, err;
+	UWORD sx, sy, special;
+	int use_tp, abort;
+	APTR gauge;
+	int *abortflag;
+
+	gauge = msg->gaugeobj;
+	abortflag = msg->abortflag;
+	abort = FALSE;
+
+	rp = _rp( obj );
+	scr = _screen( obj );
+	if( !rp || !scr || !_window( obj ) )
+	{
+		MUI_Request( app, NULL, 0, GS( ERROR ), GS( CANCEL ), GS( PRINT_BMERR ), 0 );
+		return( 0 );
+	}
+
+	vis_w = _mwidth( obj );
+	vis_h = _mheight( obj );
+	sx = (UWORD)_mleft( obj );
+	sy = (UWORD)_mtop( obj );
+	doc_h = (LONG)getv( obj, MUIA_Virtgroup_Height );
+	if( vis_w < 1 || vis_h < 1 )
+	{
+		MUI_Request( app, NULL, 0, GS( ERROR ), GS( CANCEL ), GS( PRINT_BMERR ), 0 );
+		return( 0 );
+	}
+	if( doc_h < vis_h )
+		doc_h = vis_h;
+
+	port = CreateMsgPort();
+	if( !port )
+	{
+		MUI_Request( app, NULL, 0, GS( ERROR ), GS( CANCEL ), GS( PRINT_BMERR ), 0 );
+		return( 0 );
+	}
+	pio = (struct printior *)CreateIORequest( port, sizeof( struct printior ) );
+	if( !pio )
+	{
+		DeleteMsgPort( port );
+		MUI_Request( app, NULL, 0, GS( ERROR ), GS( CANCEL ), GS( PRINT_BMERR ), 0 );
+		return( 0 );
+	}
+
+	if( OpenDevice( "printer.device", 0, (struct IORequest *)&pio->drp, 0 ) )
+	{
+		DeleteIORequest( (struct IORequest *)pio );
+		DeleteMsgPort( port );
+		MUI_Request( app, NULL, 0, GS( ERROR ), GS( CANCEL ), GS( PRINT_OPENERR ), 0 );
+		return( 0 );
+	}
+
+	use_tp = print_has_turboprint();
+#if USE_CGX
+	if( !screen_is_cybergfx( scr ) )
+		use_tp = FALSE;
+#endif
+
+	saved_top = (LONG)getv( obj, MUIA_Virtgroup_Top );
+	destcols = 0;
+	destrows = 0;
+	err = print_dump_band( pio, rp, scr, sx, sy, (UWORD)vis_w, (UWORD)vis_h, 0, 0,
+		(UWORD)( SPECIAL_FULLCOLS | SPECIAL_ASPECT | SPECIAL_NOPRINT ), use_tp );
+	if( err && use_tp )
+	{
+		use_tp = FALSE;
+		err = print_dump_band( pio, rp, scr, sx, sy, (UWORD)vis_w, (UWORD)vis_h, 0, 0,
+			(UWORD)( SPECIAL_FULLCOLS | SPECIAL_ASPECT | SPECIAL_NOPRINT ), FALSE );
+	}
+	if( !err )
+	{
+		destcols = pio->drp.io_DestCols;
+		destrows = pio->drp.io_DestRows;
+	}
+	if( destcols < 1 )
+		destcols = vis_w;
+	if( destrows < 1 )
+		destrows = doc_h;
+
+	if( gauge )
+		set( gauge, MUIA_Gauge_Max, doc_h );
+
+	for( y = 0; y < doc_h; y += vis_h )
+	{
+		if( abortflag && *abortflag )
+		{
+			abort = TRUE;
+			break;
+		}
+		band = vis_h;
+		if( y + band > doc_h )
+			band = doc_h - y;
+		set( obj, MUIA_Virtgroup_Top, y );
+		MUI_Redraw( obj, MADF_DRAWOBJECT );
+		tickapp();
+		WaitBlit();
+		rp = _rp( obj );
+		if( !rp )
+			break;
+		drows = destrows * band / doc_h;
+		if( drows < 1 )
+			drows = 1;
+		special = (UWORD)( SPECIAL_FULLCOLS | SPECIAL_ASPECT | SPECIAL_NOFORMFEED );
+		if( y + band >= doc_h )
+			special = (UWORD)( SPECIAL_FULLCOLS | SPECIAL_ASPECT );
+		err = print_dump_band( pio, rp, scr, sx, sy, (UWORD)vis_w, (UWORD)band, destcols, drows, special, use_tp );
+		if( err )
+		{
+			MUI_Request( app, NULL, 0, GS( ERROR ), GS( CANCEL ), GS( PRINT_PRINTERR ), (ULONG)err );
+			break;
+		}
+		if( gauge )
+			set( gauge, MUIA_Gauge_Current, y + band );
+		tickapp();
+	}
+
+	set( obj, MUIA_Virtgroup_Top, saved_top );
+	CloseDevice( (struct IORequest *)&pio->drp );
+	DeleteIORequest( (struct IORequest *)pio );
+	DeleteMsgPort( port );
+	(void)abort;
+	(void)msg->mode;
+#else
+	(void)msg;
+#endif
+	return( 0 );
+}
+
 /* --- DO NOT ADD ANY METHOD BELOW BUT ABOVE HTMLWin_Backward for the sake of readability ! --- */
 
 BEGINMTABLE
@@ -2753,6 +2968,8 @@ DEFMETHOD( HTMLRexx_OpenSourceView )
 DEFMETHOD( HTMLWin_Backward )
 DEFMETHOD( HTMLWin_Forward )
 DEFMETHOD( HTMLRexx_LoadBG )
+DEFSMETHOD( HTMLView_DoPrint )
+DEFTMETHOD( HTMLView_PrintWinClosed )
 
 case MM_JS_GetGCMagic:
 	return( 0 ); // We're not under GC control

@@ -23,6 +23,7 @@
 */
 
 #include "voyager.h"
+#include <ctype.h>
 
 /* private */
 #include "voyager_cat.h"
@@ -34,6 +35,7 @@
 #include "network.h"
 #include "parse.h"
 #include "htmlwin.h"
+#include "htmlclasses.h"
 #include "dos_func.h"
 
 
@@ -60,6 +62,7 @@ DECCONST
 	printmodes[ 0 ] = GS( PRINT_MODE_GFXBG );
 	printmodes[ 1 ] = GS( PRINT_MODE_GFX );
 	printmodes[ 2 ] = GS( PRINT_MODE_TEXT );
+	printmodes[ 3 ] = NULL;
 
 #if USE_TURBOPRINT
 	/*
@@ -199,10 +202,15 @@ DECMETHOD( Print_Close, ULONG )
 
 	setflag( VFLG_PRINTMODE, getv( data->cyc_mode, MUIA_Cycle_Active ) );
 
-/*
-	TOFIX
-	DoMethod( data->myvobj, MM_HTMLView_PrintWinClosed );
-*/
+	if( getv( data->grp, MUIA_Group_ActivePage ) == 1 )
+	{
+		data->abortflag = TRUE;
+		return( 0 );
+	}
+
+	if( data->myvobj )
+		DoMethod( data->myvobj, MM_HTMLView_PrintWinClosed );
+
 	set( obj, MUIA_Window_Open, FALSE );
 	DoMethod( app, OM_REMMEMBER, ( ULONG )obj );
 	MUI_DisposeObject( obj );
@@ -210,13 +218,20 @@ DECMETHOD( Print_Close, ULONG )
 	return( 0 );
 }
 
-#if 0
 static void printtext( APTR obj, struct Data *data, struct nstream *stream )
 {
-	int slen = nets_getdocptr( stream );
-	char *txt = nets_getdocmem( stream ), *otxt;
+	int slen;
+	char *txt, *otxt;
 	BPTR f;
 	int error = FALSE;
+
+	if( !stream )
+		return;
+
+	slen = nets_getdocptr( stream );
+	txt = nets_getdocmem( stream );
+	if( !txt || slen < 0 )
+		return;
 
 	set( data->gauge, MUIA_Gauge_Max, slen );
 
@@ -227,6 +242,8 @@ static void printtext( APTR obj, struct Data *data, struct nstream *stream )
 		MUI_Request( app, obj, 0, GS( ERROR ), GS( CANCEL ), GS( PRINT_OPENERR), 0 );
 		return;
 	}
+
+	nets_lockdocmem();
 
 	if( !strnicmp( nets_mimetype( stream ), "text/html", 9 ) )
 	{
@@ -239,10 +256,13 @@ static void printtext( APTR obj, struct Data *data, struct nstream *stream )
 
 		while( *txt && !data->abortflag && !error )
 		{
-			int ch = gettoken( &txt, &dummy );
+			int ch;
 			char *special;
 
+			ch = gettoken( &txt, &dummy );
+
 			set( data->gauge, MUIA_Gauge_Current, txt - otxt );
+			tickapp();
 
 			if( !ch )
 				break;
@@ -297,6 +317,24 @@ static void printtext( APTR obj, struct Data *data, struct nstream *stream )
 
 			switch( ch )
 			{
+				case ht_script:
+				case ht_style:
+					eatup = TRUE;
+					break;
+				case ht_script | HTF_NEGATE:
+				case ht_style | HTF_NEGATE:
+					eatup = FALSE;
+					break;
+
+				case ht_pre:
+					premode = TRUE;
+					special = "\n";
+					break;
+				case ht_pre | HTF_NEGATE:
+					premode = FALSE;
+					special = "\n";
+					break;
+
 				case ht_h1:
 				case ht_h2:
 				case ht_h3:
@@ -316,16 +354,20 @@ static void printtext( APTR obj, struct Data *data, struct nstream *stream )
 					break;
 
 				case ht_b:
+				case ht_strong:
 					special = "\033[1m";
 					break;
 				case ht_b | HTF_NEGATE:
+				case ht_strong | HTF_NEGATE:
 					special = "\033[22m";
 					break;
 
 				case ht_i:
+				case ht_em:
 					special = "\033[3m";
 					break;
 				case ht_i | HTF_NEGATE:
+				case ht_em | HTF_NEGATE:
 					special = "\033[23m";
 					break;
 
@@ -343,6 +385,8 @@ static void printtext( APTR obj, struct Data *data, struct nstream *stream )
 					special = "\033[0m\033[0w\n";
 					break;
 
+				case ht_p:
+				case ht_p | HTF_NEGATE:
 				case ht_br:
 				case ht_td:
 				case ht_td | HTF_NEGATE:
@@ -368,29 +412,31 @@ static void printtext( APTR obj, struct Data *data, struct nstream *stream )
 				error = FPuts( f, special );
 			}
 		}
+		if( bp && !error )
+			FWrite( f, buffer, bp, 1 );
 	}
 	else
 	{
-		// plain text
 		Write( f, txt, slen );
 		Flush( f );
 	}
+	nets_unlockdocmem();
 	set( data->gauge, MUIA_Gauge_Current, slen );
 	FPutC( f, '\f' );
 	Close( f );
 #endif
 }
-#endif
 
 DECMETHOD( Print_Start, ULONG )
 {
 	GETDATA;
-	//int mode = getv( data->cyc_mode, MUIA_Cycle_Active );
+	int mode;
 
+	mode = getv( data->cyc_mode, MUIA_Cycle_Active );
+
+	data->abortflag = FALSE;
 	set( data->grp, MUIA_Group_ActivePage, 1 );
 
-/*
-	TOFIX
 	if( mode == 2 )
 	{
 		printtext( obj, data, (APTR)getv( data->myvobj, MA_HTMLView_StreamHandle ) );
@@ -399,7 +445,8 @@ DECMETHOD( Print_Start, ULONG )
 	{
 		DoMethod( data->myvobj, MM_HTMLView_DoPrint, ( ULONG )data->gauge, ( ULONG )&data->abortflag, mode + 1 );
 	}
-*/
+
+	set( data->grp, MUIA_Group_ActivePage, 0 );
 	return( DoMethod( obj, MM_Print_Close ) );
 }
 

@@ -50,11 +50,6 @@
 #define EAGAIN 11
 #endif
 
-/* Handshake log to PROGDIR:/RAM:voyager_net.log.  Off for release. */
-#ifndef VSSL_TRACE
-#define VSSL_TRACE 0
-#endif
-
 #include "rev.h"
 
 /* SAS/C: __reg(a0, T x) -> register __a0 T x (same as Voyager macros/compilers.h). */
@@ -218,34 +213,6 @@ vssl_find_ca(char *buf, ULONG buflen)
 	buf[0] = '\0';
 	return NULL;
 }
-
-#if VSSL_TRACE
-static void
-vssl_trace(STRPTR host, LONG attach_rc, LONG hs_rc)
-{
-	BPTR fh;
-	LONG e;
-
-	e = 0;
-	if (SocketBase != NULL) {
-		e = Errno();
-	}
-	fh = Open("PROGDIR:voyager_net.log", MODE_OLDFILE);
-	if (fh == (BPTR)0) {
-		fh = Open("RAM:voyager_net.log", MODE_OLDFILE);
-	}
-	if (fh == (BPTR)0) {
-		return;
-	}
-	Seek(fh, 0, OFFSET_END);
-	FPrintf(fh, "[VSSL] host=%s attach=%ld hs=%ld tlserr=%ld errno=%ld\n",
-		host ? host : (STRPTR)"", attach_rc, hs_rc, TlsError(), e);
-	Flush(fh);
-	Close(fh);
-}
-#else
-#define vssl_trace(h, a, b) ((void)0)
-#endif
 
 static int
 vssl_tls_want(LONG rc)
@@ -480,7 +447,6 @@ vssl_do_connect(struct vssl_ctx *ctx, int sock, STRPTR hostname)
 	}
 
 	if (!vssl_ensure_task()) {
-		vssl_trace((STRPTR)hostbuf, -1, -1);
 		return NULL;
 	}
 
@@ -494,7 +460,6 @@ vssl_do_connect(struct vssl_ctx *ctx, int sock, STRPTR hostname)
 
 	own = NewTlsContextA(NULL);
 	if (own == NULL) {
-		vssl_trace((STRPTR)hostbuf, TlsError(), 0);
 		return NULL;
 	}
 	if (ctx->ca_path[0] != '\0') {
@@ -509,7 +474,6 @@ vssl_do_connect(struct vssl_ctx *ctx, int sock, STRPTR hostname)
 
 	tls = NewTlsConnection(own);
 	if (tls == NULL) {
-		vssl_trace((STRPTR)hostbuf, TlsError(), 0);
 		DisposeTlsContext(own);
 		return NULL;
 	}
@@ -522,7 +486,6 @@ vssl_do_connect(struct vssl_ctx *ctx, int sock, STRPTR hostname)
 	tags[n].ti_Data = 0;
 
 	rc = TlsAttachSocketA(tls, sock, (STRPTR)hostbuf, tags);
-	vssl_trace((STRPTR)hostbuf, rc, 0);
 	if (rc != 0) {
 		DisposeTlsConnection(tls);
 		DisposeTlsContext(own);
