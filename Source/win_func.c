@@ -150,7 +150,7 @@ void set_window_title_internal( APTR obj, STRPTR name, struct v_window *v_win )
 	}
 
 	/* Window title */
-	sprintf( v_win->win_title, "[%ld] " APPNAME " Â· %.100s", v_win->num, name );
+	sprintf( v_win->win_title, "[%ld] " APPNAME " · %.100s", v_win->num, name );
 #if !USE_STB_NAV
 	// In STB mode, we don't have window titles at all
 	set( v_win->winobj ? v_win->winobj : obj, MUIA_Window_Title, v_win->win_title );

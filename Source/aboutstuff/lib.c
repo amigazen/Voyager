@@ -14,7 +14,7 @@
  * and copy the file somewhere else.
  */
 #define LIBNAME      "voyager_about.vlib"
-#define LIBCOPYRIGHT "ï¿½ 1998-2003 by Oliver Wagner & David Gerber"
+#define LIBCOPYRIGHT "© 1998-2003 by Oliver Wagner & David Gerber"
 #define LIBPRI 0
 #define LIBBASE VAboutBase
 

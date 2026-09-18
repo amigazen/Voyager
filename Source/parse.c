@@ -714,7 +714,7 @@ DEFENT("permil", '%' )
 DEFENT("bullet", '·' )
 DEFENT("bull", '·' )	/* this is against the specs, a for-AmigaOS hack ;) */
 DEFENT("beta", 'ß' )
-DEFENT("trade",'™' )	/* might not be in all fonts (Windows 1252 codepage) */
+DEFENT("trade",'?' )	/* might not be in all fonts (Windows 1252 codepage) */
 DEFENT("hellip",'.')
 {0,0,0}
 };

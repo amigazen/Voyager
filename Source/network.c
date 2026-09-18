@@ -924,7 +924,7 @@ static void addstream( struct nstream *ns )
 		{
 			if( p[ 1 ] == '{' )
 			{
-				if( strstr( p, "}ÔøΩ" ) )
+				if( strstr( p, "}ù" ) )
 					*p = 0;
 			}
 		}
@@ -943,7 +943,7 @@ static void addstream( struct nstream *ns )
 			p = db;
 			while( isdigit( *p ) )
 				p++;
-			if( !strcmp( p, "}ÔøΩ" ) )
+			if( !strcmp( p, "}ù" ) )
 			{
 				un->postid = atoi( db );
 				db[ -2 ] = 0;
@@ -2144,10 +2144,10 @@ static void un_setup( struct unode *un )
 #endif
 				}
 				else
-					strcpy( bf2, "ÔøΩ Unregistered Demo Copy ÔøΩ" );
+					strcpy( bf2, "ù Unregistered Demo Copy ù" );
 				#else
 				#ifdef __MORPHOS__
-				strcpy( bf2, "ÔøΩ MorphOS licensed version ÔøΩ" );
+				strcpy( bf2, "ù MorphOS licensed version ù" );
 				#endif
 				#endif /* disabled keyfile code */
 				#ifdef __MORPHOS__
@@ -2156,7 +2156,7 @@ static void un_setup( struct unode *un )
 				strcpy( bf2, "Voyager" );
 				#endif
 #else /* USE_NET */
-				strcpy( bf2, "ÔøΩ Freely distributable NoNet version ÔøΩ" );
+				strcpy( bf2, "ù Freely distributable NoNet version ù" );
 #endif /* USE_NET */
 
 				/*

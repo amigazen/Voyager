@@ -87,7 +87,7 @@ UnicodeData_p UnicodeBase;
 #define VSPEC ""
 #endif
 
-char copyright[] = { "Voyager " LVERTAG " " VSPEC "ï¿½ 1995-2003 Oliver Wagner & David Gerber, All Rights Reserved" };
+char copyright[] = { "Voyager " LVERTAG " " VSPEC " © 1995-2003 Oliver Wagner & David Gerber, All Rights Reserved" };
 
 int app_started;
 static int app_doublestart;
@@ -966,9 +966,14 @@ int open_muimaster( void )
 	while( 1 )
 	{
 		MUIMasterBase = (void *)OpenLibrary( MUIMASTER_NAME, 18 );
+		/* muigfx.library is a private MUI graphics helper (removed from
+		 * later MUI). Optional: page scroll uses ClipBlit/ScrollRaster
+		 * when it is missing. */
 		MUIGfxBase = (void*)OpenLibrary( "muigfx.library", 1 );
+		if( !MUIGfxBase )
+			MUIGfxBase = (void*)OpenLibrary( "Libs/muigfx.library", 1 );
 
-		if( MUIMasterBase && MUIGfxBase )
+		if( MUIMasterBase )
 		{
 #if ALPHA_WARNING
 			char dummy[ 32 ];
@@ -980,6 +985,11 @@ int open_muimaster( void )
 					return( FALSE );
 #endif /* ALPHA_WARNING */
 			return( TRUE );
+		}
+		if( MUIGfxBase )
+		{
+			CloseLibrary( MUIGfxBase );
+			MUIGfxBase = NULL;
 		}
 		eas.es_StructSize = sizeof( eas );
 		eas.es_Flags = 0;
@@ -993,12 +1003,17 @@ int open_muimaster( void )
 
 void close_muimaster( void )
 {
+	D( db_init, bug( "cleaning up..\n" ) );
+
+	if( MUIGfxBase )
+	{
+		CloseLibrary( MUIGfxBase );
+		MUIGfxBase = NULL;
+	}
 	if( MUIMasterBase )
 	{
-		D( db_init, bug( "cleaning up..\n" ) );
-
-		CloseLibrary( MUIGfxBase );
 		CloseLibrary( MUIMasterBase );
+		MUIMasterBase = NULL;
 	}
 }
 

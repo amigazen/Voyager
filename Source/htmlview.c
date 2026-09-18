@@ -237,6 +237,58 @@ extern struct Library *MUIGfxBase;
 	, MUIGfxBase, IF_CACHEFLUSHALL, NULL, 0, IF_CACHEFLUSHALL, NULL, 0)
 #endif /* __MORPHOS__ */
 
+/* Private muigfx LVO when the library is present; otherwise ClipBlit plus
+ * graphics.library ScrollRaster (same idea as the MUI 19 virtgroup path). */
+static void voy_scroll_view( struct RastPort *rp, LONG dx, LONG dy, LONG left, LONG top, LONG right, LONG bottom )
+{
+	LONG width, height, adx, ady, cw, ch, x1, x2, y1, y2;
+	UBYTE oldmask;
+
+	if( !rp )
+		return;
+	width = right - left + 1;
+	height = bottom - top + 1;
+	if( width <= 0 || height <= 0 )
+		return;
+
+#if !defined( MBX )
+	if( MUIGfxBase )
+	{
+		MUIG_ScrollRaster( rp, (WORD)dx, (WORD)dy, (WORD)left, (WORD)top, (WORD)right, (WORD)bottom );
+		return;
+	}
+#endif
+
+	if( !dx && !dy )
+		return;
+	adx = dx >= 0 ? dx : -dx;
+	ady = dy >= 0 ? dy : -dy;
+	if( adx >= width || ady >= height )
+		return;
+	cw = width - adx;
+	ch = height - ady;
+	x1 = left;
+	x2 = left;
+	y1 = top;
+	y2 = top;
+	if( dx >= 0 )
+		x1 += dx;
+	else
+		x2 -= dx;
+	if( dy >= 0 )
+		y1 += dy;
+	else
+		y2 -= dy;
+	ClipBlit( rp, x1, y1, rp, x2, y2, cw, ch, 0xc0 );
+	if( rp->Layer && rp->Layer->Window && ( ((struct Window *)rp->Layer->Window)->Flags & WFLG_SIMPLE_REFRESH ) )
+	{
+		oldmask = rp->Mask;
+		SetWrMsk( rp, 0 );
+		ScrollRaster( rp, dx, dy, left, top, right, bottom );
+		SetWrMsk( rp, oldmask );
+	}
+}
+
 //
 // Incremental layout layer/bitmap cache
 //
@@ -1315,7 +1367,7 @@ DECMMETHOD( Draw )
 			{
 				LONG ml = _mleft(obj), mt = _mtop(obj), mr = _mright(obj), mb = _mbottom(obj);
 				if( ml <= mr && mt <= mb && ml >= -32768 && mr <= 32767 && mt >= -32768 && mb <= 32767 )
-					MUIG_ScrollRaster(_rp(obj),vgdata->pos[H]-vgdata->oldpos[H],vgdata->pos[V]-vgdata->oldpos[V],(WORD)ml,(WORD)mt,(WORD)mr,(WORD)mb);
+					voy_scroll_view( _rp(obj), vgdata->pos[H]-vgdata->oldpos[H], vgdata->pos[V]-vgdata->oldpos[V], ml, mt, mr, mb );
 			}
 		}
 		#ifndef __MORPHOS__
