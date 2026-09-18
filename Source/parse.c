@@ -271,10 +271,12 @@ void init_tokenbuff( void )
 	for( c = 0; c < NUMTOKENARGS; c++ )
 	{
 		tokenargs[ c ].data = malloc( TOKENARGBUFF );
-		memset( tokenargs[ c ].data, '\0', TOKENARGBUFF ); /* TOFIX: maybe not needed */
+		if( tokenargs[ c ].data )
+			memset( tokenargs[ c ].data, '\0', TOKENARGBUFF );
 #if USE_LIBUNICODE
 		tokenargs[ c].data_utf8 = malloc( TOKENARGBUFF * 4 );
-		memset( tokenargs[ c ].data_utf8, '\0', TOKENARGBUFF * 4 ); /* TOFIX: maybe not needed */
+		if( tokenargs[ c ].data_utf8 )
+			memset( tokenargs[ c ].data_utf8, '\0', TOKENARGBUFF * 4 );
 #endif
 	}
 }

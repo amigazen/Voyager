@@ -264,7 +264,7 @@ void net_log( const char *fmt, ... )
 	if( !net_log_file )
 		return;
 	va_start( args, fmt );
-	VSNPrintf( buf, sizeof( buf ), fmt, args );
+	voy_vsnprintf( buf, sizeof( buf ), fmt, args );
 	va_end( args );
 	FPrintf( net_log_file, "[NET] %s", buf );
 	Flush( net_log_file );
@@ -924,7 +924,7 @@ static void addstream( struct nstream *ns )
 		{
 			if( p[ 1 ] == '{' )
 			{
-				if( strstr( p, "}" ) )
+				if( strstr( p, "}ï¿½" ) )
 					*p = 0;
 			}
 		}
@@ -943,7 +943,7 @@ static void addstream( struct nstream *ns )
 			p = db;
 			while( isdigit( *p ) )
 				p++;
-			if( !strcmp( p, "}" ) )
+			if( !strcmp( p, "}ï¿½" ) )
 			{
 				un->postid = atoi( db );
 				db[ -2 ] = 0;
@@ -1136,12 +1136,7 @@ void STDARGS pushfmt( struct unode *un, char *fmt, ... )
 
 	va_start( va, fmt );
 
-#ifdef __SASC
-	/* VSNPrintf takes va_list as data stream pointer for RawDoFmt */
-	len = VSNPrintf( buffer, sizeof(buffer), (const STRPTR)fmt, (APTR)va );
-#else
-	vsnprintf( buffer, sizeof(buffer), (const STRPTR)fmt, (APTR)va );
-#endif
+	len = voy_vsnprintf( buffer, sizeof(buffer), (const STRPTR)fmt, (APTR)va );
 	va_end( va );
 	pushdata( un, buffer, strlen( buffer ) );
 }
@@ -1180,7 +1175,7 @@ void makeneterror( struct unode *un, char *str, int err )
 	errstr = dummy[ 1 ];
 	un->errorcode = err;
 #ifdef __SASC
-	SNPrintf( un->errorstring, sizeof( un->errorstring ), str, err, errstr ? errstr : "" );
+	snprintf( un->errorstring, sizeof( un->errorstring ), str, err, errstr ? errstr : "" );
 #else
 	snprintf( un->errorstring, sizeof( un->errorstring ), str, err, errstr ? errstr : "" );
 #endif
@@ -1497,18 +1492,18 @@ static void un_setup_file( struct unode *un )
 filerr:
 	/* Fault() uses locale/newlib; unsafe from the nethandler child. */
 #ifdef __SASC
-	SNPrintf( error, sizeof( error ), "%ld", (long)IoErr() );
+	snprintf( error, sizeof( error ), "%ld", (long)IoErr() );
 #else
 	sprintf( error, "%ld", (long)IoErr() );
 #endif
 #ifdef __SASC
-	SNPrintf( un->errorstring, sizeof(un->errorstring), GS( NWM_ERROR_FILEOPENFAILED ), path, IoErr(), error );
+	snprintf( un->errorstring, sizeof(un->errorstring), GS( NWM_ERROR_FILEOPENFAILED ), path, IoErr(), error );
 #else
 	snprintf( un->errorstring, sizeof(un->errorstring), GS( NWM_ERROR_FILEOPENFAILED ), path, IoErr(), error );
 #endif
 #else
 #ifdef __SASC
-	SNPrintf( un->errorstring, sizeof(un->errorstring), "Can't open file %s", path );
+	snprintf( un->errorstring, sizeof(un->errorstring), "Can't open file %s", path );
 #else
 	snprintf( un->errorstring, sizeof(un->errorstring), "Can't open file %s", path );
 #endif
@@ -1528,7 +1523,7 @@ static char *ip2a( ULONG ip )
 	static char ipabuff[ 32 ];
 
 #ifdef __SASC
-	SNPrintf( ipabuff, sizeof(ipabuff), "%lu.%lu.%lu.%lu",
+	snprintf( ipabuff, sizeof(ipabuff), "%lu.%lu.%lu.%lu",
 		( ip >> 24 ) ,
 		( ip >> 16 ) & 0xff,
 		( ip >> 8 ) & 0xff,
@@ -1671,7 +1666,8 @@ static void un_setup( struct unode *un )
 #endif /* USE_ABOUTLIB */
 				pushstring( un, "?about?" );
 		}
-		else if( !strcmp( purl.path, "ssllogo" ) ) /* about:ssllogo TOFIX: disable if there's no SSL available */
+#if USE_SSL
+		else if( !strcmp( purl.path, "ssllogo" ) ) /* about:ssllogo */
 		{
 #if USE_ABOUTLIB
 			if( openabout() )
@@ -1686,6 +1682,7 @@ static void un_setup( struct unode *un )
 #endif /* USE_ABOUTLIB */
 				pushstring( un, "?about?" );
 		}
+#endif /* USE_SSL */
 		else if( !strcmp( purl.path, "ibeta" ) )  /* about:ibeta */
 		{
 #if USE_ABOUTLIB
@@ -2141,16 +2138,16 @@ static void un_setup( struct unode *un )
 				if( getserial() != ~0 )
 				{
 #ifdef __SASC
-					SNPrintf( bf2, sizeof(bf2), "Registered to %s [%s]", getowner(), getserialtext() );
+					snprintf( bf2, sizeof(bf2), "Registered to %s [%s]", getowner(), getserialtext() );
 #else
 					sprintf( bf2, "Registered to %s [%s]", getowner(), getserialtext() );
 #endif
 				}
 				else
-					strcpy( bf2, " Unregistered Demo Copy " );
+					strcpy( bf2, "ï¿½ Unregistered Demo Copy ï¿½" );
 				#else
 				#ifdef __MORPHOS__
-				strcpy( bf2, " MorphOS licensed version " );
+				strcpy( bf2, "ï¿½ MorphOS licensed version ï¿½" );
 				#endif
 				#endif /* disabled keyfile code */
 				#ifdef __MORPHOS__
@@ -2159,7 +2156,7 @@ static void un_setup( struct unode *un )
 				strcpy( bf2, "Voyager" );
 				#endif
 #else /* USE_NET */
-				strcpy( bf2, " Freely distributable NoNet version " );
+				strcpy( bf2, "ï¿½ Freely distributable NoNet version ï¿½" );
 #endif /* USE_NET */
 
 				/*
@@ -2200,7 +2197,7 @@ static void un_setup( struct unode *un )
 		else
 		{
 #ifdef __SASC
-			SNPrintf( un->errorstring, sizeof(un->errorstring), "Not in the cache" /*, purl.scheme*/ );
+			snprintf( un->errorstring, sizeof(un->errorstring), "Not in the cache" /*, purl.scheme*/ );
 #else
 			sprintf( un->errorstring, "Not in the cache" /*, purl.scheme*/ );
 #endif
@@ -2213,7 +2210,7 @@ static void un_setup( struct unode *un )
 	{
 #ifdef ISSPECIALDEMO
 #ifdef __SASC
-		SNPrintf( un->errorstring, sizeof(un->errorstring), "Protocol %s not available in this special version.", purl.scheme );
+		snprintf( un->errorstring, sizeof(un->errorstring), "Protocol %s not available in this special version.", purl.scheme );
 #else
 		sprintf( un->errorstring, "Protocol %s not available in this special version.", purl.scheme );
 #endif
@@ -2244,7 +2241,7 @@ static void un_setup( struct unode *un )
 		else
 		{
 #ifdef __SASC
-			SNPrintf( un->errorstring, sizeof(un->errorstring), "Not in the cache" /*, purl.scheme*/ );
+			snprintf( un->errorstring, sizeof(un->errorstring), "Not in the cache" /*, purl.scheme*/ );
 #else
 			sprintf( un->errorstring, "Not in the cache" /*, purl.scheme*/ );
 #endif
@@ -2258,7 +2255,7 @@ static void un_setup( struct unode *un )
 	{
 #ifdef ISSPECIALDEMO
 #ifdef __SASC
-		SNPrintf( un->errorstring, sizeof(un->errorstring), "Protocol %s not available in this special version.", purl.scheme );
+		snprintf( un->errorstring, sizeof(un->errorstring), "Protocol %s not available in this special version.", purl.scheme );
 #else
 		sprintf( un->errorstring, "Protocol %s not available in this special version.", purl.scheme );
 #endif
@@ -2277,7 +2274,7 @@ static void un_setup( struct unode *un )
 		else
 		{
 #ifdef __SASC
-			SNPrintf( un->errorstring, sizeof(un->errorstring), "Not in the cache" /*, purl.scheme*/ );
+			snprintf( un->errorstring, sizeof(un->errorstring), "Not in the cache" /*, purl.scheme*/ );
 #else
 			sprintf( un->errorstring, "Not in the cache" /*, purl.scheme*/ );
 #endif
@@ -2301,7 +2298,7 @@ static void un_setup( struct unode *un )
 		else
 		{
 #ifdef __SASC
-			SNPrintf( un->errorstring, sizeof(un->errorstring), "Not in the cache" /*, purl.scheme*/ );
+			snprintf( un->errorstring, sizeof(un->errorstring), "Not in the cache" /*, purl.scheme*/ );
 #else
 			sprintf( un->errorstring, "Not in the cache" /*, purl.scheme*/ );
 #endif
@@ -2333,7 +2330,7 @@ static void un_setup( struct unode *un )
 	{
 		// unknown method
 #ifdef __SASC
-		SNPrintf( un->errorstring, sizeof(un->errorstring), GS( NWM_ERROR_UNKNOWNMETHOD ), purl.scheme );
+		snprintf( un->errorstring, sizeof(un->errorstring), GS( NWM_ERROR_UNKNOWNMETHOD ), purl.scheme );
 #else
 		snprintf( un->errorstring, sizeof(un->errorstring), GS( NWM_ERROR_UNKNOWNMETHOD ), purl.scheme );
 #endif
@@ -2446,7 +2443,7 @@ static void un_dnsdone( struct unode *un )
 		DL( DEBUG_WARNING, db_net, bug("dnsfailed(%s)\n", un->url ));
 
 #ifdef __SASC
-		SNPrintf( buff, sizeof(buff), GS( NWM_ERROR_NODNS ), un->dnsmsg.name );
+		snprintf( buff, sizeof(buff), GS( NWM_ERROR_NODNS ), un->dnsmsg.name );
 #else
 		sprintf( buff, GS( NWM_ERROR_NODNS ), un->dnsmsg.name );
 #endif
@@ -3108,6 +3105,20 @@ static void SAVEDS nethandler( void )
 	BPTR progdir;
 #endif
 
+	NEWLIST( &ulist );
+	NEWLIST( &sslcertlist );
+
+	InitSemaphore( &unlistsem );
+	/* Parent waits on netport. Create it before DOS log I/O: GetProgramDir
+	 * or Open in this child can stall on OS4, and the main task then looks
+	 * frozen on Calling init_netprocess. */
+	netport = CreateMsgPort();
+	if( !netport )
+	{
+		netproc = NULL;
+		return;
+	}
+
 #if VLOG_NET
 	net_log_file = NULL;
 	progdir = GetProgramDir();
@@ -3134,19 +3145,6 @@ static void SAVEDS nethandler( void )
 	}
 #endif /* USE_EXECUTIVE */
 
-	NEWLIST( &ulist );
-	NEWLIST( &sslcertlist );
-
-	InitSemaphore( &unlistsem );
-	NetLog( "nethandler: creating netport...\n" );
-	netport = CreateMsgPort();
-	if( !netport )
-	{
-		NetLog( "nethandler: CreateMsgPort failed!\n" );
-		if( net_log_file ) { Close( net_log_file ); net_log_file = (BPTR)0; }
-		netproc = NULL;
-		return;
-	}
 	NetLog( "nethandler: netport created, entering main loop\n" );
 
 #if USE_NET
@@ -3554,13 +3552,17 @@ int init_netprocess( void )
 
 	D( db_init, bug( "initializing..\n" ) );
 	VoyLog(( "[NET] init_netprocess() starting...\n" ));
+	VoyFlush();
 
 	VoyLog(( "[NET] Initializing netpoolsem...\n" ));
+	VoyFlush();
 	InitSemaphore( &netpoolsem );
 	VoyLog(( "[NET] Creating netpool...\n" ));
+	VoyFlush();
 	if( netpool = CreatePool( 0, 4096, 2048 ) )
 	{
 		VoyLog(( "[NET] netpool created successfully\n" ));
+		VoyFlush();
 #if USE_NET
 		VoyLog(( "[NET] About to create DNS processes\n" ));
 		VoyLog(( "[NET] DNSTASKS = %ld\n", (long)DNSTASKS ));
@@ -3569,23 +3571,12 @@ int init_netprocess( void )
 		for( c = 0; c < DNSTASKS; c++ )
 		{
 			VoyLog(( "[NET] DNS loop iteration %ld (c=%ld)\n", (long)(c + 1), (long)c ));
-			
-			/* Initialize name buffer to ensure it's clean */
-			{
-				int i;
-				for( i = 0; i < sizeof(name); i++ )
-					name[ i ] = '\0';
-			}
-			
-#ifdef __SASC
-			SNPrintf( name, sizeof(name), "V's DNS Server %d", c + 1 );
-#else
+			VoyFlush();
+
+			/* C sprintf: utility SNPrintf is V47+ only. */
 			sprintf( name, "V's DNS Server %d", c + 1 );
-#endif
-			
-			/* Ensure null termination */
 			name[ sizeof(name) - 1 ] = '\0';
-			
+
 			VoyLog(( "[NET] Creating DNS process\n" ));
 			VoyFlush();
 			
@@ -3646,11 +3637,7 @@ int init_netprocess( void )
 		VoyLog(( "[NET] Creating connect processes (MAXNETPROC=%ld)...\n", (long)MAXNETPROC ));
 		for( c = 0; c < MAXNETPROC; c++ )
 		{
-#ifdef __SASC
-			SNPrintf( name, sizeof(name), "V's connect() Handler %02d", c + 1 );
-#else
 			sprintf( name, "V's connect() Handler %02d", c + 1 );
-#endif
 			VoyLog(( "[NET] Creating connect process %ld: %s\n", (long)(c + 1), name ));
 			connectproc[ c ] = CreateNewProcTags(
 				NP_Entry, connecthandler,
@@ -3706,15 +3693,26 @@ int init_netprocess( void )
 
 		if( netproc )
 		{
+			int waitcount;
+
 			VoyLog(( "[NET] Main network process created, waiting for netport...\n" ));
-			while( netproc && !netport )
+			VoyFlush();
+			waitcount = 0;
+			while( netproc && !netport && waitcount < 250 )
 			{
 				Delay( 1 );
+				waitcount++;
+				if( ( waitcount % 50 ) == 0 )
+				{
+					VoyLog(( "[NET] Still waiting for netport... (%ld)\n", (long)waitcount ));
+					VoyFlush();
+				}
 			}
 			if( netport )
 				VoyLog(( "[NET] netport created successfully\n" ));
 			else
 				VoyLog(( "[NET] WARNING: netport not created (process may have exited)!\n" ));
+			VoyFlush();
 		}
 		else
 		{

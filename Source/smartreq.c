@@ -423,11 +423,7 @@ int STDARGS smartreq_request( APTR *obj, STRPTR title, APTR winobj, ULONG method
 		 * TOFIX: optimization, only copy when there's more than 1 request.
 		 */
 		buf[ 0 ] = '\0'; /* I don't know if vsnprintf() NULL terminates if the format is not here.. better safe than sorry */
-#ifdef __SASC
-		vsprintf( buf, format, va );
-#else
-		vsnprintf( buf, REQ_BUFFERSIZE, format, va ); /* TOFIX: needs SAS/C support.. grr :( */
-#endif
+		voy_vsnprintf( buf, REQ_BUFFERSIZE, format, (APTR)va );
 		len = strlen( buf );
 
 		if( len )

@@ -13,14 +13,39 @@ Changes prior to 3.0 were already dropped in that file.
 
 ## [Unreleased]
 
+### Added
+
+- Print dialog, menu/toolbar/ARexx `Print ASK`, text dump to `PRT:`, and
+  graphical `printer.device` band dumps (`PRD_TPEXTDUMPRPORT` when
+  `Turboprint:` is assigned).
+- UTF-8 HTML mapped to the OS3 Latin-1 charmap so `charset=utf-8` pages
+  (for example German text) render instead of mojibake. Charset is taken
+  from the MIME type and from `META`; incomplete UTF-8 sequences wait
+  across download chunks. Named and numeric entities that fit Latin-1
+  are mapped the same way. This is not Unicode fonts.
+
 ### Changed
 
-- Layout polish after first-paint and table work.
-- Default HTTP User-Agent (spoof off) is Firefox 4.0.1 on Windows 7. Extra tokens in the Mozilla comment (AmigaVoyager) were 403’d by StackCDN.
+- `cybergraphics.library` is opened deferred. RTG screens are gated with
+  `IsCyberModeID` so OS4 modes without `BMF_SPECIALFMT` still use the
+  CGX blit paths.
+- Default HTTP User-Agent (spoof off) is Firefox 4.0.1 on Windows 7.
+  Extra tokens in the Mozilla comment (AmigaVoyager) were 403'd by
+  StackCDN.
 
 ### Fixed
 
-- `NStream_GotInfo` deferral while `in_seturl` is set: deadlock workaround; drop it if the lockup stays gone.
+- `Print_Start` no longer closes the print window without printing.
+- Cookie-cut image blits: PNG alpha mask `(APTR)-1` is never passed to
+  `getclone` / `BltMaskBitMapRastPort` (OS4 68k jumped through
+  `0xfffffffe`).
+- Network child no longer calls `GetCatalogStr` / `Fault` (OS4
+  locale/newlib). English builtin strings and `IoErr` numbers are used
+  instead.
+- Unnecessary logging removed from the AmiTLS VSSL module.
+- `NStream_GotInfo` deferral while `in_seturl` is set: deadlock
+  workaround; drop it if the lockup stays gone.
+- Layout polish after first-paint and table work.
 
 ## [3.5.2] - 2026-09-05
 

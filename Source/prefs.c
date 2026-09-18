@@ -1038,26 +1038,27 @@ static void initprefs_continuation( void )
 	setflag( VFLG_FULLSCREEN, FALSE );
 
 #ifdef VDEBUG
-	/* debugging */
-	setprefslong( DSI_DEBUG_AUTH, FALSE );
-	setprefslong( DSI_DEBUG_CACHE, FALSE );
-	setprefslong( DSI_DEBUG_CACHEPRUNE, FALSE );
-	setprefslong( DSI_DEBUG_COOKIE, FALSE );
-	setprefslong( DSI_DEBUG_DOCINFOWIN, FALSE );
-	setprefslong( DSI_DEBUG_DOWNLOADWIN, FALSE );
-	setprefslong( DSI_DEBUG_DNS, FALSE );
-	setprefslong( DSI_DEBUG_FTP, FALSE );
-	setprefslong( DSI_DEBUG_GUI, FALSE );
-	setprefslong( DSI_DEBUG_HISTORY, FALSE );
-	setprefslong( DSI_DEBUG_HTML, FALSE );
-	setprefslong( DSI_DEBUG_HTTP, FALSE );
-	setprefslong( DSI_DEBUG_INIT, FALSE );
-	setprefslong( DSI_DEBUG_JS, FALSE );
-	setprefslong( DSI_DEBUG_MAIL, FALSE );
-	setprefslong( DSI_DEBUG_MISC, FALSE );
-	setprefslong( DSI_DEBUG_NET, FALSE );
-	setprefslong( DSI_DEBUG_PLUGIN, FALSE );
-	setprefslong( DSI_DEBUG_REXX, FALSE );
+	/* debugging: all classes on, chatty, for the Gerber debug build */
+	setprefslong( DSI_DEBUG_AUTH, TRUE );
+	setprefslong( DSI_DEBUG_CACHE, TRUE );
+	setprefslong( DSI_DEBUG_CACHEPRUNE, TRUE );
+	setprefslong( DSI_DEBUG_COOKIE, TRUE );
+	setprefslong( DSI_DEBUG_DOCINFOWIN, TRUE );
+	setprefslong( DSI_DEBUG_DOWNLOADWIN, TRUE );
+	setprefslong( DSI_DEBUG_DNS, TRUE );
+	setprefslong( DSI_DEBUG_FTP, TRUE );
+	setprefslong( DSI_DEBUG_GUI, TRUE );
+	setprefslong( DSI_DEBUG_HISTORY, TRUE );
+	setprefslong( DSI_DEBUG_HTML, TRUE );
+	setprefslong( DSI_DEBUG_HTTP, TRUE );
+	setprefslong( DSI_DEBUG_INIT, TRUE );
+	setprefslong( DSI_DEBUG_JS, TRUE );
+	setprefslong( DSI_DEBUG_MAIL, TRUE );
+	setprefslong( DSI_DEBUG_MISC, TRUE );
+	setprefslong( DSI_DEBUG_NET, TRUE );
+	setprefslong( DSI_DEBUG_PLUGIN, TRUE );
+	setprefslong( DSI_DEBUG_REXX, TRUE );
+	setprefslong( DSI_DEBUG_LEVEL, DEBUG_CHATTY );
 #endif /* VDEBUG */
 
 }
@@ -1410,26 +1411,32 @@ void cfg_load( char *filename )
 	setmenu( MENU_SET_METAREFRESH, getprefslong( DSI_NET_METAREFRESH, FALSE ) );
 
 #ifdef VDEBUG
-	setmenu( MENU_SET_DEBUG_AUTH, getprefslong( DSI_DEBUG_AUTH, FALSE ) );
-	setmenu( MENU_SET_DEBUG_CACHE, getprefslong( DSI_DEBUG_CACHE, FALSE ) );
-	setmenu( MENU_SET_DEBUG_CACHEPRUNE, getprefslong( DSI_DEBUG_CACHEPRUNE, FALSE ) );
-	setmenu( MENU_SET_DEBUG_COOKIE, getprefslong( DSI_DEBUG_COOKIE, FALSE ) );
-	setmenu( MENU_SET_DEBUG_DOCINFOWIN, getprefslong( DSI_DEBUG_DOCINFOWIN, FALSE ) );
-	setmenu( MENU_SET_DEBUG_DOWNLOADWIN, getprefslong( DSI_DEBUG_DOWNLOADWIN, FALSE ) );
-	setmenu( MENU_SET_DEBUG_DNS, getprefslong( DSI_DEBUG_DNS, FALSE ) );
-	setmenu( MENU_SET_DEBUG_FTP, getprefslong( DSI_DEBUG_FTP, FALSE ) );
-	setmenu( MENU_SET_DEBUG_GUI, getprefslong( DSI_DEBUG_GUI, FALSE ) );
-	setmenu( MENU_SET_DEBUG_HISTORY, getprefslong( DSI_DEBUG_HISTORY, FALSE ) );
-	setmenu( MENU_SET_DEBUG_HTML, getprefslong( DSI_DEBUG_HTML, FALSE ) );
-	setmenu( MENU_SET_DEBUG_CSS, getprefslong( DSI_DEBUG_CSS, FALSE ) );
-	setmenu( MENU_SET_DEBUG_HTTP, getprefslong( DSI_DEBUG_HTTP, FALSE ) );
-	setmenu( MENU_SET_DEBUG_INIT, db_init ? TRUE : getprefslong( DSI_DEBUG_INIT, FALSE ) );
-	setmenu( MENU_SET_DEBUG_JS, getprefslong( DSI_DEBUG_JS, FALSE ) );
-	setmenu( MENU_SET_DEBUG_MAIL, getprefslong( DSI_DEBUG_MAIL, FALSE ) );
-	setmenu( MENU_SET_DEBUG_MISC, getprefslong( DSI_DEBUG_MISC, FALSE ) );
-	setmenu( MENU_SET_DEBUG_NET, getprefslong( DSI_DEBUG_NET, FALSE ) );
-	setmenu( MENU_SET_DEBUG_PLUGIN, getprefslong( DSI_DEBUG_PLUGIN, FALSE ) );
-	setmenu( MENU_SET_DEBUG_LEVEL_0 + getprefslong( DSI_DEBUG_LEVEL, 0 ), TRUE );
+	setmenu( MENU_SET_DEBUG_AUTH, TRUE );
+	setmenu( MENU_SET_DEBUG_CACHE, TRUE );
+	setmenu( MENU_SET_DEBUG_CACHEPRUNE, TRUE );
+	setmenu( MENU_SET_DEBUG_COOKIE, TRUE );
+	setmenu( MENU_SET_DEBUG_DOCINFOWIN, TRUE );
+	setmenu( MENU_SET_DEBUG_DOWNLOADWIN, TRUE );
+	setmenu( MENU_SET_DEBUG_DNS, TRUE );
+	setmenu( MENU_SET_DEBUG_FTP, TRUE );
+	setmenu( MENU_SET_DEBUG_GUI, TRUE );
+	setmenu( MENU_SET_DEBUG_HISTORY, TRUE );
+	setmenu( MENU_SET_DEBUG_HTML, TRUE );
+	setmenu( MENU_SET_DEBUG_CSS, TRUE );
+	setmenu( MENU_SET_DEBUG_HTTP, TRUE );
+	setmenu( MENU_SET_DEBUG_INIT, TRUE );
+	setmenu( MENU_SET_DEBUG_JS, TRUE );
+	setmenu( MENU_SET_DEBUG_MAIL, TRUE );
+	setmenu( MENU_SET_DEBUG_MISC, TRUE );
+	setmenu( MENU_SET_DEBUG_NET, TRUE );
+	setmenu( MENU_SET_DEBUG_PLUGIN, TRUE );
+	setmenu( MENU_SET_DEBUG_LEVEL_0 + DEBUG_CHATTY, TRUE );
+	db_auth = db_cache = db_cacheprune = db_cookie = TRUE;
+	db_docinfowin = db_dlwin = db_dns = db_ftp = TRUE;
+	db_gui = db_history = db_html = db_css = db_http = TRUE;
+	db_init = db_js = db_mail = db_misc = db_net = TRUE;
+	db_plugin = db_rexx = TRUE;
+	db_level = DEBUG_CHATTY;
 #endif
 
 	DoMethod( app, MM_App_UpdateSpoofMenu );

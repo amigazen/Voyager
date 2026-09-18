@@ -167,9 +167,15 @@ DECSMETHOD( Historylist_AddURL )
 	emptymplist( &data->bflist2 );
 	ITERATELIST( mp, &data->bflist )
 	{
-		mpn = malloc( sizeof( struct history_mainpage ) );
-		memset( mpn, '\0', sizeof( struct history_mainpage ) ); /* TOFIX: maybe not necessary */
+		mpn = mallocz( sizeof( struct history_mainpage ) );
+		if( !mpn )
+			continue;
 		mpn->url = malloc( strlen( mp->url ) + 1 );
+		if( !mpn->url )
+		{
+			free( mpn );
+			continue;
+		}
 		strcpy( mpn->url, mp->url );
 		ADDTAIL( &data->bflist2, mpn );
 	}

@@ -65,13 +65,13 @@ static int doset( struct Data *data, APTR obj, struct TagItem *tags )
 
 		case MA_Layout_FormElement_Name:
 			if( tag->ti_Data )
-				data->name = strdup( (char*)tag->ti_Data ); /* TOFIX */
+				strupd( &data->name, (char*)tag->ti_Data );
 			break;
 
 		case MA_Layout_FormElement_Value:
 			if( tag->ti_Data )
 			{
-				data->value = strdup( (char*)tag->ti_Data ); /* TOFIX */
+				strupd( &data->value, (char*)tag->ti_Data );
 			}
 			break;
 
@@ -219,11 +219,11 @@ DECSMETHOD( JS_SetProperty )
 			free( data->value );
 			if( msg->dataptr )
 			{
-				data->value = strdup( msg->dataptr ); /* TOFIX */
+				strupd( &data->value, msg->dataptr );
 			}
 			else
 			{
-				data->value = strdup( "" ); /* TOFIX */
+				strupd( &data->value, "" );
 			}
             return( TRUE );
 	}

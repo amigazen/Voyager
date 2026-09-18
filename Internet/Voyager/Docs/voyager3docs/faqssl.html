@@ -1,0 +1,63 @@
+<HTML>
+<HEAD>
+<TITLE>Voyager V3 3.5 Documentation - Historical FAQ (SSL)</TITLE>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+</HEAD>
+<BODY bgcolor=white>
+<P><FONT SIZE="-1">Voyager V3 3.5. Historical FAQ by Benjamin C. Steeves (1997-1998), annotated for 3.5.</FONT></P>
+
+<font size="+2"><b>8.3 SSL / TLS</b></font>
+<p>
+Questions 3.5 and 4.x of the 1998 FAQ, plus how 3.5 actually talks
+HTTPS. For shopping risks and cookies see
+<A HREF="secure.html">section 6</A>.
+<p>
+<br>
+<a name="s1"><font size="+1"><b>What SSL was in 1998</b></font></a>
+<p>
+<I>1998:</I> SSL (Secure Sockets Layer, Netscape) encrypts HTTP.
+URLs that start with https:// are the secure variant. The browser and
+server pick a cipher; the user should not have to care. Voyager 2.95
+showed an unbroken key when the connection was secure. Implementation
+was SSLeay (SSLv2 in the FAQ's timeframe; SSLv3 in newer SSLeay).
+Voyager shipped SSLeay 0.6.6 (RC4, IDEA, DES). Miami users could use
+MiamiSSL instead. The FAQ warned that SSLeay was likely illegal in the
+US and Canada because of RSA patents and export rules, and quoted the
+SSLeay FAQ (RSAREF inside the US, IDEA in Europe, RC4 in the US).
+<p>
+That legal picture was 1998. It is not advice for 2026.
+<p>
+<br>
+<a name="s2"><font size="+1"><b>How 3.5 does HTTPS</b></font></a>
+<p>
+<B>3.5:</B> MiamiSSL and Voyager_SSLeay.vlib are not used. HTTPS is
+a loadable voyager_ssl.vlib talking to AmiTLS (amitls.library,
+BearSSL, TLS 1.2, SNI). Certificates/cacert.pem must be present.
+LIBS:amitls.library must be installed. The padlock / https:// in the
+location gadget still means the socket is TLS; it does not vouch for
+the shop.
+<p>
+Without AmiTLS, http: still works; https: will not. See install.html
+(HTTPS / AmiTLS) and Certificates in Settings.
+<p>
+<br>
+<a name="s3"><font size="+1"><b>Historical export notes</b></font></a>
+<p>
+<I>1998:</I> US/Canadian export of "strong" crypto was changing that
+year (Netscape and Microsoft were gaining export licences). RSA
+algorithm patents were a separate issue; SSLeay was described as an
+international implementation that did not ship RSA's own code.
+<p>
+<B>3.5:</B> AmiTLS / BearSSL is ordinary open-source TLS. Do not
+follow 1998 MiamiSSL-vs-SSLeay install guides. If HTTPS fails, check
+AmiTLS, the CA bundle, the system clock, and whether the site still
+offers TLS 1.2.
+<P>
+<HR WIDTH=100% NOSHADE>
+<FONT SIZE="-1"><A HREF="main.html">Contents</A> |
+<A HREF="faq.html">8 Historical FAQ</A> |
+<A HREF="faqprog.html">The program</A> |
+<A HREF="faqweb.html">The web</A> |
+<A HREF="faqssl.html">SSL / TLS</A></FONT>
+</BODY>
+</HTML>

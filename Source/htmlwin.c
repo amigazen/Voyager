@@ -2921,10 +2921,13 @@ doit:
 			if( strchr( msg->url, 0xBF ) )
 			{
 				STRPTR lastbrace;
-				dispurl = strdup( msg->url ); /* TOFIX */
-				lastbrace = strrchr( dispurl, '?' );
-				if( lastbrace )
-					*lastbrace='\0';
+				strupd( &dispurl, msg->url );
+				if( dispurl )
+				{
+					lastbrace = strrchr( dispurl, '?' );
+					if( lastbrace )
+						*lastbrace='\0';
+				}
 			}
 			nnset( data->str_url, MUIA_String_Contents, dispurl ? dispurl : msg->url );
 		}

@@ -29,4 +29,6 @@
 #include <dos/dostags.h>
 #endif
 
+#include "snprint.h"
+
 #endif /* VOYAGER_DOS_FUNC_H */

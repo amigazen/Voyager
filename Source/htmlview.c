@@ -701,16 +701,6 @@ DECSMETHOD( HTMLView_ShowNStream )
 		data->ihn_active = FALSE;
 	}
 
-	// TOFIX: remove the following. after being sure it wasn't used as a workaround for something ( I think the whole can be removed anyway )
-	//DoMethod( obj, MUIM_Group_InitChange );
-	//SetAttrs( obj,
-	//	  MUIA_Virtgroup_Top, 0,
-	//	  MUIA_Virtgroup_Left, 0,
-	//	  TAG_DONE
-	//);
-	//DoMethod( obj, MUIM_Group_ExitChange );
-
-
 	data->doc = msg->ns;
 	data->lastoffset = 0;
 	data->finished = FALSE;

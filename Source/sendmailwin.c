@@ -225,7 +225,11 @@ static void reallysendmail( int s, char *subject, char *to, char *contents )
 	}
 	else
 	{
-		char *cdup = strdup( contents ); /* TOFIX */
+		char *cdup;
+
+		cdup = strdup( contents );
+		if( !cdup )
+			return;
 		for( p = strtok( cdup, "\r\n" ); p; p = strtok( NULL, "\r\n" ) )
 		{
 			if( *p == '.' )

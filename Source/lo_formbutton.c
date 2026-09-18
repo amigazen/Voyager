@@ -55,20 +55,20 @@ static int doset( struct Data *data, APTR obj, struct TagItem *tags, int *sendup
 	{
 		case MA_Layout_FormElement_Name:
 			if( tag->ti_Data )
-				data->name = (char *)strdup( (char *)tag->ti_Data ); /* TOFIX */
+				strupd( &data->name, (char *)tag->ti_Data );
 			KILLT;
 			break;
 
 		case MA_Layout_FormElement_DOMID:
 			if( tag->ti_Data )
-				data->id = (char *)strdup( (char *)tag->ti_Data ); /* TOFIX */
+				strupd( &data->id, (char *)tag->ti_Data );
 			KILLT;
 			break;
 
 		case MA_Layout_FormElement_Value:
 			if( tag->ti_Data )
 			{
-				data->value = (char *)strdup( (char*)tag->ti_Data ); /* TOFIX */
+				strupd( &data->value, (char*)tag->ti_Data );
 				set( obj, MUIA_Text_Contents, tag->ti_Data );
 			}
 			KILLT;

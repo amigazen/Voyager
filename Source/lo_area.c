@@ -387,11 +387,9 @@ DECSMETHOD( Layout_Area_SetCoords )
 
 	data->type = msg->type;
 
-	data->points = malloc( sizeof( struct imappoint ) * pnum );
+	data->points = mallocz( sizeof( struct imappoint ) * pnum );
 	if( !data->points )
 		return( 0 );
-
-	memset( data->points, '\0', sizeof( struct imappoint ) * pnum ); /* TOFIX: maybe not needed */
 
 	data->numpoints = pnum;
 

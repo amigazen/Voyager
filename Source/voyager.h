@@ -64,6 +64,7 @@ enum {
 	ID_BM_OPEN
 };
 
+#include "snprint.h"
 
 #endif /* VOYAGER_VOYAGER_H */
 

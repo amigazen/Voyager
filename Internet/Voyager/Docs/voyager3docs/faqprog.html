@@ -1,0 +1,212 @@
+<HTML>
+<HEAD>
+<TITLE>Voyager V3 3.5 Documentation - Historical FAQ (program)</TITLE>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+</HEAD>
+<BODY bgcolor=white>
+<P><FONT SIZE="-1">Voyager V3 3.5. Historical FAQ by Benjamin C. Steeves (1997-1998), annotated for 3.5.</FONT></P>
+
+<font size="+2"><b>8.1 The Voyager program</b></font>
+<p>
+Questions 2.1-2.20 of the 1998 FAQ.
+<p>
+<br>
+<a name="p1"><font size="+1"><b>What is the current version?</b></font></a>
+<p>
+<I>1998:</I> Public Voyager was 2.95. There were separate 68000 and
+68030+FPU executables. The 030/FPU build must not be used without an
+FPU; it was intended for 68040/68060 as well.
+<p>
+<B>3.5:</B> This build is Voyager 3.5 (classic 68k SAS/C). Last
+boxed product was 3.2 (16 April 2000); then limited 3.3 and a short 3.4
+CVS series. There is one 68k executable, not a pair of 000/030+FPU
+binaries. See V.ReadMe and CHANGELOG.md.
+<p>
+<br>
+<a name="p2"><font size="+1"><b>Why does Voyager crash?</b></font></a>
+<p>
+<I>1998:</I> Intermittent crashes were often other patches, old GUI
+hacks, or low memory. Update SetPatch. MCP helped some people; MCP
+mouse-blanking crashed the image decoder for others [Jason Eyre].
+Low-memory handling could crash [Oliver Wagner]. Virtual memory (VMM
+on Aminet) could keep large JPEGs from killing the session; add tasks
+"V" and "V's Image Dec..." and press Return on the second name so VMM
+keeps the full task name [Sebastiano Vigna].
+<p>
+<B>3.5:</B> Same class of advice. Keep MUI and the TCP/IP stack
+current. Give Voyager Fast RAM. Image decode is linked into V, not a
+separate vimgdecode.library. VMM is still optional on 68k. If you
+report a crash, include Enforcer/MuForce output and what page you were
+on; send that to GitHub or voyager@amigazen.com, not a mailing list
+dump.
+<p>
+<br>
+<a name="p3"><font size="+1"><b>Why does Voyager eat CHIP RAM?</b></font></a>
+<p>
+<I>1998:</I> Without a graphics card, bitmaps live in CHIP RAM. Disable
+the memory cache if CHIP is tight; quit and restart to free CHIP. On
+AGA, a Workbench screen uses less CHIP than extra custom screens. On a
+graphics card, images should go in card memory (usual default).
+<p>
+<B>3.5:</B> Still true on OCS/ECS/AGA. On RTG, cybergraphics.library
+is opened when first needed; screens are treated as CGX via
+IsCyberModeID. Prefer a CyberGraphX / Picasso96 / OS4 RTG screen for
+deep colour. Disk image cache is still a Settings item.
+<p>
+<br>
+<a name="p4"><font size="+1"><b>Why does Voyager use MUI?</b></font></a>
+<p>
+<I>1998:</I> MUI (Stefan Stuntz) is a shared GUI toolkit. Wagner said
+Voyager would not exist without it: without MUI the executable would be
+larger, hungrier, and worse to write. Shared MUI libraries mean mailer,
+browser, and newsreader share one copy of the GUI code.
+<p>
+<B>3.5:</B> Still a MUI application. You need MUI 3.8 (or a later
+compatible MUI). Registering MUI is separate from Voyager. Tear-off
+panels are compiled off (USE_TEAROFF 0) because TearOff.mcc was not
+Enforcer hit clean. See MUI Tips in this manual.
+<p>
+<br>
+<a name="p5"><font size="+1"><b>Can I change the buttons?</b></font></a>
+<p>
+<I>1998:</I> Toolbar images were built in. GIF copies in the home
+drawer were only for HTML docs. People asked for configurable buttons.
+<p>
+<B>3.5:</B> Settings / Toolbar lets you add, remove, and relabel
+buttons, pick icons from Buttons/, and set hotkeys. That is a V3
+feature the 2.95 FAQ did not have.
+<p>
+<br>
+<a name="p6"><font size="+1"><b>Can I change the transfer animation?</b></font></a>
+<p>
+<I>1998:</I> Yes. File TransferAnim in the program drawer is a
+horizontal strip of IFF brushes. WIDTH= in the .info tooltype is the
+width of one frame. General settings: uncheck Hide Transfer Anim Icon
+to show it. Datatypes are used for this anim, not for page GIF/JPEG/PNG
+(those are internal).
+<p>
+<B>3.5:</B> PROGDIR:TransferAnim is still loaded that way. Hide? in
+General settings still controls it. Page images remain internal
+decoders plus MIME helpers for other types; see mime.html.
+<p>
+<br>
+<a name="p7"><font size="+1"><b>Mail, news, and Find</b></font></a>
+<p>
+<I>1998:</I> Fill in Mail/News (SMTP from your ISP). Need a current
+textinput.mcc (see below). Mail could be Internal SMTP, MicroDot II, or
+External. News was never internal; only MD2 or an external newsreader.
+The Find <I>button</I> was a plugin that queried four search engines in
+frames; Find-in-page was a Windows menu item.
+<p>
+<B>3.5:</B> Internal SMTP mailto: still exists; set address and mail
+host in Settings. MicroDot II paths (ENV:VAPOR/MD2_LASTUSEDDIR) are
+historical. Public NNTP from 1998 is largely gone; use an external
+client if you still have a server. The toolbar Find control is still
+the multi-engine search idea; use Windows / Find in page (or the RMB
+page menu) to search the current document. Old search-engine URLs in a
+plugin will often be dead; MIME still launches helpers for video/audio.
+<p>
+<br>
+<a name="p10"><font size="+1"><b>What is the Plugin drawer for?</b></font></a>
+<p>
+<I>1998:</I> Search.VPlug shipped with Voyager. Voyager_SSLeay.vlib
+provided SSL. Other "plugins" were often MIME viewers (MPEG, WAV) from
+third-party sites. The plugin API lived on www.vapor.com.
+<p>
+<B>3.5:</B> Plugins/ holds voyager_ssl.vlib (AmiTLS, not SSLeay).
+MIME Prefs still start external viewers. Plugin SDK notes are in the
+source tree if present; vapor.com is offline. See faqssl.html for HTTPS.
+<p>
+<br>
+<a name="p11"><font size="+1"><b>Voyager invalidates my hard drive</b></font></a>
+<p>
+<I>1998:</I> A crash while writing the disk cache can invalidate an
+OFS/FFS partition. Workarounds: put the cache on RAM:, RAD:, or a small
+partition that validates quickly; or disable the cache. AFS was
+mentioned as not invalidating (with other drawbacks).
+<p>
+<B>3.5:</B> Same FFS/OFS risk. Prefer a small cache partition or RAM:
+on flaky setups. SFS/PFS users still should not crash mid-write, but
+validation behaviour differs. Cache path is Settings / Cache.
+<p>
+Cache export: the 1998 cache browser Copy / Copy All dumped files to
+one directory and did not rebuild the site tree. Expect the same.
+<p>
+<br>
+<a name="p12"><font size="+1"><b>Second copy after a crash</b></font></a>
+<p>
+<I>1998:</I> Empty file S:V-DEBUG allowed a second instance.
+<p>
+<B>3.5:</B> That file is not how 3.x starts. Voyager uses a public
+port named VOYAGER. A second start tries to send ARexx LoadURL NEW to
+the first copy and then exits. If the first copy is wedged but the port
+remains, you may need to break that task (or reboot) before V will
+start again. Do not leave a zombie V occupying the port.
+<p>
+Floppy-only: the 1998 FAQ said a minimal MUI plus V on one disk was
+possible with cache in RAM and almost no downloads. 3.5 with AmiTLS
+and certificates is not a floppy product. Use a hard disk or CF/SD.
+<p>
+<br>
+<a name="p14"><font size="+1"><b>Datatypes, printing, black boxes</b></font></a>
+<p>
+<I>1998:</I> JPEG, PNG, and GIF are internal. Datatypes are for
+TransferAnim. Printing was screen-resolution, not printer dpi; no
+deeper than 8-bit (printer.device); long pages often printed one sheet
+on laser/inkjet because the page was one big bitmap and drivers missed
+formfeeds. Epson emulation / Canon Europe drivers in Epson 48-pin mode
+helped some BJ users [The Duke of Prunes]. Black boxes: old
+CyberGraphX and/or picture.datatype.
+<p>
+<B>3.5:</B> Internal image codecs unchanged in spirit. Printing is
+restored (it was missing in the 3.3 line): Print dialog, menu, toolbar,
+ARexx Print ASK. Text dump to PRT:; graphics via printer.device bands;
+TurboPrint if Turboprint: is assigned. Quality is still Amiga
+printer.device class, not a modern print engine. Keep CyberGraphX /
+Picasso96 current if RTG images are black or corrupt; picture.datatype
+still matters for the anim.
+<p>
+<br>
+<a name="p18"><font size="+1"><b>Slow start and quit</b></font></a>
+<p>
+<I>1998:</I> CompuGraphic fonts in the Fonts settings (CGTimes,
+CGTriumvirate, LetterGothic) are scaled at startup; make bitmaps with
+Fountain (OS2) or Intellifont (OS3), or use bitmap fonts. Quit updates
+URL-History; a long "followed links expire" plus a disk cache makes
+that file huge. A nearly full small cache partition is also slow;
+format it now and then.
+<p>
+<B>3.5:</B> Same. Prefer bitmap or pre-generated CG sizes. Trim
+history expiry if quit is slow. Disk cache settings are under Cache.
+<p>
+<br>
+<a name="p19"><font size="+1"><b>textview.mcc and textinput.mcc</b></font></a>
+<p>
+<I>1998:</I> Pre-2.88 used Textview.mcc (E. F. Pritchard). Wagner wrote
+Textinput.mcc to replace it. Install the class in LIBS:MUI/. Do not
+delete MUI classes; move them aside until you know nothing else needs
+them.
+<p>
+<B>3.5:</B> Still Textinput.mcc (and other classes in the Voyager
+Libs drawer). Keep those with the program or in MUI:Libs as you
+installed them.
+<p>
+<br>
+<a name="p20"><font size="+1"><b>I wrote to Olli and he never wrote back</b></font></a>
+<p>
+<I>1998:</I> Wagner printed bug mail and BugTrack, marked known/fixed,
+and often did not reply. Include config, patches, Voyager state, and
+Enforcer hits. Do not post huge Enforcer logs to the mailing list.
+<p>
+<B>3.5:</B> Oliver Wagner died in 2016; Voyager V3 is dedicated to
+his memory. Do not mail historical VaporWare addresses. Open a GitHub
+issue. 
+<P>
+<HR WIDTH=100% NOSHADE>
+<FONT SIZE="-1"><A HREF="main.html">Contents</A> |
+<A HREF="faq.html">8 Historical FAQ</A> |
+<A HREF="faqprog.html">The program</A> |
+<A HREF="faqweb.html">The web</A> |
+<A HREF="faqssl.html">SSL / TLS</A></FONT>
+</BODY>
+</HTML>

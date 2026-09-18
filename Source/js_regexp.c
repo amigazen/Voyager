@@ -125,7 +125,7 @@ static void setattrs( struct IClass *cl, APTR obj, struct TagItem *tagp )
 			}
 			if( tag->ti_Data )
 			{
-				data->source = strdup( (STRPTR)tag->ti_Data ); /* TOFIX */
+				strupd( &data->source, (STRPTR)tag->ti_Data );
 			}
 			free_re = TRUE;
 			break;
@@ -354,11 +354,11 @@ DECSMETHOD( JS_CallMethod )
 						free( data->input );
 					if( str )
 					{
-						data->input = strdup( str ); /* TOFIX */
+						strupd( &data->input, str );
 					}
 					else
 					{
-						data->input = strdup( "" ); /* TOFIX */
+						strupd( &data->input, "" );
 					}
 					pop = TRUE;
 				}

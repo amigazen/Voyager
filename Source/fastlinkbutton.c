@@ -91,8 +91,8 @@ DECMMETHOD( DragDrop )
 	{
 		int remote_num = getv( msg->obj, MA_Fastlink_Number );
 
-		r_url = strdup( r_url ); /* TOFIX: why ? */
-		r_name = strdup( r_name ); /* TOFIX */
+		strupd( &r_url, r_url );
+		strupd( &r_name, r_name );
 
 		setprefsstr( DSI_FASTLINKS_URLS + remote_num, getprefs( DSI_FASTLINKS_URLS + data->num ) );
 		setprefsstr( DSI_FASTLINKS_LABELS + remote_num, getprefs( DSI_FASTLINKS_LABELS + data->num ) );

@@ -95,14 +95,14 @@ static int doset( struct Data *data, APTR obj, struct TagItem *tags )
 			{
 				if( data->name )
 					free( data->name );
-				data->name = strdup( (char*)tag->ti_Data ); /* TOFIX */
+				strupd( &data->name, (char*)tag->ti_Data );
 			}
 			break;
 
 		case MUIA_Pip_ChannelName:
 			free( data->lastchname );
 			if( tag->ti_Data )
-				data->lastchname = strdup( (char*)tag->ti_Data ); /* TOFIX */
+				strupd( &data->lastchname, (char*)tag->ti_Data );
 			else
 				data->lastchname = NULL;
 			break;
@@ -274,11 +274,11 @@ DOM_SETPROP
 				free( data->name );
 			if( msg->dataptr )
 			{
-				data->name = strdup( (char*)msg->dataptr ); /* TOFIX */
+				strupd( &data->name, (char*)msg->dataptr );
 			}
 			else
 			{
-				data->name = strdup( "" ); /* TOFIX */
+				strupd( &data->name, "" );
 			}
             return( TRUE );
 

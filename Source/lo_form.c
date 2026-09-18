@@ -274,11 +274,11 @@ DECSMETHOD( JS_SetProperty )
 			free( data->target );
 			if( msg->dataptr )
 			{
-				data->target = strdup( msg->dataptr ); /* TOFIX */
+				strupd( &data->target, msg->dataptr );
 			}
 			else
 			{
-				data->target = strdup( "" ); /* TOFIX */
+				strupd( &data->target, "" );
 			}
 			return( TRUE );
 
@@ -286,11 +286,11 @@ DECSMETHOD( JS_SetProperty )
 			free( data->url );
 			if( msg->dataptr )
 			{
-				data->url = strdup( msg->dataptr ); /* TOFIX */
+				strupd( &data->url, msg->dataptr );
 			}
 			else
 			{
-				data->url = strdup( "" ); /* TOFIX */
+				strupd( &data->url, "" );
 			}
 			return( TRUE );
 	}

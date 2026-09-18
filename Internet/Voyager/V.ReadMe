@@ -14,14 +14,15 @@ it with him. The last boxed commercial product was Voyager 3.2
 vertical nav panel, optional TearOff, CManager aliases in the
 URL gadget, ftp. auto-prefix, HTML on HTTP 4xx/5xx, AS225
 removed. Public betas 3.3.65 and 3.3.75; 3.3.126 (27.12.2002)
-for 68k and MorphOS, followed with alpha releases. Printing
-and some layout/JS gaps remained. A short 3.4 CVS series
+for 68k and MorphOS, followed with alpha releases. A short 3.4 CVS series
 followed. Source to a 3.4 release was later published under 
 the GNU GPL. This 3.5.2 build is that GPL tree made usable.
 
 Requirements: MUI, a TCP/IP stack (bsdsocket.library). AmiTLS
 (LIBS:amitls.library) and Certificates/cacert.pem for HTTPS.
-cybergraphics.library is used when present for RTG.
+cybergraphics.library is opened when first needed for RTG
+(IsCyberModeID). Printing uses printer.device / PRT: (TurboPrint
+if Turboprint: is assigned). UTF-8 HTML is mapped to Latin-1.
 
 Runtime vapor_toolkit.library dependencies and keyfile checks are 
 removed in this Free and Open Source release.
@@ -42,21 +43,29 @@ Newsflash: 3.5.2 compared with a 3.2 binary install
 * SAS/C 68k smakefile for V, imgdecode, MimePrefs, libmath64
 
 * Image decoder linked into the executable; cybergraphics.library
-  pixel-write paths
+  opened when first needed; RTG via IsCyberModeID (OS4 screens
+  without BMF_SPECIALFMT still use CGX paths)
 
 * SpeedBar toolbar enabled; TearOff panels disabled
 
 * No vapor_toolkit.library / keyfile; GPL, no registration nag
 
 * HTTPS via AmiTLS (TLS 1.2, SNI). OpenSSL 0.9 VSSL is not
-  linked. 
+  linked.
 
 * Default User-Agent uses Firefox 4 grammar with AmigaVoyager
   in the Mozilla comment so current CDNs do not reject the
   client. The Spoof menu can still identify as Voyager.
 
-* Compile, layout, image, HTTP header, and first-paint fixes
-  required to run at all
+* Printing: Print dialog, menu/toolbar/ARexx Print ASK, text
+  dump to PRT:, graphical printer.device bands. TurboPrint
+  TPEXT when Turboprint: is assigned.
+
+* UTF-8 HTML (charset from MIME/META) mapped to the OS3
+  Latin-1 charmap. Not Unicode fonts.
+
+* Compile, layout, image, HTTP header, cookie-mask blit,
+  nethandler, and first-paint fixes required to run at all
 
 The per-version history for the limited 3.4/3.3 line and for
 Voyager 3.2 and older (3.0.0 through 3.2) is in CHANGELOG.md

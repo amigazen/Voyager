@@ -33,6 +33,9 @@ char *strdup( const char *string );
 #include <stdlib.h>
 #endif
 
+void *mallocz( size_t size );
+void strupd( char **dst, const char *src );
+
 STRPTR StrDupPooled( APTR pool, STRPTR instring );
 
 #endif /* VOYAGER_MALLOC_H */

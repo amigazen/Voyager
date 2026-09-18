@@ -60,9 +60,10 @@ int formp_storedata( char *data, int len, int enctype )
 	if( len < 0 )
 		len = strlen( data );
 
-	nfd = malloc( sizeof( *nfd ) + len );
-	memset( nfd, '\0', sizeof( *nfd ) + len ); /* TOFIX: maybe not necessary */
-    nfd->id = ++maxid;
+	nfd = mallocz( sizeof( *nfd ) + len );
+	if( !nfd )
+		return( 0 );
+	nfd->id = ++maxid;
 	nfd->len = len;
 	nfd->enctype = enctype;
 	memcpy( nfd->data, data, len );
@@ -125,11 +126,17 @@ void formstore_add( char *url, int formelementid, int formsubid, char *data, int
 		}
 	}
 
-	fn = malloc( sizeof( *fn ) + size );
-	memset( fn, '\0', sizeof( *fn ) + size ); /* TOFIX: maybe not necessary */
-    fn->fid = formelementid;
+	fn = mallocz( sizeof( *fn ) + size );
+	if( !fn )
+		return;
+	fn->fid = formelementid;
 	fn->fsid = formsubid;
-	fn->url = strdup( url ); /* TOFIX */
+	strupd( &fn->url, url );
+	if( !fn->url )
+	{
+		free( fn );
+		return;
+	}
 	fn->size = size;
 	memcpy( fn->data, data, size );
 

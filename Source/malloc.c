@@ -120,16 +120,45 @@ void *realloc( void *old, size_t nsize )
 
 char *strdup( const char *string )
 {
-	char *news = malloc( strlen( string ) + 1 );
+	char *news;
+
+	if( !string )
+		return( NULL );
+	news = malloc( strlen( string ) + 1 );
 	if( news )
 		strcpy( news, string );
 	return( news );
 }
 #endif /* USE_MALLOC */
 
+void *mallocz( size_t size )
+{
+	void *p;
+
+	p = malloc( size );
+	if( p )
+		memset( p, 0, size );
+	return( p );
+}
+
+void strupd( char **dst, const char *src )
+{
+	char *d;
+
+	if( !dst || !src )
+		return;
+	d = strdup( src );
+	if( d )
+		*dst = d;
+}
+
 STRPTR StrDupPooled( APTR pool, STRPTR string )
 {
-	STRPTR s = AllocPooled( pool, strlen( string ) + 1 );
+	STRPTR s;
+
+	if( !string )
+		return( NULL );
+	s = AllocPooled( pool, strlen( string ) + 1 );
 	if( s )
 		strcpy( s, string );
 	return( s );

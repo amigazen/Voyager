@@ -78,10 +78,8 @@ DECNEW
 		D( db_plugin, bug( "allocating %lu images..\n", tag->ti_Data ) );
 		
 		data->cnt = tag->ti_Data;
-		data->images = malloc( data->cnt * 4 );
-		memset( data->images, '\0', data->cnt * 4 ); /* TOFIX: maybe not needed */
-		data->iobj = malloc( data->cnt * 4 );
-		memset( data->iobj, '\0', data->cnt * 4 ); /* TOFIX: maybe not needed, missing NULL check btw */
+		data->images = mallocz( data->cnt * 4 );
+		data->iobj = mallocz( data->cnt * 4 );
 	}
 
 	DoMethod( obj, MUIM_Notify, MUIA_List_Active, MUIV_EveryTime,

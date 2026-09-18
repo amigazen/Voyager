@@ -393,12 +393,21 @@ void l_free( struct layout_ctx *ctx, APTR what )
 
 void l_readstrtag( struct TagItem *tag, char **str )
 {
+	char *n;
+
+	if( !tag->ti_Data )
+	{
+		if( *str )
+			free( *str );
+		*str = NULL;
+		return;
+	}
+	n = strdup( (STRPTR)tag->ti_Data );
+	if( !n )
+		return;
 	if( *str )
 		free( *str );
-	if( tag->ti_Data )
-		*str = strdup( (STRPTR)tag->ti_Data ); /* TOFIX */
-	else
-		*str = NULL;
+	*str = n;
 }
 
 //

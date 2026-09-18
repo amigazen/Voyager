@@ -134,9 +134,7 @@ void STDARGS reporterror( char *msg, ... )
 		msg = "(null)";
 
 	va_start( va, msg );
-
-	vsprintf( buffer, msg, va );
-
+	voy_vsnprintf( buffer, sizeof( buffer ), msg, (APTR)va );
 	va_end( va );
 
 	kprintf( "INTERNAL ERROR: \007" );
@@ -185,16 +183,15 @@ static void checkinternalipc( void )
 		char *p;
 		int flags = m->flags;
 
+		p = NULL;
 		if( m->parms )
-		{
-			p = strdup( m->parms ); /* TOFIX */
-		}
+			strupd( &p, m->parms );
 		else
-		{
-			p = strdup( "" ); /* TOFIX */
-		}
-		
+			strupd( &p, "" );
+
 		ReplyMsg( (struct Message *)m );
+		if( !p )
+			continue;
 		if( flags & VCMD_GOTOURL_FLAG_NEWWIN )
 		{
 			win_create( "", p, NULL, NULL, FALSE, FALSE, FALSE );

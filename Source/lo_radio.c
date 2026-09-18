@@ -73,7 +73,7 @@ static int doset( struct Data *data, APTR cl, APTR obj, struct TagItem *tags )
 
 		case MA_Layout_FormElement_Name:
 			if( tag->ti_Data )
-				data->name = strdup( (char*)tag->ti_Data ); /* TOFIX */
+				strupd( &data->name, (char*)tag->ti_Data );
 			break;
 
 		case MA_Layout_FormElement_DefaultValue:
@@ -83,7 +83,7 @@ static int doset( struct Data *data, APTR cl, APTR obj, struct TagItem *tags )
 		case MA_Layout_FormElement_Value:
 			if( tag->ti_Data )
 			{
-				data->value = strdup( (char*)tag->ti_Data ); /* TOFIX */
+				strupd( &data->value, (char*)tag->ti_Data );
 				set( obj, MUIA_Text_Contents, tag->ti_Data );
 			}
 			else

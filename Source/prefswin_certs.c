@@ -196,7 +196,7 @@ static void loadcerts( char *dir, int isactive, struct Library *VSSLBase )
 
 									cert_getinfo( newcert, buffer, VSSLBase );
 
-									cn->info = strdup( buffer ); /* TOFIX */
+									strupd( &cn->info, buffer );
 
 									n = VSSL_X509_get_subject_name( newcert );
 									if( n )

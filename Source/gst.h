@@ -139,4 +139,6 @@ extern struct Library *MUIMasterBase;
 #undef memcmp
 #endif
 
+#include "snprint.h"
+
 #endif /* VOYAGER_GST_H */

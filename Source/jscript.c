@@ -2359,7 +2359,9 @@ static void js_bytecode(
 					char *temp;
 					exprs_get_type( es, 0, &strl );
 					temp = malloc( strl + 1 );
-					memset( temp, '\0', strl + 1 ); /* TOFIX: probably not needed */
+					if( !temp )
+						longjmp( es->myrb, 1 );
+					memset( temp, '\0', strl + 1 );
 					exprs_pop_as_string( es, temp, 0 );
 					exprs_push_str( es, temp, strl );
 					free( temp );
@@ -3527,7 +3529,9 @@ dofunccall:
 						{
 							exprs_get_type( es, 0, &strl );
 							temp = malloc( strl + 1 );
-							memset( temp, '\0', strl + 1 ); /* TOFIX: probably not needed.. NULL check missing */
+							if( !temp )
+								longjmp( es->myrb, 1 );
+							memset( temp, '\0', strl + 1 );
 							exprs_pop_as_string( es, temp, 0 );
 							// Drop any excess constructor arguments
 							while( --argcnt >= 0 )

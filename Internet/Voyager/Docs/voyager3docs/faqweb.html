@@ -1,0 +1,95 @@
+<HTML>
+<HEAD>
+<TITLE>Voyager V3 3.5 Documentation - Historical FAQ (web)</TITLE>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+</HEAD>
+<BODY bgcolor=white>
+<P><FONT SIZE="-1">Voyager V3 3.5. Historical FAQ by Benjamin C. Steeves (1997-1998), annotated for 3.5.</FONT></P>
+
+<font size="+2"><b>8.2 Voyager and the web</b></font>
+<p>
+Questions 3.x and 5.x of the 1998 FAQ. SSL is in
+<A HREF="faqssl.html">8.3</A>.
+<p>
+<br>
+<a name="w1"><font size="+1"><b>Frames, JavaScript, Java</b></font></a>
+<p>
+<I>1998:</I> Frames yes (FRAMESET, NOFRAMES, FRAME SRC, TARGET).
+SCROLLING=NO was ignored (you could still scroll). JavaScript was
+<B>not</B> supported in 2.95; from 2.88 the browser ignored script.
+jslib.library was an old stub. Java was "not yet"; Wagner and Haage
+&amp; Partner were said to be working on a JVM for 1998. Java vs
+JavaScript: Java is compiled bytecode for a VM (applets); JavaScript
+is source mixed into HTML [after Mike Weaver].
+<p>
+<B>3.5:</B> Frames remain. JavaScript <B>is</B> supported: a JS 1.3 /
+ECMA-Script bytecode compiler and interpreter, with a Javascript
+settings page and optional JSERROR.LOG. It is not a modern engine;
+many current sites will fail. There is <B>no Java</B> (no applets, no
+Haage &amp; Partner JVM). &lt;SCRIPT&gt; / &lt;NOSCRIPT&gt; are
+layout tags; CSS is not applied.
+<p>
+<br>
+<a name="w4"><font size="+1"><b>Anonymous browsing and spoofing</b></font></a>
+<p>
+<I>1998:</I> Security settings could omit the Referer: header. That is
+not real anonymity; an anonymizing proxy (the FAQ named
+www.anonymizer.com) was stronger. Proxies were set in Net settings.
+From 2.91, Settings could "Spoof as Mozilla". Older builds were
+hex-edited: both User-Agent strings in the executable. Spoofing does
+not turn Voyager into Netscape; a site that demands Netscape may use
+tags Voyager cannot render.
+<p>
+<B>3.5:</B> Don't send Referer: is still in Security prefs. Factory
+User-Agent uses Firefox 4 grammar with AmigaVoyager in the comment so
+CDNs are less likely to return 403. Settings / Spoof as Mozilla still
+exists; it does not add missing HTML/JS. Do not hex-edit V. A privacy
+proxy still belongs in Network settings if you use one. "Anonymous"
+HTTP is not a substitute for HTTPS.
+<p>
+<br>
+<a name="w7"><font size="+1"><b>HTML tags and VRML</b></font></a>
+<p>
+<I>1998:</I> Wagner had a day job; tag requests went to the mailing
+list without a promised date. Voyager supported most of HTML 3.2. VRML
+was a 3D web format; an IBrowse plugin was rumoured, with no Voyager
+promise [Ewald Borger].
+<p>
+<B>3.5:</B> Still an HTML 3.2 layout engine with some later tags.
+HTML5/CSS3 is out of scope. No VRML. Feature requests: GitHub.
+<p>
+<br>
+<a name="w9"><font size="+1"><b>HTTP/1.1</b></font></a>
+<p>
+<I>1998:</I> HTTP/1.1 allows persistent connections (many objects on
+one TCP session) instead of a new connection per image. VoyagerNG
+2.92+ (including 2.95) spoke 1.1; 2.88 fell back to 1.0. The "1.1"
+mark in the lower-left of the window meant the server agreed.
+<p>
+<B>3.5:</B> HTTP/1.1 is still in the network code. The status area
+still shows protocol information (see The Main Interface). Modern
+sites may also require TLS 1.2 (faqssl.html) before HTTP even starts.
+<p>
+<br>
+<a name="w11"><font size="+1"><b>Documentation, lists, websites</b></font></a>
+<p>
+<I>1998:</I> HTML docs from ftp://ftp.vapor.com/pub/voyager/
+(vng_docs_v4). Mailing list: mail voyager-request@vapor.com with ADD
+in the body; save the welcome message. No dedicated newsgroup. Site:
+http://www.vapor.com/.
+<p>
+<B>3.5:</B> This HTML set is PROGDIR:Docs/voyager3docs/ (Docs
+fastlink). ftp.vapor.com and the VaporWare list are gone; www.vapor.com
+is not VaporWare. Use https://github.com/amigazen/Voyager ,
+http://www.amigazen.com/voyager/.
+Historical notes: https://zapek.com/software/voyager/ . The 1998 FAQ
+files remain in the GitHub archive/FAQ/ drawer.
+<P>
+<HR WIDTH=100% NOSHADE>
+<FONT SIZE="-1"><A HREF="main.html">Contents</A> |
+<A HREF="faq.html">8 Historical FAQ</A> |
+<A HREF="faqprog.html">The program</A> |
+<A HREF="faqweb.html">The web</A> |
+<A HREF="faqssl.html">SSL / TLS</A></FONT>
+</BODY>
+</HTML>

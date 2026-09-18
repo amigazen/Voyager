@@ -100,7 +100,7 @@ static int doset( struct Data *data, APTR obj, struct TagItem *tags )
 
 		case MA_Layout_FormElement_Name:
 			if( tag->ti_Data )
-				data->name = strdup( (char*)tag->ti_Data ); /* TOFIX */
+				strupd( &data->name, (char*)tag->ti_Data );
 			break;
 
 		case MA_Layout_FormElement_Form:
@@ -450,14 +450,14 @@ DECSMETHOD( Layout_FormCycle_AddOption )
 
 		if( msg->name )
 		{
-			opt->name = strdup( msg->name ); /* TOFIX */
+			strupd( &opt->name, msg->name );
 		}
 		else
 		{
-			opt->name = strdup( "" ); /* TOFIX */
+			strupd( &opt->name, "" );
 		}
 		if( msg->value )
-			opt->value = strdup( msg->value ); /* TOFIX */
+			strupd( &opt->value, msg->value );
 		else
 			opt->value = NULL;
 		opt->selected = msg->selected;

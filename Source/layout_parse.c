@@ -2125,19 +2125,19 @@ dotext:
 						free( ctx->currenttable->tr_align );
 
 						if( bgcolor )
-							ctx->currenttable->tr_bgcolor = strdup( bgcolor ); /* TOFIX */
+							strupd( &ctx->currenttable->tr_bgcolor, bgcolor );
 						else
 							ctx->currenttable->tr_bgcolor = 0;
 						if( bgimage )
-							ctx->currenttable->tr_bgimage = strdup( bgimage ); /* TOFIX */
+							strupd( &ctx->currenttable->tr_bgimage, bgimage );
 						else
 							ctx->currenttable->tr_bgimage = 0;
 						if( valign )
-							ctx->currenttable->tr_valign = strdup( valign ); /* TOFIX */
+							strupd( &ctx->currenttable->tr_valign, valign );
 						else
 							ctx->currenttable->tr_valign = 0;
 						if( align )
-							ctx->currenttable->tr_align = strdup( align ); /* TOFIX */
+							strupd( &ctx->currenttable->tr_align, align );
 						else
 							ctx->currenttable->tr_align = 0;
 

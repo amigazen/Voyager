@@ -47,7 +47,7 @@ DECMMETHOD( DragDrop )
 
 	if( r_url && !r_name || !*r_name )
 	{
-		char *p = strdup( r_url ); /* TOFIX */
+		char *p = strdup( r_url );
 		
 		if( p )
 		{

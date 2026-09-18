@@ -49,6 +49,7 @@ extern struct Library *MUIMasterBase;
 #undef _DCC
 #endif
 
+#include "snprint.h"
 
 #include "mui_macros.h"
 

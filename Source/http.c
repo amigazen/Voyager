@@ -73,12 +73,12 @@ char vuseragent[ 256 ];
 void SAVEDS setup_useragent( void )
 {
 #ifdef MBX
-	SNPrintf( vuseragent, sizeof(vuseragent), "Mozilla/5.0 (compatible; Met@box1000-Browser/" VERSIONSTRING ") (KHTML, like Gecko)" );
+	snprintf( vuseragent, sizeof(vuseragent), "Mozilla/5.0 (compatible; Met@box1000-Browser/" VERSIONSTRING ") (KHTML, like Gecko)" );
 #else
 	if( !gp_spoof )
-		SNPrintf( vuseragent, sizeof(vuseragent), "%s", DEFAULT_USERAGENT );
+		snprintf( vuseragent, sizeof(vuseragent), "%s", DEFAULT_USERAGENT );
 	else
-		SNPrintf( vuseragent, sizeof(vuseragent), "%s", getprefsstr( DSI_NET_SPOOF_AS_1 + gp_spoof - 1, "(none)" ) );
+		snprintf( vuseragent, sizeof(vuseragent), "%s", getprefsstr( DSI_NET_SPOOF_AS_1 + gp_spoof - 1, "(none)" ) );
 #endif
 }
 
@@ -1292,7 +1292,7 @@ static int un_doprotocol_http_ssl_after_write( struct unode *un )
 	sslver = VSSL_GetVersion( un->sslh );
 	un->sslcipher = StrDupPooled( un->pool, cipher );
 	un->sslversion = StrDupPooled( un->pool, sslver );
-	sur_text( un, GS( NETST_SSLESTABLISHED ), cipher );
+	sur_text( un, GS( NETST_SSLESTABLISHED ), sslver, cipher );
 	net_log( "ssl_setup: handshake ok host=%s sslh=%lx\n",
 		un->purl.host ? (char *)un->purl.host : "", (ULONG)(APTR)un->sslh );
 	return TRUE;

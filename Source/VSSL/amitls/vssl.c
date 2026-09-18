@@ -507,7 +507,8 @@ vssl_do_connect(struct vssl_ctx *ctx, int sock, STRPTR hostname)
 	conn->hs_ok = 0;
 	conn->verify_rc = 0;
 	conn->verify_err[0] = '\0';
-	strcpy(conn->cipher, "TLS_ECDHE_AES128_GCM");
+	/* AmiTLS is TLS 1.2 only; handshake success means that version. */
+	strcpy(conn->cipher, "AmiTLS");
 	strcpy(conn->version, "TLSv1.2");
 	return (APTR)conn;
 }

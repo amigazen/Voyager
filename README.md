@@ -124,12 +124,14 @@ Gerber documented Voyager as **HTML 3.2**, with later tags marked `+`. The layou
 
 | Feature | Support | Notes |
 |---------|---------|-------|
-| Character / numeric entities | ✅ | Named, `&#nnn;`, hex |
+| Character / numeric entities | ✅ | Named, `&#nnn;`, hex; UTF-8 bytes mapped to Latin-1 / OS3 charmap |
+| Charset (`Content-Type` / `META`) | ✅ Partial | `utf-8` / `utf8` detected; decoded to the OS3 charmap, not Unicode fonts |
 | Nested tables | ✅ | Major 3.x layout work |
 | File upload | ✅ | `INPUT type=file` / HTTP POST |
 | Framesets | ✅ | |
 | Inline frames | ❌ | No `IFRAME` |
 | Client-side image maps | ✅ | |
+| Printing | ✅ | Print dialog; text to `PRT:`; graphical `printer.device` bands; TurboPrint TPEXT when `Turboprint:` is assigned |
 | CSS 1 / CSS 2 | ❌ | Never a Voyager product feature |
 | Inline `style=` / `class=` styling | ❌ | `id` used for JS lookup |
 | XHTML 1.0 | ❌ | |
@@ -312,15 +314,17 @@ Notable changes in 3.5.2 compared to a stock 3.2 binary install are restoration 
 
 - SAS/C 68k `smakefile` / `SCOPTIONS` for the main program, imgdecode, MimePrefs, VFlash, and libmath64
 - Image decoder linked into the executable (not a separate `vimgdecode.library` selected at runtime)
-- CyberGraphX pixel-write paths
+- CyberGraphX pixel-write paths; `cybergraphics.library` opened deferred; RTG via `IsCyberModeID` (OS4 screens without `BMF_SPECIALFMT` still count as CGX)
 - SpeedBar toolbar enabled; TearOff panels disabled due to Enforcer hits in the MUI TearOff.mcc
 - Runtime `vapor_toolkit.library` and keyfile checks removed; registration nag removed
 - HTTPS via AmiTLS (`amitls.library`, BearSSL, TLS 1.2, SNI) as a new `voyager_ssl.vlib`; OpenSSL 0.9 under `Source/VSSL/openssl` is historical and not linked
 - Default User-Agent uses Firefox 4 grammar with AmigaVoyager in the Mozilla comment so current CDNs do not reject the client; the Spoof menu can still identify as Voyager
-- Compile, layout, image, HTTP header, and first-paint fixes required to run at all (see [CHANGELOG.md](CHANGELOG.md))
+- Printing restored: Print dialog, menu/toolbar/ARexx `Print ASK`, text dump to `PRT:`, graphical `printer.device` bands (TurboPrint when `Turboprint:` is assigned)
+- Basic UTF-8: HTML `charset=utf-8` and Latin-1 named/numeric entities mapped to the OS3 charmap (not Unicode fonts)
+- Compile, layout, image, HTTP header, first-paint, cookie-mask blit, and nethandler locale fixes required to run (see [CHANGELOG.md](CHANGELOG.md))
 
 
-See [CHANGELOG.md](CHANGELOG.md) for the detailed 3.5.2 log and the copied VaporWare Voyager 3.x history.
+See [CHANGELOG.md](CHANGELOG.md) for the 3.5.2 log, later Unreleased work (printing, UTF-8 mapping, CyberGraphX/OS4 blit and nethandler fixes), and the copied VaporWare Voyager 3.x history.
 
 ## Frequently Asked Questions
 
@@ -330,7 +334,7 @@ The GPL release of that code was a generous act. However, the tree as originally
 
 ### Does this Voyager work on Workbench 3.1, 3.5 or 3.9?
 
-The 3.5.2 68k build is aimed at classic Amiga with MUI, `bsdsocket.library`, and optional cybergraphics.libraru for RTG. It is built in the AmigaOS 3.2 NDK / ToolKit environment used by other amigazen project releases. A TCP/IP stack must be running. AmiTLS (`amitls.library`) and an included CA bundle (`Certificates/cacert.pem`) are required for HTTPS support
+The 3.5.2 68k build is aimed at classic Amiga with MUI, `bsdsocket.library`, and optional `cybergraphics.library` for RTG (`IsCyberModeID`; the library is opened when first needed). It is built in the AmigaOS 3.2 NDK / ToolKit environment used by other amigazen project releases. A TCP/IP stack must be running. AmiTLS (`amitls.library`) and an included CA bundle (`Certificates/cacert.pem`) are required for HTTPS support.
 
 Tear-off control panels from Voyager 3 are not enabled in 3.5.2 (`USE_TEAROFF` is 0) because `TearOffPanel.mcc` is not clean of Enforcer hits and the source code is not available for maintenance.
 
@@ -344,7 +348,7 @@ Voyager 3.2 was the last full public product release (16.4.2000). Development co
 
 ### Will this version be available for OS4, AROS or MorphOS?
 
-The GPL tree already contains MorphOS conditionals. The first priority is a stable classic 68k SAS/C build. Native ports can be revisited once that line is solid. A 68k binary may run on OS4 in emulation the same way other 68k MUI software does; that is not the primary test target for 3.5.
+The GPL tree already contains MorphOS conditionals. The first priority is a stable classic 68k SAS/C build. Native ports can be revisited once that line is solid. A 68k binary may run on OS4 in emulation the same way other 68k MUI software does. OS4 RTG is treated as CyberGraphX via `IsCyberModeID`; PNG cookie-cut masks no longer pass `(APTR)-1` into blits; the network child avoids OS4 `GetCatalogStr`/`Fault`. That is still not the primary test target for 3.5.
 
 ### Can I contribute to the new Voyager?
 
@@ -354,7 +358,7 @@ Yes please! Whether code, testing or translations and documentation, all contrib
 
 - At GitHub https://github.com/amigazen/Voyager
 - on the web at http://www.amigazen.com/voyager/ (Amiga browser compatible)
-- or email aweb@amigazen.com
+- or email voyager@amigazen.com
 
 ## Acknowledgements
 

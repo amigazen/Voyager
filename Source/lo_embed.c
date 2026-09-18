@@ -407,7 +407,7 @@ DECMETHOD( NStream_GotInfo, APTR )
 	GETDATA;
 
 	if( !data->type && nets_mimetype( data->nethandle )[ 0 ] )
-		data->type = strdup( nets_mimetype( data->nethandle ) ); /* TOFIX */
+		strupd( &data->type, nets_mimetype( data->nethandle ) );
 
 	return( DoMethod( obj, MM_Layout_Embed_SetupPlugin ) );
 }

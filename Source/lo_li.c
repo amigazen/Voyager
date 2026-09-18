@@ -49,6 +49,7 @@
 #include "fontcache.h"
 #include "gfxcompat.h"
 #include "mui_func.h"
+#include "malloc.h"
 
 
 static struct MUI_CustomClass *lcc;
@@ -132,7 +133,14 @@ return(NULL); //TOFIX!!!
 
 	// We have to create one..
 	m = malloc( sizeof( *m ) );
+	if( !m )
+		return( NULL );
 	m->mem = AllocPooled( mylispool, ( ( size + 15 ) / 16 ) * size * 4 );
+	if( !m->mem )
+	{
+		free( m );
+		return( NULL );
+	}
 
 	m->size = size;
 	m->modulo = ( size + 15 ) / 16 * 2;

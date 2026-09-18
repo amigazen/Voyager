@@ -8,34 +8,72 @@
    Oliver Wagner <owagner@vapor.com>
    All Rights Reserved
 
-  Parts Copyright (C) by
-   David Gerber <zapek@vapor.com>
-   Jon Bright <jon@siliconcircus.com>
-   Matt Sealey <neko@vapor.com>
-
 **************************************************************************/
 
 /*
- * Simple snprintf implementation using utility.library VSNPrintf
- * $Id: snprintf.c,v 1.1 2003/07/06 16:51:33 olli Exp $
+ * Bounded sprintf. utility.library SNPrintf/VSNPrintf are V47+ only.
  */
 
-#include <exec/types.h>
-#include <proto/utility.h>
+#include "voyager.h"
 #include <stdarg.h>
 
-#ifndef size_t
-#define size_t ULONG
-#endif
+#ifdef __SASC
+#include <proto/exec.h>
 
-int snprintf(char *str, size_t size, const char *format, ...)
+struct snbuf
+{
+	char *p;
+	char *end;
+};
+
+static void ASM sn_putc( __reg( d0, UBYTE c ), __reg( a3, struct snbuf *s ) )
+{
+	if( s->p < s->end )
+		*s->p++ = (char)c;
+}
+
+int voy_vsnprintf( char *str, unsigned int size, const char *format, APTR args )
+{
+	struct snbuf s;
+
+	if( !str || size == 0 )
+		return( 0 );
+	s.p = str;
+	s.end = str + size - 1;
+	RawDoFmt( (STRPTR)format, args, (void (*)())sn_putc, &s );
+	*s.p = 0;
+	return( (int)( s.p - str ) );
+}
+
+int STDARGS snprintf( char *str, unsigned int size, const char *format, ... )
+{
+	va_list args;
+	int n;
+
+	va_start( args, format );
+	n = voy_vsnprintf( str, size, format, (APTR)args );
+	va_end( args );
+	return( n );
+}
+
+#else /* !__SASC */
+
+#include <proto/utility.h>
+
+int voy_vsnprintf( char *str, unsigned int size, const char *format, APTR args )
+{
+	return( VSNPrintf( str, size, (const STRPTR)format, args ) );
+}
+
+int snprintf( char *str, unsigned int size, const char *format, ... )
 {
 	va_list args;
 	int result;
 
-	va_start(args, format);
-	result = VSNPrintf(str, size, (const STRPTR)format, (APTR)args);
-	va_end(args);
-
-	return result;
+	va_start( args, format );
+	result = VSNPrintf( str, size, (const STRPTR)format, (APTR)args );
+	va_end( args );
+	return( result );
 }
+
+#endif /* __SASC */

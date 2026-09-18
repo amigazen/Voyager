@@ -431,11 +431,11 @@ DECSMETHOD( JS_SetProperty )
 				free( data->url );
 				if( msg->dataptr )
 				{
-					data->url = strdup( (char*)msg->dataptr ); /* TOFIX */
+					strupd( &data->url, (char*)msg->dataptr );
 				}
 				else
 				{
-					data->url = strdup( "" ); /* TOFIX */
+					strupd( &data->url, "" );
 				}
 			}
 			return( TRUE );

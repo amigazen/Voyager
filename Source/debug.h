@@ -24,7 +24,7 @@
  * - Select debugging output. Authors are encouraged to put debug output as much as possible
  *   in their sources. It's easy and the betatesters can give very usefull outputs.
  *
- * © 2000 by VaporWare CVS team <ibcvs@vapor.com>
+ * ï¿½ 2000 by VaporWare CVS team <ibcvs@vapor.com>
  * All rights reserved
  *
  * How to use:
@@ -37,22 +37,7 @@
  *
  */
 
-/* SAS/C - completely disable all debug functionality */
-#ifdef __SASC
-#define DB(x)
-#define DBL(lvl,x)
-#define DBD(x)
-#define D(class,x)
-#define DL(lvl,class,x)
-#define bug
-#define ALERT(m)
-#define ASSERT(x)
-#define DEBUG_ERROR 0
-#define DEBUG_WARNING 1
-#define DEBUG_IMPORTANT 2
-#define DEBUG_INFO 3
-#define DEBUG_CHATTY 4
-#elif defined(VDEBUG)
+#if defined(VDEBUG) && (VDEBUG > 0)
 
 #ifdef __GNUC__ /* GCC */
 #define __FUNC__ __FUNCTION__
@@ -61,7 +46,8 @@
 #endif
 
 #ifdef AMIGAOS
-extern void kprintf(char *, ...);
+/* SAS/C debug.lib kprintf is serial-only; send traces to the CLI. */
+#define kprintf Printf
 #endif
 
 #ifdef __MORPHOS__
@@ -230,7 +216,7 @@ void dump_image(UBYTE *p, ULONG size, ULONG width);
 #define DEBUG_INFO 3
 #define DEBUG_CHATTY 4
 
-#else /* !VDEBUG and !__SASC */
+#else /* !VDEBUG */
 #define DB(x)
 #define DBL(lvl,x)
 #define DBD(x)
@@ -244,7 +230,7 @@ void dump_image(UBYTE *p, ULONG size, ULONG width);
 #define DEBUG_IMPORTANT 2
 #define DEBUG_INFO 3
 #define DEBUG_CHATTY 4
-#endif /* VDEBUG / __SASC */
+#endif /* VDEBUG */
 
 /*
  * Debug flags - always declared, even when VDEBUG is not defined

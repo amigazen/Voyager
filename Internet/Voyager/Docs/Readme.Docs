@@ -42,7 +42,10 @@ In the 3.5.2 Workbench tree
 
 A TCP/IP stack (bsdsocket.library) must be running. AmiTLS
 (LIBS:amitls.library) is required for HTTPS. cybergraphics.library
-is used when present for RTG. 
+is opened when first needed for RTG (IsCyberModeID). Printing uses
+printer.device (PRT: text, graphical bands; TurboPrint if
+Turboprint: is assigned). UTF-8 HTML is mapped to the OS3 Latin-1
+charmap. 
 
 HTML manual (voyager3docs)
 --------------------------
@@ -50,6 +53,11 @@ HTML manual (voyager3docs)
 The missing V3 HTML documentation is in voyager3docs/. Start at
 main.html. From a factory-reset prefs set, click the Docs fastlink
 (file:///PROGDIR:Docs/voyager3docs/main.html).
+
+Section 8 of that manual is a historical FAQ: the 1998 Voyager FAQ
+1.7 by Benjamin C. Steeves (Voyager 2.95), annotated for 3.5.2.
+Unannotated originals are in the GitHub tree under archive/FAQ/
+(English HTML, German HTML, and older .txt / AmigaGuide).
 
 Voyager.guide was a separate AmigaGuide from the VaporWare pack.
 Use the HTML manual, README.md / CHANGELOG.md from the source
@@ -64,9 +72,9 @@ engine and window framework, vertical navigation panel, optional
 TearOff, CManager aliases in the URL gadget, ftp. auto-prefix, HTML
 error pages for HTTP 4xx/5xx, AS225 removed. Public betas 3.3.65 and
 3.3.75; 3.3.126 (27.12.2002) for 68k and MorphOS, not to be installed
-over 3.2. Printing and some layout/JS gaps remained. A short 3.4 CVS
-series followed. Headline list: CHANGELOG.md. Per-build 3.3.0-3.3.127
-log: Source/V.ReadMe in the GitHub tree.
+over 3.2. Printing was still missing in that line; 3.5.2 restores it.
+A short 3.4 CVS series followed. Headline list: CHANGELOG.md. Per-build
+3.3.0-3.3.127 log: Source/V.ReadMe in the GitHub tree.
 
 Licence
 -------

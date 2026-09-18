@@ -87,7 +87,7 @@ UnicodeData_p UnicodeBase;
 #define VSPEC ""
 #endif
 
-char copyright[] = { "Voyager " LVERTAG " " VSPEC "ù 1995-2003 Oliver Wagner & David Gerber, All Rights Reserved" };
+char copyright[] = { "Voyager " LVERTAG " " VSPEC "ÔøΩ 1995-2003 Oliver Wagner & David Gerber, All Rights Reserved" };
 
 int app_started;
 static int app_doublestart;
@@ -239,7 +239,8 @@ int initstuff( void )
 #endif
 
 	VoyLog(( "[INIT] Calling init_netprocess()...\n" ));
-	if( !init_netprocess() ) { VoyLog(( "[INIT] init_netprocess() failed!\n" )); return( FALSE ); }
+	VoyFlush();
+	if( !init_netprocess() ) { VoyLog(( "[INIT] init_netprocess() failed!\n" )); VoyFlush(); return( FALSE ); }
 	VoyLog(( "[INIT] init_netprocess() succeeded\n" ));
 
 	VoyLog(( "[INIT] Calling init_locale()...\n" ));
@@ -1248,7 +1249,7 @@ int mcccheck( void )
 			ver = getv( o, MUIA_Version );
 			rev = getv( o, MUIA_Revision );
 #ifdef __SASC
-			SNPrintf( verinfo, sizeof(verinfo), "%ld.%ld", (long)ver, (long)rev );
+			snprintf( verinfo, sizeof(verinfo), "%ld.%ld", (long)ver, (long)rev );
 #else
 			sprintf( verinfo, "%ld.%ld", (long)ver, (long)rev );
 #endif
@@ -1286,7 +1287,7 @@ int mcccheck( void )
 		msgend = strchr( message, 0 );
 #ifdef __SASC
 		/* RawDoFmt %d/%u are 16-bit; %u printed v0.29 and ate the version string. */
-		SNPrintf( msgend, sizeof(message) - (msgend - message),
+		snprintf( msgend, sizeof(message) - (msgend - message),
 			"\n%s: required v%ld.%ld, installed %s",
 			mccs[ c ].name, (long)mccs[ c ].minver, (long)mccs[ c ].minrev,
 			verinfo
@@ -1304,7 +1305,7 @@ int mcccheck( void )
 			case MCCCHK_OK:
 				msgend = strchr( message, 0 );
 #ifdef __SASC
-				SNPrintf( msgend, sizeof(message) - (msgend - message), ": %s", GS( MCCCHECK_GOOD ) );
+				snprintf( msgend, sizeof(message) - (msgend - message), ": %s", GS( MCCCHECK_GOOD ) );
 #else
 				sprintf( msgend, ": %s", GS( MCCCHECK_GOOD ) );
 #endif
@@ -1313,7 +1314,7 @@ int mcccheck( void )
 			case MCCCHK_FAILED:
 				msgend = strchr( message, 0 );
 #ifdef __SASC
-				SNPrintf( msgend, sizeof(message) - (msgend - message), ": %s", GS( MCCCHECK_BAD ) );
+				snprintf( msgend, sizeof(message) - (msgend - message), ": %s", GS( MCCCHECK_BAD ) );
 #else
 				sprintf( msgend, ": %s", GS( MCCCHECK_BAD ) );
 #endif
@@ -1322,7 +1323,7 @@ int mcccheck( void )
 			case MCCCHK_MISSING:
 				msgend = strchr( message, 0 );
 #ifdef __SASC
-				SNPrintf( msgend, sizeof(message) - (msgend - message), ": %s", GS( MCCCHECK_MISSING ) );
+				snprintf( msgend, sizeof(message) - (msgend - message), ": %s", GS( MCCCHECK_MISSING ) );
 #else
 				sprintf( msgend, ": %s", GS( MCCCHECK_MISSING ) );
 #endif
@@ -1419,7 +1420,6 @@ int load_diskobj( void )
 			openurls = malloc( c * 4 + 4 );
 			if( openurls )
 			{
-				memset( openurls, '\0', c * 4 + 4 ); /* TOFIX: maybe not needed */
 				for( c = 0; myargs.urls[ c ]; c++ )
 				{
 					FileLock_p l = Lock( myargs.urls[ c ], SHARED_LOCK );
@@ -1436,6 +1436,7 @@ int load_diskobj( void )
 					else
 						openurls[ c ] = myargs.urls[ c ];
 				}
+				openurls[ c ] = NULL;
 			}
 		}
 
@@ -1528,7 +1529,7 @@ int load_diskobj( void )
 									char buffer[ 300 ];
 
 									sprintf( buffer, "file://localhost/%s", fullpath );
-									openurls[ c ] = strdup( buffer ); /* TOFIX */
+									strupd( &openurls[ c ], buffer );
 									break;
 								}
 							}
@@ -1703,33 +1704,33 @@ NM_TITLE, MENU(SETTINGS),               0,   0, 0, NULL,
  NM_ITEM, MENU(SET_SAVEAS),             0,  0, 0, (APTR)MENU_SET_SAVEAS,
 #ifdef VDEBUG
 NM_TITLE, MENU(DEBUG),				   	0,  0,  0,  NULL,
- NM_ITEM, MENU(DEBUG_LEVEL_0),			0,   CHECKIT | CHECKED, 2 + 4 + 8 + 16, (APTR)MENU_SET_DEBUG_LEVEL_0,
+ NM_ITEM, MENU(DEBUG_LEVEL_0),			0,   CHECKIT, 2 + 4 + 8 + 16, (APTR)MENU_SET_DEBUG_LEVEL_0,
  NM_ITEM, MENU(DEBUG_LEVEL_1),			0,   CHECKIT, 1 + 4 + 8 + 16, (APTR)MENU_SET_DEBUG_LEVEL_1,
  NM_ITEM, MENU(DEBUG_LEVEL_2),			0,   CHECKIT, 1 + 2 + 8 + 16, (APTR)MENU_SET_DEBUG_LEVEL_2,
  NM_ITEM, MENU(DEBUG_LEVEL_3),			0,   CHECKIT, 1 + 2 + 4 + 16, (APTR)MENU_SET_DEBUG_LEVEL_3,
- NM_ITEM, MENU(DEBUG_LEVEL_4),			0,   CHECKIT, 1 + 2 + 4 + 8, (APTR)MENU_SET_DEBUG_LEVEL_4,
+ NM_ITEM, MENU(DEBUG_LEVEL_4),			0,   CHECKIT | CHECKED, 1 + 2 + 4 + 8, (APTR)MENU_SET_DEBUG_LEVEL_4,
  NM_ITEM, NM_BARLABEL,                  0,   0, 0, NULL,
- NM_ITEM, MENU(DEBUG_AUTH),				0,  CHECKIT | MENUTOGGLE, 0, ( APTR )MENU_SET_DEBUG_AUTH,
- NM_ITEM, MENU(DEBUG_CACHE),			0,  CHECKIT | MENUTOGGLE, 0, ( APTR )MENU_SET_DEBUG_CACHE,
- NM_ITEM, MENU(DEBUG_CACHEPRUNE),		0,  CHECKIT | MENUTOGGLE, 0, ( APTR )MENU_SET_DEBUG_CACHEPRUNE,
- NM_ITEM, MENU(DEBUG_COOKIE),			0,  CHECKIT | MENUTOGGLE, 0, ( APTR )MENU_SET_DEBUG_COOKIE,
- NM_ITEM, MENU(DEBUG_CSS),				0,  CHECKIT | MENUTOGGLE, 0, ( APTR )MENU_SET_DEBUG_CSS,
- NM_ITEM, MENU(DEBUG_DOCINFOWIN),		0,  CHECKIT | MENUTOGGLE, 0, ( APTR )MENU_SET_DEBUG_DOCINFOWIN,
- NM_ITEM, MENU(DEBUG_DOWNLOADWIN),		0,  CHECKIT | MENUTOGGLE, 0, ( APTR )MENU_SET_DEBUG_DOWNLOADWIN,
- NM_ITEM, MENU(DEBUG_DNS),			    0,  CHECKIT | MENUTOGGLE, 0, ( APTR )MENU_SET_DEBUG_DNS,
- NM_ITEM, MENU(DEBUG_FTP),			    0,  CHECKIT | MENUTOGGLE, 0, ( APTR )MENU_SET_DEBUG_FTP,
- NM_ITEM, MENU(DEBUG_GUI ),				0,	CHECKIT | MENUTOGGLE, 0, ( APTR )MENU_SET_DEBUG_GUI,
- NM_ITEM, MENU(DEBUG_HISTORY),			0,  CHECKIT | MENUTOGGLE, 0, ( APTR )MENU_SET_DEBUG_HISTORY,
- NM_ITEM, MENU(DEBUG_HTML),				0,  CHECKIT | MENUTOGGLE, 0, ( APTR )MENU_SET_DEBUG_HTML,
- NM_ITEM, MENU(DEBUG_HTTP),				0,  CHECKIT | MENUTOGGLE, 0, ( APTR )MENU_SET_DEBUG_HTTP,
- NM_ITEM, MENU(DEBUG_INIT),				0,	CHECKIT | MENUTOGGLE, 0, ( APTR )MENU_SET_DEBUG_INIT,
- NM_ITEM, MENU(DEBUG_JS),			    0,  CHECKIT | MENUTOGGLE, 0, ( APTR )MENU_SET_DEBUG_JS,
- NM_ITEM, MENU(DEBUG_MAIL),				0,  CHECKIT | MENUTOGGLE, 0, ( APTR )MENU_SET_DEBUG_MAIL,
- NM_ITEM, MENU(DEBUG_MISC),				0,  CHECKIT | MENUTOGGLE, 0, ( APTR )MENU_SET_DEBUG_MISC,
- NM_ITEM, MENU(DEBUG_NET),			    0,  CHECKIT | MENUTOGGLE, 0, ( APTR )MENU_SET_DEBUG_NET,
- NM_ITEM, MENU(DEBUG_PLUGIN),			0,  CHECKIT | MENUTOGGLE, 0, ( APTR )MENU_SET_DEBUG_PLUGIN,
- NM_ITEM, MENU(DEBUG_REXX),	            0,  CHECKIT | MENUTOGGLE, 0, ( APTR )MENU_SET_DEBUG_REXX,
- NM_ITEM, MENU(DEBUG_IMGDEC),           0,  CHECKIT | MENUTOGGLE, 0, ( APTR )MENU_SET_DEBUG_IMGDEC,
+ NM_ITEM, MENU(DEBUG_AUTH),				0,  CHECKIT | MENUTOGGLE | CHECKED, 0, ( APTR )MENU_SET_DEBUG_AUTH,
+ NM_ITEM, MENU(DEBUG_CACHE),			0,  CHECKIT | MENUTOGGLE | CHECKED, 0, ( APTR )MENU_SET_DEBUG_CACHE,
+ NM_ITEM, MENU(DEBUG_CACHEPRUNE),		0,  CHECKIT | MENUTOGGLE | CHECKED, 0, ( APTR )MENU_SET_DEBUG_CACHEPRUNE,
+ NM_ITEM, MENU(DEBUG_COOKIE),			0,  CHECKIT | MENUTOGGLE | CHECKED, 0, ( APTR )MENU_SET_DEBUG_COOKIE,
+ NM_ITEM, MENU(DEBUG_CSS),				0,  CHECKIT | MENUTOGGLE | CHECKED, 0, ( APTR )MENU_SET_DEBUG_CSS,
+ NM_ITEM, MENU(DEBUG_DOCINFOWIN),		0,  CHECKIT | MENUTOGGLE | CHECKED, 0, ( APTR )MENU_SET_DEBUG_DOCINFOWIN,
+ NM_ITEM, MENU(DEBUG_DOWNLOADWIN),		0,  CHECKIT | MENUTOGGLE | CHECKED, 0, ( APTR )MENU_SET_DEBUG_DOWNLOADWIN,
+ NM_ITEM, MENU(DEBUG_DNS),			    0,  CHECKIT | MENUTOGGLE | CHECKED, 0, ( APTR )MENU_SET_DEBUG_DNS,
+ NM_ITEM, MENU(DEBUG_FTP),			    0,  CHECKIT | MENUTOGGLE | CHECKED, 0, ( APTR )MENU_SET_DEBUG_FTP,
+ NM_ITEM, MENU(DEBUG_GUI ),				0,	CHECKIT | MENUTOGGLE | CHECKED, 0, ( APTR )MENU_SET_DEBUG_GUI,
+ NM_ITEM, MENU(DEBUG_HISTORY),			0,  CHECKIT | MENUTOGGLE | CHECKED, 0, ( APTR )MENU_SET_DEBUG_HISTORY,
+ NM_ITEM, MENU(DEBUG_HTML),				0,  CHECKIT | MENUTOGGLE | CHECKED, 0, ( APTR )MENU_SET_DEBUG_HTML,
+ NM_ITEM, MENU(DEBUG_HTTP),				0,  CHECKIT | MENUTOGGLE | CHECKED, 0, ( APTR )MENU_SET_DEBUG_HTTP,
+ NM_ITEM, MENU(DEBUG_INIT),				0,	CHECKIT | MENUTOGGLE | CHECKED, 0, ( APTR )MENU_SET_DEBUG_INIT,
+ NM_ITEM, MENU(DEBUG_JS),			    0,  CHECKIT | MENUTOGGLE | CHECKED, 0, ( APTR )MENU_SET_DEBUG_JS,
+ NM_ITEM, MENU(DEBUG_MAIL),				0,  CHECKIT | MENUTOGGLE | CHECKED, 0, ( APTR )MENU_SET_DEBUG_MAIL,
+ NM_ITEM, MENU(DEBUG_MISC),				0,  CHECKIT | MENUTOGGLE | CHECKED, 0, ( APTR )MENU_SET_DEBUG_MISC,
+ NM_ITEM, MENU(DEBUG_NET),			    0,  CHECKIT | MENUTOGGLE | CHECKED, 0, ( APTR )MENU_SET_DEBUG_NET,
+ NM_ITEM, MENU(DEBUG_PLUGIN),			0,  CHECKIT | MENUTOGGLE | CHECKED, 0, ( APTR )MENU_SET_DEBUG_PLUGIN,
+ NM_ITEM, MENU(DEBUG_REXX),	            0,  CHECKIT | MENUTOGGLE | CHECKED, 0, ( APTR )MENU_SET_DEBUG_REXX,
+ NM_ITEM, MENU(DEBUG_IMGDEC),           0,  CHECKIT | MENUTOGGLE | CHECKED, 0, ( APTR )MENU_SET_DEBUG_IMGDEC,
  NM_ITEM, NM_BARLABEL,                  0,   0, 0, NULL,
  NM_ITEM, MENU(DEBUG_FORCEBORDER),		0,  CHECKIT | MENUTOGGLE, 0, ( APTR )MENU_SET_DEBUG_FORCEBORDER,
 #endif /* DEBUG */

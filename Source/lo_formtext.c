@@ -80,12 +80,12 @@ static int doset( struct Data *data, APTR obj, struct TagItem *tags )
 
 		case MA_Layout_FormElement_Name:
 			if( tag->ti_Data )
-				data->name = strdup( (char*)tag->ti_Data ); /* TOFIX */
+				strupd( &data->name, (char*)tag->ti_Data );
 			break;
 
 		case MA_Layout_FormElement_DOMID:
 			if( tag->ti_Data )
-				data->domid = strdup( (char*)tag->ti_Data ); /* TOFIX */
+				strupd( &data->domid, (char*)tag->ti_Data );
 			break;
 
 		case MA_Layout_FormElement_Value:
@@ -98,7 +98,7 @@ static int doset( struct Data *data, APTR obj, struct TagItem *tags )
 		case MA_Layout_FormElement_DefaultValue:
 			if( tag->ti_Data )
 			{
-				data->value = strdup( (char*)tag->ti_Data ); /* TOFIX */
+				strupd( &data->value, (char*)tag->ti_Data );
 			}
 			break;
 

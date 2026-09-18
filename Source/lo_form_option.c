@@ -64,11 +64,11 @@ static int doset( struct Data *data, APTR obj, struct TagItem *tags )
 			free( data->text );
 			if( tag->ti_Data )
 			{
-				data->text = strdup( (char*)tag->ti_Data ); /* TOFIX */
+				strupd( &data->text, (char*)tag->ti_Data );
 			}
 			else
 			{
-				data->text = strdup( "" ); /* TOFIX */
+				strupd( &data->text, "" );
 			}
             break;
 
@@ -76,11 +76,11 @@ static int doset( struct Data *data, APTR obj, struct TagItem *tags )
 			free( data->value );
 			if( tag->ti_Data )
 			{
-				data->value = strdup( (char*)tag->ti_Data ); /* TOFIX */
+				strupd( &data->value, (char*)tag->ti_Data );
 			}
 			else
 			{
-				data->text = strdup( "" ); /* TOFIX */
+				strupd( &data->text, "" );
 			}
             break;
 
@@ -224,11 +224,11 @@ DECSMETHOD( JS_SetProperty )
 			free( data->value );
 			if( msg->dataptr )
 			{
-				data->value = strdup( msg->dataptr ); /* TOFIX */
+				strupd( &data->value, msg->dataptr );
 			}
 			else
 			{
-				data->value = strdup( "" ); /* TOFIX */
+				strupd( &data->value, "" );
 			}
             return( TRUE );
 
@@ -236,11 +236,11 @@ DECSMETHOD( JS_SetProperty )
 			free( data->text );
 			if( msg->dataptr )
 			{
-				data->text = strdup( msg->dataptr ); /* TOFIX */
+				strupd( &data->text, msg->dataptr );
 			}
 			else
 			{
-				data->text = strdup( "" ); /* TOFIX */
+				strupd( &data->text, "" );
 			}
             return( TRUE );
 	}

@@ -259,7 +259,7 @@ static void setattrs( struct IClass *cl, APTR obj, struct TagItem *tagp )
 				data->name = NULL;
 			}
 			if( tag->ti_Data )
-				data->name = strdup( (STRPTR)tag->ti_Data ); /* TOFIX */
+				strupd( &data->name, (STRPTR)tag->ti_Data );
 			break;
 
 		case MA_JS_ID:
@@ -269,7 +269,7 @@ static void setattrs( struct IClass *cl, APTR obj, struct TagItem *tagp )
 				data->id = NULL;
 			}
 			if( tag->ti_Data )
-				data->id = strdup( (STRPTR)tag->ti_Data ); /* TOFIX */
+				strupd( &data->id, (STRPTR)tag->ti_Data );
 			break;
 
 		case MA_JS_ClassName:

@@ -27,29 +27,29 @@
 #include "voyager.h"
 
 /* public - always define these, even if VDEBUG is not set */
-int db_auth = 0;
-int db_cache = 0;
-int db_cookie = 0;
-int db_dns = 0;
-int db_docinfowin = 0;
-int db_dlwin = 0;
-int db_ftp = 0;
-int db_history = 0;
-int db_http = 0;
-int db_js = 0;
-int db_net = 0;
-int db_plugin = 0;
-int db_mail = 0;
-int db_cacheprune = 0;
-int db_html = 0;
-int db_gui = 0;
-int db_init = 0;
-int db_forceborder = 0;
-int db_rexx = 0;
-int db_css = 0;
-int db_misc = 0;
+int db_auth = 1;
+int db_cache = 1;
+int db_cookie = 1;
+int db_dns = 1;
+int db_docinfowin = 1;
+int db_dlwin = 1;
+int db_ftp = 1;
+int db_history = 1;
+int db_http = 1;
+int db_js = 1;
+int db_net = 1;
+int db_plugin = 1;
+int db_mail = 1;
+int db_cacheprune = 1;
+int db_html = 1;
+int db_gui = 1;
+int db_init = 1;
+int db_forceborder = 1;
+int db_rexx = 1;
+int db_css = 1;
+int db_misc = 1;
 
-int db_level = 1;
+int db_level = 4;
 
 #ifdef VDEBUG
 

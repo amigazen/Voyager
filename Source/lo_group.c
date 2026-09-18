@@ -1444,8 +1444,9 @@ DECSMETHOD( Layout_DoLayout )
 					break;
 
 				case align_left:
-					left_margin = malloc( sizeof( *left_margin ) );
-					memset( left_margin, '\0', sizeof( *left_margin ) ); /* TOFIX: maybe not needed + missing NULL check */
+					left_margin = mallocz( sizeof( *left_margin ) );
+					if( !left_margin )
+						break;
 					ADDHEAD( &marginfloat_left, left_margin );
 					left_margin->width = tn->li->xs;
 					left_margin->stopat = yoffs + tn->li->ys;
@@ -1461,8 +1462,9 @@ DECSMETHOD( Layout_DoLayout )
 						innerrestwidth = max( innerrestwidth, tn->li->xs );
 
 						tnr->xp += ( innerrestwidth - tn->li->xs );
-						right_margin = malloc( sizeof( *right_margin ) );
-						memset( right_margin, '\0', sizeof( *right_margin ) ); /* TOFIX: maybe not needed + missing NULL check */
+						right_margin = mallocz( sizeof( *right_margin ) );
+						if( !right_margin )
+							break;
 						ADDHEAD( &marginfloat_right, right_margin );
 						right_margin->width = tn->li->xs;
 						right_margin->stopat = yoffs + tn->li->ys;

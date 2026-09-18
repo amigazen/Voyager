@@ -220,12 +220,14 @@ int	donag( int mode )
 	char *regurl, tmp[ 256 ];
 	int rc = TRUE;
 
+	regurl = NULL;
+
 	if( foundoldkey )
 		sprintf( tmp, "http://www.vapor.com/update/v_update.php3?amirc_ser=%lx", foundoldkey );
 	else
 		strcpy( tmp, "http://www.vapor.com/order/?oprod=voyager3" );
 
-	regurl = strdup( tmp ); /* TOFIX */
+	strupd( &regurl, tmp );
 
 	regtxt[ 0 ] = GS( REG_TXT1 );
 	regtxt[ 1 ] = GS( REG_TXT2 );
