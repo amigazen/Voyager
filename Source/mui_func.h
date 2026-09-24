@@ -83,4 +83,6 @@ APTR STDARGS DoSuperNew( struct IClass *cl, APTR obj, ULONG tag1, ... );
 
 char *filter_escapecodes( char *src );
 
+int mcc_lib_version( STRPTR name, int *ver, int *rev );
+
 #endif /* VOYAGER_MUI_FUNC_H */

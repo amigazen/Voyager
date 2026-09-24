@@ -266,11 +266,30 @@ CONSTRUCTOR_P(probenlist,20001)
 
 	if( o1 && o2 )
 	{
-		int v;
+		struct Library *nlbase;
+		int v, gotver;
 
-		get( o1, MUIA_Version, &v );
-
-		if( v >= 19 )
+		v = 0;
+		gotver = FALSE;
+		nlbase = OpenLibrary( "NList.mcc", 0 );
+		if( !nlbase )
+			nlbase = OpenLibrary( "LIBS:mui/NList.mcc", 0 );
+		if( !nlbase )
+			nlbase = OpenLibrary( "MUI:Libs/mui/NList.mcc", 0 );
+#ifdef __MORPHOS__
+		if( !nlbase )
+			nlbase = OpenLibrary( "MOSSYS:Classes/MUI/NList.mcc", 0 );
+		if( !nlbase )
+			nlbase = OpenLibrary( "SYS:Classes/MUI/NList.mcc", 0 );
+#endif
+		if( nlbase )
+		{
+			v = (int)nlbase->lib_Version;
+			CloseLibrary( nlbase );
+			gotver = TRUE;
+		}
+		/* MCC file version, not MUIA_Version (often muimaster/Group). */
+		if( !gotver || v >= 19 )
 		{
 			class_l = MUIC_NList;
 			class_lv = MUIC_NListview;

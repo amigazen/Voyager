@@ -30,6 +30,7 @@
 // Windows to ISO-8859-1-Table
 #if !USE_LIBUNICODE
 #include "charmap.h"
+#include <proto/iconv.h>
 #endif
 
 void convertentities( char *from, char *to );
@@ -47,12 +48,58 @@ void parse_setcurrentlayoutctx( struct layout_ctx *ctx )
 #if !USE_LIBUNICODE
 /* OS3 has no Unicode fonts. Decode UTF-8 (and numeric entities above 255)
  * down to Latin-1 / charmap, and wait on a chunk boundary if a sequence is
- * incomplete (NUL-terminated by layout_do). */
+ * incomplete (NUL-terminated by layout_do). Prefer iconv.library
+ * (ISO-8859-15//TRANSLIT) when OpenLibrary succeeds; otherwise the
+ * built-in utf8_one + map_unicode path. */
 static int parse_in_utf8;
+static iconv_t parse_utf8_cd;
+static UBYTE parse_iconv_hold[ 8 ];
+static int parse_iconv_nhold;
+static int parse_iconv_nhold_i;
+
+struct Library *IConvBase;
+
+void parse_open_iconv( void )
+{
+	IConvBase = OpenLibrary( "iconv.library", 3 );
+	if( !IConvBase )
+		IConvBase = OpenLibrary( "PROGDIR:Libs/iconv.library", 3 );
+	if( !IConvBase )
+		return;
+
+	parse_utf8_cd = iconv_open( "ISO-8859-15//TRANSLIT", "UTF-8" );
+	if( parse_utf8_cd == (iconv_t)-1 )
+		parse_utf8_cd = iconv_open( "ISO-8859-15", "UTF-8" );
+	if( parse_utf8_cd == (iconv_t)-1 )
+	{
+		CloseLibrary( IConvBase );
+		IConvBase = NULL;
+		parse_utf8_cd = NULL;
+		return;
+	}
+
+	VoyLog(( "[INIT] iconv.library loaded (UTF-8 -> ISO-8859-15)\n" ));
+}
+
+void parse_close_iconv( void )
+{
+	if( IConvBase && parse_utf8_cd )
+		iconv_close( parse_utf8_cd );
+	parse_utf8_cd = NULL;
+	parse_iconv_nhold = 0;
+	parse_iconv_nhold_i = 0;
+	if( IConvBase )
+	{
+		CloseLibrary( IConvBase );
+		IConvBase = NULL;
+	}
+}
 
 void parse_set_utf8( int on )
 {
 	parse_in_utf8 = on ? TRUE : FALSE;
+	parse_iconv_nhold = 0;
+	parse_iconv_nhold_i = 0;
 }
 
 int mime_charset_is_utf8( char *mimetype )
@@ -230,6 +277,39 @@ static int utf8_one( unsigned char *p, ULONG *outch, int *n )
 	}
 	*outch = (ULONG)'?';
 	*n = 1;
+	return( TRUE );
+}
+
+/* Convert a complete UTF-8 sequence. Extra Latin-9 bytes from //TRANSLIT
+ * are queued for gettoken. */
+static int utf8_iconv_bytes( unsigned char *p, int n, unsigned char *out, int *outn )
+{
+	const char *inptr;
+	char *outptr;
+	size_t inleft, outleft;
+	char outbuf[ 8 ];
+	size_t rc;
+	int produced;
+	int i;
+
+	if( !IConvBase || !parse_utf8_cd || n <= 0 )
+		return( FALSE );
+
+	inptr = (const char *)p;
+	inleft = (size_t)n;
+	outptr = outbuf;
+	outleft = sizeof( outbuf );
+	rc = iconv( parse_utf8_cd, &inptr, &inleft, &outptr, &outleft );
+	if( rc == (size_t)-1 )
+		return( FALSE );
+	produced = (int)( sizeof( outbuf ) - outleft );
+	if( produced <= 0 )
+		return( FALSE );
+	if( produced > 8 )
+		produced = 8;
+	for( i = 0; i < produced; i++ )
+		out[ i ] = (unsigned char)outbuf[ i ];
+	*outn = produced;
 	return( TRUE );
 }
 #endif /* !USE_LIBUNICODE */
@@ -845,6 +925,14 @@ static UBYTE getentity( char *ent, int *lenp )
 
 void convertentities( char *from, char *to )
 {
+#if !USE_LIBUNICODE
+	ULONG uch;
+	int n;
+	unsigned char ib[ 8 ];
+	int on;
+	int i;
+#endif
+
 	while( *from )
 	{
 		if( *from == '&' && !isspace( from[ 1 ] ) )
@@ -862,12 +950,16 @@ void convertentities( char *from, char *to )
 #if !USE_LIBUNICODE
 		else if( parse_in_utf8 && (UBYTE)*from >= 0x80 )
 		{
-			ULONG uch;
-			int n;
-
 			if( !utf8_one( (unsigned char *)from, &uch, &n ) )
 			{
 				*to++ = *from++;
+				continue;
+			}
+			if( utf8_iconv_bytes( (unsigned char *)from, n, ib, &on ) )
+			{
+				for( i = 0; i < on; i++ )
+					*to++ = (char)ib[ i ];
+				from += n;
 				continue;
 			}
 			uch = map_unicode( uch );
@@ -890,12 +982,27 @@ ULONG gettoken( char **text, int *lineno )
 	int tokenlen;
 	ULONG negate = FALSE;
 	struct token *toklist;
+#if !USE_LIBUNICODE
+	unsigned char ib[ 8 ];
+	int on;
+	int i;
+#endif
 
 redo:
 
 	if( *p != '<' )
 	{
 		ULONG ch = (UBYTE)*p;
+
+#if !USE_LIBUNICODE
+		if( parse_iconv_nhold )
+		{
+			ch = parse_iconv_hold[ parse_iconv_nhold_i++ ];
+			if( parse_iconv_nhold_i >= parse_iconv_nhold )
+				parse_iconv_nhold = 0;
+			return( ch );
+		}
+#endif
 
 		if( !ch )
 			return( 0 );
@@ -928,6 +1035,20 @@ skipit:
 
 			if( !utf8_one( (unsigned char *)p, &uch, &n ) )
 				return( 0 );
+			if( utf8_iconv_bytes( (unsigned char *)p, n, ib, &on ) )
+			{
+				*text = *text + n;
+				if( on <= 0 )
+				{
+					p = *text;
+					goto redo;
+				}
+				parse_iconv_nhold = 0;
+				parse_iconv_nhold_i = 0;
+				for( i = 1; i < on; i++ )
+					parse_iconv_hold[ parse_iconv_nhold++ ] = ib[ i ];
+				return( (ULONG)ib[ 0 ] );
+			}
 			uch = map_unicode( uch );
 			if( !uch )
 			{

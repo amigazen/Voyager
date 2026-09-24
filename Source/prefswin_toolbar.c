@@ -89,9 +89,11 @@ APTR hotkeystring( void )
 
 	if( o )
 	{
-		int v = 0;
-		get( o, MUIA_Version, &v );
-		if( v < 17 )
+		int v, r;
+
+		v = 0;
+		r = 0;
+		if( mcc_lib_version( MUIC_Pophotkey, &v, &r ) && v < 17 )
 		{
 			MUI_DisposeObject( o );
 			o = NULL;

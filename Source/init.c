@@ -65,6 +65,7 @@
 #include "nlist.h"
 #include "popph.h"
 #include "rexx.h"
+#include "parse.h"
 
 // MUI object vars
 APTR app, notify;
@@ -198,6 +199,9 @@ int initstuff( void )
 	if( !open_mathlibs() ) return( FALSE );
 	if( !open_muimaster() ) return( FALSE );
 	open_vaportoolkit();
+#if !USE_LIBUNICODE
+	parse_open_iconv();
+#endif
 	VoyLog(( "[INIT] After open_muimaster, about to check USE_KEYFILES\n" ));
 	VoyFlush();
 #endif /* !MBX */
@@ -859,6 +863,9 @@ void closestuff( void )
 #ifndef MBX
 	close_bundled_mccs();
 	close_vaportoolkit();
+#if !USE_LIBUNICODE
+	parse_close_iconv();
+#endif
 	close_muimaster();
 	close_mathlibs();
 #endif /* !MBX */
@@ -1218,6 +1225,7 @@ int mcccheck( void )
 	STRPTR altname;
 	char altnamebuf[ 128 ];
 	ULONG len;
+	int gotver;
 	
 	D( db_init, bug( "initializing..\n" ) );
 	VoyLog(( "[MCC] mcccheck() starting...\n" ));
@@ -1261,21 +1269,27 @@ int mcccheck( void )
 		
 		if( o )
 		{
-			ver = getv( o, MUIA_Version );
-			rev = getv( o, MUIA_Revision );
+			gotver = mcc_lib_version( classname, &ver, &rev );
+			if( !gotver && altname )
+				gotver = mcc_lib_version( altname, &ver, &rev );
+			if( gotver )
+			{
 #ifdef __SASC
-			snprintf( verinfo, sizeof(verinfo), "%ld.%ld", (long)ver, (long)rev );
+				snprintf( verinfo, sizeof(verinfo), "%ld.%ld", (long)ver, (long)rev );
 #else
-			sprintf( verinfo, "%ld.%ld", (long)ver, (long)rev );
+				sprintf( verinfo, "%ld.%ld", (long)ver, (long)rev );
 #endif
+			}
+			else
+				strcpy( verinfo, "ok" );
 
 			VoyLog(( "[MCC] Class %s found: v%s\n", mccs[ c ].name, verinfo ));
 			VoyFlush();
 			D( db_init, bug( "creation of of %s (%s) successfull\n", mccs[ c ].name, verinfo ) );
 
-			if( ver < mccs[ c ].minver || ( ver == mccs[ c ].minver && rev < mccs[ c ].minrev ) )
+			if( gotver && ( ver < mccs[ c ].minver || ( ver == mccs[ c ].minver && rev < mccs[ c ].minrev ) ) )
 			{
-				VoyLog(( "[MCC] ERROR: Class %s version %s is too old (required: v%ld.%ld)\n", mccs[ c ].name, verinfo, (long)mccs[ c ].minver, (long)mccs[ c ].minrev ));
+				VoyLog(( "[MCC] ERROR: Class %s library %s is too old (required: v%ld.%ld)\n", mccs[ c ].name, verinfo, (long)mccs[ c ].minver, (long)mccs[ c ].minrev ));
 				VoyFlush();
 				error++;
 				status = MCCCHK_FAILED;
@@ -1286,7 +1300,7 @@ int mcccheck( void )
 				VoyFlush();
 				status = MCCCHK_OK;
 			}
-			
+
 			MUI_DisposeObject( o );
 		}
 		else

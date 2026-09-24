@@ -340,3 +340,58 @@ DCN( Menuitem );
 DCN( Menustrip );
 DCN( Bodychunk );
 
+/*
+ * MCC file lib_Version, not MUIA_Version on a dummy object (that is often
+ * the Group/muimaster version, e.g. 22 on MorphOS).
+ */
+int mcc_lib_version( STRPTR name, int *ver, int *rev )
+{
+	struct Library *base;
+	char path[ 256 ];
+	char mccname[ 128 ];
+	int nlen, i;
+	static const char *pfx[] = {
+		NULL,
+		"LIBS:mui/",
+		"MUI:Libs/mui/",
+		"PROGDIR:Libs/mui/",
+		"PROGDIR:mui/",
+#ifdef __MORPHOS__
+		"MOSSYS:Classes/MUI/",
+		"SYS:Classes/MUI/",
+#endif
+	};
+
+	if( !name || !ver || !rev )
+		return( FALSE );
+	*ver = 0;
+	*rev = 0;
+	nlen = strlen( name );
+	if( nlen >= (int)sizeof( mccname ) - 5 )
+		return( FALSE );
+	strcpy( mccname, name );
+	if( nlen < 4 || strcmp( name + nlen - 4, ".mcc" ) )
+		strcat( mccname, ".mcc" );
+
+	base = NULL;
+	for( i = 0; i < (int)( sizeof( pfx ) / sizeof( pfx[ 0 ] ) ); i++ )
+	{
+		if( pfx[ i ] )
+		{
+			strcpy( path, pfx[ i ] );
+			strcat( path, mccname );
+			base = OpenLibrary( path, 0 );
+		}
+		else
+			base = OpenLibrary( mccname, 0 );
+		if( base )
+			break;
+	}
+	if( !base )
+		return( FALSE );
+	*ver = (int)base->lib_Version;
+	*rev = (int)base->lib_Revision;
+	CloseLibrary( base );
+	return( TRUE );
+}
+

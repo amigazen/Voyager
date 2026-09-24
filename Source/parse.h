@@ -45,6 +45,8 @@ void encodedata( char *from, char *to );
 void parse_set_utf8( int on );
 int mime_charset_is_utf8( char *mimetype );
 int html_meta_charset_is_utf8( char *data, int len );
+void parse_open_iconv( void );
+void parse_close_iconv( void );
 #endif
 
 #if USE_LIBUNICODE
