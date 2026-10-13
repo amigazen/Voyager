@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2026, amigazen project
+ */
+
 #ifndef CLIB_ICONV_PROTOS_H
 #define CLIB_ICONV_PROTOS_H
 

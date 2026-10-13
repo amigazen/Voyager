@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2026, amigazen project
+ */
+
 #ifndef VAPOR_MACROS_H
 #define VAPOR_MACROS_H
 

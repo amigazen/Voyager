@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2026, amigazen project
+ */
+
 #include "mimeprefs.h"
 #include "rev.h"
 #define CATCOMP_ARRAY

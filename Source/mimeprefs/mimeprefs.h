@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2026, amigazen project
+ */
+
 #include "gst.h"
 #include "vatstatic.h"
 

@@ -1,4 +1,8 @@
 /*
+ * Copyright (C) 2026, amigazen project
+ */
+
+/*
  * GST support, SAS/C only
  * -----------------------
  *

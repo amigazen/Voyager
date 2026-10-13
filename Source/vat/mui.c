@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2026, amigazen project
+ */
+
 #define __USE_SYSBASE
 #include <proto/exec.h>
 #include <proto/dos.h>

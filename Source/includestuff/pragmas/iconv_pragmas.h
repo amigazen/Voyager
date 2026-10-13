@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2026, amigazen project
+ */
+
 #ifndef PRAGMAS_ICONV_PRAGMAS_H
 #define PRAGMAS_ICONV_PRAGMAS_H
 

@@ -8,6 +8,8 @@
    Oliver Wagner <owagner@vapor.com>
    All Rights Reserved
 
+  Copyright (C) 2026, amigazen project
+
 **************************************************************************/
 
 /*

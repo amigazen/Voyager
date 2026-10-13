@@ -1,4 +1,8 @@
 /*
+ * Copyright (C) 2026, amigazen project
+ */
+
+/*
  * voyager_ssl.vlib — VSSL ABI implemented on amitls.library (BearSSL).
  *
  * OpenSSL 0.9 remains under Source/VSSL/openssl as a historical tree.

@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2026, amigazen project
+ */
+
 #ifndef VOYAGER_SNPRINT_H
 #define VOYAGER_SNPRINT_H
 /*

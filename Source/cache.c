@@ -13,6 +13,8 @@
    Jon Bright <jon@siliconcircus.com>
    Matt Sealey <neko@vapor.com>
 
+  Copyright (C) 2026, amigazen project
+
 **************************************************************************/
 
 

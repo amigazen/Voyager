@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2026, amigazen project
+ */
+
 #include <exec/types.h>
 #include <exec/memory.h>
 #include <dos/dos.h>

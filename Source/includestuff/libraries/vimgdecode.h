@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2026, amigazen project
+ */
+
 #ifdef __GNUC__
 #pragma pack(2)
 #pragma pack(2)

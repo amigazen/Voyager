@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2026, amigazen project
+ */
+
 struct VSSL_CacheInfo {
 	int sess_number;
 	int sess_connect;

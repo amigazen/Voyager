@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2026, amigazen project
+ */
+
 
 /*  A Bison parser, made from css.y
  by  GNU Bison version 1.25

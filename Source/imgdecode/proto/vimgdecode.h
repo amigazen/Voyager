@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2026, amigazen project
+ */
+
 #ifndef PROTO_VIMGDECODE_H
 #define PROTO_VIMGDECODE_H
 #ifdef MBX

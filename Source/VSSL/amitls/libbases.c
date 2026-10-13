@@ -1,4 +1,8 @@
 /*
+ * Copyright (C) 2026, amigazen project
+ */
+
+/*
  * SAS/C #pragma libcall for amitls.library and bsdsocket.library
  * resolve through these near-data bases.
  */

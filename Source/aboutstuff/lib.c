@@ -1,4 +1,8 @@
 /*
+ * Copyright (C) 2026, amigazen project
+ */
+
+/*
  * $Id: lib.c,v 1.1 2003/06/22 23:04:48 zapek Exp $
  */
 

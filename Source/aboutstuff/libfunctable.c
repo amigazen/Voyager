@@ -1,4 +1,8 @@
 /*
+ * Copyright (C) 2026, amigazen project
+ */
+
+/*
  * Ambient - the ultimate desktop
  * ------------------------------
  * (c) 2001-2003 by David Gerber <zapek@meanmachine.ch>

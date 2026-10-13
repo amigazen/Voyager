@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2026, amigazen project
+ */
+
 #ifndef LIBRARIES_ICONV_H
 #define LIBRARIES_ICONV_H
 

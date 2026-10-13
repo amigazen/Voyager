@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2026, amigazen project
+ */
+
 #ifndef INLINE_ICONV_H
 #define INLINE_ICONV_H
 

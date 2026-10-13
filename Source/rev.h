@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2026, amigazen project
+ */
+
 #define VERSIONSTRING "3.5.2"
 #define VERSION 3
 #define REVISION 5

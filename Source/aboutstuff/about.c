@@ -1,4 +1,8 @@
 /*
+ * Copyright (C) 2026, amigazen project
+ */
+
+/*
    $Id: about.c,v 1.36 2003/06/23 20:55:05 olli Exp $
 */
 

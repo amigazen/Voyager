@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2026, amigazen project
+ */
+
 #ifndef PROTO_ICONV_H
 #define PROTO_ICONV_H
 

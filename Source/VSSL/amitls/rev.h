@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2026, amigazen project
+ */
+
 #define VERSIONSTRING "10.0"
 #define VERSION 10
 #define COMPILEREV 0

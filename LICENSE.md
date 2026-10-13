@@ -9,6 +9,7 @@ GPL release.
 Copyright (C) 1995-2003 Oliver Wagner (owagner@vapor.com).
 
 Parts copyright David Gerber (zapek@vapor.com),
+amigazen project (https://www.amigazen.com)
 Jon Bright (jon@siliconcircus.com),
 and Matt Sealey (neko@vapor.com).
 

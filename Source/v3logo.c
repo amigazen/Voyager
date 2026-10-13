@@ -1,4 +1,8 @@
 /*
+ * Copyright (C) 2026, amigazen project
+ */
+
+/*
  * Voyager 3 JPEG logo for voyager_about.vlib.
  */
 

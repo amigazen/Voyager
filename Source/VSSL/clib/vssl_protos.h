@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2026, amigazen project
+ */
+
 typedef void *X509;
 typedef void *ASN1_UTCTIME;
 typedef void *X509_NAME;

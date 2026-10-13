@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2026, amigazen project
+ */
+
 /* Automatically generated header! Do not edit! */
 
 #ifndef PROTO_VIMGDECODE_H

@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2026, amigazen project
+ */
+
 /* Automatically generated file! Do not edit! */
 
 #if defined( __MORPHOS__ )
