@@ -2157,6 +2157,24 @@ DECMETHOD( HTMLWin_ToStandalone, APTR )
 						MUIA_Bitmap_Width, 8,
 						MUIA_FixWidth, 8,
 					End,
+					Child, BitmapObject,
+						MUIA_Bitmap_Bitmap, &tls12ImageBitMap,
+						MUIA_Bitmap_SourceColors, http10imgCMap32,
+						MUIA_Bitmap_UseFriend, TRUE,
+						MUIA_Bitmap_Height, 6,
+						MUIA_FixHeight, 6,
+						MUIA_Bitmap_Width, 8,
+						MUIA_FixWidth, 8,
+					End,
+					Child, BitmapObject,
+						MUIA_Bitmap_Bitmap, &tls13ImageBitMap,
+						MUIA_Bitmap_SourceColors, http10imgCMap32,
+						MUIA_Bitmap_UseFriend, TRUE,
+						MUIA_Bitmap_Height, 6,
+						MUIA_FixHeight, 6,
+						MUIA_Bitmap_Width, 8,
+						MUIA_FixWidth, 8,
+					End,
 				End,
 			End,
 
@@ -3014,7 +3032,7 @@ DECMETHOD( NStream_GotInfo, APTR )
 		if( data->grp_keybm )
 		{
 			set( data->grp_keybm, MUIA_Group_ActivePage, nets_issecure( data->doc_loading ) );
-			set( data->grp_httpbm, MUIA_Group_ActivePage, nets_sourceid( data->doc_loading ) );
+			set( data->grp_httpbm, MUIA_Group_ActivePage, nets_badgeid( data->doc_loading ) );
 		}
 
 		if( getmenucheck( MENU_SET_LOADIMAGES_IMAPS ) )

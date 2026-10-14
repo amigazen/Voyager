@@ -4381,6 +4381,31 @@ int nets_sourceid( struct nstream *ns )
 	return( nets_sourceid2( ns->un ) );
 }
 
+/*
+ * Footer badge beside the lock. HTTP and FTP keep nets_sourceid.
+ * HTTPS pages 5 and 6 are the TLS 1.2 and 1.3 glyphs. The version
+ * string is whatever VSSL_GetVersion stored (TLSv1.2 / TLSv1.3).
+ */
+int nets_badgeid( struct nstream *ns )
+{
+	int id;
+
+	id = nets_sourceid( ns );
+#if USE_SSL
+	if( ns && ns->un && ns->un->ssl && ns->un->sslversion )
+	{
+		char *ver;
+
+		ver = ns->un->sslversion;
+		if( strstr( ver, "1.3" ) )
+			return( 6 );
+		if( strstr( ver, "1.2" ) )
+			return( 5 );
+	}
+#endif
+	return( id );
+}
+
 void nets_setdocmem( struct nstream *ns, APTR data, int len )
 {
 	if( len < 0 )

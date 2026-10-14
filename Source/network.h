@@ -311,6 +311,7 @@ void nets_setiobj( struct nstream *ns, APTR gauge, APTR txt );
 int nets_flushmem( void );
 int nets_issecure( struct nstream *ns );
 int nets_sourceid( struct nstream *ns );
+int nets_badgeid( struct nstream *ns );
 
 int nets_sourceid2( struct unode *un );
 

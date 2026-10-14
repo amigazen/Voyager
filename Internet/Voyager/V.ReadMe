@@ -1,65 +1,41 @@
+Short:        Voyager V3 3.5 web browser for Amiga
+Uploader:     voyager@amigazen.com (amigazen project)
+Author:       voyager@amigazen.com (amigazen project)
+Type:         comm/www
+Version:      3.5.3
+Architecture: m68k-amigaos >= 3.1
+Distribution: Aminet
+
   __   __
   \ \ / 3 | Voyager V3 3.5.3
    \ V /  | amigazen project (14.10.2026)
     \_/   | http://www.amigazen.com/voyager/
 
-
-Welcome to Voyager V3 3.5, a restoration of VaporWare's Voyager V3
+Welcome to Voyager V3 3.5, a new release of VaporWare's Voyager V3
 for classic 68k Amiga.
 
-Oliver Wagner started Voyager in 1995. David Gerber co-developed
-it with him. The last boxed commercial product was Voyager 3.2
-(16.4.2000). A limited 3.3 alpha / public-beta line followed
-(from August 2000): new layout engine and window framework,
-vertical nav panel, optional TearOff, CManager aliases in the
-URL gadget, ftp. auto-prefix, HTML on HTTP 4xx/5xx, AS225
-removed. Public betas 3.3.65 and 3.3.75; 3.3.126 (27.12.2002)
-for 68k and MorphOS, followed with alpha releases. A short 3.4 CVS series
-followed. Source to a 3.4 release was later published under 
-the GNU GPL. This 3.5.3 build is that GPL tree made usable.
+This release 3.5.3 Beta is built from the GPL source code release of 
+Voyager 3.4 made by original Voyager developer David "Zapek" Gerber, 
+with refactoring to fix bugs, fix the build, replace missing files
+and make Voyager functional again in 2026 by amigazen project.
 
-Requirements: MUI 3.8. A TCP/IP stack (bsdsocket.library).
-HTTPS uses AmiSSL when amisslmaster.library can open AmiSSL 5.27,
-or the included amitls.library otherwise. cybergraphics.library is 
-used when availablerModeID). 
+New in Voyager V3 3.5:
 
-This Free and Open Source release does not need
-vapor_toolkit.library or a keyfile.
-
-
-See Docs/Readme.Docs and Docs/voyager3docs/main.html in this
-drawer (factory fastlink Docs). README.md / CHANGELOG.md are
-in the source tree:
-
-  https://github.com/amigazen/Voyager
-  http://www.amigazen.com/voyager/
-  voyager@amigazen.com
-
-------------------------------------------------------------
-
-Newsflash: New in Voyager V3 3.5
-
-* HTTPS connections load using either AmiSSL (if installed) or
-  AmiTLS (included in the release package).
-
-* Printing functionality has been completed: Print dialog, menu,
+- HTTPS connections load using either AmiSSL (if installed) or
+  AmiTLS (included in this release package).
+- Printing functionality has been completed: Print dialog, menu,
   toolbar, and ARexx Print ASK; text to PRT:; graphical
   printer.device bands; TurboPrint when Turboprint: is assigned.
-
-* UTF-8 HTML, from the MIME charset or a META tag, is mapped onto
+- UTF-8 HTML, from the MIME charset or a META tag, is mapped onto
   the OS3 Latin-1 charmap, including named and numeric entities
   that fit Latin-1.
-
-* The default User-Agent is Firefox 4.0.1 on Windows 7. Some CDNs
+- The default User-Agent is Firefox 4.0.1 on Windows 7. Some CDNs
   answer 403 when a Firefox-shaped agent also contains an Amiga
   token. The Spoof menu can still identify as Voyager.
-
-* No vapor_toolkit.library and no keyfile required. All
+- No vapor_toolkit.library and no keyfile required. All
   functionality is now unlocked.
-
-* PNG alpha masks no longer crash the blit.
-
-* Wide tables finish layout instead of hanging or corrupting
+- PNG alpha masks no longer crash the blit.
+- Wide tables finish layout instead of hanging or corrupting
   the page.
 
 The per-version history for the limited 3.4/3.3 line and for
@@ -68,56 +44,77 @@ in the source tree. The 3.3.0-3.3.127 build log is Source/V.ReadMe:
 
   https://github.com/amigazen/Voyager/blob/main/CHANGELOG.md
 
-Dead VaporWare URLs (v3.vapor.com, bugs.vapor.com, mailing lists) no
-longer apply. Historical notes: https://zapek.com/software/voyager/
+Original VaporWare URLs (v3.vapor.com, bugs.vapor.com, mailing lists) no
+longer apply. Historical notes can be found at Zapek's website: 
+https://zapek.com/software/voyager/
+
+The original authors are not affiliated with amigazen project.
+
+A brief history of Voyager
+==========================
+
+Oliver Wagner started Voyager in 1995. David Gerber co-developed
+it with him. The last boxed commercial product was Voyager 3.2
+(16.4.2000). A limited 3.3 alpha / public-beta line followed
+(from August 2000): new layout engine and window framework,
+vertical nav panel, optional TearOff, CManager aliases in the
+URL gadget, ftp. auto-prefix, HTML on HTTP 4xx/5xx, AS225
+removed. Public betas 3.3.65 and 3.3.75; 3.3.126 (27.12.2002)
+for 68k and MorphOS, followed with alpha releases. A short 3.4 CVS
+series followed. Source to a 3.4 release was later published under
+the GNU GPL by David Gerber, but did not build as-is. This 3.5 release
+is that code refactored into a buildable, runnable, tested release.
+
+Requirements: MUI 3.8 (or a compatible implementation such as
+mushin). A TCP/IP stack (bsdsocket.library). HTTPS uses AmiSSL when
+amisslmaster.library can open AmiSSL 5.27, or the included
+amitls.library otherwise. cybergraphics.library is used when
+present. Tear-off panels are disabled in 3.5 due to Enforcer hits. 
+This release does not need vapor_toolkit.library or a keyfile, all
+functionality is now unlocked.
+
+
+  https://github.com/amigazen/Voyager
+  http://www.amigazen.com/voyager/
+  voyager@amigazen.com
 
 
 Support & Bug reporting
 =======================
 
-For 3.5.3, use GitHub or email. The VaporWare bug tracker and
-mailing list are gone.
+For 3.5.3, use GitHub. The VaporWare bug tracker and mailing list 
+are gone.
 
   https://github.com/amigazen/Voyager
-  voyager@amigazen.com
-
-JSERROR.LOG in the program drawer is still useful for JS
-quirks when that preference is enabled.
 
 Credits
 =======
 
-Voyager is (C) 1995-2003 by Oliver Wagner, David Gerber,
-Jon Bright, Matt Sealey, and the VaporWare Voyager team.
+Voyager is (C) 1995-2026 by Oliver Wagner, David Gerber,
+Jon Bright, Matt Sealey, amigazen project, and the 
+VaporWare Voyager team.
+
 Released under the GNU GPL v3.
 
 V3 was a joint effort conducted by several people
-using the powers of CVS:
+using the powers of CVS, and later, GitHub:
 
-The flash player and many many core changes have been done
-by David "Zapek" Gerber <zapek@vapor.com>
+The bookmark and toolbar system has been devised by the wits
+of Simone "Wiz" Tellini
 
-The new bookmark and toolbar system has been devised by the wits
-of Simone "Wiz" Tellini <wiz@vapor.com>
+Jerome "KingGuppy" Fisher contributed the new Textinput functionality 
+including HTML tag highlighting. He also squashed some bugs.
 
-Jerome "KingGuppy" Fisher <kingguppy@vapor.com> contributed
-the new Textinput functionality including HTML tag highliting.
-He also squashed some bugs.
-
-The GUI cleanup and the new about:, plus the Voyager
+The GUI cleanup and the about:, plus the origianl Voyager
 Portal site (http://v3.vapor.com) design are done by
-Ben "Beej" Preece <beej@vapor.com>
+Ben "Beej" Preece
 
-The nifty new V3 logo is done by Jason "Morden" Murray
-<morden@sub.net.au>, who also did the www.vapor.com web
-site design.
+The nifty V3 logo is done by Jason "Morden" Murray, 
+who also did the www.vapor.com web site design.
 
-The Vpdf plugin was done by Emmanuel Lesueur
-<lesueur@club-internet.fr>.
+Changes for release 3.5 made by amigazen project.
 
-3.5.3 restoration: amigazen project. HTTPS uses AmiSSL when it
-is installed, and AmiTLS otherwise. The original authors are not
-affiliated with amigazen project.
+The original authors are not affiliated with amigazen project.
 
 Voyager V3 is dedicated to the memory of Oliver Wagner,
 1969-2016.

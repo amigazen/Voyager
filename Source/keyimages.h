@@ -108,4 +108,19 @@ static struct BitMap ftpImageBitMap={2,6,0,1,0,(PLANEPTR)&ftpimgData[0]};
 
 /**** end of "ftpimg" ****/
 
+/*
+ * TLS version badges, same 8x6 cell as http10img. Left digit is "1",
+ * right digit is 2 or 3. Shown beside the lock once the handshake
+ * reports TLSv1.2 or TLSv1.3.
+ */
+static USHORT __chip tls12imgData[6]={
+	0x4600,0xc100,0x4300,0x4600,0x4400,0x4700};
+
+static struct BitMap tls12ImageBitMap={2,6,0,1,0,(PLANEPTR)&tls12imgData[0]};
+
+static USHORT __chip tls13imgData[6]={
+	0x4700,0xc100,0x4300,0x4100,0x4100,0x4700};
+
+static struct BitMap tls13ImageBitMap={2,6,0,1,0,(PLANEPTR)&tls13imgData[0]};
+
 #endif /* VOYAGER_KEYIMAGES_H */

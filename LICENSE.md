@@ -39,9 +39,16 @@ Some directories in this tree carry their own notices:
 | OpenSSL (historical VSSL tree) | `Source/VSSL/openssl/LICENSE` | OpenSSL |
 | AmiTLS (runtime, not bundled) | sibling `AmiTLS` tree | BSD-2-Clause / MIT (BearSSL) |
 | AmiSSL (runtime, not bundled) | sibling `AmiSSL-5.27-SDK` | Apache-2.0 (OpenSSL 3) |
+| Mozilla CA certificate list (curl PEM extract) | `Internet/Voyager/Certificates/cacert.pem` | MPL-2.0 |
 
 JPEG, PNG, Zlib, and similar decoder libraries under imgdecode / VFlash
 remain under their upstream licenses as shipped in the GPL drop.
+
+`Certificates/cacert.pem` is Mozilla's root store (`certdata.txt`)
+extracted to PEM by curl. That compilation stays under the Mozilla
+Public License 2.0 (https://www.mozilla.org/MPL/2.0/). The notice at
+the top of the file names Mozilla and the source file. It is not
+relicensed under the GPL.
 
 ---
 

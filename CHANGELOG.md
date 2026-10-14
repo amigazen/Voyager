@@ -18,7 +18,8 @@ the VaporWare history from the Voyager 3.2 product readme (2000-04-16).
 
 - AmiSSL VSSL plugin `voyager_ssl_amissl.vlib` (AmiSSL 5.27 / OpenSSL 3).
   Voyager opens it first and falls back to `voyager_ssl.vlib` (AmiTLS)
-  when `amisslmaster.library` cannot open AmiSSL.
+  when `amisslmaster.library` cannot open AmiSSL. Both plugins load
+  `Certificates/cacert.pem`.
 - Print dialog, menu/toolbar/ARexx `Print ASK`, text dump to `PRT:`, and
   graphical `printer.device` band dumps (`PRD_TPEXTDUMPRPORT` when
   `Turboprint:` is assigned).
@@ -40,6 +41,19 @@ the VaporWare history from the Voyager 3.2 product readme (2000-04-16).
 - Default HTTP User-Agent (spoof off) is Firefox 4.0.1 on Windows 7.
   Extra tokens in the Mozilla comment (AmigaVoyager) were 403'd by
   StackCDN.
+- HTML manual under `Docs/voyager3docs/` and `Docs/Readme.Docs` name
+  the product Voyager 3.5. Patch numbers stay in this changelog.
+  `before.html` credits amigazen project the same way `V.ReadMe` does
+  (copyright 1995-2026, 3.5 changes by amigazen project).
+- `Certificates/cacert.pem` is credited in `LICENSE.md` as Mozilla's
+  root store (curl PEM extract) under MPL-2.0. The older per-CA hash
+  files in that drawer are no longer shipped.
+- `V.ReadMe` is an Aminet readme (`comm/www`, version 3.5.3,
+  `m68k-amigaos >= 3.1`). `README.md` and `V.ReadMe` share the same
+  "New in Voyager V3 3.5" list.
+- Workbench drawer for this release includes `V`, `MimePrefs`,
+  `Plugins/Search.VPlug`, `voyager_ssl_amissl.vlib`, `voyager_ssl.vlib`,
+  and `voyager_about.vlib`.
 
 ### Fixed
 
@@ -53,7 +67,16 @@ the VaporWare history from the Voyager 3.2 product readme (2000-04-16).
 - Unnecessary logging removed from the AmiTLS VSSL module.
 - `NStream_GotInfo` deferral while `in_seturl` is set: deadlock
   workaround; drop it if the lockup stays gone.
-- Layout polish after first-paint and table work.
+- Layout polish after first-paint and table work. Wide tables finish
+  layout instead of hanging or corrupting the page.
+- `Search.VPlug` compiles again. UTF-8 replacement bytes in `search.c`
+  are Latin-1 again (spaces in the source, `³` and `Bücher` in the
+  HTML). The link line sets library version 3, revision 9
+  (`search_plugin`) instead of an unset `$libver`.
+- The status line no longer says "TLS 1.2" while the handshake is
+  still in progress. After it finishes, the text uses
+  `VSSL_GetVersion` (AmiSSL can report TLSv1.3). The footer badge
+  beside the lock shows 1.2 or 1.3 to match.
 
 ## [3.5.2] - 2026-09-05
 
