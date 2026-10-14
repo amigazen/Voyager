@@ -26,7 +26,7 @@
  *   prevent V from closing as long as they're there) can be handled
  *   that way
  *
- * Â© 2000-2003 by Vapor CVS team <ibcvs@vapor.com>
+ * © 2000-2003 by Vapor CVS team <ibcvs@vapor.com>
  * All rights reserved
  *
  * $Id: win_func.c,v 1.42 2003/07/06 16:51:34 olli Exp $

@@ -1,7 +1,3 @@
-/*
- * Copyright (C) 2026, amigazen project
- */
-
 #ifndef VOYAGER_CAT_H
 #define VOYAGER_CAT_H
 

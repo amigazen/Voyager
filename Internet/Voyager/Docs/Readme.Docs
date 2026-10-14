@@ -1,8 +1,8 @@
-Voyager 3.5.2 documentation
+Voyager 3.5.3 documentation
 ==========================
 
 This drawer is the Workbench documentation for the amigazen project
-release of Voyager 3.5.2 (classic 68k).
+release of Voyager 3.5.3 (classic 68k).
 
 The original VaporWare V3 "complete documentation" archive was
 distributed from http://v3.vapor.com/ (Oliver Wagner, 2000). That
@@ -10,7 +10,7 @@ site is offline. Historical notes remain at:
 
   https://zapek.com/software/voyager/
 
-Source, changelog, licence, and the full feature list for 3.5.2 are
+Source, changelog, licence, and the full feature list for 3.5.3 are
 in the GitHub tree and on the amigazen project site:
 
   https://github.com/amigazen/Voyager
@@ -28,11 +28,11 @@ Files in this drawer
                   notes from Stefan Stuntz. Voyager still requires MUI.
   ReadMe.TearOff  TearOff MUI classes by Szymon Ulatowski.
 
-In the 3.5.2 Workbench tree
+In the 3.5.3 Workbench tree
 ---------------------------
 
   V               The browser (SAS/C 68k).
-  V.ReadMe        Program readme for 3.5.2. History for 3.4, 3.3, and
+  V.ReadMe        Program readme for 3.5.3. History for 3.4, 3.3, and
                   3.2 and older is in CHANGELOG.md in the source tree.
   Libs/           MUI classes used by Voyager.
   Plugins/        Including voyager_ssl.vlib (AmiTLS / TLS 1.2, SNI).
@@ -55,7 +55,7 @@ main.html. From a factory-reset prefs set, click the Docs fastlink
 (file:///PROGDIR:Docs/voyager3docs/main.html).
 
 Section 8 of that manual is a historical FAQ: the 1998 Voyager FAQ
-1.7 by Benjamin C. Steeves (Voyager 2.95), annotated for 3.5.2.
+1.7 by Benjamin C. Steeves (Voyager 2.95), annotated for 3.5.3.
 Unannotated originals are in the GitHub tree under archive/FAQ/
 (English HTML, German HTML, and older .txt / AmigaGuide).
 
@@ -72,7 +72,7 @@ engine and window framework, vertical navigation panel, optional
 TearOff, CManager aliases in the URL gadget, ftp. auto-prefix, HTML
 error pages for HTTP 4xx/5xx, AS225 removed. Public betas 3.3.65 and
 3.3.75; 3.3.126 (27.12.2002) for 68k and MorphOS, not to be installed
-over 3.2. Printing was still missing in that line; 3.5.2 restores it.
+over 3.2. Printing was still missing in that line; 3.5.3 restores it.
 A short 3.4 CVS series followed. Headline list: CHANGELOG.md. Per-build
 3.3.0-3.3.127 log: Source/V.ReadMe in the GitHub tree.
 

@@ -259,7 +259,7 @@ STRPTR ASM SAVEDS VABOUT_GetAboutPtr(
 "    </TR>\n"
 "    <TR>\n"
 "     <TD BGCOLOR='White' ALIGN=CENTER>\n"
-"      <B>Build and test of Voyager V3 3.5.2</B><BR>\n"
+"      <B>Build and test of Voyager V3 3.5.3</B><BR>\n"
 "      amigazen project<BR>\n"
 "      <A HREF='https://www.amigazen.com/'>https://www.amigazen.com/</A><BR>\n"
 "     </TD>\n"

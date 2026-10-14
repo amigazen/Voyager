@@ -1,7 +1,3 @@
-/*
- * Copyright (C) 2026, amigazen project
- */
-
 #ifndef MIMEPREFS_CAT_H
 #define MIMEPREFS_CAT_H
 

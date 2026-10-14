@@ -1,6 +1,6 @@
 # Voyager V3 3.5
 
-This is Voyager V3 3.5, an HTML 4 web browser for Amiga, rebuilt from the GPL source drop of VaporWare's Voyager available at original Voyager developer [Zapek's GitHub](https://github.com/zapek/Voyager)
+This is Voyager V3 3.5, a web browser for Amiga, rebuilt from the GPL source drop of VaporWare's Voyager available at original Voyager developer [Zapek's GitHub](https://github.com/zapek/Voyager)
 
 ## [amigazen project](http://www.amigazen.com)
 
@@ -24,11 +24,11 @@ PRs for all projects are gratefully received at [GitHub](https://github.com/amig
 
 ## About Voyager V3 3.5
 
-Voyager is one of the classic Amiga web browsers of the late 1990s, alongside IBrowse and AWeb. Oliver Wagner started it in 1995; David Gerber co-developed it with him. It is a MUI application with an HTML 3.2 layout engine (woth work in progress HTML 4 features), a JavaScript 1.3 / ECMA-Script bytecode compiler and interpreter, a plugin API, and SSL through a loadable `voyager_ssl.vlib` module.
+Voyager is one of the classic Amiga web browsers of the late 1990s, alongside IBrowse and AWeb. Oliver Wagner's **VaporWare** started it in 1995 with David "Zapek" Gerber co-developing with him. It is a MUI application with an HTML 3.2 layout engine (with work in progress HTML 4 features), a JavaScript 1.3 / ECMA-Script bytecode compiler and interpreter, a plugin API, and HTTPS through a VSSL plugin: `voyager_ssl_amissl.vlib` when AmiSSL is installed, otherwise `voyager_ssl.vlib` (AmiTLS).
 
-There were also a CaOS embedded build and a MorphOS bundle. Historically it ran on 68k, ColdFire, and PPC. This 3.5.2 restoration targets the classic 68k SAS/C line for AmigaOS only.
+There were also a Metabox CaOS embedded build and a MorphOS release. This version 3.5 restoration targets the classic 68k SAS/C line for Amiga only.
 
-The last widely shipped commercial release was Voyager 3.2 (16 April 2000). An alpha release 3.3 followed in August 2000. The source in this tree is derived from the the later "3.4" GPL drop (copyright through 2003, with CVS timestamps into 2004–2005). 
+The last widely shipped commercial release was Voyager 3.2 (16 April 2000). An alpha release 3.3 followed in August 2000. The source in this tree is derived from the the later "3.4" GPL drop (copyright through 2003, with CVS timestamps into 2004–2005) released by David Gerber. 
 
 This project's aim is to take that GPL tree and produce a Voyager that:
 
@@ -153,7 +153,7 @@ Author list, still present in this tree unless noted.
 | Authentication | ✅ | Basic |
 | Language tags | ✅ | |
 | Cookies | ✅ | |
-| User-Agent spoofing | ✅ | For broken sites; 3.5.2 also has a Firefox-grammar default so CDNs do not 403 |
+| User-Agent spoofing | ✅ | For broken sites. The 3.5.3 default (spoof off) is Firefox 4.0.1 on Windows 7, so CDNs do not reject requests |
 | **FTP** anonymous and normal login | ✅ | |
 | FTP persistent connections | ✅ | Prefs `keepftp` |
 | FTP resume | ✅ | `REST` |
@@ -161,7 +161,7 @@ Author list, still present in this tree unless noted.
 | Advanced `LIST` / `ls -l` parsing | ✅ | |
 | EPLF | ✅ | |
 | **SMTP** | ✅ | Simple mail from `mailto:` / form mail |
-| **SSL** SSLv2 / SSLv3 / TLS 1.0 | ❌ | Historical OpenSSL 0.9 VSSL (up to 168-bit keys, certificates). **3.5.2** ships AmiTLS (TLS 1.2, SNI) instead |
+| **SSL** TLS 1.2+ | ✅  | The OpenSSL 0.9 VSSL tree is historical. **3.5.3** prefers AmiSSL 5.27 (OpenSSL 3, TLS 1.2, SNI) and falls back to AmiTLS if AmiSSL is not installed |
 
 ## Cache, images, plugins, editor
 
@@ -170,8 +170,6 @@ Author list, still present in this tree unless noted.
 | Variable memory cache | ✅ | Images kept while memory lasts |
 | Variable disk cache | ✅ | Automatic cleanup; no index, always consistent (author) |
 | Inline image decode | ✅ | GIF (animated / progressive), JPEG, PNG (alpha), XBM |
-| **VFlash** | ✅ | Flash 3 and some Flash 4; plugin in this tree |
-| **VPDF** | ❌ | PDF viewer by Emmanuel Lesueur; not bundled in 3.5.2 |
 | HTML source editor | ✅ | Internal view/edit with HTML tag highlighting (`sourceview` / Textinput) |
 
 ## JavaScript Support
@@ -300,9 +298,9 @@ Voyager can append JavaScript errors to `JSERROR.LOG` in the program drawer when
 
 ## Roadmap
 
-The last public VaporWare **boxed** product release was Voyager 3.2 in 2000. A limited 3.3 line followed in CVS (public betas, then 3.3.126 / MorphOS), then 3.4.x. Source was later published under the GNU GPL. 
+The last public VaporWare **boxed** product release was Voyager 3.2 in 2000. A limited 3.3 line followed in CVS (public betas, then 3.3.126 / MorphOS), then 3.4.x. Source was later published under the GNU GPL by David Gerber. 
 
-Version **3.5.2** is the first public amigazen project release. It is derived from that GPL tree. The goals are:
+Version **3.5.3** is the current public amigazen project release. It is derived from that GPL tree. The goals are:
 
 - Ensure Voyager can be built with supported SDKs (SAS/C, NDK, MUI, CyberGraphX, ToolKit)
 - Make the application start, fetch, layout, draw, and quit on classic Amiga
@@ -310,21 +308,18 @@ Version **3.5.2** is the first public amigazen project release. It is derived fr
 - Package a Workbench drawer with binaries, MUI classes, plugins, certificates, and documentation
 - Keep behaviour aligned with Voyager 3 as users knew it
 
-Notable changes in 3.5.2 compared to a stock 3.2 binary install are restoration and porting, not new browsing features:
+New in Voyager V3 3.5:
 
-- SAS/C 68k `smakefile` / `SCOPTIONS` for the main program, imgdecode, MimePrefs, VFlash, and libmath64
-- Image decoder linked into the executable (not a separate `vimgdecode.library` selected at runtime)
-- CyberGraphX pixel-write paths; `cybergraphics.library` opened deferred; RTG via `IsCyberModeID` (OS4 screens without `BMF_SPECIALFMT` still count as CGX)
-- SpeedBar toolbar enabled; TearOff panels disabled due to Enforcer hits in the MUI TearOff.mcc
-- Runtime `vapor_toolkit.library` and keyfile checks removed; registration nag removed
-- HTTPS via AmiTLS (`amitls.library`, BearSSL, TLS 1.2, SNI) as a new `voyager_ssl.vlib`; OpenSSL 0.9 under `Source/VSSL/openssl` is historical and not linked
-- Default User-Agent uses Firefox 4 grammar with AmigaVoyager in the Mozilla comment so current CDNs do not reject the client; the Spoof menu can still identify as Voyager
-- Printing restored: Print dialog, menu/toolbar/ARexx `Print ASK`, text dump to `PRT:`, graphical `printer.device` bands (TurboPrint when `Turboprint:` is assigned)
-- Basic UTF-8: HTML `charset=utf-8` and Latin-1 named/numeric entities mapped to the OS3 charmap (not Unicode fonts)
-- Compile, layout, image, HTTP header, first-paint, cookie-mask blit, and nethandler locale fixes required to run (see [CHANGELOG.md](CHANGELOG.md))
+- HTTPS connections load using either AmiSSL (if installed) or AmiTLS (included in the release package).
+- Printing functionality has been completed: Print dialog, menu, toolbar, and ARexx `Print ASK`; text to `PRT:`; graphical `printer.device` bands; TurboPrint when `Turboprint:` is assigned.
+- UTF-8 HTML, from the MIME charset or a `META` tag, is mapped onto the OS3 Latin-1 charmap, including named and numeric entities that fit Latin-1. 
+- The default User-Agent is Firefox 4.0.1 on Windows 7. Some CDNs answer 403 when a Firefox-shaped agent also contains an Amiga token. The Spoof menu can still identify as Voyager.
+- No `vapor_toolkit.library` and no keyfile required. All functionality is now unlocked.
+- PNG alpha masks no longer crash the blit.
+- Wide tables finish layout instead of hanging or corrupting the page.
 
 
-See [CHANGELOG.md](CHANGELOG.md) for the 3.5.2 log, later Unreleased work (printing, UTF-8 mapping, CyberGraphX/OS4 blit and nethandler fixes), and the copied VaporWare Voyager 3.x history.
+See [CHANGELOG.md](CHANGELOG.md) for the full 3.5.3 change log and the historical VaporWare Voyager 3.x changes.
 
 ## Frequently Asked Questions
 
@@ -334,9 +329,9 @@ The GPL release of that code was a generous act. However, the tree as originally
 
 ### Does this Voyager work on Workbench 3.1, 3.5 or 3.9?
 
-The 3.5.2 68k build is aimed at classic Amiga with MUI, `bsdsocket.library`, and optional `cybergraphics.library` for RTG (`IsCyberModeID`; the library is opened when first needed). It is built in the AmigaOS 3.2 NDK / ToolKit environment used by other amigazen project releases. A TCP/IP stack must be running. AmiTLS (`amitls.library`) and an included CA bundle (`Certificates/cacert.pem`) are required for HTTPS support.
+The 3.5.3 68k build is aimed at classic Amiga with MUI 3.8 (or compatible MUI implementations). It needs `bsdsocket.library` for network access. `cybergraphics.library` is also supported when present. 
 
-Tear-off control panels from Voyager 3 are not enabled in 3.5.2 (`USE_TEAROFF` is 0) because `TearOffPanel.mcc` is not clean of Enforcer hits and the source code is not available for maintenance.
+Tear-off control panels from Voyager 3 are disabled in this version 3.5 because `TearOffPanel.mcc` is not clean of Enforcer hits and the source code is not available for maintenance.
 
 ### Will Voyager support modern websites?
 
@@ -346,9 +341,15 @@ No more than Voyager 3 ever did. HTML5, CSS3, WebAssembly, WebGL, and the Chromi
 
 Voyager 3.2 was the last full public product release (16.4.2000). Development continued in CVS; the GPL sources in this repository are that later tree. Historical notes remain on [zapek.com](https://zapek.com/software/voyager/). VaporWare automatic software updates and keyfile infrastructure dependencies have been removed in order to make this 3.5 release standalone and available to all.
 
+### Does Voyager work with MUI alternatives like Zune?
+
+Voyager relies on certain undocumented functions and internal data structures of MUI that mean it will fail on alternative MUI implementations such as AROS Zune.
+
+The only MUI implementation Voyager works with apart from the original MUI 3.8, is _mushin_ also by amigazen project. This fork of Zune, intended for use on classic Amiga, has been specially modified to use the same internal data structures and undocumented APIs that Voyager depends upon.
+
 ### Will this version be available for OS4, AROS or MorphOS?
 
-The GPL tree already contains MorphOS conditionals. The first priority is a stable classic 68k SAS/C build. Native ports can be revisited once that line is solid. A 68k binary may run on OS4 in emulation the same way other 68k MUI software does. OS4 RTG is treated as CyberGraphX via `IsCyberModeID`; PNG cookie-cut masks no longer pass `(APTR)-1` into blits; the network child avoids OS4 `GetCatalogStr`/`Fault`. That is still not the primary test target for 3.5.
+The GPL tree already contains MorphOS conditionals. The first priority is a stable classic 68k SAS/C build. Native ports can be revisited once that line is solid. A 68k binary may run on OS4 in emulation the same way other 68k MUI software does. OS4 RTG is treated as CyberGraphX via `IsCyberModeID`; PNG cookie-cut masks no longer pass `(APTR)-1` into blits; the network child avoids OS4 `GetCatalogStr`/`Fault`. 
 
 ### Can I contribute to the new Voyager?
 
@@ -366,6 +367,6 @@ Yes please! Whether code, testing or translations and documentation, all contrib
 
 Original Voyager by Oliver Wagner, with David Gerber, Jon Bright, Matt Sealey, Simone Tellini, Jerome Fisher, and the rest of the VaporWare Voyager team, released under the GNU GPL.
 
-MUI by Stefan Stuntz. SpeedBar by Simone Tellini. Historical TearOff classes by Szymon Ulatowski. [AmiTLS from amigazen project](https://github.com/amigazen/AmiTLS) as the current VSSL backend.
+MUI by Stefan Stuntz. SpeedBar by Simone Tellini. Historical TearOff classes by Szymon Ulatowski. HTTPS uses [AmiSSL](https://github.com/jens-maus/amissl) when it is installed, and [AmiTLS](https://github.com/amigazen/AmiTLS) otherwise.
 
 Voyager V3 is forever dedicated to the memory of Oliver "Olli" Wagner.

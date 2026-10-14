@@ -1,10 +1,10 @@
   __   __
-  \ \ / 3 | Voyager V3 3.5.2
-   \ V /  | amigazen project (5.9.2026)
+  \ \ / 3 | Voyager V3 3.5.3
+   \ V /  | amigazen project (14.10.2026)
     \_/   | http://www.amigazen.com/voyager/
 
 
-Welcome to Voyager 3.5.2, a restoration of VaporWare's Voyager V3
+Welcome to Voyager V3 3.5, a restoration of VaporWare's Voyager V3
 for classic 68k Amiga.
 
 Oliver Wagner started Voyager in 1995. David Gerber co-developed
@@ -16,16 +16,15 @@ URL gadget, ftp. auto-prefix, HTML on HTTP 4xx/5xx, AS225
 removed. Public betas 3.3.65 and 3.3.75; 3.3.126 (27.12.2002)
 for 68k and MorphOS, followed with alpha releases. A short 3.4 CVS series
 followed. Source to a 3.4 release was later published under 
-the GNU GPL. This 3.5.2 build is that GPL tree made usable.
+the GNU GPL. This 3.5.3 build is that GPL tree made usable.
 
-Requirements: MUI, a TCP/IP stack (bsdsocket.library). AmiTLS
-(LIBS:amitls.library) and Certificates/cacert.pem for HTTPS.
-cybergraphics.library is opened when first needed for RTG
-(IsCyberModeID). Printing uses printer.device / PRT: (TurboPrint
-if Turboprint: is assigned). UTF-8 HTML is mapped to Latin-1.
+Requirements: MUI 3.8. A TCP/IP stack (bsdsocket.library).
+HTTPS uses AmiSSL when amisslmaster.library can open AmiSSL 5.27,
+or the included amitls.library otherwise. cybergraphics.library is 
+used when availablerModeID). 
 
-Runtime vapor_toolkit.library dependencies and keyfile checks are 
-removed in this Free and Open Source release.
+This Free and Open Source release does not need
+vapor_toolkit.library or a keyfile.
 
 
 See Docs/Readme.Docs and Docs/voyager3docs/main.html in this
@@ -38,34 +37,30 @@ in the source tree:
 
 ------------------------------------------------------------
 
-Newsflash: 3.5.2 compared with a 3.2 binary install
+Newsflash: New in Voyager V3 3.5
 
-* SAS/C 68k smakefile for V, imgdecode, MimePrefs, libmath64
+* HTTPS connections load using either AmiSSL (if installed) or
+  AmiTLS (included in the release package).
 
-* Image decoder linked into the executable; cybergraphics.library
-  opened when first needed; RTG via IsCyberModeID (OS4 screens
-  without BMF_SPECIALFMT still use CGX paths)
+* Printing functionality has been completed: Print dialog, menu,
+  toolbar, and ARexx Print ASK; text to PRT:; graphical
+  printer.device bands; TurboPrint when Turboprint: is assigned.
 
-* SpeedBar toolbar enabled; TearOff panels disabled
+* UTF-8 HTML, from the MIME charset or a META tag, is mapped onto
+  the OS3 Latin-1 charmap, including named and numeric entities
+  that fit Latin-1.
 
-* No vapor_toolkit.library / keyfile; GPL, no registration nag
+* The default User-Agent is Firefox 4.0.1 on Windows 7. Some CDNs
+  answer 403 when a Firefox-shaped agent also contains an Amiga
+  token. The Spoof menu can still identify as Voyager.
 
-* HTTPS via AmiTLS (TLS 1.2, SNI). OpenSSL 0.9 VSSL is not
-  linked.
+* No vapor_toolkit.library and no keyfile required. All
+  functionality is now unlocked.
 
-* Default User-Agent uses Firefox 4 grammar with AmigaVoyager
-  in the Mozilla comment so current CDNs do not reject the
-  client. The Spoof menu can still identify as Voyager.
+* PNG alpha masks no longer crash the blit.
 
-* Printing: Print dialog, menu/toolbar/ARexx Print ASK, text
-  dump to PRT:, graphical printer.device bands. TurboPrint
-  TPEXT when Turboprint: is assigned.
-
-* UTF-8 HTML (charset from MIME/META) mapped to the OS3
-  Latin-1 charmap. Not Unicode fonts.
-
-* Compile, layout, image, HTTP header, cookie-mask blit,
-  nethandler, and first-paint fixes required to run at all
+* Wide tables finish layout instead of hanging or corrupting
+  the page.
 
 The per-version history for the limited 3.4/3.3 line and for
 Voyager 3.2 and older (3.0.0 through 3.2) is in CHANGELOG.md
@@ -80,7 +75,7 @@ longer apply. Historical notes: https://zapek.com/software/voyager/
 Support & Bug reporting
 =======================
 
-For 3.5.2, use GitHub or email. The VaporWare bug tracker and
+For 3.5.3, use GitHub or email. The VaporWare bug tracker and
 mailing list are gone.
 
   https://github.com/amigazen/Voyager
@@ -120,9 +115,9 @@ site design.
 The Vpdf plugin was done by Emmanuel Lesueur
 <lesueur@club-internet.fr>.
 
-3.5.2 restoration: amigazen project. AmiTLS / BearSSL as the
-shipping VSSL backend. The original authors are not affiliated
-with amigazen project.
+3.5.3 restoration: amigazen project. HTTPS uses AmiSSL when it
+is installed, and AmiTLS otherwise. The original authors are not
+affiliated with amigazen project.
 
 Voyager V3 is dedicated to the memory of Oliver Wagner,
 1969-2016.

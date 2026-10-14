@@ -6,15 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 where version numbers allow.
 
-Product **3.5.2** is the SAS/C 68k rebuild. **3.4.9** and **3.3.126** summarise the
+Product **3.5.3** is the SAS/C 68k rebuild. **3.4.9** and **3.3.126** summarise the
 limited post-3.2 CVS line from `Source/V.ReadMe`. **3.2.0** through **3.0.0** is
 the VaporWare history from the Voyager 3.2 product readme (2000-04-16).
-Changes prior to 3.0 were already dropped in that file.
 
 ## [Unreleased]
 
+## [3.5.3] - 2026-10-14
+
 ### Added
 
+- AmiSSL VSSL plugin `voyager_ssl_amissl.vlib` (AmiSSL 5.27 / OpenSSL 3).
+  Voyager opens it first and falls back to `voyager_ssl.vlib` (AmiTLS)
+  when `amisslmaster.library` cannot open AmiSSL.
 - Print dialog, menu/toolbar/ARexx `Print ASK`, text dump to `PRT:`, and
   graphical `printer.device` band dumps (`PRD_TPEXTDUMPRPORT` when
   `Turboprint:` is assigned).
@@ -26,6 +30,10 @@ Changes prior to 3.0 were already dropped in that file.
 
 ### Changed
 
+- Product version `3.5.3` (`rev.h`), date 14.10.2026. `VERHEXID` is
+  `0x3050003` (`COMPILEREV` 3).
+- About page names the SSL plugin that is actually loaded. Its library
+  priority is 0 so Exec can expunge it.
 - `cybergraphics.library` is opened deferred. RTG screens are gated with
   `IsCyberModeID` so OS4 modes without `BMF_SPECIALFMT` still use the
   CGX blit paths.
@@ -1382,7 +1390,8 @@ Changes prior to 3.0 were already dropped in that file.
 - First Prerelease
 - big pack-up, all fingers crossed
 
-[Unreleased]: https://github.com/amigazen/Voyager/compare/v3.5.2...HEAD
+[Unreleased]: https://github.com/amigazen/Voyager/compare/v3.5.3...HEAD
+[3.5.3]: https://github.com/amigazen/Voyager/compare/v3.5.2...v3.5.3
 [3.5.2]: https://github.com/amigazen/Voyager/compare/v3.5.1...v3.5.2
 [3.5.1]: https://github.com/amigazen/Voyager/releases/tag/v3.5.1
 [3.4.9]: https://github.com/amigazen/Voyager/blob/main/CHANGELOG.md#349---2005-01-01

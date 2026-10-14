@@ -12,7 +12,7 @@
 #define BUILDPLUGIN
 #include <libraries/v_plugin.h>
 
-#include "rev.h"
+#include "/rev.h"
 
 /** "us" created by ShapeMe 1.6 ((7.12.96)) from "us.gif" **/ 
 
@@ -75,7 +75,7 @@ long __asm __saveds __UserLibInit( register __a6 struct Library *libbase )
 		return( 0 );
 }
 
-struct TagItem tags[] = {
+struct TagItem tags[] = {
 
 		VPLUG_Query_Version, VERSION,
 		VPLUG_Query_Revision, REVISION,
@@ -97,7 +97,7 @@ struct TagItem * __asm __saveds VPLUG_Query( void )
 //      sprintf() replacement
 void __stdargs sprintf( char *to, char *fmt, ... )
 {
-		static UWORD fmtfunc[] = { 0x16c0, 0x4e75 };
+		static UWORD fmtfunc[] = { 0x16c0, 0x4e75 };
 		RawDoFmt( fmt, &fmt + 1, (APTR)fmtfunc, to );
 }
 
@@ -233,14 +233,14 @@ static void deescape( char *p )
 		{
 				if( *p == '+' )
 						*p = ' ';
-				else if( *p == '%' && p[ 1 ] && p[ 2 ] )
+				else if( *p == '%' && p[ 1 ] && p[ 2 ] )
 				{
 						char hex[ 4 ];
 						long v;
 
-						hex[ 0 ] = p[ 1 ];
-						hex[ 1 ] = p[ 2 ];
-						hex[ 2 ] = 0;
+						hex[ 0 ] = p[ 1 ];
+						hex[ 1 ] = p[ 2 ];
+						hex[ 2 ] = 0;
 
 						stch_l( hex, &v );
 						*p = v;
@@ -253,7 +253,7 @@ static void deescape( char *p )
 APTR __asm __saveds VPLUG_ProcessURLMethod( register __a0 STRPTR url )
 {
 		char *res, *p;
-		char temp[ 4096 ];
+		char temp[ 4096 ];
 
 		res = AllocVec( 4096 - 4, 0 );
 		strcpy( res, "<TITLE>Search Error</TITLE><BODY><H2>Internal error" );
@@ -305,11 +305,11 @@ APTR __asm __saveds VPLUG_ProcessURLMethod( register __a0 STRPTR url )
 
 						// Split query string
 						stccpy( temp, p, sizeof( temp ) );
-						temp[ 0 ] = '&';
+						temp[ 0 ] = '&';
 
-						respurl[ 0 ] = 0;
+						respurl[ 0 ] = 0;
 
-						for( p = strtok( temp, "&" ); p; p = strtok( NULL, "&" ) )
+						for( p = strtok( temp, "&" ); p; p = strtok( NULL, "&" ) )
 						{
 								char *p2;
 								p2 = strchr( p, '=' );
@@ -383,7 +383,7 @@ APTR __asm __saveds VPLUG_ProcessURLMethod( register __a0 STRPTR url )
 								}
 						}
 
-						if( respurl[ 0 ] )
+						if( respurl[ 0 ] )
 						{
 								deescape( keywords );
 								sprintf( res, RESPONSE, keywords, respurl );

@@ -8,7 +8,7 @@
 /*
  * $VER: iconv.h 3.1 (24.9.2026)
  *
- * Public API for iconv.library — GNU libiconv 1.11 wrapped as a classic
+ * Public API for iconv.library - GNU libiconv 1.11 wrapped as a classic
  * Amiga shared library (amigazen project). API names match MorphOS
  * iconv.library for source portability.
  *
