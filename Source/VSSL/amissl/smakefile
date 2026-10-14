@@ -1,0 +1,40 @@
+# AmiSSL backend for voyager_ssl_amissl.vlib (VSSL ABI v10).
+# Runtime: Libs:amisslmaster.library opening AmiSSL 5.27 (AMISSL_V362).
+# Compile: assign AmiSSL:Developer to the AmiSSL 5.27 SDK Developer
+# directory (the drawer that contains include/openssl and include/proto),
+# then from Source/VSSL/amissl: smake
+#
+# slink does not understand Unix "../"; Amiga parent of this dir is /fd/
+
+CC = sc MemorySize=h ppbuf=32768 IdentifierLength=100
+OBJS = vssl.o libbases.o
+FD = /fd/vssl.fd
+
+all: voyager_ssl_amissl.vlib
+
+voyager_ssl_amissl.vlib: $(OBJS)
+	slink FROM lib:libent.o,lib:libinit.o $(OBJS) LIB lib:sc.lib LIB lib:amiga.lib \
+	SMALLCODE SMALLDATA ADDSYM NOICONS \
+	LIBVERSION 10 LIBREVISION 0 \
+	LIBFD $(FD) \
+	LIBID "Voyager SSL (AmiSSL) 10.0 (13.10.26)" \
+	to voyager_ssl_amissl.vlib.debug
+	slink FROM lib:libent.o,lib:libinit.o $(OBJS) LIB lib:sc.lib LIB lib:amiga.lib \
+	SMALLCODE ND SMALLDATA NOICONS \
+	LIBVERSION 10 LIBREVISION 0 \
+	LIBFD $(FD) \
+	LIBID "Voyager SSL (AmiSSL) 10.0 (13.10.26)" \
+	to voyager_ssl_amissl.vlib
+
+vssl.o: vssl.c rev.h
+	$(CC) vssl.c to vssl.o
+
+libbases.o: libbases.c
+	$(CC) libbases.c to libbases.o
+
+clean:
+	-delete vssl.o libbases.o voyager_ssl_amissl.vlib voyager_ssl_amissl.vlib.debug QUIET
+
+install: all
+	copy voyager_ssl_amissl.vlib to ///Internet/Voyager/Plugins
+	-avail flush

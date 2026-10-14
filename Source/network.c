@@ -490,16 +490,39 @@ static int opennet( void )
 
 #if USE_SSL && USE_NET
 
+#ifndef MBX
+struct Library *vssl_open_plugin( ULONG version )
+{
+	struct Library *base;
+
+	/*
+	 * AmiSSL plugin first.  A second try with version 1 covers a library
+	 * whose version byte was not set to the VSSL ABI version.  Libinit
+	 * still fails the open when AmiSSL itself cannot be opened.
+	 */
+	base = OpenLibrary( VSSL_PLUGIN_AMISSL, version );
+	if( base == NULL && version > 1 )
+		base = OpenLibrary( VSSL_PLUGIN_AMISSL, 1 );
+	if( base == NULL )
+	{
+		base = OpenLibrary( VSSL_PLUGIN_AMITLS, version );
+		if( base == NULL && version > 1 )
+			base = OpenLibrary( VSSL_PLUGIN_AMITLS, 1 );
+	}
+	return( base );
+}
+#endif
+
 int openssl( void )
 {
 	if( ssl_ctx )
 		return( TRUE );
 
 #ifndef MBX
-	VSSLBase = OpenLibrary( "PROGDIR:Plugins/voyager_ssl.vlib", 10 );
+	VSSLBase = vssl_open_plugin( 10 );
 	if( !VSSLBase )
 	{
-/* MiamiSSL deprecated - commented out
+/* MiamiSSL deprecated
 #if USE_MIAMI
 		if( MiamiBase && MiamiBase->lib_Version >= 7 )
 			MiamiSSLBase = MiamiOpenSSL( 0 );
@@ -926,7 +949,7 @@ static void addstream( struct nstream *ns )
 		{
 			if( p[ 1 ] == '{' )
 			{
-				if( strstr( p, "}" ) )
+				if( strstr( p, "}Â" ) )
 					*p = 0;
 			}
 		}
@@ -945,7 +968,7 @@ static void addstream( struct nstream *ns )
 			p = db;
 			while( isdigit( *p ) )
 				p++;
-			if( !strcmp( p, "}" ) )
+			if( !strcmp( p, "}Â" ) )
 			{
 				un->postid = atoi( db );
 				db[ -2 ] = 0;
@@ -2146,10 +2169,10 @@ static void un_setup( struct unode *un )
 #endif
 				}
 				else
-					strcpy( bf2, " Unregistered Demo Copy " );
+					strcpy( bf2, "Â Unregistered Demo Copy Â" );
 				#else
 				#ifdef __MORPHOS__
-				strcpy( bf2, " MorphOS licensed version " );
+				strcpy( bf2, "Â MorphOS licensed version Â" );
 				#endif
 				#endif /* disabled keyfile code */
 				#ifdef __MORPHOS__
@@ -2158,7 +2181,7 @@ static void un_setup( struct unode *un )
 				strcpy( bf2, "Voyager" );
 				#endif
 #else /* USE_NET */
-				strcpy( bf2, " Freely distributable NoNet version " );
+				strcpy( bf2, "Â Freely distributable NoNet version Â" );
 #endif /* USE_NET */
 
 				/*

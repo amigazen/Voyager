@@ -3,11 +3,11 @@
  */
 
 /*
- * voyager_ssl.vlib — VSSL ABI implemented on amitls.library (BearSSL).
+ * voyager_ssl.vlib - VSSL ABI implemented on amitls.library (BearSSL).
  *
  * OpenSSL 0.9 remains under Source/VSSL/openssl as a historical tree.
- * This plugin does not link that tree.  An AmiSSL backend can sit beside
- * this one later; both export the same VSSL LVOs.
+ * This plugin does not link that tree.  Source/VSSL/amissl is the AmiSSL
+ * backend and exports the same VSSL LVOs as voyager_ssl_amissl.vlib.
  *
  * V9 adds VSSL_ConnectHost so SNI gets the URL hostname.  VSSL_Connect
  * still exists and uses "localhost" (wrong SNI for real sites).
@@ -25,6 +25,7 @@
 #include <exec/memory.h>
 #include <exec/libraries.h>
 #include <dos/dos.h>
+#include <dos/dosextens.h>
 #include <utility/tagitem.h>
 
 #include <proto/exec.h>
@@ -141,24 +142,22 @@ static ULONG ssl_options = SSL_OP_ALL;
 static int vssl_errno;
 static int task_attached;
 
-static const char *ca_candidates[] = {
-	"PROGDIR:Certificates/cacert.pem",
-	"PROGDIR:cacert.pem",
-	"AmiTLS:cacert.pem",
-	"AmiSSL:Certs/curl-ca-bundle.crt",
-	"ENVARC:AmiSSL/Certs/curl-ca-bundle.crt",
-	NULL
-};
-
 static int
 vssl_file_exists(STRPTR path)
 {
+	struct Process *proc;
+	APTR oldwin;
 	BPTR lock;
 
 	if (path == NULL || path[0] == '\0') {
 		return FALSE;
 	}
+	/* A missing assign must not pop a "please insert volume" requester. */
+	proc = (struct Process *)FindTask(NULL);
+	oldwin = proc->pr_WindowPtr;
+	proc->pr_WindowPtr = (APTR)-1;
 	lock = Lock(path, ACCESS_READ);
+	proc->pr_WindowPtr = oldwin;
 	if (lock == (BPTR)0) {
 		return FALSE;
 	}
@@ -169,48 +168,32 @@ vssl_file_exists(STRPTR path)
 static STRPTR
 vssl_find_ca(char *buf, ULONG buflen)
 {
-	int i;
-	STRPTR p;
+	BPTR plock;
+	char dir[192];
+	char path[256];
 
-	i = 0;
-	while (ca_candidates[i] != NULL) {
-		p = (STRPTR)ca_candidates[i];
-		if (vssl_file_exists(p)) {
-			strncpy(buf, (char *)p, (size_t)(buflen - 1));
-			buf[buflen - 1] = '\0';
-			return (STRPTR)buf;
-		}
-		i++;
+	if (vssl_file_exists((STRPTR)"PROGDIR:Certificates/cacert.pem")) {
+		strncpy(buf, "PROGDIR:Certificates/cacert.pem", (size_t)(buflen - 1));
+		buf[buflen - 1] = '\0';
+		return (STRPTR)buf;
 	}
 
-	/* Net process may lack PROGDIR:; GetProgramDir() is the executable drawer. */
-	{
-		BPTR plock;
-		char dir[192];
-		char path[256];
-
-		plock = GetProgramDir();
-		dir[0] = '\0';
-		if (plock != (BPTR)0) {
-			plock = DupLock(plock);
-		}
-		if (plock != (BPTR)0) {
-			NameFromLock(plock, dir, (LONG)sizeof(dir));
-			UnLock(plock);
-		}
-		if (dir[0] != '\0') {
-			sprintf(path, "%s/Certificates/cacert.pem", dir);
-			if (vssl_file_exists((STRPTR)path)) {
-				strncpy(buf, path, (size_t)(buflen - 1));
-				buf[buflen - 1] = '\0';
-				return (STRPTR)buf;
-			}
-			sprintf(path, "%s/cacert.pem", dir);
-			if (vssl_file_exists((STRPTR)path)) {
-				strncpy(buf, path, (size_t)(buflen - 1));
-				buf[buflen - 1] = '\0';
-				return (STRPTR)buf;
-			}
+	/* The net process may not have PROGDIR:. Same file via the program lock. */
+	plock = GetProgramDir();
+	dir[0] = '\0';
+	if (plock != (BPTR)0) {
+		plock = DupLock(plock);
+	}
+	if (plock != (BPTR)0) {
+		NameFromLock(plock, dir, (LONG)sizeof(dir));
+		UnLock(plock);
+	}
+	if (dir[0] != '\0') {
+		sprintf(path, "%s/Certificates/cacert.pem", dir);
+		if (vssl_file_exists((STRPTR)path)) {
+			strncpy(buf, path, (size_t)(buflen - 1));
+			buf[buflen - 1] = '\0';
+			return (STRPTR)buf;
 		}
 	}
 
@@ -517,7 +500,7 @@ vssl_do_connect(struct vssl_ctx *ctx, int sock, STRPTR hostname)
 	return (APTR)conn;
 }
 
-char * __asm VSSL_Id(void)
+char * __asm __saveds VSSL_Id(void)
 {
 	return ("Voyager SSL  " VERTAG " AmiTLS/BearSSL");
 }

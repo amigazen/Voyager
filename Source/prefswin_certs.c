@@ -22,7 +22,7 @@
  * Certificates
  * ------------
  *
- * © 2000 VaporWare CVS team <ibcvs@vapor.com>
+ * Â© 2000 VaporWare CVS team <ibcvs@vapor.com>
  * All rights reserved
  *
  * $Id: prefswin_certs.c,v 1.29 2003/07/06 16:51:34 olli Exp $
@@ -258,7 +258,7 @@ MUI_HOOK( cert_disp, STRPTR *array, struct certnode *cn )
 	}
 	else
 	{
-		*array++ = cn->isactive ? "×" : " ";
+		*array++ = cn->isactive ? "Ã—" : " ";
 		*array++ = cn->name;
 	}
 	return( 0 );
@@ -331,7 +331,7 @@ DECNEW
 	{
 #ifndef MBX
 #if USE_SSL
-		VSSLBase = OpenLibrary( "PROGDIR:Plugins/voyager_ssl.vlib", 6 );
+		VSSLBase = vssl_open_plugin( 6 );
 		if( !VSSLBase )
 		{
 			obj = DoSuperNew( cl, obj,

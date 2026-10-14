@@ -8,6 +8,7 @@
 
 #include <proto/exec.h>
 #include <exec/libraries.h>
+#include "/vssl.h"
 
 #include "/includestuff/macros/compilers.h" /* XXX: hackish.. */
 
@@ -29,7 +30,12 @@ void lib_cleanup( void )
 
 #ifdef __SASC
 #define FAR
-void __saveds __XCEXIT(void)
+/*
+ * sc.lib _exit.c references __XCEXIT. SAS/C adds one underscore, so the
+ * C name is _XCEXIT. Priority stays 0: -128 makes Exec skip this library
+ * during a flush, so it never expunges.
+ */
+void __saveds _XCEXIT(void)
 {
 }
 
@@ -43,8 +49,13 @@ void __regargs _CXBRK(void)
 
 long ASM SAVEDS __UserLibInit( register __a6 struct Library *libbase )
 {
-	libbase->lib_Node.ln_Pri = -128;
+	(void)libbase;
 	return( 0 );
+}
+
+void ASM SAVEDS __UserLibCleanup( register __a6 struct Library *libbase )
+{
+	(void)libbase;
 }
 #endif
 
@@ -75,7 +86,22 @@ STRPTR ASM SAVEDS VABOUT_GetAboutPtr(
 	__reg( a2, char *imgdec )
 )
 {
-	struct Library *ssl = OpenLibrary( "PROGDIR:Plugins/voyager_ssl.vlib", 1 );
+	struct Library *ssl;
+	char *sslname;
+
+	ssl = OpenLibrary( VSSL_PLUGIN_AMISSL, 10 );
+	if( !ssl )
+		ssl = OpenLibrary( VSSL_PLUGIN_AMISSL, 1 );
+	if( !ssl )
+		ssl = OpenLibrary( VSSL_PLUGIN_AMITLS, 10 );
+	if( !ssl )
+		ssl = OpenLibrary( VSSL_PLUGIN_AMITLS, 1 );
+	if( ssl && ssl->lib_IdString )
+		sslname = ssl->lib_IdString;
+	else if( ssl )
+		sslname = "(installed)";
+	else
+		sslname = "(not installed)";
 
 	sprintf( abouttxt,
 
@@ -190,12 +216,12 @@ STRPTR ASM SAVEDS VABOUT_GetAboutPtr(
 " </TR>\n"
 " <TR>\n"
 "  <TD ALIGN=RIGHT>\n"
-"   <A HREF='https://github.com/amigazen/AmiTLS'>\n"
-"    <B>AmiTLS</B>\n"
+"   <A HREF='https://github.com/jens-maus/amissl'>\n"
+"    <B>AmiSSL</B>\n"
 "   </A>\n"
 "  </TD>\n"
 "  <TD>\n"
-"   <B>HTTPS</B> uses voyager_ssl.vlib with amitls.library (TLS 1.2). OpenSSL 0.9 is not used.\n"
+"   <B>HTTPS</B> uses voyager_ssl_amissl.vlib (AmiSSL / OpenSSL) when that plugin is in PROGDIR:Plugins. If it is not, Voyager uses voyager_ssl.vlib and amitls.library (TLS 1.2).\n"
 "  </TD>\n"
 " </TR>\n"
 "</TABLE>\n"
@@ -325,10 +351,11 @@ STRPTR ASM SAVEDS VABOUT_GetAboutPtr(
 		revid,
 		owner,
 		imgdec,
-		ssl ? ssl->lib_IdString : "(not installed)"
+		sslname
 	);
 
-	CloseLibrary( ssl );
+	if( ssl )
+		CloseLibrary( ssl );
 
 	return( abouttxt );
 }

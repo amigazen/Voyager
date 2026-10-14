@@ -261,6 +261,9 @@ extern int useproxyauth;
 
 extern struct SignalSemaphore netpoolsem;
 extern struct Library *VSSLBase;
+#ifndef MBX
+struct Library *vssl_open_plugin(ULONG version);
+#endif
 /* MiamiSSL deprecated - commented out
 extern struct Library *MiamiSSLBase;
 */

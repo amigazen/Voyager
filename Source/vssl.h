@@ -21,6 +21,14 @@
 #ifndef VOYAGER_VSSL_H
 #define VOYAGER_VSSL_H
 
+/*
+ * Two plugins export this ABI.  voyager_ssl_amissl.vlib is tried first and
+ * its libinit fails closed when amisslmaster.library cannot be opened, so
+ * Voyager then loads voyager_ssl.vlib (amitls.library).
+ */
+#define VSSL_PLUGIN_AMISSL "PROGDIR:Plugins/voyager_ssl_amissl.vlib"
+#define VSSL_PLUGIN_AMITLS "PROGDIR:Plugins/voyager_ssl.vlib"
+
 struct VSSL_CacheInfo {
 	int sess_number;
 	int sess_connect;
@@ -71,7 +79,7 @@ struct VSSL_CacheInfo {
 #pragma libcall VSSLBase VSSL_GetVersion d2 801
 /* V8*/
 #pragma libcall VSSLBase VSSL_SetDefaultOptions d8 001
-/* V9 — SNI hostname (AmiTLS / future AmiSSL plugins) */
+/* V9 - SNI hostname (AmiTLS and AmiSSL plugins) */
 #pragma libcall VSSLBase VSSL_ConnectHost de 90803
 #pragma libcall VSSLBase VSSL_Pending e4 801
 

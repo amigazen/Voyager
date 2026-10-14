@@ -15,7 +15,7 @@ struct Library *SocketBase;
 int errno;
 int h_errno;
 
-/* sc.lib _exit / abort hooks — shared libraries must not terminate the process. */
+/* sc.lib _exit / abort hooks - shared libraries must not terminate the process. */
 void __saveds __XCEXIT(void)
 {
 }
